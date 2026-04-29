@@ -1,0 +1,282 @@
+{
+  "meta": {
+    "id_dossier": "ORIA-2026-0042",
+    "version_schema": "1.1.0",
+    "source_entree": "note_vocale",
+    "date_creation": "2026-04-09T11:15:00Z",
+    "utilisateur_createur": {
+      "id": "dac_coord_03",
+      "nom_affichage": "Coordinateur DAC Var Ouest"
+    },
+    "statut_dossier": "analyse_terminee_en_attente_de_relecture",
+    "niveau_confiance_global": 0.88
+  },
+
+  "adresseur": {
+    "categorie": "professionnel_de_sante_liberal",
+    "profession": "infirmiere_liberale",
+    "structure": "Cabinet infirmier du Port",
+    "identite": {
+      "nom": "Mme Martin",
+      "prenom": "Claire"
+    },
+    "coordonnees": {
+      "telephone": "0600000000",
+      "email": "cabinet.port@exemple.fr"
+    },
+    "mode_signalement": "note_vocale_depuis_application_mobile",
+    "degre_urgence_percu": "modere"
+  },
+
+  "usager": {
+    "identite": {
+      "nom_usage": "non_renseigne",
+      "nom_naissance": "non_renseigne",
+      "prenoms": "non_renseigne",
+      "civilite": "madame",
+      "sexe": "feminin",
+      "age_estime": 84,
+      "mode_obtention_age": "mention_explicite_dans_le_recit",
+      "situation_familiale": "marié",
+      "enfants": 2
+    },
+    "localisation": {
+      "commune_residence": "La Seyne-sur-Mer",
+      "code_postal": "83500",
+      "adresse_precise": "non_renseignee",
+      "zone_territoriale_associee": "Var Ouest",
+      "niveau_confiance_localisation": 0.96
+    },
+    "cadre_de_vie": {
+      "lieu_de_vie_principal": "domicile_personnel",
+      "composition_du_foyer": "vit_seule",
+      "presence_entourage": "entourage_peu_disponible",
+      "frequence_soutien_entourage": "ponctuelle",
+      "type_habitat": "appartement",
+      "adequation_logement_situation": "partiellement_adapte"
+    },
+    "situation_actuelle": {
+      "lieu_ou_se_trouve_la_personne": "domicile",
+      "contexte_recent": "retour_a_domicile_apres_hospitalisation",
+      "temporalite_evenement": "moins_de_7_jours",
+      "stabilite_apparente_situation": "fragile",
+      "GIR": 1
+    }
+  },
+
+  "demande": {
+    "resume_structure": "Personne âgée vivant seule, retour récent d’hospitalisation, organisation du domicile insuffisamment sécurisée, difficultés de coordination des relais et absence de médecin traitant clairement identifié.",
+    "motif_principal": "securisation_du_retour_a_domicile",
+    "motifs_secondaires": [
+      "besoin_de_coordination",
+      "remise_en_lien_avec_les_soins_de_ville",
+      "evaluation_de_la_situation_sociale"
+    ],
+    "evenement_declencheur": "sortie_hospitaliere",
+    "description_factuelle": {
+      "autonomie_observee": "diminuee",
+      "etat_general_decrit": "fatigue_importante",
+      "capacite_organisationnelle": "limitee",
+      "adhesion_presumee_aux_aides": "a_confirmer"
+    },
+    "actions_deja_menees": [
+      {
+        "acteur": "infirmiere_liberale",
+        "action": "premiere_evaluation_informelle",
+        "resultat": "besoin_d_un_relais_plus_structure"
+      }
+    ],
+    "attentes_formulees": {
+      "attente_principale": "orientation_vers_structure_competente",
+      "attente_secondaire": "appui_pour_coordination_des_intervenants",
+      "niveau_de_precision_attendu": "operationnel"
+    }
+  },
+
+  "vulnerabilites": {
+    "autonomie": {
+      "niveau_global": "fragilite_moderee_a_importante",
+      "mobilite": "ralentie",
+      "transferts": "a_preciser",
+      "deplacements_exterieurs": "limites",
+      "gestion_du_quotidien": "partiellement_compromise"
+    },
+    "sante": {
+      "hospitalisation": {
+        "statut": "recente",
+        "motif": "non_precise_dans_le_recit",
+        "impact_presume": "majoration_de_la_fragilite"
+      },
+      "suivi_medical": {
+        "medecin_traitant": "non_identifie_avec_certitude",
+        "continuite_soins": "insuffisamment_securisee"
+      },
+      "etat_clinique_percu": "fragile_sans_signal_d_urgence_vitale"
+    },
+    "social": {
+      "isolement_relationnel": "important",
+      "soutien_familial": "faible_ou_irregulier",
+      "risque_epuisement_entourage": "non_evaluable_a_ce_stade",
+      "precarite": "non_objectivee_mais_a_explorer"
+    },
+    "administratif": {
+      "lisibilite_du_parcours": "faible",
+      "coordination_existante": "insuffisante",
+      "ouverture_des_droits": "non_documentee",
+      "niveau_complexite_administrative": "modere"
+    },
+    "habitat": {
+      "securite_du_domicile": "a_evaluer",
+      "adequation_aux_limites_fonctionnelles": "incertaine",
+      "besoin_d_amenagement": "possible"
+    }
+  },
+
+  "signaux_detectes": [
+    {
+      "categorie": "isolement",
+      "intensite": "elevee",
+      "indice_textuel": "elle vit seule et il n’y a pas vraiment de relais autour",
+      "niveau_confiance": 0.95
+    },
+    {
+      "categorie": "retour_hospitalisation",
+      "intensite": "recente",
+      "indice_textuel": "elle est rentrée de l’hôpital il y a quelques jours",
+      "niveau_confiance": 0.98
+    },
+    {
+      "categorie": "fragilite_autonomie",
+      "intensite": "moderee_a_importante",
+      "indice_textuel": "elle est très fatiguée et a du mal à gérer son quotidien",
+      "niveau_confiance": 0.91
+    },
+    {
+      "categorie": "absence_de_relais_medical_clair",
+      "intensite": "significative",
+      "indice_textuel": "je n’ai pas réussi à identifier de médecin traitant qui suive vraiment la situation",
+      "niveau_confiance": 0.89
+    }
+  ],
+
+  "cercle_de_soins": {
+    "professionnels_identifies": [
+      {
+        "role": "infirmiere_liberale",
+        "nom": "Mme Martin",
+        "niveau_implication": "deja_mobilisee",
+        "stabilite_du_lien": "active"
+      }
+    ],
+    "professionnels_non_identifies_ou_incertains": [
+      {
+        "role": "medecin_traitant",
+        "statut": "incertain_ou_non_identifie"
+      }
+    ],
+    "aidants_et_proches": [
+      {
+        "type": "famille",
+        "niveau_presence": "faible",
+        "regularite": "irréguliere"
+      }
+    ],
+    "niveau_structuration_cercle_de_soins": "insuffisamment_coordonne"
+  },
+
+  "complexite": {
+    "referentiel": "COMID_adapte_prototype_ORIA",
+    "facteurs_contributifs": [
+      {
+        "facteur": "isolement_relationnel",
+        "poids": 2,
+        "commentaire": "absence de relais réguliers clairement identifiés"
+      },
+      {
+        "facteur": "retour_hospitalisation_recent",
+        "poids": 2,
+        "commentaire": "phase de transition domicile potentiellement à risque"
+      },
+      {
+        "facteur": "fragilite_fonctionnelle",
+        "poids": 2,
+        "commentaire": "fatigue et difficultés dans la gestion du quotidien"
+      },
+      {
+        "facteur": "continuité_medicale_incomplète",
+        "poids": 2,
+        "commentaire": "médecin traitant non identifié avec certitude"
+      },
+      {
+        "facteur": "coordination_insuffisante",
+        "poids": 2,
+        "commentaire": "relais peu formalisés à ce stade"
+      }
+    ],
+    "score_total": 10,
+    "niveau": "complexe",
+    "lecture_clinico_organisationnelle": "situation nécessitant une coordination renforcée à court terme",
+    "explication_synthetique": "La situation cumule fragilité fonctionnelle, isolement, retour récent à domicile et défaut de structuration des relais."
+  },
+
+  "orientation": {
+    "proposition_principale": {
+      "type_structure": "CLIC",
+      "nom_structure": "CLIC La Seyne-sur-Mer",
+      "territoire": "La Seyne-sur-Mer",
+      "niveau_pertinence": "tres_eleve",
+      "priorite_traitement": "rapide",
+      "objectif_orientation": "evaluation_coordination_gerontologique_et_securisation_du_maintien_a_domicile"
+    },
+    "propositions_complementaires": [
+      {
+        "type_structure": "CPTS",
+        "nom_structure": "CPTS du territoire concerné",
+        "niveau_pertinence": "eleve",
+        "objectif_orientation": "remise_en_lien_avec_un_parcours_de_soins_de_ville"
+      }
+    ],
+    "justification_detaillee": "L’orientation principale vers le CLIC est proposée car la situation relève d’une fragilité gérontologique avec besoin d’évaluation globale, coordination des relais et sécurisation du maintien à domicile. Une mobilisation de la CPTS apparaît également pertinente au regard de l’absence de suivi médical clairement identifié.",
+    "niveau_confiance_orientation": 0.87,
+    "validation_humaine": {
+      "statut": "requise",
+      "motif": "la situation comporte plusieurs dimensions à confirmer en revue métier"
+    }
+  },
+
+  "relecture_metier": {
+    "champs_a_confirmer": [
+      {
+        "champ": "medecin_traitant",
+        "raison": "information présente mais incomplètement confirmée",
+        "priorite": "haute"
+      },
+      {
+        "champ": "niveau_reel_autonomie",
+        "raison": "description vocale suggestive mais non standardisée",
+        "priorite": "haute"
+      },
+      {
+        "champ": "adequation_du_logement",
+        "raison": "besoin évoqué indirectement",
+        "priorite": "moyenne"
+      }
+    ],
+    "coherence_globale_du_dossier": "bonne",
+    "niveau_de_relecture_recommande": "relecture_metier_complete"
+  },
+
+  "validation": {
+    "etat_validation": "en_attente",
+    "orientation_finale": null,
+    "validateur": null,
+    "commentaire_validateur": null,
+    "historique_modifications": []
+  },
+
+  "export": {
+    "etat_pre_remplissage_fiche": "possible_apres_validation",
+    "format_cible_prioritaire": "fiche_orientation_CLIC",
+    "statut_generation_document": "non_lance"
+  }
+}
