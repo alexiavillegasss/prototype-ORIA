@@ -1,7 +1,11 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-app = FastAPI()
+from backend.src.services.comid_engine import compute_comid
+from backend.src.services.schema_loader import load_schema
+from backend.src.services.schema_builder import build_schema
+
+app = FastAPI(title="ORIA API")
 
 
 # -----------------------------
@@ -12,77 +16,53 @@ class AnalyzeRequest(BaseModel):
 
 
 # -----------------------------
-# ROOT ENDPOINT
+# ROOT
 # -----------------------------
 @app.get("/")
 def root():
-    return {"message": "ORIA API is running"}
-
-
-# -----------------------------
-# ORIA CORE LOGIC
-# -----------------------------
-
-def extract_signals(text: str):
-    """
-    Extraction simple (version v1 sans IA)
-    """
-    text = text.lower()
-
     return {
-        "isolation": "isolé" in text or "seul" in text,
-        "fall_risk": "chute" in text,
-        "age_risk": "âgé" in text or "personne âgée" in text
+        "message": "ORIA API running",
+        "status": "ok"
     }
 
 
-def compute_score(signals: dict):
-    """
-    Scoring simple basé sur règles métier internes
-    """
-    score = 0
+# -----------------------------
+# SIGNAL EXTRACTION (V1 simple)
+# -----------------------------
+def extract_signals(text: str):
+    text = text.lower()
 
-    if signals["isolation"]:
-        score += 2
-    if signals["fall_risk"]:
-        score += 3
-    if signals["age_risk"]:
-        score += 2
-
-    return score
-
-
-def determine_risk_level(score: int):
-    """
-    Classification du risque
-    """
-    if score >= 5:
-        return "high"
-    elif score >= 3:
-        return "medium"
-    else:
-        return "low"
+    return {
+        "isolement": "isolé" in text or "seul" in text,
+        "chute": "chute" in text,
+        "age_risk": "âgé" in text or "personne âgée" in text,
+        "retour_hospit": "hospitalisation" in text or "retour" in text
+    }
 
 
 # -----------------------------
-# ANALYZE ENDPOINT
+# ANALYZE ENDPOINT (ORIA CORE)
 # -----------------------------
 @app.post("/analyze")
 def analyze(request: AnalyzeRequest):
 
-    # 1. extraction des signaux
+    # 1. extraction signaux
     signals = extract_signals(request.text)
 
-    # 2. score
-    score = compute_score(signals)
+    # 2. COMID (complexité)
+    comid_result = compute_comid(signals)
 
-    # 3. niveau de risque
-    risk_level = determine_risk_level(score)
+    # 3. charger le schema pivot
+    template = load_schema()
 
-    # 4. réponse ORIA
-    return {
-        "input": request.text,
-        "signals": signals,
-        "score": score,
-        "risk_level": risk_level
-    }
+    # 4. construire dossier ORIA complet
+    dossier = build_schema(
+        template=template,
+        text=request.text,
+        signals=signals,
+        score=comid_result["score"]["total"],
+        risk_level=comid_result["classification"]["level"]
+    )
+
+    # 5. retour final ORIA
+    return dossier
