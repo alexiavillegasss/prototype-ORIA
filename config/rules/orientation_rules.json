@@ -341,6 +341,18 @@
         }
       ],
       "conditions_entree_all": [],
+      "conditions_renfort": [
+        {
+          "field": "adresseur.degre_urgence_percu",
+          "operator": "equals",
+          "value": "critique"
+        },
+        {
+          "field": "usager.situation_actuelle.suspiion_malveillance",
+          "operator": "not_empty",
+          "value": true
+        }
+      ],
       "conditions_exclusion": [],
       "particularites": {
         "adresseur_anonyme_autorise": true,
@@ -400,6 +412,11 @@
           "field": "vulnerabilites.habitat.besoin_d_amenagement",
           "operator": "in",
           "value": ["possible", "probable", "urgent"]
+        },
+        {
+          "field": "demande.description_factuelle.refus_aide",
+          "operator": "equals",
+          "value": true
         }
       ],
       "conditions_exclusion": [],
@@ -456,6 +473,11 @@
           "field": "complexite.niveau",
           "operator": "equals",
           "value": "complexe"
+        },
+        {
+          "field": "usager.identite.mesure_protection",
+          "operator": "in",
+          "value": ["tutelle", "curatelle simple", "curatelle renforcée", "sauvegarde de justice"]
         }
       ],
       "particularites": {

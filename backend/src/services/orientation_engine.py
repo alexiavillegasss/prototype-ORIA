@@ -38,6 +38,10 @@ def compute_orientation(data: dict, rules: dict):
         if not evaluate_any(data, config.get("conditions_entree_any", [])):
             continue
 
+        # EXCLUSIONS
+        if evaluate_any(data, config.get("conditions_exclusion", [])):
+            continue
+
         # RENFORT
         if "conditions_renfort" in config:
             score += count_matches(data, config["conditions_renfort"])
@@ -53,7 +57,7 @@ def compute_orientation(data: dict, rules: dict):
     # -------------------------
     # 2. PRIORITÉS MÉTIER
     # -------------------------
-    winner = select_winner(candidates, priorities)
+    winner = select_winner(candidates, priorities, data)
 
     # -------------------------
     # 3. COMPLEMENTS
@@ -77,20 +81,28 @@ def compute_orientation(data: dict, rules: dict):
 # -----------------------------
 # PRIORITY RESOLUTION
 # -----------------------------
-def select_winner(candidates, priorities):
+def select_winner(candidates, priorities, data):
     if not candidates:
         return None
 
-    # default max score
-    best = max(candidates.items(), key=lambda x: x[1]["score"])
-    winner = best[0]
-
-    # apply priority overrides
+    # apply priority overrides en premier
     for rule in priorities:
-        if evaluate_any_field(rule.get("if_any", [])):
-            return rule["winner"]
+        if evaluate_any(data, rule.get("if_any", [])):
+            # Si le gagnant prioritaire est un candidat valide
+            if rule["winner"] in candidates:
+                return rule["winner"]
+        if evaluate_all(data, rule.get("if_all", [])):
+            if rule["winner"] in candidates:
+                return rule["winner"]
 
-    return winner
+    # max score
+    max_score = max(c["score"] for c in candidates.values())
+    tied_candidates = [k for k, v in candidates.items() if v["score"] == max_score]
+
+    if len(tied_candidates) > 1:
+        return "AMBIGU"
+
+    return tied_candidates[0]
 
 
 # -----------------------------
@@ -105,8 +117,8 @@ def evaluate_any(data, conditions):
 
 
 def evaluate_any_field(conditions):
-    # version simplifiée (priorité globale)
-    return True if conditions else False
+    # Plus utilisé, on utilise evaluate_any ou evaluate_all directement
+    pass
 
 
 def evaluate_condition(data, condition):

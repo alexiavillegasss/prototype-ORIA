@@ -1,3 +1,4 @@
+import re
 from fastapi import FastAPI
 from pydantic import BaseModel
 
@@ -27,18 +28,17 @@ def root():
 
 
 # -----------------------------
-# SIGNAL EXTRACTION (V1 simple)
+# ENTITY EXTRACTION
 # -----------------------------
-def extract_signals(text: str):
-    text = text.lower()
+def extract_entities(text: str):
+    entities = {}
+    match = re.search(r'(\d+)\s*ans', text.lower())
+    if match:
+        entities["age"] = int(match.group(1))
+    return entities
 
-    return {
-        "isolement": "isolé" in text or "seul" in text,
-        "chute": "chute" in text,
-        "age_risk": "âgé" in text or "personne âgée" in text,
-        "retour_hospit": "hospitalisation" in text or "retour" in text
-    }
 
+from backend.src.services.llm_service import extract_signals_llm
 
 # -----------------------------
 # ANALYZE ENDPOINT (ORIA CORE)
@@ -46,8 +46,8 @@ def extract_signals(text: str):
 @app.post("/analyze")
 def analyze(request: AnalyzeRequest):
 
-    # 1. extraction signaux
-    signals = extract_signals(request.text)
+    # 1. extraction signaux via LLM (ou fallback mots-clés)
+    signals = extract_signals_llm(request.text)
 
     # 2. COMID (complexité)
     comid_result = compute_comid(signals)
@@ -55,13 +55,17 @@ def analyze(request: AnalyzeRequest):
     # 3. charger le schema pivot
     template = load_schema()
 
+    # 3b. extraction entites (age)
+    entities = extract_entities(request.text)
+
     # 4. construire dossier ORIA complet
     dossier = build_schema(
         template=template,
         text=request.text,
         signals=signals,
         score=comid_result["score"]["total"],
-        risk_level=comid_result["classification"]["level"]
+        risk_level=comid_result["classification"]["level"],
+        entities=entities
     )
 
     # 5. retour final ORIA

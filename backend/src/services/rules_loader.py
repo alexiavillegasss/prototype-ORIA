@@ -1,7 +1,7 @@
 import json
 import os
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 def load_json(relative_path):
     full_path = os.path.join(BASE_DIR, relative_path)
