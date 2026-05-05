@@ -1,0 +1,962 @@
+{
+  "version_regles": "1.0.0",
+  "nom_moteur": "ORIA_rules_engine_v1",
+  "description": "Jeu de regles metier ORIA V1 pour orientation vers CEV, CRT, CLIC, CCAS, UTS, CPTS et DAC a partir du schema_definition.",
+  "principes_generaux": {
+    "validation_humaine_par_defaut": true,
+    "orientation_multiple_autorisee": true,
+    "une_orientation_principale_maximum": true,
+    "orientations_complementaires_maximum": 3,
+    "territorialisation_obligatoire": true,
+    "urgence_prime_sur_toute_autre_orientation": true,
+    "complexite_forte_favorise_DAC": true
+  },
+
+  "sources_champs": {
+    "identite_minimale": [
+      "usager.identite.nom_usage",
+      "usager.identite.prenoms",
+      "usager.identite.date_naissance",
+      "usager.identite.age_estime",
+      "usager.localisation.commune_residence",
+      "usager.localisation.adresse_precise",
+      "usager.identite.consentement"
+    ],
+    "social": [
+      "vulnerabilites.social.isolement_relationnel",
+      "vulnerabilites.social.soutien_familial",
+      "vulnerabilites.social.risque_epuisement_entourage",
+      "vulnerabilites.social.precarite",
+      "vulnerabilites.social.accompagnement_travailleur_social",
+      "vulnerabilites.social.accompagnement_mandataire"
+    ],
+    "autonomie": [
+      "usager.situation_actuelle.GIR",
+      "demande.description_factuelle.autonomie_observee",
+      "vulnerabilites.autonomie.niveau_global",
+      "vulnerabilites.autonomie.mobilite",
+      "vulnerabilites.autonomie.transferts",
+      "vulnerabilites.autonomie.deplacements_exterieurs",
+      "vulnerabilites.autonomie.gestion_du_quotidien",
+      "vulnerabilites.autonomie.autonomie_decisionnelle"
+    ],
+    "sante": [
+      "vulnerabilites.sante.hospitalisation.statut",
+      "vulnerabilites.sante.hospitalisation.motif",
+      "vulnerabilites.sante.hospitalisation.lieu",
+      "vulnerabilites.sante.problematique_de_sante",
+      "vulnerabilites.sante.suivi_medical.medecin_traitant",
+      "vulnerabilites.sante.suivi_medical.continuité_soins",
+      "vulnerabilites.sante.etat_clinique_percu",
+      "vulnerabilites.sante.acces_aux_soins"
+    ],
+    "habitat": [
+      "usager.cadre_de_vie.type_habitat",
+      "usager.cadre_de_vie.type_bail",
+      "usager.cadre_de_vie.adequation_logement_situation",
+      "usager.cadre_de_vie.etat_logement",
+      "usager.cadre_de_vie.animaux",
+      "usager.cadre_de_vie.nombre_animaux",
+      "vulnerabilites.habitat.securite_du_domicile",
+      "vulnerabilites.habitat.adequation_aux_limites_fonctionnelles",
+      "vulnerabilites.habitat.besoin_d_amenagement"
+    ],
+    "administratif": [
+      "vulnerabilites.administratif.lisibilite_du_parcours",
+      "vulnerabilites.administratif.coordination_existante",
+      "vulnerabilites.administratif.ouverture_des_droits",
+      "vulnerabilites.administratif.niveau_complexite_administrative",
+      "vulnerabilites.administratif.probleme_financier",
+      "usager.identite.mesure_protection"
+    ],
+    "cercle_de_soins": [
+      "cercle_de_soins.professionnels_identifies",
+      "cercle_de_soins.professionnels_non_identifies_ou_incertains",
+      "cercle_de_soins.aidants_et_proches",
+      "cercle_de_soins.niveau_structuration_cercle_de_soins"
+    ],
+    "orientation_sortie": [
+      "orientation.proposition_principale.type_structure",
+      "orientation.proposition_principale.nom_structure",
+      "orientation.proposition_principale.territoire",
+      "orientation.proposition_principale.niveau_pertinence",
+      "orientation.proposition_principale.priorite_traitement",
+      "orientation.proposition_principale.objectif_orientation",
+      "orientation.propositions_complementaires",
+      "orientation.justification_detaillee",
+      "orientation.niveau_confiance_orientation",
+      "orientation.validation_humaine.statut",
+      "orientation.validation_humaine.motif"
+    ]
+  },
+
+  "regles_globales": [
+    {
+      "id": "GLOBAL_001_IDENTITE_MINIMALE",
+      "description": "Si les donnees minimales d'identite ou de localisation sont insuffisantes, la relecture humaine est obligatoire.",
+      "if_any_missing": [
+        "usager.localisation.commune_residence"
+      ],
+      "then": {
+        "orientation.validation_humaine.statut": "requise",
+        "orientation.validation_humaine.motif": "Localisation insuffisante pour une orientation territoriale fiable.",
+        "relecture_metier.niveau_de_relecture_recommande": "relecture_metier_complete"
+      }
+    },
+    {
+      "id": "GLOBAL_002_MINEUR_HORS_PERIMETRE",
+      "description": "Si la personne est mineure, le moteur V1 ne statue pas automatiquement.",
+      "if": {
+        "field": "usager.identite.age_estime",
+        "operator": "lt",
+        "value": 18
+      },
+      "then": {
+        "orientation.validation_humaine.statut": "requise",
+        "orientation.validation_humaine.motif": "Situation hors perimetre V1 majeur.",
+        "relecture_metier.niveau_de_relecture_recommande": "relecture_metier_complete"
+      }
+    },
+    {
+      "id": "GLOBAL_003_URGENCE",
+      "description": "En cas d'urgence ou de danger, l'orientation urgente prime.",
+      "if_any": [
+        {
+          "field": "adresseur.degre_urgence_percu",
+          "operator": "in",
+          "value": ["critique", "eleve"]
+        },
+        {
+          "field": "usager.situation_actuelle.suspiion_malveillance",
+          "operator": "in",
+          "value": ["violences psychologiques", "violence physique", "spoliation", "maltraitance"]
+        }
+      ],
+      "then": {
+        "orientation.proposition_principale.type_structure": "CEV",
+        "orientation.proposition_principale.niveau_pertinence": "tres_eleve",
+        "orientation.proposition_principale.priorite_traitement": "immediate",
+        "orientation.proposition_principale.objectif_orientation": "signalement_adulte_vulnerable_ou_danger_immediat",
+        "orientation.validation_humaine.statut": "requise",
+        "orientation.validation_humaine.motif": "Situation urgente ou potentiellement dangereuse.",
+        "orientation.justification_detaillee": "Danger ou urgence detecte, orientation prioritaire vers CEV ou dispositif d'urgence."
+      }
+    },
+    {
+      "id": "GLOBAL_004_COMPLEXITE_FORTE_VERS_DAC",
+      "description": "Une forte complexite favorise le DAC.",
+      "if_any": [
+        {
+          "field": "complexite.niveau",
+          "operator": "equals",
+          "value": "complexe"
+        },
+        {
+          "field": "complexite.score_total",
+          "operator": "gte",
+          "value": 10
+        },
+        {
+          "field": "cercle_de_soins.niveau_structuration_cercle_de_soins",
+          "operator": "equals",
+          "value": "insuffisamment_coordonne"
+        },
+        {
+          "field": "vulnerabilites.administratif.coordination_existante",
+          "operator": "in",
+          "value": ["insuffisante", "absente"]
+        }
+      ],
+      "then_append_primary_candidate": {
+        "type_structure": "DAC",
+        "niveau_pertinence": "tres_eleve",
+        "priorite_traitement": "prioritaire",
+        "objectif_orientation": "coordination_soutenue_ou_intensive"
+      }
+    }
+  ],
+
+  "regles_scoring_complexite": {
+    "description": "Ponderation V1 pour alimenter complexite.facteurs_contributifs et complexite.score_total.",
+    "grille": [
+      {
+        "id": "SCORE_001_ISOLEMENT",
+        "if": {
+          "field": "vulnerabilites.social.isolement_relationnel",
+          "operator": "equals",
+          "value": "important"
+        },
+        "add_points": 2,
+        "facteur": "isolement_relationnel",
+        "commentaire": "Isolement relationnel important."
+      },
+      {
+        "id": "SCORE_002_ISOLEMENT_CRITIQUE",
+        "if": {
+          "field": "vulnerabilites.social.isolement_relationnel",
+          "operator": "equals",
+          "value": "critique"
+        },
+        "add_points": 3,
+        "facteur": "isolement_relationnel_critique",
+        "commentaire": "Isolement relationnel critique."
+      },
+      {
+        "id": "SCORE_003_HOSPITALISATION_RECENTE",
+        "if": {
+          "field": "vulnerabilites.sante.hospitalisation.statut",
+          "operator": "equals",
+          "value": "recente"
+        },
+        "add_points": 2,
+        "facteur": "retour_hospitalisation_recent",
+        "commentaire": "Hospitalisation recente ou retour de recente hospitalisation."
+      },
+      {
+        "id": "SCORE_004_CONTINUITE_SOINS",
+        "if": {
+          "field": "vulnerabilites.sante.suivi_medical.continuité_soins",
+          "operator": "in",
+          "value": ["insuffisamment_securisee", "rompue"]
+        },
+        "add_points": 2,
+        "facteur": "continuite_medicale_incomplete",
+        "commentaire": "Continuite des soins insuffisante ou rompue."
+      },
+      {
+        "id": "SCORE_005_ABSENCE_MT",
+        "if": {
+          "field": "vulnerabilites.sante.suivi_medical.medecin_traitant",
+          "operator": "in",
+          "value": ["non_identifie_avec_certitude", "absent", "incertain"]
+        },
+        "add_points": 2,
+        "facteur": "absence_ou_incertain_medecin_traitant",
+        "commentaire": "Medecin traitant absent ou non identifie avec certitude."
+      },
+      {
+        "id": "SCORE_006_AUTONOMIE_FORTE",
+        "if": {
+          "field": "demande.description_factuelle.autonomie_observee",
+          "operator": "equals",
+          "value": "fortement_diminuee"
+        },
+        "add_points": 3,
+        "facteur": "fragilite_fonctionnelle_majeure",
+        "commentaire": "Autonomie fortement diminuee."
+      },
+      {
+        "id": "SCORE_007_AUTONOMIE_DIMINUEE",
+        "if": {
+          "field": "demande.description_factuelle.autonomie_observee",
+          "operator": "equals",
+          "value": "diminuee"
+        },
+        "add_points": 2,
+        "facteur": "fragilite_fonctionnelle",
+        "commentaire": "Autonomie diminuee."
+      },
+      {
+        "id": "SCORE_008_AIDANT_EPUISABLE",
+        "if": {
+          "field": "vulnerabilites.social.risque_epuisement_entourage",
+          "operator": "in",
+          "value": ["probable", "eleve"]
+        },
+        "add_points": 2,
+        "facteur": "epuisement_aidants",
+        "commentaire": "Risque d'epuisement de l'entourage."
+      },
+      {
+        "id": "SCORE_009_COORDINATION",
+        "if": {
+          "field": "vulnerabilites.administratif.coordination_existante",
+          "operator": "in",
+          "value": ["insuffisante", "absente"]
+        },
+        "add_points": 2,
+        "facteur": "coordination_insuffisante",
+        "commentaire": "Coordination existante insuffisante ou absente."
+      },
+      {
+        "id": "SCORE_010_PRECARITE",
+        "if": {
+          "field": "vulnerabilites.social.precarite",
+          "operator": "in",
+          "value": ["probable", "averee"]
+        },
+        "add_points": 1,
+        "facteur": "precarite",
+        "commentaire": "Precarite probable ou averee."
+      }
+    ],
+    "seuils": [
+      {
+        "min": 0,
+        "max": 5,
+        "niveau": "non_complexe"
+      },
+      {
+        "min": 6,
+        "max": 9,
+        "niveau": "a_risque_de_complexite"
+      },
+      {
+        "min": 10,
+        "max": 999,
+        "niveau": "complexe"
+      }
+    ]
+  },
+
+  "structures": {
+    "CEV": {
+      "description": "Cellule adulte vulnerable / violences / protection / situations graves.",
+      "priorite_absolue_si_urgence": true,
+      "conditions_entree_any": [
+        {
+          "field": "adresseur.degre_urgence_percu",
+          "operator": "in",
+          "value": ["critique", "eleve"]
+        },
+        {
+          "field": "usager.situation_actuelle.suspiion_malveillance",
+          "operator": "in",
+          "value": ["violences psychologiques", "violence physique", "spoliation", "maltraitance"]
+        },
+        {
+          "field": "usager.cadre_de_vie.etat_logement",
+          "operator": "in",
+          "value": ["incurie", "diogene", "insalubre", "présence de nuisibles"]
+        },
+        {
+          "field": "vulnerabilites.social.isolement_relationnel",
+          "operator": "in",
+          "value": ["important", "critique"]
+        },
+        {
+          "field": "usager.identite.mesure_protection",
+          "operator": "in",
+          "value": ["sauvergarde de justice", "tutelle", "curatelle simple", "curatelle renforcée"]
+        }
+      ],
+      "conditions_entree_all": [],
+      "conditions_exclusion": [],
+      "particularites": {
+        "adresseur_anonyme_autorise": true,
+        "critere_autonomie_obligatoire": false
+      },
+      "resultat": {
+        "type_structure": "CEV",
+        "niveau_pertinence": "tres_eleve",
+        "priorite_traitement": "immediate",
+        "objectif_orientation": "protection_adulte_vulnerable_ou_danger"
+      }
+    },
+
+    "CRT": {
+      "description": "Centre de ressources territorial, appui territorial ou accompagnement renforce a domicile.",
+      "conditions_entree_all": [
+        {
+          "field": "usager.identite.age_estime",
+          "operator": "gte",
+          "value": 65
+        },
+        {
+          "field": "usager.situation_actuelle.GIR",
+          "operator": "between",
+          "value": [1, 4]
+        }
+      ],
+      "conditions_entree_any": [
+        {
+          "field": "orientation.proposition_principale.objectif_orientation",
+          "operator": "equals",
+          "value": "maintien_a_domicile_renforce"
+        },
+        {
+          "field": "demande.motif_principal",
+          "operator": "contains",
+          "value": "maintien"
+        },
+        {
+          "field": "vulnerabilites.autonomie.niveau_global",
+          "operator": "contains",
+          "value": "fragilite"
+        }
+      ],
+      "conditions_renfort": [
+        {
+          "field": "demande.description_factuelle.autonomie_observee",
+          "operator": "in",
+          "value": ["diminuee", "fortement_diminuee"]
+        },
+        {
+          "field": "usager.cadre_de_vie.adequation_logement_situation",
+          "operator": "in",
+          "value": ["partiellement_adapte", "inadequat", "a_evaluer"]
+        },
+        {
+          "field": "vulnerabilites.habitat.besoin_d_amenagement",
+          "operator": "in",
+          "value": ["possible", "probable", "urgent"]
+        }
+      ],
+      "conditions_exclusion": [],
+      "particularites": {
+        "droits_a_jour_recommandes": true,
+        "refus_ehpad_renforce_pertinence": true
+      },
+      "resultat": {
+        "type_structure": "CRT",
+        "niveau_pertinence": "eleve",
+        "priorite_traitement": "rapide",
+        "objectif_orientation": "accompagnement_renforce_a_domicile"
+      }
+    },
+
+    "CLIC": {
+      "description": "Orientation gérontologique, aides, services, evaluation, coordination legere a moderee.",
+      "conditions_entree_all": [
+        {
+          "field": "usager.identite.age_estime",
+          "operator": "gte",
+          "value": 60
+        }
+      ],
+      "conditions_entree_any": [
+        {
+          "field": "demande.motif_principal",
+          "operator": "contains",
+          "value": "aide"
+        },
+        {
+          "field": "demande.motif_principal",
+          "operator": "contains",
+          "value": "orientation"
+        },
+        {
+          "field": "demande.motif_principal",
+          "operator": "contains",
+          "value": "maintien"
+        },
+        {
+          "field": "vulnerabilites.administratif.ouverture_des_droits",
+          "operator": "in",
+          "value": ["partielle", "a_verifier", "problematique_identifiee"]
+        },
+        {
+          "field": "usager.cadre_de_vie.adequation_logement_situation",
+          "operator": "in",
+          "value": ["partiellement_adapte", "inadequat", "a_evaluer"]
+        }
+      ],
+      "conditions_exclusion": [
+        {
+          "field": "complexite.niveau",
+          "operator": "equals",
+          "value": "complexe"
+        }
+      ],
+      "particularites": {
+        "premier_point_entree_personne_agee": true,
+        "presence_mandataire_declenche_relecture": true
+      },
+      "resultat": {
+        "type_structure": "CLIC",
+        "niveau_pertinence": "eleve",
+        "priorite_traitement": "standard",
+        "objectif_orientation": "evaluation_information_aides_et_coordination_gerontologique"
+      }
+    },
+
+    "CCAS": {
+      "description": "Aides sociales de proximite, domiciliation, aides du quotidien, aide alimentaire, info locale.",
+      "conditions_entree_all": [
+        {
+          "field": "usager.localisation.adresse_precise",
+          "operator": "not_empty",
+          "value": true
+        }
+      ],
+      "conditions_entree_any": [
+        {
+          "field": "demande.motif_principal",
+          "operator": "contains",
+          "value": "domiciliation"
+        },
+        {
+          "field": "demande.motif_principal",
+          "operator": "contains",
+          "value": "mobilite"
+        },
+        {
+          "field": "vulnerabilites.social.precarite",
+          "operator": "in",
+          "value": ["possible", "probable", "averee"]
+        },
+        {
+          "field": "vulnerabilites.administratif.probleme_financier",
+          "operator": "not_empty",
+          "value": true
+        }
+      ],
+      "conditions_exclusion": [
+        {
+          "field": "complexite.niveau",
+          "operator": "equals",
+          "value": "complexe"
+        }
+      ],
+      "particularites": {
+        "structure_proximite": true,
+        "si_pas_perte_autonomie_uts_ou_ccas": true
+      },
+      "resultat": {
+        "type_structure": "CCAS",
+        "niveau_pertinence": "modere",
+        "priorite_traitement": "standard",
+        "objectif_orientation": "aides_sociales_de_proximite_ou_domiciliation"
+      }
+    },
+
+    "UTS": {
+      "description": "Problematique sociale dominante, ouverture de droits, administration, accompagnement social.",
+      "conditions_entree_all": [
+        {
+          "field": "usager.identite.age_estime",
+          "operator": "lt",
+          "value": 60
+        }
+      ],
+      "conditions_entree_any": [
+        {
+          "field": "vulnerabilites.administratif.ouverture_des_droits",
+          "operator": "in",
+          "value": ["partielle", "a_verifier", "problematique_identifiee", "non_documentee"]
+        },
+        {
+          "field": "vulnerabilites.administratif.probleme_financier",
+          "operator": "not_empty",
+          "value": true
+        },
+        {
+          "field": "vulnerabilites.social.isolement_relationnel",
+          "operator": "in",
+          "value": ["important", "critique"]
+        },
+        {
+          "field": "vulnerabilites.sante.problematique_de_sante",
+          "operator": "contains",
+          "value": "psy"
+        },
+        {
+          "field": "vulnerabilites.sante.problematique_de_sante",
+          "operator": "contains",
+          "value": "neuro"
+        }
+      ],
+      "conditions_exclusion": [
+        {
+          "field": "demande.description_factuelle.autonomie_observee",
+          "operator": "equals",
+          "value": "fortement_diminuee"
+        },
+        {
+          "field": "usager.situation_actuelle.GIR",
+          "operator": "between",
+          "value": [1, 4]
+        }
+      ],
+      "particularites": {
+        "sante_secondaire_par_rapport_au_social": true,
+        "personne_doit_pouvoir_se_deplacer_ou_etre_accompagnee": true
+      },
+      "resultat": {
+        "type_structure": "UTS",
+        "niveau_pertinence": "eleve",
+        "priorite_traitement": "standard",
+        "objectif_orientation": "ouverture_de_droits_et_accompagnement_social"
+      }
+    },
+
+    "CPTS": {
+      "description": "Difficulte d'acces au medecin traitant, acces aux soins, prevention, depistage, maladies chroniques.",
+      "conditions_entree_all": [
+        {
+          "field": "usager.identite.age_estime",
+          "operator": "gte",
+          "value": 60
+        }
+      ],
+      "conditions_entree_any": [
+        {
+          "field": "vulnerabilites.sante.suivi_medical.medecin_traitant",
+          "operator": "in",
+          "value": ["absent", "non_identifie_avec_certitude", "incertain"]
+        },
+        {
+          "field": "vulnerabilites.sante.acces_aux_soins",
+          "operator": "not_empty",
+          "value": true
+        },
+        {
+          "field": "demande.motif_principal",
+          "operator": "contains",
+          "value": "prevention"
+        },
+        {
+          "field": "demande.motif_principal",
+          "operator": "contains",
+          "value": "depistage"
+        }
+      ],
+      "conditions_renfort": [
+        {
+          "field": "vulnerabilites.sante.problematique_de_sante",
+          "operator": "not_empty",
+          "value": true
+        }
+      ],
+      "conditions_exclusion": [
+        {
+          "field": "vulnerabilites.administratif.ouverture_des_droits",
+          "operator": "in",
+          "value": ["problematique_identifiee", "a_verifier", "non_documentee"]
+        },
+        {
+          "field": "complexite.niveau",
+          "operator": "equals",
+          "value": "complexe"
+        }
+      ],
+      "particularites": {
+        "raison_absence_mt_recommandee": true,
+        "droits_secu_et_mutuelle_css_recommandes": true,
+        "si_droits_pas_a_jour_orientation_DAC": true
+      },
+      "resultat": {
+        "type_structure": "CPTS",
+        "niveau_pertinence": "eleve",
+        "priorite_traitement": "rapide",
+        "objectif_orientation": "acces_aux_soins_et_remise_en_lien_avec_medecin_traitant"
+      }
+    },
+
+    "DAC": {
+      "description": "Situations complexes, risque de rupture, coordination soutenue ou intensive, medico-social imbrique.",
+      "conditions_entree_any": [
+        {
+          "field": "complexite.niveau",
+          "operator": "equals",
+          "value": "complexe"
+        },
+        {
+          "field": "complexite.score_total",
+          "operator": "gte",
+          "value": 10
+        },
+        {
+          "field": "vulnerabilites.administratif.coordination_existante",
+          "operator": "in",
+          "value": ["insuffisante", "absente"]
+        },
+        {
+          "field": "vulnerabilites.sante.suivi_medical.continuité_soins",
+          "operator": "in",
+          "value": ["insuffisamment_securisee", "rompue"]
+        },
+        {
+          "field": "cercle_de_soins.niveau_structuration_cercle_de_soins",
+          "operator": "in",
+          "value": ["insuffisamment_coordonne", "absent"]
+        },
+        {
+          "field": "vulnerabilites.social.risque_epuisement_entourage",
+          "operator": "in",
+          "value": ["probable", "eleve"]
+        }
+      ],
+      "conditions_renfort": [
+        {
+          "field": "demande.actions_deja_menees",
+          "operator": "not_empty",
+          "value": true
+        },
+        {
+          "field": "vulnerabilites.administratif.ouverture_des_droits",
+          "operator": "in",
+          "value": ["partielle", "a_verifier", "problematique_identifiee", "non_documentee"]
+        }
+      ],
+      "conditions_exclusion": [],
+      "particularites": {
+        "personne_majeure": true,
+        "actions_deja_menees_recommandees": true,
+        "si_urgence_basculer_vers_CEV_ou_15": true
+      },
+      "resultat": {
+        "type_structure": "DAC",
+        "niveau_pertinence": "tres_eleve",
+        "priorite_traitement": "prioritaire",
+        "objectif_orientation": "coordination_medico_sociale_complexe"
+      }
+    }
+  },
+
+  "regles_priorite": [
+    {
+      "id": "PRIORITE_001_URGENCE",
+      "if_any": [
+        {
+          "field": "adresseur.degre_urgence_percu",
+          "operator": "in",
+          "value": ["critique", "eleve"]
+        },
+        {
+          "field": "usager.situation_actuelle.suspiion_malveillance",
+          "operator": "in",
+          "value": ["violences psychologiques", "violence physique", "spoliation", "maltraitance"]
+        }
+      ],
+      "winner": "CEV",
+      "overrides": ["DAC", "CLIC", "CCAS", "UTS", "CPTS", "CRT"]
+    },
+    {
+      "id": "PRIORITE_002_CLIC_SUR_UTS",
+      "if_all": [
+        {
+          "field": "usager.identite.age_estime",
+          "operator": "gte",
+          "value": 60
+        }
+      ],
+      "winner": "CLIC",
+      "overrides": ["UTS"]
+    },
+    {
+      "id": "PRIORITE_003_UTS_SUR_CCAS",
+      "if_all": [
+        {
+          "field": "usager.localisation.commune_residence",
+          "operator": "not_equals",
+          "value": "Saint-Mandrier"
+        }
+      ],
+      "winner": "UTS",
+      "overrides": ["CCAS"]
+    },
+    {
+      "id": "PRIORITE_004_CRT_SUR_CLIC",
+      "if_all": [
+        {
+          "field": "usager.identite.age_estime",
+          "operator": "gte",
+          "value": 65
+        },
+        {
+          "field": "usager.situation_actuelle.GIR",
+          "operator": "between",
+          "value": [1, 4]
+        }
+      ],
+      "winner": "CRT",
+      "overrides": ["CLIC"]
+    },
+    {
+      "id": "PRIORITE_005_DAC_SUR_STRUCTURES_SIMPLES",
+      "if_any": [
+        {
+          "field": "complexite.niveau",
+          "operator": "equals",
+          "value": "complexe"
+        },
+        {
+          "field": "complexite.score_total",
+          "operator": "gte",
+          "value": 10
+        }
+      ],
+      "winner": "DAC",
+      "overrides": ["CLIC", "CCAS", "UTS", "CPTS"]
+    },
+    {
+      "id": "PRIORITE_006_CPTS_SI_ACCES_AUX_SOINS_SANS_COMPLEXITE",
+      "if_all": [
+        {
+          "field": "vulnerabilites.sante.suivi_medical.medecin_traitant",
+          "operator": "in",
+          "value": ["absent", "non_identifie_avec_certitude", "incertain"]
+        },
+        {
+          "field": "complexite.niveau",
+          "operator": "not_equals",
+          "value": "complexe"
+        }
+      ],
+      "winner": "CPTS",
+      "overrides": ["DAC"]
+    }
+  ],
+
+  "regles_orientations_complementaires": [
+    {
+      "id": "COMPLEMENT_001_CLIC_PLUS_CPTS",
+      "if_all": [
+        {
+          "field": "usager.identite.age_estime",
+          "operator": "gte",
+          "value": 60
+        },
+        {
+          "field": "vulnerabilites.sante.suivi_medical.medecin_traitant",
+          "operator": "in",
+          "value": ["absent", "non_identifie_avec_certitude", "incertain"]
+        }
+      ],
+      "append_complement": {
+        "type_structure": "CPTS",
+        "niveau_pertinence": "eleve",
+        "objectif_orientation": "remise_en_lien_avec_le_soin_de_ville"
+      }
+    },
+    {
+      "id": "COMPLEMENT_002_DAC_PLUS_CLIC",
+      "if_all": [
+        {
+          "field": "complexite.niveau",
+          "operator": "equals",
+          "value": "complexe"
+        },
+        {
+          "field": "usager.identite.age_estime",
+          "operator": "gte",
+          "value": 60
+        }
+      ],
+      "append_complement": {
+        "type_structure": "CLIC",
+        "niveau_pertinence": "modere",
+        "objectif_orientation": "relais_gerontologique_territorial"
+      }
+    },
+    {
+      "id": "COMPLEMENT_003_DAC_PLUS_CPTS",
+      "if_all": [
+        {
+          "field": "complexite.niveau",
+          "operator": "equals",
+          "value": "complexe"
+        },
+        {
+          "field": "vulnerabilites.sante.suivi_medical.medecin_traitant",
+          "operator": "in",
+          "value": ["absent", "non_identifie_avec_certitude", "incertain"]
+        }
+      ],
+      "append_complement": {
+        "type_structure": "CPTS",
+        "niveau_pertinence": "modere",
+        "objectif_orientation": "soutien_sur_acces_aux_soins"
+      }
+    }
+  ],
+
+  "regles_relecture_metier": [
+    {
+      "id": "RELECTURE_001_MT_INCERTAIN",
+      "if": {
+        "field": "vulnerabilites.sante.suivi_medical.medecin_traitant",
+        "operator": "in",
+        "value": ["non_identifie_avec_certitude", "incertain"]
+      },
+      "append": {
+        "champ": "vulnerabilites.sante.suivi_medical.medecin_traitant",
+        "raison": "Information sur le medecin traitant incertaine.",
+        "priorite": "haute"
+      }
+    },
+    {
+      "id": "RELECTURE_002_AUTONOMIE_A_PRECISER",
+      "if_any": [
+        {
+          "field": "vulnerabilites.autonomie.transferts",
+          "operator": "equals",
+          "value": "a_preciser"
+        },
+        {
+          "field": "vulnerabilites.autonomie.deplacements_exterieurs",
+          "operator": "equals",
+          "value": "a_preciser"
+        }
+      ],
+      "append": {
+        "champ": "vulnerabilites.autonomie",
+        "raison": "Autonomie ou mobilite a preciser avant validation finale.",
+        "priorite": "haute"
+      }
+    },
+    {
+      "id": "RELECTURE_003_HABITAT_A_EVALUER",
+      "if_any": [
+        {
+          "field": "usager.cadre_de_vie.adequation_logement_situation",
+          "operator": "equals",
+          "value": "a_evaluer"
+        },
+        {
+          "field": "vulnerabilites.habitat.securite_du_domicile",
+          "operator": "equals",
+          "value": "a_evaluer"
+        }
+      ],
+      "append": {
+        "champ": "vulnerabilites.habitat",
+        "raison": "Evaluation habitat incomplete.",
+        "priorite": "moyenne"
+      }
+    },
+    {
+      "id": "RELECTURE_004_DROITS_NON_DOCUMENTES",
+      "if": {
+        "field": "vulnerabilites.administratif.ouverture_des_droits",
+        "operator": "equals",
+        "value": "non_documentee"
+      },
+      "append": {
+        "champ": "vulnerabilites.administratif.ouverture_des_droits",
+        "raison": "Ouverture des droits non documentee.",
+        "priorite": "moyenne"
+      }
+    }
+  ],
+
+  "templates_justification": {
+    "CEV": "Orientation vers la CEV car la situation fait apparaitre une vulnerabilite forte, un risque de danger, de maltraitance, de spoliation ou un habitat gravement degrade.",
+    "CRT": "Orientation vers le CRT car la situation correspond a une personne agee avec perte d'autonomie, logique de maintien a domicile renforce et besoin d'appui territorial ou intensif.",
+    "CLIC": "Orientation vers le CLIC car la situation releve d'un besoin d'information, d'aides, de services a domicile ou de coordination gerontologique de premier niveau.",
+    "CCAS": "Orientation vers le CCAS car la situation releve d'un besoin de proximite, d'aide sociale simple, de domiciliation ou d'aide du quotidien.",
+    "UTS": "Orientation vers l'UTS car la problematique dominante est sociale, administrative ou liee a l'ouverture de droits, sans perte d'autonomie majeure.",
+    "CPTS": "Orientation vers la CPTS car la situation met en evidence une difficulte d'acces au medecin traitant, a la prevention ou a l'acces aux soins de ville.",
+    "DAC": "Orientation vers le DAC car la situation presente une complexite medico-sociale, un risque de rupture ou un besoin de coordination soutenue ou intensive."
+  },
+
+  "mapping_nom_structure_par_type": {
+    "CEV": "Cellule CEV du territoire",
+    "CRT": "CRT du territoire",
+    "CLIC": "CLIC du territoire",
+    "CCAS": "CCAS de la commune",
+    "UTS": "UTS du territoire",
+    "CPTS": "CPTS du territoire",
+    "DAC": "DAC Var Ouest"
+  },
+
+  "sortie_attendue": {
+    "remplir_orientation_principale": true,
+    "remplir_orientations_complementaires": true,
+    "remplir_justification_detaillee": true,
+    "remplir_niveau_confiance_orientation": true,
+    "remplir_validation_humaine": true,
+    "remplir_relecture_metier": true
+  }
+}

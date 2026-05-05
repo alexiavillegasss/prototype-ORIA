@@ -199,7 +199,7 @@
     "source": "voix_ou_extraction",
     "description": "Date de naissance."
   },
-  "usager.identite.situation familiale": {
+  "usager.identite.situation_familiale": {
     "type": "string",
     "required": false,
     "source": "voix_ou_extraction",
@@ -462,6 +462,13 @@
     "source": "voix_ou_analyse",
     "enum": ["aucune", "violences psychologiques", "violence physique", "spoliation", "maltraitance"],
     "description": "Raison de l'isolement de la personne."
+  },
+  "usager.situation_actuelle.APA": {
+    "type": "string",
+    "required": false,
+    "source": "voix_ou_analyse",
+    "enum": ["oui", "non", "non_defini"],
+    "description": "La personne est-elle bénéficiaire de l'APA ou non"
   },
 
   "demande.resume_structuré": {
