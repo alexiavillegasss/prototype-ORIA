@@ -163,9 +163,12 @@ def build_schema(template, text, signals, score, risk_level, entities=None):
         justification = f"Erreur d'exécution du moteur: {str(e)}"
         complements = []
 
+    questions = orientation_result.get("questions_affinage", []) if 'orientation_result' in locals() else []
+
     data["orientation"] = {
         "proposition_principale": proposition,
         "propositions_complementaires": complements,
+        "questions_affinage": questions,
         "justification_detaillee": justification,
         "niveau_confiance_orientation": 0.85
     }

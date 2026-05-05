@@ -1,12 +1,25 @@
 import re
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
+import os
 
 from backend.src.services.comid_engine import compute_comid
 from backend.src.services.schema_loader import load_schema
 from backend.src.services.schema_builder import build_schema
 
 app = FastAPI(title="ORIA API")
+
+# CORS pour permettre l'appel depuis le frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # -----------------------------
@@ -16,15 +29,7 @@ class AnalyzeRequest(BaseModel):
     text: str
 
 
-# -----------------------------
-# ROOT
-# -----------------------------
-@app.get("/")
-def root():
-    return {
-        "message": "ORIA API running",
-        "status": "ok"
-    }
+# (Static files mount moved to the end of file)
 
 
 # -----------------------------
@@ -70,3 +75,13 @@ def analyze(request: AnalyzeRequest):
 
     # 5. retour final ORIA
     return dossier
+
+
+# -----------------------------
+# STATIC FILES (Frontend UI)
+# -----------------------------
+from pathlib import Path as _Path
+FRONTEND_DIR = str(_Path(__file__).resolve().parent.parent.parent / "frontend" / "public")
+
+# Servir les fichiers statiques à la fin pour ne pas intercepter les routes API
+app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="static")

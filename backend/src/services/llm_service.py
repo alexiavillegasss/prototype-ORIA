@@ -4,24 +4,36 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Vérifier si on a une clé API
+# Configuration LLM Local ou OpenAI
+USE_LOCAL_LLM = os.getenv("USE_LOCAL_LLM", "false").lower() == "true"
+LOCAL_LLM_URL = os.getenv("LOCAL_LLM_URL", "http://localhost:11434/v1")
+LOCAL_LLM_MODEL = os.getenv("LOCAL_LLM_MODEL", "llama3")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 try:
-    if OPENAI_API_KEY and OPENAI_API_KEY.startswith("sk-"):
-        from openai import OpenAI
+    from openai import OpenAI
+    if USE_LOCAL_LLM:
+        client = OpenAI(base_url=LOCAL_LLM_URL, api_key="ollama")
+        HAS_LLM = True
+        CURRENT_MODEL = LOCAL_LLM_MODEL
+        print(f"[LLM_SERVICE] Initialisé avec un LLM local : {CURRENT_MODEL} sur {LOCAL_LLM_URL}")
+    elif OPENAI_API_KEY and OPENAI_API_KEY.startswith("sk-"):
         client = OpenAI(api_key=OPENAI_API_KEY)
-        HAS_OPENAI = True
+        HAS_LLM = True
+        CURRENT_MODEL = "gpt-3.5-turbo"
+        print("[LLM_SERVICE] Initialisé avec OpenAI")
     else:
-        HAS_OPENAI = False
+        HAS_LLM = False
+        CURRENT_MODEL = None
 except ImportError:
-    HAS_OPENAI = False
+    HAS_LLM = False
+    CURRENT_MODEL = None
 
 
 def extract_signals_mock(text: str):
     """
     Fonction de fallback qui utilise la recherche par mots-clés 
-    si l'API OpenAI n'est pas disponible.
+    si aucune API LLM n'est disponible ou en cas d'erreur.
     """
     text_lower = text.lower().replace("’", "'").replace("\n", " ")
 
@@ -42,11 +54,11 @@ def extract_signals_mock(text: str):
 
 def extract_signals_llm(text: str):
     """
-    Tente d'extraire les signaux via OpenAI. 
-    En cas d'échec ou d'absence de clé, bascule sur le mock.
+    Tente d'extraire les signaux via le LLM configuré (Local ou OpenAI). 
+    En cas d'échec, bascule sur le mock.
     """
-    if not HAS_OPENAI:
-        print("[LLM_SERVICE] Clé OpenAI non trouvée ou librairie manquante. Utilisation du fallback (Mots-clés).")
+    if not HAS_LLM:
+        print("[LLM_SERVICE] Aucun LLM configuré (ni local ni OpenAI) ou librairie manquante. Utilisation du fallback (Mots-clés).")
         return extract_signals_mock(text)
 
     prompt = f"""
@@ -72,7 +84,7 @@ def extract_signals_llm(text: str):
 
     try:
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo", # ou gpt-4o-mini
+            model=CURRENT_MODEL,
             response_format={ "type": "json_object" },
             messages=[
                 {"role": "system", "content": "Tu es un assistant qui renvoie uniquement du JSON."},
@@ -96,9 +108,9 @@ def extract_signals_llm(text: str):
             if key not in signals:
                 signals[key] = False
                 
-        print("[LLM_SERVICE] Extraction réussie via OpenAI !")
+        print(f"[LLM_SERVICE] Extraction réussie via {CURRENT_MODEL} !")
         return signals
 
     except Exception as e:
-        print(f"[LLM_SERVICE] Erreur API OpenAI ({e}). Utilisation du fallback (Mots-clés).")
+        print(f"[LLM_SERVICE] Erreur API LLM ({e}). Utilisation du fallback (Mots-clés).")
         return extract_signals_mock(text)

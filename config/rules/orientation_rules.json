@@ -373,14 +373,19 @@
           "field": "usager.identite.age_estime",
           "operator": "gte",
           "value": 65
-        },
+        }
+      ],
+      "conditions_entree_any": [
         {
           "field": "usager.situation_actuelle.GIR",
           "operator": "between",
           "value": [1, 4]
-        }
-      ],
-      "conditions_entree_any": [
+        },
+        {
+          "field": "demande.description_factuelle.autonomie_observee",
+          "operator": "in",
+          "value": ["diminuee", "fortement_diminuee"]
+        },
         {
           "field": "orientation.proposition_principale.objectif_orientation",
           "operator": "equals",
