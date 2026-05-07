@@ -4,475 +4,630 @@
         "version": "1.0.1",
         "description": "Règle d'orientation ORIA par structure, priorisation et fallback parcours PA maintient à domicile"
     },
-    "global_rules":{
+    "global_rules": {
         "urgency_first": true,
         "allow_multiple_eligible_structures": true,
         "apply_priority_scoring": true
     },
     "eligibility_rules": [
-    {
-      "id": "eligibility_crt_01",
-      "structure_type": "CRT",
-      "label": "CRT - personne agé avec besoin de maintien a domicile renforce",
-      "enabled": true,
-      "all_of": [
         {
-            "field": "usager.identite.age_estime",
-            "operator": ">=",
-            "value": 60
-        },
-        {
-            "field": "demande.motif_principal",
-            "operator": "contains_any",
-            "value": ["maintien_a_domicile", "renforcement_domicile"]
-        }
-      ],
-      "any_of": [
-        {
-            "field": "usager.situation_actuelle.GIR",
-            "operator": "in",
-            "value": [1, 2, 3, 4]
-        },
-        {
-            "field": "complexite.niveau",
-            "operator": "==",
-            "value": "complexe"
-        }
-      ],
-      "none_of": [],
-      "result": {
-        "eligible": true,
-        "base_pertinence": "eleve",
-        "base_priority_score": 70,
-        "objectif_orientation": "maintien_a_domicile_renforce"
-      }
-    },
-    {
-      "id": "eligibility_cev_01",
-      "structure_type": "CEV",
-      "label": "CEV - Célule écoute et vigilance signalement pour adulte vulnérable, danger, etc ...",
-      "enabled": true,
-      "all_of": [
-      ],
-      "any_of": [
-        {
-            "field": "vulnerabilites.social.soutien_familial",
-            "operator": "==",
-            "value": "absent"
-        },
-        {
-            "field": "vulnerabilites.social.risque_epuisement_entourage",
-            "operator": "==",
-            "value": "eleve"
-        },
-        {
-            "field": "vulnerabilites.habitat.securite_du_domicile",
-            "operator": "in",
-            "value": ["problematique", "a_evaluer"]
-        },
-        {
-            "field": "vulnerabilites.social.precarite",
-            "operator": "==",
-            "value": "averee"
-        },
-        {
-            "field": "vulnerabilites.social.isolement_relationnel",
-            "operator": "==",
-            "value": "critique"
-        },
-        {
-            "field": "vulnerabilites.sante.suivi_medical.continuité_soins",
-            "operator": "==",
-            "value": "rompue"
-        },
-        {
-            "field": "vulnerabilites.autonomie.autonomie_decisionnelle",
-            "operator": "==",
-            "value": "fortement_compromise"
-        },
-        {
-            "field": "vulnerabilites.autonomie.gestion_du_quotidien",
-            "operator": "==",
-            "value": "fortement_compromise"
-        },
-        {
-            "field": "usager.situation_actuelle.suspiion_malveillance",
-            "operator": "in",
-            "value": ["violences psychologiques", "violence physique", "spoliation", "maltraitance"]
-        },
-        {
-            "field": "usager.situation_actuelle.vulnerabilite",
-            "operator": "==",
-            "value": "oui"
-        },
-        {
-            "field": "usager.situation_actuelle.isolement",
-            "operator": "in",
-            "value": ["isolement_social", "isolement_famillial"]
-        },
-        {
-            "field": "usager.situation_actuelle.stabilite_apparente_situation",
-            "operator": "==",
-            "value": "instable"
-        }
-      ],
-      "none_of": [],
-      "result": {
-        "eligible": true,
-        "base_pertinence": "eleve",
-        "base_priority_score": 70,
-        "objectif_orientation": "maintien_a_domicile_renforce"
-      }
-    },
-    {
-      "id": "eligibility_clic.seyne.coudon_01",
-      "structure_type": "CLIC_la_seyne_le_coudon",
-      "label": "CLIC - Sans coordination médicale Centre Local d'Information et de Coordination problématique sociale et maintient à domicile ",
-      "enabled": true,
-      "all_of": [
-        {
-            "field": "usager.situation_actuelle.APA",
-            "operator": "==",
-            "value": "non"
-        },
-        {
-            "field": "usager.identite.age_estime",
-            "operator": ">=",
-            "value": 60
-        },
-        {
-            "field": "demande.motif_principal",
-            "operator": "contains_any",
-            "value": "maintien_a_domicile"
-        }
-
-      ],
-      "any_of": [
-        {
-            "field": "vulnerabilites.administratif.ouverture_des_droits",
-            "operator": "in",
-            "value": ["partielle", "problematique_identifiee" ]
-        },
-        {
-            "field": "demande.motifs_secondaires",
-            "operator": "contains_any",
-            "value": ["coordination_sociale", "ouverture de droits"]
-        },
-        {
-            "field": "vulnerabilites.social.risque_epuisement_entourage",
-            "operator": "in",
-            "value": ["possible", "probable", "eleve"]
-        },
-        {
-            "field": "vulnerabilites.autonomie.mobilite",
-            "operator": "in",
-            "value": ["avec_aide", "dependant"]
-        },
-        {
-            "field": "vulnerabilites.autonomie.deplacements_exterieurs",
-            "operator": "in",
-            "value": ["limites", "impossibles", "avec_aide_materielle", "avec_aide_humaine"]
-        },
-        {
-            "field": "vulnerabilites.autonomie.gestion_du_quotidien",
-            "operator": "in",
-            "value": ["partiellement_compromise", "fortement_compromise", "avec_aide_materielle", "avec_aide_humaine"]
-        },
-        {
-            "field": "demande.description_factuelle.autonomie_observee",
-            "operator": "in",
-            "value": ["diminuee", "fortement_diminuee"]
-        }
-
-
-      ],
-      "none_of": [
-         {
-            "field": "usager.situation_actuelle.APA",
-            "operator": "==",
-            "value": "oui"
-        }
-      ],
-      "result": {
-        "eligible": true,
-        "base_pertinence": "eleve",
-        "base_priority_score": 70,
-        "objectif_orientation": "maintien_a_domicile_renforce"
-      }
-    },
-    {
-      "id": "eligibility_clic.toulon_01",
-      "structure_type": "CLIC_Toulon",
-      "label": "CLIC Toulon - Coordination médicale Centre Local d'Information et de Coordination problématique sociale et maintient à domicile ",
-      "enabled": true,
-      "all_of": [
-        {
-            "field": "usager.situation_actuelle.APA",
-            "operator": "==",
-            "value": "non"
-        },
-        {
-            "field": "usager.identite.age_estime",
-            "operator": ">=",
-            "value": 60
-        },
-        {
-            "field": "demande.motif_principal",
-            "operator": "contains_any",
-            "value": ["maintien_a_domicile", "perte_autonomie"]
-        }
-
-      ],
-      "any_of": [
-        {
-            "field": "vulnerabilites.sante.acces_aux_soins",
-            "operator": "==",
-            "value": "aucun"
-        },
-        {
-            "field": "vulnerabilites.sante.suivi_medical.medecin_traitant",
-            "operator": "in",
-            "value": ["non_identifie_avec_certitude", "absent", "incertain"]
-        },
-        {
-            "field": "vulnerabilites.sante.suivi_medical.continuité_soins",
-            "operator": "in",
-            "value": ["partiellement_securisee", "insuffisamment_securisee", "rompue"]
-        },
-        {
-            "field": "vulnerabilites.administratif.ouverture_des_droits",
-            "operator": "in",
-            "value": ["partielle", "problematique_identifiee" ]
-        },
-        {
-            "field": "demande.motifs_secondaires",
-            "operator": "contains_any",
-            "value": ["coordination_médicale", "coordination_sociale", "ouverture de droits"]
-        },
-        {
-            "field": "vulnerabilites.social.risque_epuisement_entourage",
-            "operator": "in",
-            "value": ["possible", "probable", "eleve"]
-        },
-        {
-            "field": "vulnerabilites.autonomie.mobilite",
-            "operator": "in",
-            "value": ["avec_aide", "dependant"]
-        },
-        {
-            "field": "vulnerabilites.autonomie.deplacements_exterieurs",
-            "operator": "in",
-            "value": ["limites", "impossibles", "avec_aide_materielle", "avec_aide_humaine"]
-        },
-        {
-            "field": "vulnerabilites.autonomie.gestion_du_quotidien",
-            "operator": "in",
-            "value": ["partiellement_compromise", "fortement_compromise", "avec_aide_materielle", "avec_aide_humaine"]
-        },
-        {
-            "field": "demande.description_factuelle.autonomie_observee",
-            "operator": "in",
-            "value": ["diminuee", "fortement_diminuee"]
-        }
-
-      ],
-      "none_of": [
-         {
-            "field": "usager.situation_actuelle.APA",
-            "operator": "==",
-            "value": "oui"
-        }
-      ],
-      "result": {
-        "eligible": true,
-        "base_pertinence": "eleve",
-        "base_priority_score": 70,
-        "objectif_orientation": "maintien_a_domicile_renforce"
-      }
-    },
-    {
-      "id": "eligibility_ccas_01",
-      "structure_type": "CCAS",
-      "label": "CLIC - Sans coordination médicale Centre Local d'Information et de Coordination problématique sociale et maintient à domicile ",
-      "enabled": true,
-      "all_of": [
-        {
-            "field": "demande.motif_principal",
-            "operator": "contains_any",
-            "value": ["information", "information_locale", "atelier", "atelier_collectifs"]
-        }
-      ],
-      "any_of": [],
-      "none_of": [
-        {
-            "field": "demande.description_factuelle.autonomie_observee",
-            "operator": "in",
-            "value": ["diminuee", "fortement_diminuee", "non_evaluable"]
-        }
-      ],
-      "result": {
-        "eligible": true,
-        "base_pertinence": "eleve",
-        "base_priority_score": 70,
-        "objectif_orientation": "maintien_a_domicile_renforce"
-      }
-    },
-    {
-      "id": "eligibility_uts_01",
-      "structure_type": "UTS",
-      "label": "UTS - ",
-      "enabled": true,
-      "all_of": [
-        {
-            "field": "usager.situation_actuelle.APA",
-            "operator": "==",
-            "value": "non"
-        }
-      ],
-      "any_of": [
-        {
-            "field": "vulnerabilites.social.isolement_relationnel",
-            "operator": "in",
-            "value": ["modere", "important", "critique"]
-        },
-        {
-            "field": "vulnerabilites.sante.etat_clinique_percu",
-            "operator": "contains_any",
-            "value": ["psychologique", "psychiatrique", "cognitif", "neurologique"]
-        },
-        {
-            "field": "vulnerabilites.social.soutien_familial",
-            "operator": "in",
-            "value": ["present_mais_limite", "faible_ou_irregulier","absent"]
-        },
-        {
-            "field": "vulnerabilites.social.risque_epuisement_entourage",
-            "operator": "in",
-            "value": ["possible", "probable", "eleve"]
-        },
-        {
-            "field": "vulnerabilites.social.precarite",
-            "operator": "in",
-            "value": ["possible","probable","averee"]
-        },
-        {
-            "field": "vulnerabilites.administratif.coordination_existante",
-            "operator": "==",
-            "value": "absente"
-        },
-        {
-            "field": "vulnerabilites.administratif.ouverture_des_droits",
-            "operator": "in",
-            "value": ["partielle", "non_documentee", "a_verifier"]
-        },
-        {
-            "field": "vulnerabilites.administratif.niveau_complexite_administrative",
-            "operator": "in",
-            "value": ["modere", "important", "critique"]
-        },
-        {
-            "field": "vulnerabilites.habitat.securite_du_domicile",
-            "operator": "in",
-            "value": ["fragile", "problematique"]
-        },
-        {
-            "field": "demande.motif_principal",
-            "operator": "contains_any",
-            "value": ["isolement", "vulnérabilité"]
-        }
-      ],
-      "none_of": [
-        {
-            "field": "usager.situation_actuelle.APA",
-            "operator": "==",
-            "value": "oui"
-        },
-        {
-            "field": "vulnerabilites.autonomie.deplacements_exterieurs",
-            "operator": "==",
-            "value": "impossibles"
-        },
-        {
-            "field": "vulnerabilites.social.accompagnement_travailleur_social",
-            "operator": "==",
-            "value": "suivi travailleur social CCAS"
-        }
-      ],
-      "result": {
-        "eligible": true,
-        "base_pertinence": "eleve",
-        "base_priority_score": 70,
-        "objectif_orientation": "maintien_a_domicile_renforce"
-      }
-    },
-    {
-      "id": "eligibility_cpts_01",
-      "structure_type": "CPTS",
-      "label": "CPTS - recherche médecin traitant et soin",
-      "enabled": true,
-      "all_of": [
-        {
-            "field": "vulnerabilites.sante.suivi_medical.medecin_traitant",
-            "operator": "==",
-            "value": "abscent"
-        }
-      ],
-      "any_of": [
-        {
-            "field": "demande.motif_principal",
-            "operator": "contains_any",
-            "value": ["recherche medecin traitant", "difficulté acces aux soins", "acces aux soins"]
-        }
-      ],
-      "none_of": [],
-      "result": {
-        "eligible": true,
-        "base_pertinence": "eleve",
-        "base_priority_score": 70,
-        "objectif_orientation": "maintien_a_domicile_renforce"
-      }
-    },
-    {
-        "id": "eligibility_dac_01",
-        "structure_type": "DAC",
-        "label": "DAC - situation complexe medico-sociale a coordonner",
-        "enabled": true,
-        "all_of": [
-            {
-            "field": "complexite.niveau",
-            "operator": "==",
-            "value": "complexe"
+            "id": "eligibility_crt_01",
+            "structure_type": "CRT",
+            "label": "CRT - personne agé avec besoin de maintien a domicile renforce",
+            "enabled": true,
+            "all_of": [
+                {
+                    "field": "usager.identite.age_estime",
+                    "operator": ">=",
+                    "value": 60
+                },
+                {
+                    "field": "demande.motif_principal",
+                    "operator": "contains_any",
+                    "value": [
+                        "maintien_a_domicile",
+                        "renforcement_domicile"
+                    ]
+                }
+            ],
+            "any_of": [
+                {
+                    "field": "usager.situation_actuelle.GIR",
+                    "operator": "in",
+                    "value": [
+                        1,
+                        2,
+                        3,
+                        4
+                    ]
+                },
+                {
+                    "field": "complexite.niveau",
+                    "operator": "==",
+                    "value": "complexe"
+                }
+            ],
+            "none_of": [],
+            "result": {
+                "eligible": true,
+                "base_pertinence": "eleve",
+                "base_priority_score": 90,
+                "objectif_orientation": "maintien_a_domicile_renforce"
             }
-        ],
-        "any_of": [
-            {
-            "field": "cercle_de_soins.niveau_structuration_cercle_de_soins",
-            "operator": "in",
-            "value": ["insuffisamment_coordonne", "absent"]
-            },
-            {
-            "field": "vulnerabilites.administratif.coordination_existante",
-            "operator": "in",
-            "value": ["insuffisante", "absente"]
-            },
-            {
-            "field": "vulnerabilites.social.risque_epuisement_entourage",
-            "operator": "in",
-            "value": ["probable", "eleve"]
-            },
-            {
-            "field": "vulnerabilites.sante.hospitalisation.statut",
-            "operator": "in",
-            "value": ["recente", "en_cours"]
+        },
+        {
+            "id": "eligibility_cev_01",
+            "structure_type": "CEV",
+            "label": "CEV - Célule écoute et vigilance signalement pour adulte vulnérable, danger, etc ...",
+            "enabled": true,
+            "all_of": [],
+            "any_of": [
+                {
+                    "field": "vulnerabilites.social.soutien_familial",
+                    "operator": "==",
+                    "value": "absent"
+                },
+                {
+                    "field": "vulnerabilites.social.risque_epuisement_entourage",
+                    "operator": "==",
+                    "value": "eleve"
+                },
+                {
+                    "field": "vulnerabilites.habitat.securite_du_domicile",
+                    "operator": "in",
+                    "value": [
+                        "problematique",
+                        "a_evaluer"
+                    ]
+                },
+                {
+                    "field": "vulnerabilites.social.precarite",
+                    "operator": "==",
+                    "value": "averee"
+                },
+                {
+                    "field": "vulnerabilites.social.isolement_relationnel",
+                    "operator": "==",
+                    "value": "critique"
+                },
+                {
+                    "field": "vulnerabilites.sante.suivi_medical.continuité_soins",
+                    "operator": "==",
+                    "value": "rompue"
+                },
+                {
+                    "field": "vulnerabilites.autonomie.autonomie_decisionnelle",
+                    "operator": "==",
+                    "value": "fortement_compromise"
+                },
+                {
+                    "field": "vulnerabilites.autonomie.gestion_du_quotidien",
+                    "operator": "==",
+                    "value": "fortement_compromise"
+                },
+                {
+                    "field": "usager.situation_actuelle.suspiion_malveillance",
+                    "operator": "in",
+                    "value": [
+                        "violences psychologiques",
+                        "violence physique",
+                        "spoliation",
+                        "maltraitance"
+                    ]
+                },
+                {
+                    "field": "usager.situation_actuelle.vulnerabilite",
+                    "operator": "==",
+                    "value": "oui"
+                },
+                {
+                    "field": "usager.situation_actuelle.isolement",
+                    "operator": "in",
+                    "value": [
+                        "isolement_social",
+                        "isolement_famillial"
+                    ]
+                },
+                {
+                    "field": "usager.situation_actuelle.stabilite_apparente_situation",
+                    "operator": "==",
+                    "value": "instable"
+                }
+            ],
+            "none_of": [],
+            "result": {
+                "eligible": true,
+                "base_pertinence": "eleve",
+                "base_priority_score": 95,
+                "objectif_orientation": "maintien_a_domicile_renforce"
             }
-        ],
-        "none_of": [],
-        "result": {
-            "eligible": true,
-            "base_pertinence": "tres_eleve",
-            "base_priority_score": 80,
-            "objectif_orientation": "coordination_medico_sociale_soutenue"
+        },
+        {
+            "id": "eligibility_clic.seyne.coudon_01",
+            "structure_type": "CLIC_la_seyne_le_coudon",
+            "label": "CLIC - Sans coordination médicale Centre Local d'Information et de Coordination problématique sociale et maintient à domicile ",
+            "enabled": true,
+            "all_of": [
+                {
+                    "field": "usager.situation_actuelle.APA",
+                    "operator": "==",
+                    "value": "non"
+                },
+                {
+                    "field": "usager.identite.age_estime",
+                    "operator": ">=",
+                    "value": 60
+                },
+                {
+                    "field": "demande.motif_principal",
+                    "operator": "contains_any",
+                    "value": "maintien_a_domicile"
+                }
+            ],
+            "any_of": [
+                {
+                    "field": "vulnerabilites.administratif.ouverture_des_droits",
+                    "operator": "in",
+                    "value": [
+                        "partielle",
+                        "problematique_identifiee"
+                    ]
+                },
+                {
+                    "field": "demande.motifs_secondaires",
+                    "operator": "contains_any",
+                    "value": [
+                        "coordination_sociale",
+                        "ouverture de droits"
+                    ]
+                },
+                {
+                    "field": "vulnerabilites.social.risque_epuisement_entourage",
+                    "operator": "in",
+                    "value": [
+                        "possible",
+                        "probable",
+                        "eleve"
+                    ]
+                },
+                {
+                    "field": "vulnerabilites.autonomie.mobilite",
+                    "operator": "in",
+                    "value": [
+                        "avec_aide",
+                        "dependant"
+                    ]
+                },
+                {
+                    "field": "vulnerabilites.autonomie.deplacements_exterieurs",
+                    "operator": "in",
+                    "value": [
+                        "limites",
+                        "impossibles",
+                        "avec_aide_materielle",
+                        "avec_aide_humaine"
+                    ]
+                },
+                {
+                    "field": "vulnerabilites.autonomie.gestion_du_quotidien",
+                    "operator": "in",
+                    "value": [
+                        "partiellement_compromise",
+                        "fortement_compromise",
+                        "avec_aide_materielle",
+                        "avec_aide_humaine"
+                    ]
+                },
+                {
+                    "field": "demande.description_factuelle.autonomie_observee",
+                    "operator": "in",
+                    "value": [
+                        "diminuee",
+                        "fortement_diminuee"
+                    ]
+                }
+            ],
+            "none_of": [
+                {
+                    "field": "usager.situation_actuelle.APA",
+                    "operator": "==",
+                    "value": "oui"
+                }
+            ],
+            "result": {
+                "eligible": true,
+                "base_pertinence": "eleve",
+                "base_priority_score": 80,
+                "objectif_orientation": "maintien_a_domicile_renforce"
+            }
+        },
+        {
+            "id": "eligibility_clic.toulon_01",
+            "structure_type": "CLIC_Toulon",
+            "label": "CLIC Toulon - Coordination médicale Centre Local d'Information et de Coordination problématique sociale et maintient à domicile ",
+            "enabled": true,
+            "all_of": [
+                {
+                    "field": "usager.situation_actuelle.APA",
+                    "operator": "==",
+                    "value": "non"
+                },
+                {
+                    "field": "usager.identite.age_estime",
+                    "operator": ">=",
+                    "value": 60
+                },
+                {
+                    "field": "demande.motif_principal",
+                    "operator": "contains_any",
+                    "value": [
+                        "maintien_a_domicile",
+                        "perte_autonomie"
+                    ]
+                }
+            ],
+            "any_of": [
+                {
+                    "field": "vulnerabilites.sante.acces_aux_soins",
+                    "operator": "==",
+                    "value": "aucun"
+                },
+                {
+                    "field": "vulnerabilites.sante.suivi_medical.medecin_traitant",
+                    "operator": "in",
+                    "value": [
+                        "non_identifie_avec_certitude",
+                        "absent",
+                        "incertain"
+                    ]
+                },
+                {
+                    "field": "vulnerabilites.sante.suivi_medical.continuité_soins",
+                    "operator": "in",
+                    "value": [
+                        "partiellement_securisee",
+                        "insuffisamment_securisee",
+                        "rompue"
+                    ]
+                },
+                {
+                    "field": "vulnerabilites.administratif.ouverture_des_droits",
+                    "operator": "in",
+                    "value": [
+                        "partielle",
+                        "problematique_identifiee"
+                    ]
+                },
+                {
+                    "field": "demande.motifs_secondaires",
+                    "operator": "contains_any",
+                    "value": [
+                        "coordination_médicale",
+                        "coordination_sociale",
+                        "ouverture de droits"
+                    ]
+                },
+                {
+                    "field": "vulnerabilites.social.risque_epuisement_entourage",
+                    "operator": "in",
+                    "value": [
+                        "possible",
+                        "probable",
+                        "eleve"
+                    ]
+                },
+                {
+                    "field": "vulnerabilites.autonomie.mobilite",
+                    "operator": "in",
+                    "value": [
+                        "avec_aide",
+                        "dependant"
+                    ]
+                },
+                {
+                    "field": "vulnerabilites.autonomie.deplacements_exterieurs",
+                    "operator": "in",
+                    "value": [
+                        "limites",
+                        "impossibles",
+                        "avec_aide_materielle",
+                        "avec_aide_humaine"
+                    ]
+                },
+                {
+                    "field": "vulnerabilites.autonomie.gestion_du_quotidien",
+                    "operator": "in",
+                    "value": [
+                        "partiellement_compromise",
+                        "fortement_compromise",
+                        "avec_aide_materielle",
+                        "avec_aide_humaine"
+                    ]
+                },
+                {
+                    "field": "demande.description_factuelle.autonomie_observee",
+                    "operator": "in",
+                    "value": [
+                        "diminuee",
+                        "fortement_diminuee"
+                    ]
+                }
+            ],
+            "none_of": [
+                {
+                    "field": "usager.situation_actuelle.APA",
+                    "operator": "==",
+                    "value": "oui"
+                }
+            ],
+            "result": {
+                "eligible": true,
+                "base_pertinence": "eleve",
+                "base_priority_score": 80,
+                "objectif_orientation": "maintien_a_domicile_renforce"
+            }
+        },
+        {
+            "id": "eligibility_ccas_01",
+            "structure_type": "CCAS",
+            "label": "CCAS - Centre Communal d'Action Social",
+            "enabled": true,
+            "all_of": [
+                {
+                    "field": "demande.motif_principal",
+                    "operator": "contains_any",
+                    "value": [
+                        "information",
+                        "information_locale",
+                        "atelier",
+                        "atelier_collectifs"
+                    ]
+                }
+            ],
+            "any_of": [],
+            "none_of": [
+                {
+                    "field": "demande.description_factuelle.autonomie_observee",
+                    "operator": "in",
+                    "value": [
+                        "diminuee",
+                        "fortement_diminuee",
+                        "non_evaluable"
+                    ]
+                }
+            ],
+            "result": {
+                "eligible": true,
+                "base_pertinence": "eleve",
+                "base_priority_score": 75,
+                "objectif_orientation": "maintien_a_domicile_renforce"
+            }
+        },
+        {
+            "id": "eligibility_uts_01",
+            "structure_type": "UTS",
+            "label": "UTS - ",
+            "enabled": true,
+            "all_of": [
+                {
+                    "field": "usager.situation_actuelle.APA",
+                    "operator": "==",
+                    "value": "non"
+                }
+            ],
+            "any_of": [
+                {
+                    "field": "vulnerabilites.social.isolement_relationnel",
+                    "operator": "in",
+                    "value": [
+                        "modere",
+                        "important",
+                        "critique"
+                    ]
+                },
+                {
+                    "field": "vulnerabilites.sante.etat_clinique_percu",
+                    "operator": "contains_any",
+                    "value": [
+                        "psychologique",
+                        "psychiatrique",
+                        "cognitif",
+                        "neurologique"
+                    ]
+                },
+                {
+                    "field": "vulnerabilites.social.soutien_familial",
+                    "operator": "in",
+                    "value": [
+                        "present_mais_limite",
+                        "faible_ou_irregulier",
+                        "absent"
+                    ]
+                },
+                {
+                    "field": "vulnerabilites.social.risque_epuisement_entourage",
+                    "operator": "in",
+                    "value": [
+                        "possible",
+                        "probable",
+                        "eleve"
+                    ]
+                },
+                {
+                    "field": "vulnerabilites.social.precarite",
+                    "operator": "in",
+                    "value": [
+                        "possible",
+                        "probable",
+                        "averee"
+                    ]
+                },
+                {
+                    "field": "vulnerabilites.administratif.coordination_existante",
+                    "operator": "==",
+                    "value": "absente"
+                },
+                {
+                    "field": "vulnerabilites.administratif.ouverture_des_droits",
+                    "operator": "in",
+                    "value": [
+                        "partielle",
+                        "non_documentee",
+                        "a_verifier"
+                    ]
+                },
+                {
+                    "field": "vulnerabilites.administratif.niveau_complexite_administrative",
+                    "operator": "in",
+                    "value": [
+                        "modere",
+                        "important",
+                        "critique"
+                    ]
+                },
+                {
+                    "field": "vulnerabilites.habitat.securite_du_domicile",
+                    "operator": "in",
+                    "value": [
+                        "fragile",
+                        "problematique"
+                    ]
+                },
+                {
+                    "field": "demande.motif_principal",
+                    "operator": "contains_any",
+                    "value": [
+                        "isolement",
+                        "vulnérabilité"
+                    ]
+                }
+            ],
+            "none_of": [
+                {
+                    "field": "usager.situation_actuelle.APA",
+                    "operator": "==",
+                    "value": "oui"
+                },
+                {
+                    "field": "vulnerabilites.autonomie.deplacements_exterieurs",
+                    "operator": "==",
+                    "value": "impossibles"
+                },
+                {
+                    "field": "vulnerabilites.social.accompagnement_travailleur_social",
+                    "operator": "==",
+                    "value": "suivi travailleur social CCAS"
+                }
+            ],
+            "result": {
+                "eligible": true,
+                "base_pertinence": "eleve",
+                "base_priority_score": 60,
+                "objectif_orientation": "maintien_a_domicile_renforce"
+            }
+        },
+        {
+            "id": "eligibility_cpts_01",
+            "structure_type": "CPTS",
+            "label": "CPTS - recherche médecin traitant et soin",
+            "enabled": true,
+            "all_of": [
+                {
+                    "field": "vulnerabilites.sante.suivi_medical.medecin_traitant",
+                    "operator": "==",
+                    "value": "absent"
+                }
+            ],
+            "any_of": [
+                {
+                    "field": "demande.motif_principal",
+                    "operator": "contains_any",
+                    "value": [
+                        "recherche medecin traitant",
+                        "difficulté acces aux soins",
+                        "acces aux soins"
+                    ]
+                }
+            ],
+            "none_of": [],
+            "result": {
+                "eligible": true,
+                "base_pertinence": "eleve",
+                "base_priority_score": 65,
+                "objectif_orientation": "maintien_a_domicile_renforce"
+            }
+        },
+        {
+            "id": "eligibility_dac_01",
+            "structure_type": "DAC",
+            "label": "DAC - situation complexe medico-sociale a coordonner",
+            "enabled": true,
+            "all_of": [
+                {
+                    "field": "complexite.niveau",
+                    "operator": "==",
+                    "value": "complexe"
+                }
+            ],
+            "any_of": [
+                {
+                    "field": "cercle_de_soins.niveau_structuration_cercle_de_soins",
+                    "operator": "in",
+                    "value": [
+                        "insuffisamment_coordonne",
+                        "absent"
+                    ]
+                },
+                {
+                    "field": "vulnerabilites.administratif.coordination_existante",
+                    "operator": "in",
+                    "value": [
+                        "insuffisante",
+                        "absente"
+                    ]
+                },
+                {
+                    "field": "vulnerabilites.social.risque_epuisement_entourage",
+                    "operator": "in",
+                    "value": [
+                        "probable",
+                        "eleve"
+                    ]
+                },
+                {
+                    "field": "vulnerabilites.sante.hospitalisation.statut",
+                    "operator": "in",
+                    "value": [
+                        "recente",
+                        "en_cours"
+                    ]
+                },
+                {
+                    "field": "demande.motif_principal",
+                    "operator": "contains_any",
+                    "value": [
+                        "coordination",
+                        "refus_de_soins",
+                        "complexite_medico_sociale"
+                    ]
+                },
+                {
+                    "field": "demande.motifs_secondaires",
+                    "operator": "contains_any",
+                    "value": [
+                        "coordination",
+                        "refus_de_soins",
+                        "complexite_medico_sociale"
+                    ]
+                }
+            ],
+            "none_of": [],
+            "result": {
+                "eligible": true,
+                "base_pertinence": "tres_eleve",
+                "base_priority_score": 100,
+                "objectif_orientation": "coordination_medico_sociale_soutenue"
+            }
         }
-    }
-  ]
+    ]
 }
