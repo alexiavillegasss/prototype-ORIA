@@ -224,27 +224,27 @@
     "type": "string",
     "required": false,
     "source": "voix_ou_extraction",
-    "decription": "Adresse mail de la personne."
+    "description": "Adresse mail de la personne."
   },
   "usager.identite.numero": {
     "type": "string",
     "required": false,
     "source": "voix_ou_extraction",
-    "decription": "Numéro de téléphonne."
+    "description": "Numéro de téléphone."
   },
   "usager.identite.consentement": {
     "type": "string",
     "required": false,
     "source": "voix_ou_extraction",
     "enum": ["oui", "non", "aucune indication"],
-    "decription": "La personne est elle consentante de cette oientation"
+    "description": "La personne est elle consentante de cette orientation"
   },
   "usager.identite.mesure_protection": {
     "type": "string",
     "required": false,
     "source": "voix_ou_extraction",
-    "enum": ["aucune", "sauvergarde de justice", "tutelle", "curatelle simple", "curatelle renforcée"],
-    "decription": "La personne est elle sous mesure de protection ?"
+    "enum": ["aucune", "sauvegarde de justice", "tutelle", "curatelle simple", "curatelle renforcée"],
+    "description": "La personne est elle sous mesure de protection ?"
   },
 
   "usager.localisation.commune_residence": {
@@ -456,7 +456,7 @@
     "enum": ["oui", "non", "non_defini"],
     "description": "La personne est-elle vulnérable ?"
   },
-  "usager.situation_actuelle.suspiion_malveillance": {
+  "usager.situation_actuelle.suspicion_malveillance": {
     "type": "string",
     "required": false,
     "source": "voix_ou_analyse",

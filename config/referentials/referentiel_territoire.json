@@ -1,0 +1,927 @@
+{
+  "Toulon - Canton 1, 2 et 3": {
+    "priorite_ccas_sur_uts": false,
+    "structures_disponibles": {
+      "CCAS": {
+        "present": true,
+        "nom": "Centre Communal d'Action Sociale Toulon (CCAS)",
+        "adresse": "100 rue des remparts - CS 20813 83051 Toulon Cedex",
+        "telephone": "04 94 24 65 00",
+        "email": "accueil@ccas-toulon.fr"
+      },
+      "UTS": {
+        "present": true,
+        "nom": "UTS Toulon",
+        "adresse": "100, traverse des minimes 83000 Toulon",
+        "telephone": "04 83 95 24 42"
+      },
+      "CLIC": {
+        "present": true,
+        "nom": "CLIC de Toulon",
+        "telephone": "04 94 24 65 25",
+        "email": "clic@ccas-toulon.fr"
+      },
+      "CRT": {
+        "present": true,
+        "nom": "CRT Mar Vivo",
+        "adresse": "104, chemin de Mar Vivo aux deux Chênes 83500 LA SEYNE SUR MER",
+        "telephone": "06 84 99 32 49",
+        "email": "accueil.marvivo@lna-sante.com"
+      },
+      "CPTS": {
+        "present": true,
+        "nom": "CPTS LSTO",
+        "adresse": "198 rue de Lisbonne 83500 La Seyne-sur-Mer",
+        "telephone": "06 81 10 57 70"
+      },
+      "DAC": {
+        "present": true,
+        "nom": "DAC Var Ouest",
+        "telephone": "04 94 35 32 01",
+        "email": "contact@dac-varouest.fr"
+      },
+      "CEV": {
+        "present": true,
+        "nom": "Cellule Ecoute et Vigilance du Var",
+        "telephone": "04 83 95 16 01",
+        "email": "gro-cev@var.fr"
+      }
+    }
+  },
+  "Toulon - Canton 4, 5, 6, 7, 8 et 9": {
+    "priorite_ccas_sur_uts": false,
+    "structures_disponibles": {
+      "CCAS": {
+        "present": true,
+        "nom": "Centre Communal d'Action Sociale Toulon (CCAS)",
+        "adresse": "100 rue des remparts - CS 20813 83051 Toulon Cedex",
+        "telephone": "04 94 24 65 00",
+        "email": "accueil@ccas-toulon.fr"
+      },
+      "UTS": {
+        "present": true,
+        "nom": "UTS Toulon",
+        "adresse": "100, traverse des minimes 83000 Toulon",
+        "telephone": "04 83 95 24 42"
+      },
+      "CLIC": {
+        "present": true,
+        "nom": "CLIC de Toulon",
+        "telephone": "04 94 24 65 25",
+        "email": "clic@ccas-toulon.fr"
+      },
+      "CRT": {
+        "present": true,
+        "nom": "CRT Clémenceau",
+        "adresse": "421 Av 1er Bataillon Infanterie de Marine du Pacifique 83130 La Garde",
+        "telephone": "06 83 38 39 39",
+        "email": "crt.clemenceau@ch-toulon.fr"
+      },
+      "CPTS": {
+        "present": true,
+        "nom": "CPTS Toulon littoral",
+        "adresse": "298 Boulevard Drive Cunéo Toulon",
+        "telephone": "07 83 40 29 17",
+        "email": "coordination@cptstoulon.fr"
+      },
+      "DAC": {
+        "present": true,
+        "nom": "DAC Var Ouest",
+        "telephone": "04 94 35 32 01",
+        "email": "contact@dac-varouest.fr"
+      },
+      "CEV": {
+        "present": true,
+        "nom": "Cellule Ecoute et Vigilance du Var",
+        "telephone": "04 83 95 16 01",
+        "email": "gro-cev@var.fr"
+      }
+    }
+  },
+  "La Valette": {
+    "priorite_ccas_sur_uts": false,
+    "structures_disponibles": {
+      "CCAS": {
+        "present": true,
+        "nom": "Centre Communal d'Action Sociale La Valette du Var (CCAS)",
+        "adresse": "place Général de Gaulle 83160 la Valette du Var",
+        "telephone": "04 94 20 92 70",
+        "email": "aide-sociale@lavalette83.fr"
+      },
+      "UTS": {
+        "present": true,
+        "nom": "UTS Val Gapeau Iles d'Or - LA VALETTE",
+        "adresse": "427 Avenue Duchatel 83130 La Valette du Var",
+        "telephone": "04 83 95 56 90"
+      },
+      "CLIC": {
+        "present": true,
+        "nom": "CLIC du Coudon",
+        "telephone": "04 22 44 84 73",
+        "email": "clicducoudon@neuf.fr"
+      },
+      "CRT": {
+        "present": false
+      },
+      "CPTS": {
+        "present": true,
+        "nom": "CPTS Var Provence Méditerranée",
+        "adresse": "3 Rue Aspirant François Philippe 83260 La Crau",
+        "telephone": "06 63 63 63 91",
+        "email": "cptsvpm@gmail.com"
+      },
+      "DAC": {
+        "present": true,
+        "nom": "DAC Var Ouest",
+        "telephone": "04 94 35 32 01",
+        "email": "contact@dac-varouest.fr"
+      },
+      "CEV": {
+        "present": true,
+        "nom": "Cellule Ecoute et Vigilance du Var",
+        "telephone": "04 83 95 16 01",
+        "email": "gro-cev@var.fr"
+      }
+    }
+  },
+  "La Garde": {
+    "priorite_ccas_sur_uts": false,
+    "structures_disponibles": {
+      "CCAS": {
+        "present": true,
+        "nom": "Centre Communal d'Action Sociale La Garde (CCAS)",
+        "adresse": "81 Rue Marius Tardivier 83130 La garde",
+        "telephone": "04 94 08 98 34",
+        "email": "service-ccas@ville-lagarde.fr"
+      },
+      "UTS": {
+        "present": true,
+        "nom": "UTS Val Gapeau Iles d'Or - LA GARDE",
+        "adresse": "53 Impasse Blériot Immeuble Le Frédéric 83130 La Garde",
+        "telephone": "04 83 95 56 50"
+      },
+      "CLIC": {
+        "present": true,
+        "nom": "CLIC du Coudon",
+        "telephone": "04 22 44 84 73",
+        "email": "clicducoudon@neuf.fr"
+      },
+      "CRT": {
+        "present": true,
+        "nom": "CRT Clémenceau",
+        "adresse": "421 Av 1er Bataillon Infanterie de Marine du Pacifique 83130 La Garde",
+        "telephone": "06 83 38 39 39",
+        "email": "crt.clemenceau@ch-toulon.fr"
+      },
+      "CPTS": {
+        "present": true,
+        "nom": "CPTS Var Provence Méditerranée",
+        "adresse": "3 Rue Aspirant François Philippe 83260 La Crau",
+        "telephone": "06 63 63 63 91",
+        "email": "cptsvpm@gmail.com"
+      },
+      "DAC": {
+        "present": true,
+        "nom": "DAC Var Ouest",
+        "telephone": "04 94 35 32 01",
+        "email": "contact@dac-varouest.fr"
+      },
+      "CEV": {
+        "present": true,
+        "nom": "Cellule Ecoute et Vigilance du Var",
+        "telephone": "04 83 95 16 01",
+        "email": "gro-cev@var.fr"
+      }
+    }
+  },
+  "Le Pradet": {
+    "priorite_ccas_sur_uts": false,
+    "structures_disponibles": {
+      "CCAS": {
+        "present": true,
+        "nom": "Centre Communal d'Action Sociale Pradet (CCAS)",
+        "adresse": "Rue du Pensionnat Square Keller 83220 Le Pradet",
+        "telephone": "04 94 08 08 58",
+        "email": "courrier@le-pradet.fr"
+      },
+      "UTS": {
+        "present": true,
+        "nom": "UTS Val Gapeau Iles d'Or - LA GARDE",
+        "adresse": "53 Impasse Blériot Immeuble Le Frédéric 83130 La Garde",
+        "telephone": "04 83 95 56 50"
+      },
+      "CLIC": {
+        "present": true,
+        "nom": "CLIC du Coudon",
+        "telephone": "04 22 44 84 73",
+        "email": "clicducoudon@neuf.fr"
+      },
+      "CRT": {
+        "present": false
+      },
+      "CPTS": {
+        "present": true,
+        "nom": "CPTS Var Provence Méditerranée",
+        "adresse": "3 Rue Aspirant François Philippe 83260 La Crau",
+        "telephone": "06 63 63 63 91",
+        "email": "cptsvpm@gmail.com"
+      },
+      "DAC": {
+        "present": true,
+        "nom": "DAC Var Ouest",
+        "telephone": "04 94 35 32 01",
+        "email": "contact@dac-varouest.fr"
+      },
+      "CEV": {
+        "present": true,
+        "nom": "Cellule Ecoute et Vigilance du Var",
+        "telephone": "04 83 95 16 01",
+        "email": "gro-cev@var.fr"
+      }
+    }
+  },
+  "La Farlède": {
+    "priorite_ccas_sur_uts": false,
+    "structures_disponibles": {
+      "CCAS": {
+        "present": true,
+        "nom": "Centre Communal d'Action Sociale La Farlède (CCAS)",
+        "adresse": "Rez-de-chaussée de l'Hôtel de ville (entrée droite) Place de la Liberté BP 25 83210 La Farlède",
+        "telephone": "04 94 27 85 84",
+        "email": "ccas@lafarlede.fr"
+      },
+      "UTS": {
+        "present": true,
+        "nom": "UTS Val Gapeau Iles d'Or - LA FARLEDE",
+        "adresse": "210 Centralité Chemin du Partégal 83210 La Farlede",
+        "telephone": "04 83 95 20 00"
+      },
+      "CLIC": {
+        "present": true,
+        "nom": "CLIC la Vallée du Gapeau",
+        "telephone": "04 94 33 10 62",
+        "email": "social@ccvg.fr"
+      },
+      "CRT": {
+        "present": false
+      },
+      "CPTS": {
+        "present": true,
+        "nom": "CPTS Vallée du Gapeau",
+        "adresse": "1193 Avenue des Sènes 83210 Solliès-Pont",
+        "telephone": "07 71 13 26 32",
+        "email": "coordocptsvdg83@gmail.com"
+      },
+      "DAC": {
+        "present": true,
+        "nom": "DAC Var Ouest",
+        "telephone": "04 94 35 32 01",
+        "email": "contact@dac-varouest.fr"
+      },
+      "CEV": {
+        "present": true,
+        "nom": "Cellule Ecoute et Vigilance du Var",
+        "telephone": "04 83 95 16 01",
+        "email": "gro-cev@var.fr"
+      }
+    }
+  },
+  "Le Revest": {
+    "priorite_ccas_sur_uts": false,
+    "structures_disponibles": {
+      "CCAS": {
+        "present": true,
+        "nom": "Centre Communal d'Action Sociale Le Revest (CCAS)",
+        "adresse": "Place Jean Jaurès 83200 Le Revest-les-Eaux",
+        "telephone": "04 94 98 19 90"
+      },
+      "UTS": {
+        "present": true,
+        "nom": "UTS Val Gapeau Iles d'Or - LA VALETTE",
+        "adresse": "427 Avenue Duchatel 83130 La Valette du Var",
+        "telephone": "04 83 95 56 90"
+      },
+      "CLIC": {
+        "present": true,
+        "nom": "CLIC du Coudon",
+        "telephone": "04 22 44 84 73",
+        "email": "clicducoudon@neuf.fr"
+      },
+      "CRT": {
+        "present": false
+      },
+      "CPTS": {
+        "present": true,
+        "nom": "CPTS LSTO",
+        "adresse": "198 rue de Lisbonne 83500 La Seyne-sur-Mer",
+        "telephone": "06 81 10 57 70"
+      },
+      "DAC": {
+        "present": true,
+        "nom": "DAC Var Ouest",
+        "telephone": "04 94 35 32 01",
+        "email": "contact@dac-varouest.fr"
+      },
+      "CEV": {
+        "present": true,
+        "nom": "Cellule Ecoute et Vigilance du Var",
+        "telephone": "04 83 95 16 01",
+        "email": "gro-cev@var.fr"
+      }
+    }
+  },
+  "Signes": {
+    "priorite_ccas_sur_uts": false,
+    "structures_disponibles": {
+      "CCAS": {
+        "present": true,
+        "nom": "Centre Communal d'Action Sociale Signes (CCAS)"
+      },
+      "UTS": {
+        "present": true,
+        "nom": "UTS Littoral Sud Sainte Baume - LE BEAUSSET",
+        "adresse": "Le Saint Anne 21 A avenue Saint Louis 83330 Le Beausset",
+        "telephone": "04 83 95 57 30"
+      },
+      "CLIC": {
+        "present": false
+      },
+      "CRT": {
+        "present": true,
+        "nom": "CRT le Beausset",
+        "telephone": "04 94 98 55 00 ou 06 08 46 20 3X",
+        "email": "crt.lebeausset@gmail.com"
+      },
+      "CPTS": {
+        "present": true,
+        "nom": "CPTS Var Ouest",
+        "adresse": "121 Chemin de la Cadière à Bandol 83740 La Cadière d'azur",
+        "telephone": "06 44 18 95 44",
+        "email": "contact@cptsvarouest.com"
+      },
+      "DAC": {
+        "present": true,
+        "nom": "DAC Var Ouest",
+        "telephone": "04 94 35 32 01",
+        "email": "contact@dac-varouest.fr"
+      },
+      "CEV": {
+        "present": true,
+        "nom": "Cellule Ecoute et Vigilance du Var",
+        "telephone": "04 83 95 16 01",
+        "email": "gro-cev@var.fr"
+      }
+    }
+  },
+  "Riboux": {
+    "priorite_ccas_sur_uts": false,
+    "structures_disponibles": {
+      "CCAS": {
+        "present": false
+      },
+      "UTS": {
+        "present": true,
+        "nom": "UTS Littoral Sud Sainte Baume - LE BEAUSSET",
+        "adresse": "Le Saint Anne 21 A avenue Saint Louis 83330 Le Beausset",
+        "telephone": "04 83 95 57 30"
+      },
+      "CLIC": {
+        "present": false
+      },
+      "CRT": {
+        "present": true,
+        "nom": "CRT le Beausset",
+        "telephone": "04 94 98 55 00",
+        "email": "crt.lebeausset@gmail.com"
+      },
+      "CPTS": {
+        "present": true,
+        "nom": "CPTS Var Ouest",
+        "adresse": "121 Chemin de la Cadière à Bandol 83740 La Cadière d'azur",
+        "telephone": "06 44 18 95 44",
+        "email": "contact@cptsvarouest.com"
+      },
+      "DAC": {
+        "present": true,
+        "nom": "DAC Var Ouest",
+        "telephone": "04 94 35 32 01",
+        "email": "contact@dac-varouest.fr"
+      },
+      "CEV": {
+        "present": true,
+        "nom": "Cellule Ecoute et Vigilance du Var",
+        "telephone": "04 83 95 16 01",
+        "email": "gro-cev@var.fr"
+      }
+    }
+  },
+  "La Cadière d'Azur": {
+    "priorite_ccas_sur_uts": false,
+    "structures_disponibles": {
+      "CCAS": {
+        "present": true,
+        "nom": "Centre Communal d'Action Sociale La Cadière d'Azur (CCAS)",
+        "adresse": "Mairie de la Cadière d'Azur 11 rue Gabriel Péri 83740 La Cadière d'Azur",
+        "telephone": "04 94 98 25 20",
+        "email": "ccas@lacadieredazur.com"
+      },
+      "UTS": {
+        "present": true,
+        "nom": "UTS Littoral Sud Sainte Baume - LE BEAUSSET",
+        "adresse": "Le Saint Anne 21 A avenue Saint Louis 83330 Le Beausset",
+        "telephone": "04 83 95 57 30"
+      },
+      "CLIC": {
+        "present": false
+      },
+      "CRT": {
+        "present": true,
+        "nom": "CRT le Beausset",
+        "telephone": "04 94 98 55 00",
+        "email": "crt.lebeausset@gmail.com"
+      },
+      "CPTS": {
+        "present": true,
+        "nom": "CPTS Var Ouest",
+        "adresse": "121 Chemin de la Cadière à Bandol 83740 La Cadière d'azur",
+        "telephone": "06 44 18 95 44",
+        "email": "contact@cptsvarouest.com"
+      },
+      "DAC": {
+        "present": true,
+        "nom": "DAC Var Ouest",
+        "telephone": "04 94 35 32 01",
+        "email": "contact@dac-varouest.fr"
+      },
+      "CEV": {
+        "present": true,
+        "nom": "Cellule Ecoute et Vigilance du Var",
+        "telephone": "04 83 95 16 01",
+        "email": "gro-cev@var.fr"
+      }
+    }
+  },
+  "Le Castellet": {
+    "priorite_ccas_sur_uts": false,
+    "structures_disponibles": {
+      "CCAS": {
+        "present": true,
+        "nom": "Centre Communal d'Action Sociale Castellet (CCAS)",
+        "adresse": "Mairie Annexe du Plan du Castellet 26 Rue des Micocouliers 83330 Le Castellet",
+        "telephone": "04 94 98 57 90",
+        "email": "ccas@ville-lecastellet.fr"
+      },
+      "UTS": {
+        "present": true,
+        "nom": "UTS Littoral Sud Sainte Baume - LE BEAUSSET",
+        "adresse": "Le Saint Anne 21 A avenue Saint Louis 83330 Le Beausset",
+        "telephone": "04 83 95 57 30"
+      },
+      "CLIC": {
+        "present": false
+      },
+      "CRT": {
+        "present": true,
+        "nom": "CRT le Beausset",
+        "telephone": "04 94 98 55 00",
+        "email": "crt.lebeausset@gmail.com"
+      },
+      "CPTS": {
+        "present": true,
+        "nom": "CPTS Var Ouest",
+        "adresse": "121 Chemin de la Cadière à Bandol 83740 La Cadière d'azur",
+        "telephone": "06 44 18 95 44",
+        "email": "contact@cptsvarouest.com"
+      },
+      "DAC": {
+        "present": true,
+        "nom": "DAC Var Ouest",
+        "telephone": "04 94 35 32 01",
+        "email": "contact@dac-varouest.fr"
+      },
+      "CEV": {
+        "present": true,
+        "nom": "Cellule Ecoute et Vigilance du Var",
+        "telephone": "04 83 95 16 01",
+        "email": "gro-cev@var.fr"
+      }
+    }
+  },
+  "Le Beausset": {
+    "priorite_ccas_sur_uts": false,
+    "structures_disponibles": {
+      "CCAS": {
+        "present": true,
+        "nom": "Centre Communal d'Action Sociale La Beausset (CCAS)",
+        "adresse": "Pôle Saint-Exupéry 80 chemin de Rouve 83330 Le Beausset",
+        "telephone": "04 94 02 39 25",
+        "email": "ccas@ville-lebeausset.fr"
+      },
+      "UTS": {
+        "present": true,
+        "nom": "UTS Littoral Sud Sainte Baume - LE BEAUSSET",
+        "adresse": "Le Saint Anne 21 A avenue Saint Louis 83330 Le Beausset",
+        "telephone": "04 83 95 57 30"
+      },
+      "CLIC": {
+        "present": false
+      },
+      "CRT": {
+        "present": true,
+        "nom": "CRT le Beausset",
+        "telephone": "04 94 98 55 00",
+        "email": "crt.lebeausset@gmail.com"
+      },
+      "CPTS": {
+        "present": true,
+        "nom": "CPTS Var Ouest",
+        "adresse": "121 Chemin de la Cadière à Bandol 83740 La Cadière d'azur",
+        "telephone": "06 44 18 95 44",
+        "email": "contact@cptsvarouest.com"
+      },
+      "DAC": {
+        "present": true,
+        "nom": "DAC Var Ouest",
+        "telephone": "04 94 35 32 01",
+        "email": "contact@dac-varouest.fr"
+      },
+      "CEV": {
+        "present": true,
+        "nom": "Cellule Ecoute et Vigilance du Var",
+        "telephone": "04 83 95 16 01",
+        "email": "gro-cev@var.fr"
+      }
+    }
+  },
+  "Saint-Cyr-sur-mer": {
+    "priorite_ccas_sur_uts": false,
+    "structures_disponibles": {
+      "CCAS": {
+        "present": true,
+        "nom": "Centre Communal d'Action Sociale Saint Cyr sur Mer (CCAS)",
+        "adresse": "Centre Communal d'Actions Sociales-CCAS 5, Avenue Aristide Briand 83270 Saint Cyr Sur Mer",
+        "telephone": "04 94 32 01 79",
+        "email": "ccas.saintcyr@wanadoo.fr"
+      },
+      "UTS": {
+        "present": true,
+        "nom": "UTS Littoral Sud Sainte Baume - BANDOL / SAINT CYR",
+        "adresse": "Le Pergolèse Bât 2 1155 avenue Del Reganeaou 83150 Bandol",
+        "telephone": "04 83 95 52 70"
+      },
+      "CLIC": {
+        "present": false
+      },
+      "CRT": {
+        "present": true,
+        "nom": "CRT le Beausset",
+        "telephone": "04 94 98 55 00",
+        "email": "crt.lebeausset@gmail.com"
+      },
+      "CPTS": {
+        "present": true,
+        "nom": "CPTS Var Ouest",
+        "adresse": "121 Chemin de la Cadière à Bandol 83740 La Cadière d'azur",
+        "telephone": "06 44 18 95 44",
+        "email": "contact@cptsvarouest.com"
+      },
+      "DAC": {
+        "present": true,
+        "nom": "DAC Var Ouest",
+        "telephone": "04 94 35 32 01",
+        "email": "contact@dac-varouest.fr"
+      },
+      "CEV": {
+        "present": true,
+        "nom": "Cellule Ecoute et Vigilance du Var",
+        "telephone": "04 83 95 16 01",
+        "email": "gro-cev@var.fr"
+      }
+    }
+  },
+  "Evenos": {
+    "priorite_ccas_sur_uts": false,
+    "structures_disponibles": {
+      "CCAS": {
+        "present": true,
+        "nom": "Centre Communal d'Action Sociale Evenos (CCAS)",
+        "adresse": "Hôtel de ville 2 Route de Toulon, Sainte-Anne d'Evenos 83330 Evenos",
+        "telephone": "04 94 98 50 86",
+        "email": "mairie@evenos.fr"
+      },
+      "UTS": {
+        "present": true,
+        "nom": "UTS Littoral Sud Sainte Baume - LE BEAUSSET",
+        "adresse": "Le Saint Anne 21 A avenue Saint Louis 83330 Le Beausset",
+        "telephone": "04 83 95 57 30"
+      },
+      "CLIC": {
+        "present": false
+      },
+      "CRT": {
+        "present": true,
+        "nom": "CRT le Beausset",
+        "telephone": "04 94 98 55 00",
+        "email": "crt.lebeausset@gmail.com"
+      },
+      "CPTS": {
+        "present": true,
+        "nom": "CPTS Var Ouest",
+        "adresse": "121 Chemin de la Cadière à Bandol 83740 La Cadière d'azur",
+        "telephone": "06 44 18 95 44",
+        "email": "contact@cptsvarouest.com"
+      },
+      "DAC": {
+        "present": true,
+        "nom": "DAC Var Ouest",
+        "telephone": "04 94 35 32 01",
+        "email": "contact@dac-varouest.fr"
+      },
+      "CEV": {
+        "present": true,
+        "nom": "Cellule Ecoute et Vigilance du Var",
+        "telephone": "04 83 95 16 01",
+        "email": "gro-cev@var.fr"
+      }
+    }
+  },
+  "Ollioules": {
+    "priorite_ccas_sur_uts": false,
+    "structures_disponibles": {
+      "CCAS": {
+        "present": true,
+        "nom": "Centre Communal d'Action Sociale Ollioules (CCAS)",
+        "adresse": "Mairie Administrative Espace Pierre Puget - 2 place Marius Trotobas 83190 Ollioules",
+        "telephone": "04 94 30 41 25",
+        "email": "ccas@ollioules.fr"
+      },
+      "UTS": {
+        "present": true,
+        "nom": "UTS Littoral Sud Sainte Baume - OLLIOULES",
+        "adresse": "Espace Pierre Puget 2 Place Marius Trotobas 83190 Ollioules",
+        "telephone": "04 83 95 58 50"
+      },
+      "CLIC": {
+        "present": false
+      },
+      "CRT": {
+        "present": true,
+        "nom": "CRT Mar Vivo",
+        "adresse": "104, chemin de Mar Vivo aux deux Chênes 83500 LA SEYNE SUR MER",
+        "telephone": "06 84 99 32 49",
+        "email": "accueil.marvivo@lna-sante.com"
+      },
+      "CPTS": {
+        "present": true,
+        "nom": "CPTS LSTO",
+        "adresse": "198 rue de Lisbonne 83500 La Seyne-sur-Mer",
+        "telephone": "06 81 10 57 70"
+      },
+      "DAC": {
+        "present": true,
+        "nom": "DAC Var Ouest",
+        "telephone": "04 94 35 32 01",
+        "email": "contact@dac-varouest.fr"
+      },
+      "CEV": {
+        "present": true,
+        "nom": "Cellule Ecoute et Vigilance du Var",
+        "telephone": "04 83 95 16 01",
+        "email": "gro-cev@var.fr"
+      }
+    }
+  },
+  "Bandol": {
+    "priorite_ccas_sur_uts": false,
+    "structures_disponibles": {
+      "CCAS": {
+        "present": true,
+        "nom": "Centre Communal d'Action Sociale Bandol (CCAS)",
+        "adresse": "Résidence Autonomie Les Acacias 13 rue Didier Daurat 83150 Bandol",
+        "telephone": "04 94 29 45 98",
+        "email": "ccas@bandol.fr"
+      },
+      "UTS": {
+        "present": true,
+        "nom": "UTS Littoral Sud Sainte Baume - BANDOL / SAINT CYR",
+        "adresse": "Le Pergolèse Bât 2 1155 avenue Del Reganeaou 83150 Bandol",
+        "telephone": "04 83 95 52 70"
+      },
+      "CLIC": {
+        "present": false
+      },
+      "CRT": {
+        "present": true,
+        "nom": "CRT Mar Vivo",
+        "adresse": "104, chemin de Mar Vivo aux deux Chênes 83500 LA SEYNE SUR MER",
+        "telephone": "06 84 99 32 49",
+        "email": "accueil.marvivo@lna-sante.com"
+      },
+      "CPTS": {
+        "present": true,
+        "nom": "CPTS Var Ouest",
+        "adresse": "121 Chemin de la Cadière à Bandol 83740 La Cadière d'azur",
+        "telephone": "06 44 18 95 44",
+        "email": "contact@cptsvarouest.com"
+      },
+      "DAC": {
+        "present": true,
+        "nom": "DAC Var Ouest",
+        "telephone": "04 94 35 32 01",
+        "email": "contact@dac-varouest.fr"
+      },
+      "CEV": {
+        "present": true,
+        "nom": "Cellule Ecoute et Vigilance du Var",
+        "telephone": "04 83 95 16 01",
+        "email": "gro-cev@var.fr"
+      }
+    }
+  },
+  "Sanary-sur-mer": {
+    "priorite_ccas_sur_uts": false,
+    "structures_disponibles": {
+      "CCAS": {
+        "present": true,
+        "nom": "Centre Communal d'Action Sociale Sanary sur Mer (CCAS)",
+        "adresse": "Ilot des Picotières 281 avenue Maréchal Leclerc 83110 Sanary-sur-Mer",
+        "telephone": "04 94 88 50 70"
+      },
+      "UTS": {
+        "present": true,
+        "nom": "UTS Littoral Sud Sainte Baume - SANARY",
+        "adresse": "CCAS Picotières 281 avenue Maréchal LeClerc 83110 Sanary sur mer",
+        "telephone": "04 83 95 83 10"
+      },
+      "CLIC": {
+        "present": false
+      },
+      "CRT": {
+        "present": true,
+        "nom": "CRT Mar Vivo",
+        "adresse": "104, chemin de Mar Vivo aux deux Chênes 83500 LA SEYNE SUR MER",
+        "telephone": "06 84 99 32 49",
+        "email": "accueil.marvivo@lna-sante.com"
+      },
+      "CPTS": {
+        "present": true,
+        "nom": "CPTS Var Ouest",
+        "adresse": "121 Chemin de la Cadière à Bandol 83740 La Cadière d'azur",
+        "telephone": "06 44 18 95 44",
+        "email": "contact@cptsvarouest.com"
+      },
+      "DAC": {
+        "present": true,
+        "nom": "DAC Var Ouest",
+        "telephone": "04 94 35 32 01",
+        "email": "contact@dac-varouest.fr"
+      },
+      "CEV": {
+        "present": true,
+        "nom": "Cellule Ecoute et Vigilance du Var",
+        "telephone": "04 83 95 16 01",
+        "email": "gro-cev@var.fr"
+      }
+    }
+  },
+  "Six-fours-les-plages": {
+    "priorite_ccas_sur_uts": false,
+    "structures_disponibles": {
+      "CCAS": {
+        "present": true,
+        "nom": "Centre Communal d'Action Sociale Six Fours Les Plages (CCAS)",
+        "adresse": "Centre Communal d'Action Sociale 32 Avenue Joseph Raynaud 83140 Six-Fours les Plages",
+        "telephone": "04 94 34 94 50"
+      },
+      "UTS": {
+        "present": true,
+        "nom": "UTS Littoral Sud Sainte Baume - SIX FOURS",
+        "adresse": "Centre Geoffroy Jouglas 40 avenue Joseph Raynaud 83140 Six Fours Les Plages",
+        "telephone": "04 83 95 41 00"
+      },
+      "CLIC": {
+        "present": false
+      },
+      "CRT": {
+        "present": true,
+        "nom": "CRT Mar Vivo",
+        "adresse": "104, chemin de Mar Vivo aux deux Chênes 83500 LA SEYNE SUR MER",
+        "telephone": "06 84 99 32 49",
+        "email": "accueil.marvivo@lna-sante.com"
+      },
+      "CPTS": {
+        "present": true,
+        "nom": "CPTS Var Ouest",
+        "adresse": "121 Chemin de la Cadière à Bandol 83740 La Cadière d'azur",
+        "telephone": "06 44 18 95 44",
+        "email": "contact@cptsvarouest.com"
+      },
+      "DAC": {
+        "present": true,
+        "nom": "DAC Var Ouest",
+        "telephone": "04 94 35 32 01",
+        "email": "contact@dac-varouest.fr"
+      },
+      "CEV": {
+        "present": true,
+        "nom": "Cellule Ecoute et Vigilance du Var",
+        "telephone": "04 83 95 16 01",
+        "email": "gro-cev@var.fr"
+      }
+    }
+  },
+  "La Seyne-sur-mer": {
+    "priorite_ccas_sur_uts": false,
+    "structures_disponibles": {
+      "CCAS": {
+        "present": true,
+        "nom": "Centre Communal d'Action Sociale La Seyne (CCAS)",
+        "adresse": "Espace Hermès 2 avenue Charles-Gide 83500 La Seyne-sur-Mer",
+        "telephone": "04 94 06 97 18",
+        "email": "ccas@la-seyne.fr"
+      },
+      "UTS": {
+        "present": true,
+        "nom": "UTS La Seyne / Saint-Mandrier - CENTRE HERMES",
+        "adresse": "rue Charles Gide 83500 La Seyne sur mer",
+        "telephone": "04 83 95 48 30 ou 04 83 95 37 99"
+      },
+      "CLIC": {
+        "present": true,
+        "nom": "CLIC du Cap Sicié",
+        "telephone": "04 94 06 97 04",
+        "email": "clic@la-seyne.fr"
+      },
+      "CRT": {
+        "present": true,
+        "nom": "CRT Mar Vivo",
+        "adresse": "104, chemin de Mar Vivo aux deux Chênes 83500 LA SEYNE SUR MER",
+        "telephone": "06 84 99 32 49",
+        "email": "accueil.marvivo@lna-sante.com"
+      },
+      "CPTS": {
+        "present": true,
+        "nom": "CPTS LSTO",
+        "adresse": "198 rue de Lisbonne 83500 La Seyne-sur-Mer",
+        "telephone": "06 81 10 57 70"
+      },
+      "DAC": {
+        "present": true,
+        "nom": "DAC Var Ouest",
+        "telephone": "04 94 35 32 01",
+        "email": "contact@dac-varouest.fr"
+      },
+      "CEV": {
+        "present": true,
+        "nom": "Cellule Ecoute et Vigilance du Var",
+        "telephone": "04 83 95 16 01",
+        "email": "gro-cev@var.fr"
+      }
+    }
+  },
+  "Saint-Mandrier-sur-Mer": {
+    "priorite_ccas_sur_uts": true,
+    "structures_disponibles": {
+      "CCAS": {
+        "present": true,
+        "nom": "Centre Communal d'Action Sociale Saint Mandrier (CCAS)",
+        "adresse": "Place des Résistants 83430 Saint Mandrier Sur Mer",
+        "telephone": "04 94 11 24 56"
+      },
+      "UTS": {
+        "present": true,
+        "nom": "UTS La Seyne / Saint-Mandrier - CENTRE HERMES",
+        "adresse": "rue Charles Gide 83500 La Seyne sur mer",
+        "telephone": "04 83 95 48 30 ou 04 83 95 37 99"
+      },
+      "CLIC": {
+        "present": false
+      },
+      "CRT": {
+        "present": true,
+        "nom": "CRT Mar Vivo",
+        "adresse": "104, chemin de Mar Vivo aux deux Chênes 83500 LA SEYNE SUR MER",
+        "telephone": "06 84 99 32 49",
+        "email": "accueil.marvivo@lna-sante.com"
+      },
+      "CPTS": {
+        "present": true,
+        "nom": "CPTS LSTO",
+        "adresse": "198 rue de Lisbonne 83500 La Seyne-sur-Mer",
+        "telephone": "06 81 10 57 70"
+      },
+      "DAC": {
+        "present": true,
+        "nom": "DAC Var Ouest",
+        "telephone": "04 94 35 32 01",
+        "email": "contact@dac-varouest.fr"
+      },
+      "CEV": {
+        "present": true,
+        "nom": "Cellule Ecoute et Vigilance du Var",
+        "telephone": "04 83 95 16 01",
+        "email": "gro-cev@var.fr"
+      }
+    }
+  }
+}

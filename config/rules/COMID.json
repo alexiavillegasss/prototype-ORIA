@@ -358,7 +358,7 @@
     "regles_niveau_complexite": [
       {
         "id": "niveau_non_complexe",
-        "condition": "score_total >= 1 && score_total <= 5",
+        "condition": "score_total >= 0 && score_total <= 5",
         "niveau": "non_complexe",
         "label": "Situation non complexe"
       },
@@ -370,7 +370,7 @@
       },
       {
         "id": "niveau_complexe",
-        "condition": "score_total > 10",
+        "condition": "score_total >= 10",
         "niveau": "complexe",
         "label": "Situation complexe"
       }
