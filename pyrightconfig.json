@@ -1,0 +1,17 @@
+{
+    "include": [
+        "backend/src",
+        "test_mme_michu.py"
+    ],
+    "venvPath": ".",
+    "venv": "venv",
+    "extraPaths": [
+        "backend/src"
+    ],
+    "executionEnvironments": [
+        {
+            "root": "backend/src"
+        }
+    ],
+    "typeCheckingMode": "off"
+}
