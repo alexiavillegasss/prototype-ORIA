@@ -1294,25 +1294,25 @@
     ],
     "description": "Statut de génération du document final."
   },
-  "evaluation.comid.plusieurs_maladies_chroniques_ou_symptomes_inexpliques": {
+  "evaluation.comid.multimorbidite": {
     "type": "boolean",
     "required": false,
     "source": "analyse",
     "description": "Plusieurs maladies chroniques (>2) et/ou symptômes inexpliqués"
   },
-  "evaluation.comid.douleurs_chroniques": {
+  "evaluation.comid.douleurs": {
     "type": "boolean",
     "required": false,
     "source": "analyse",
     "description": "Douleurs persistantes ou récurrentes impactant le quotidien."
   },
-  "evaluation.comid.allergie_ou_intolerance_medicamenteuse": {
+  "evaluation.comid.allergies": {
     "type": "boolean",
     "required": false,
     "source": "analyse",
     "description": "Présence d’une allergie ou intolérance médicamenteuse connue."
   },
-  "evaluation.comid.polymedication_superieure_a_5": {
+  "evaluation.comid.polymedication": {
     "type": "boolean",
     "required": false,
     "source": "analyse",
@@ -1324,19 +1324,19 @@
     "source": "analyse",
     "description": "Présence de troubles cognitifs impactant les AVQ/AIVQ."
   },
-  "evaluation.comid.difficultes_financieres_ou_incapacite_a_supporter_les_couts": {
+  "evaluation.comid.precarite_financiere": {
     "type": "boolean",
     "required": false,
     "source": "analyse",
     "description": "Difficultés financières ou incapacité à gérer/assumer les coûts liés à la prise en charge."
   },
-  "evaluation.comid.absence_ou_epuisement_du_proche_aidant_ou_tensions_familiales": {
+  "evaluation.comid.epuisement_aidant": {
     "type": "boolean",
     "required": false,
     "source": "analyse",
     "description": "Absence, épuisement ou tensions importantes dans l’entourage aidant."
   },
-  "evaluation.comid.faible_niveau_de_litteratie": {
+  "evaluation.comid.litteratie_faible": {
     "type": "boolean",
     "required": false,
     "source": "analyse",
@@ -1348,19 +1348,19 @@
     "source": "analyse",
     "description": "Absence involontaire ou faiblesse marquée des liens sociaux."
   },
-  "evaluation.comid.logement_inadapte_ou_barriere_environnementale": {
+  "evaluation.comid.logement_inadapte": {
     "type": "boolean",
     "required": false,
     "source": "analyse",
     "description": "Présence d’obstacles ou de dangers dans le logement ou son environnement immédiat."
   },
-  "evaluation.comid.depression_ou_idees_suicidaires": {
+  "evaluation.comid.depression": {
     "type": "boolean",
     "required": false,
     "source": "analyse",
     "description": "Présence de dépression objectivable ou d’idées suicidaires."
   },
-  "evaluation.comid.maladie_psychiatrique_ou_troubles_psychiques": {
+  "evaluation.comid.psychiatrie": {
     "type": "boolean",
     "required": false,
     "source": "analyse",
@@ -1372,91 +1372,91 @@
     "source": "analyse",
     "description": "Rapport pathologique à une substance ou un comportement."
   },
-  "evaluation.comid.anxiete_ou_angoisse_rendant_le_tableau_clinique_confus": {
+  "evaluation.comid.anxiete": {
     "type": "boolean",
     "required": false,
     "source": "analyse",
     "description": "Anxiété ou angoisse compliquant la lecture clinique de la situation."
   },
-  "evaluation.comid.fonctions_mentales_variant_au_cours_de_la_journee": {
+  "evaluation.comid.fluctuation_mentale": {
     "type": "boolean",
     "required": false,
     "source": "analyse",
     "description": "Variabilité marquée du comportement, de l’humeur ou des fonctions mentales."
   },
-  "evaluation.comid.sollicitations_recurrentes_du_reseau_primaire_ou_secondaire": {
+  "evaluation.comid.sollicitations_recurrentes": {
     "type": "boolean",
     "required": false,
     "source": "analyse",
     "description": "Demandes répétées et fréquentes de soutien, présence, information ou réassurance."
   },
-  "evaluation.comid.communication_ambivalente_ou_conflictuelle_avec_un_membre_du_reseau": {
+  "evaluation.comid.conflit_reseau": {
     "type": "boolean",
     "required": false,
     "source": "analyse",
     "description": "Communication contradictoire, instable ou conflictuelle avec un membre du réseau."
   },
-  "evaluation.comid.inquietude_face_aux_symptomes_etat_de_sante_ou_informations_medicales": {
+  "evaluation.comid.inquietude_sante": {
     "type": "boolean",
     "required": false,
     "source": "analyse",
     "description": "Préoccupation marquée concernant l’état de santé ou les informations médicales."
   },
-  "evaluation.comid.agressivite_ou_mutisme": {
+  "evaluation.comid.agressivite": {
     "type": "boolean",
     "required": false,
     "source": "analyse",
     "description": "Présence d’agressivité, de comportements menaçants ou de mutisme."
   },
-  "evaluation.comid.resistance_ou_opposition_aux_soins": {
+  "evaluation.comid.opposition_soins": {
     "type": "boolean",
     "required": false,
     "source": "analyse",
     "description": "Refus, négociations répétées ou évitement des soins."
   },
-  "evaluation.comid.degradation_recente_de_l_etat_de_sante_ressentie_par_le_client": {
+  "evaluation.comid.degradation_recente": {
     "type": "boolean",
     "required": false,
     "source": "analyse",
     "description": "Perception d’une aggravation de l’état de santé au cours du dernier mois."
   },
-  "evaluation.comid.changement_global_du_degre_d_independance_dans_le_dernier_mois": {
+  "evaluation.comid.perte_autonomie_recente": {
     "type": "boolean",
     "required": false,
     "source": "analyse",
     "description": "Modification du degré d’indépendance dans les AVQ/AIVQ."
   },
-  "evaluation.comid.periode_de_transition": {
+  "evaluation.comid.transition_parcours": {
     "type": "boolean",
     "required": false,
     "source": "analyse",
     "description": "Présence d’un changement majeur de vie ou de parcours affectant les besoins."
   },
-  "evaluation.comid.changement_aigu_des_capacites_cognitives": {
+  "evaluation.comid.trouble_cognitif_aigu": {
     "type": "boolean",
     "required": false,
     "source": "analyse",
     "description": "Changement rapide du comportement ou des capacités cognitives habituelles."
   },
-  "evaluation.comid.non_previsibilite_de_l_etat_de_sante": {
+  "evaluation.comid.imprevisibilite": {
     "type": "boolean",
     "required": false,
     "source": "analyse",
     "description": "Évolution de l’état de santé ou des comportements difficilement prévisible."
   },
-  "evaluation.comid.multitude_d_intervenants_dans_le_reseau_secondaire": {
+  "evaluation.comid.multitude_intervenants": {
     "type": "boolean",
     "required": false,
     "source": "analyse",
     "description": "Présence d’au moins 3 professionnels intervenant régulièrement dans la situation."
   },
-  "evaluation.comid.absence_ou_faible_degre_de_partenariat_entre_les_intervenants": {
+  "evaluation.comid.manque_partenariat": {
     "type": "boolean",
     "required": false,
     "source": "analyse",
     "description": "Communication ou partenariat faible entre les intervenants."
   },
-  "evaluation.comid.incoherence_therapeutique_ou_perte_de_sens_dans_la_prise_en_charge": {
+  "evaluation.comid.incoherence_soins": {
     "type": "boolean",
     "required": false,
     "source": "analyse",
@@ -1468,7 +1468,7 @@
     "source": "analyse",
     "description": "Problème d’assurance impactant la prise en charge."
   },
-  "evaluation.comid.lourdeur_emotionnelle_ou_physique_de_la_prise_en_charge_ressentie_par_le_reseau_secondaire": {
+  "evaluation.comid.lourdeur_reseau": {
     "type": "boolean",
     "required": false,
     "source": "analyse",

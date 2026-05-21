@@ -9,8 +9,10 @@ class OrientationEngine:
         """
         Évalue l'éligibilité du patient pour chaque structure définie dans les règles.
         """
+        if comid_results is None:
+            comid_results = {}
+
         # On prépare un dictionnaire de données complet pour l'évaluation
-        # On fusionne les données d'extraction et les résultats de complexité
         eval_context = {**extracted_data}
         eval_context["complexite.niveau"] = comid_results.get("niveau")
         eval_context["complexite.score_total"] = comid_results.get("score_total")
@@ -26,16 +28,86 @@ class OrientationEngine:
             if is_eligible:
                 eligible_structures.append({
                     "structure_type": rule["structure_type"],
-                    "label": rule["label"],
-                    "priorite": rule["result"]["base_priority_score"],
-                    "pertinence": rule["result"]["base_pertinence"],
-                    "objectif": rule["result"]["objectif_orientation"]
+                    "label": rule.get("label", rule["structure_type"]),
+                    "priorite": rule.get("result", {}).get("base_priority_score", 0),
+                    "pertinence": rule.get("result", {}).get("base_pertinence", "moyenne"),
+                    "objectif": rule.get("result", {}).get("objectif_orientation", "N/A")
+                })
+
+        # Dédoublonner et regrouper par structure_type pour éviter les doublons à l'affichage
+        grouped_structures = {}
+        for struct in eligible_structures:
+            stype = struct["structure_type"]
+            if stype not in grouped_structures:
+                grouped_structures[stype] = {
+                    "structure_type": stype,
+                    "winning_label": struct["label"],
+                    "priorite": struct["priorite"],
+                    "pertinence": struct["pertinence"],
+                    "matches": [(struct["label"], struct["objectif"])]
+                }
+            else:
+                # On garde la priorité maximale
+                if struct["priorite"] > grouped_structures[stype]["priorite"]:
+                    grouped_structures[stype]["priorite"] = struct["priorite"]
+                    grouped_structures[stype]["winning_label"] = struct["label"]
+                # On combine les pertinences
+                if struct["pertinence"] == "eleve":
+                    grouped_structures[stype]["pertinence"] = "eleve"
+                # On évite d'ajouter des doublons exacts d'explications
+                match_entry = (struct["label"], struct["objectif"])
+                if match_entry not in grouped_structures[stype]["matches"]:
+                    grouped_structures[stype]["matches"].append(match_entry)
+
+        # On reconstruit la liste finale avec les explications combinées
+        final_structures = []
+        for stype, data in grouped_structures.items():
+            if len(data["matches"]) == 1:
+                final_structures.append({
+                    "structure_type": stype,
+                    "label": data["winning_label"],
+                    "priorite": data["priorite"],
+                    "pertinence": data["pertinence"],
+                    "objectif": data["matches"][0][1]
+                })
+            else:
+                # On définit un label propre de niveau structure pour le regroupement
+                base_label = data["winning_label"]
+                if " - " in base_label:
+                    parts = base_label.split(" - ")
+                    prefix = parts[0].strip()
+                    if prefix == "DAC":
+                        base_label = "DAC - Dispositif d'Appui à la Coordination"
+                    elif prefix == "CRT":
+                        base_label = "CRT - Centre de Ressources Territorial (Accompagnement Renforcé)"
+                    elif prefix == "CLIC":
+                        base_label = "CLIC - Centre Local d'Information et de Coordination"
+                
+                # Regroupement des explications sous forme de liste à puces propre
+                combined_objectifs = "Motifs d'orientation combinés :"
+                for label, obj in data["matches"]:
+                    clean_label = label
+                    if " - " in clean_label:
+                        clean_label = clean_label.split(" - ", 1)[1].strip()
+                    combined_objectifs += f"\n  • [{clean_label}] : {obj}"
+
+                final_structures.append({
+                    "structure_type": stype,
+                    "label": base_label,
+                    "priorite": data["priorite"],
+                    "pertinence": data["pertinence"],
+                    "objectif": combined_objectifs
                 })
 
         # On trie par score de priorité (le plus élevé en premier)
-        eligible_structures.sort(key=lambda x: x["priorite"], reverse=True)
+        final_structures.sort(key=lambda x: x["priorite"], reverse=True)
 
-        return eligible_structures
+        # Si les règles globales imposent une seule structure ou si on veut la meilleure
+        allow_multiple = self.rules.get("global_rules", {}).get("allow_multiple_eligible_structures", True)
+        if not allow_multiple and final_structures:
+            return [final_structures[0]]
+
+        return final_structures
 
     def _check_eligibility(self, rule: dict, data: dict):
         # 1. Vérification ALL_OF (toutes les conditions doivent être vraies)
@@ -69,24 +141,26 @@ class OrientationEngine:
         # On récupère la valeur actuelle dans les données
         actual_value = data.get(field)
 
-        if actual_value is None:
+        if actual_value is None or target_value is None:
             return False
 
         if operator == "==":
-            return actual_value == target_value
+            return str(actual_value) == str(target_value)
         elif operator == ">=":
             try:
                 return float(actual_value) >= float(target_value)
             except:
                 return False
         elif operator == "in":
-            return actual_value in target_value
+            if isinstance(target_value, list):
+                # On compare en string pour éviter les problèmes int/str
+                return str(actual_value) in [str(v) for v in target_value]
+            return str(actual_value) in str(target_value)
         elif operator == "contains_any":
-            # Si target_value est une liste, on vérifie si l'un d'eux est dans actual_value
             if isinstance(target_value, list):
                 if isinstance(actual_value, list):
-                    return any(item in actual_value for item in target_value)
-                return any(item in str(actual_value) for item in target_value)
-            return target_value in str(actual_value)
+                    return any(str(item) in [str(v) for v in actual_value] for item in target_value)
+                return any(str(item) in str(actual_value) for item in target_value)
+            return str(target_value) in str(actual_value)
         
         return False

@@ -12,10 +12,13 @@ class OllamaClient:
             "model": self.model,
             "prompt": prompt,
             "stream": False,
-            "format": "json"
+            "format": "json",
+            "options": {
+                "temperature": 0.0
+            }
         }
         
-        async with httpx.AsyncClient(timeout=180.0) as client:
+        async with httpx.AsyncClient(timeout=None) as client:
             response = await client.post(url, json=payload)
             response.raise_for_status()
             result = response.json()

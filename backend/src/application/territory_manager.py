@@ -7,13 +7,12 @@ class TerritoryManager:
 
     def get_contacts_for_structures(self, eligible_structures: list, city: str | None):
         """
-        Pour chaque structure éligible, récupère les coordonnées locales
-        en fonction de la ville du patient.
+        Pour chaque structure éligible, récupère les coordonnées locales.
+        Gère les relais territoriaux (ex: CLIC absent -> UTS).
         """
         if not city:
-            return eligible_structures # On renvoie tel quel si pas de ville
+            return eligible_structures
 
-        # Recherche de la zone géographique
         area_data = self._find_area(city)
         if not area_data:
             return eligible_structures
@@ -22,23 +21,27 @@ class TerritoryManager:
 
         results = []
         for struct in eligible_structures:
-            struct_type = struct["structure_type"]
+            # On travaille sur une copie pour ne pas polluer les autres tests
+            struct_copy = struct.copy()
+            struct_type = struct_copy["structure_type"]
             
-            # Cas particulier pour les CLIC qui peuvent avoir des noms variés dans les règles
-            search_key = struct_type
-            if "CLIC" in struct_type:
-                search_key = "CLIC"
-
-            local_info = available_local_structures.get(search_key)
+            local_info = available_local_structures.get(struct_type)
+            
+            # LOGIQUE DE RELAIS : Si CLIC absent -> Redirection directe vers UTS
+            if struct_type == "CLIC" and (not local_info or not local_info.get("present")):
+                uts_info = available_local_structures.get("UTS")
+                if uts_info and uts_info.get("present"):
+                    struct_copy["label"] = f"{uts_info.get('nom', 'UTS')} (Relais CLIC)"
+                    struct_copy["objectif"] = f"La commune ne dispose pas de CLIC, se rapprocher de l'UTS. {struct_copy.get('objectif', '')}"
+                    local_info = uts_info
             
             if local_info and local_info.get("present"):
-                # On enrichit l'objet avec les infos locales
-                struct["nom_local"] = local_info.get("nom")
-                struct["telephone"] = local_info.get("telephone")
-                struct["email"] = local_info.get("email")
-                struct["adresse"] = local_info.get("adresse")
+                struct_copy["nom_local"] = local_info.get("nom")
+                struct_copy["telephone"] = local_info.get("telephone")
+                struct_copy["email"] = local_info.get("email")
+                struct_copy["adresse"] = local_info.get("adresse")
                 
-            results.append(struct)
+            results.append(struct_copy)
 
         return results
 

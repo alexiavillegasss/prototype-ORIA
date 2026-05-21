@@ -13,7 +13,7 @@
         {
             "id": "eligibility_crt_01",
             "structure_type": "CRT",
-            "label": "CRT - Centre de Ressources Territorial (Volet 1 et 2)",
+            "label": "CRT - Centre de Ressources Territorial (Volet 2 - Accompagnement Renforcé)",
             "enabled": true,
             "all_of": [
                 {
@@ -34,27 +34,28 @@
                     "value": "complexe"
                 },
                 {
+                    "field": "evaluation.comid.epuisement_aidant",
+                    "operator": "==",
+                    "value": true
+                },
+                {
                     "field": "demande.motif_principal",
                     "operator": "contains_any",
-                    "value": ["maintien_a_domicile", "renforcement_domicile", "refus_aide"]
-                },
-                {
-                    "field": "vulnerabilites.sante.suivi_medical.medecin_traitant",
-                    "operator": "==",
-                    "value": "present"
-                },
-                {
-                    "field": "usager.situation_actuelle.APA",
-                    "operator": "==",
-                    "value": "oui"
+                    "value": ["renforcement_domicile", "alternative_ehpad", "maintien_intensif", "maintien_a_domicile"]
                 }
             ],
-            "none_of": [],
+            "none_of": [
+                {
+                    "field": "demande.motif_principal",
+                    "operator": "in",
+                    "value": ["information_aides"]
+                }
+            ],
             "result": {
                 "eligible": true,
                 "base_pertinence": "eleve",
-                "base_priority_score": 90,
-                "objectif_orientation": "maintien_a_domicile_renforce_intensif"
+                "base_priority_score": 85,
+                "objectif_orientation": "Maintien à domicile renforcé : Alternative à l'EHPAD pour les situations en perte d'autonomie importante ou complexité technique."
             }
         },
         {
@@ -128,11 +129,6 @@
                     "field": "usager.situation_actuelle.APA",
                     "operator": "==",
                     "value": "non"
-                },
-                {
-                    "field": "demande.motif_principal",
-                    "operator": "contains_any",
-                    "value": ["maintien_a_domicile", "renforcement_domicile", "aide_a_domicile", "information_aides", "choix_prestataire", "portage_repas"]
                 }
             ],
             "any_of": [
@@ -145,6 +141,16 @@
                     "field": "usager.situation_actuelle.PCH",
                     "operator": "==",
                     "value": "oui"
+                },
+                {
+                    "field": "evaluation.comid.epuisement_aidant",
+                    "operator": "==",
+                    "value": true
+                },
+                {
+                    "field": "demande.motif_principal",
+                    "operator": "contains_any",
+                    "value": ["maintien_a_domicile", "renforcement_domicile", "aide_a_domicile", "information_aides", "choix_prestataire", "portage_repas"]
                 }
             ],
             "none_of": [
@@ -157,7 +163,7 @@
             "result": {
                 "eligible": true,
                 "base_pertinence": "eleve",
-                "base_priority_score": 80,
+                "base_priority_score": 90,
                 "objectif_orientation": "Maintien à domicile : Information, évaluation, ouverture des droits (APA, CARSAT) et aide administrative (impôts, retraite). UNIQUEMENT si l'APA n'est pas déjà en place."
             }
         },
@@ -166,14 +172,13 @@
             "structure_type": "UTS",
             "label": "UTS / ASPI - Unité Territoriale Sociale (Action Sociale Prévention Insertion)",
             "enabled": true,
-            "all_of": [
-                {
-                    "field": "usager.situation_actuelle.APA",
-                    "operator": "==",
-                    "value": "non"
-                }
-            ],
+            "all_of": [],
             "any_of": [
+                {
+                    "field": "evaluation.comid.precarite_financiere",
+                    "operator": "==",
+                    "value": true
+                },
                 {
                     "field": "vulnerabilites.social.precarite",
                     "operator": "in",
@@ -185,9 +190,9 @@
                     "value": ["rsa", "violence_conjugale", "gestion_budget", "parentalite", "pas_premier_accueil", "logement"]
                 },
                 {
-                    "field": "usager.situation_actuelle.suspicion_malveillance",
+                    "field": "complexite.niveau",
                     "operator": "==",
-                    "value": "violences_conjugales"
+                    "value": "complexe"
                 }
             ],
             "none_of": [],
@@ -203,13 +208,7 @@
             "structure_type": "CCAS",
             "label": "CCAS - Centre Communal d'Action Sociale",
             "enabled": true,
-            "all_of": [
-                {
-                    "field": "usager.situation_actuelle.APA",
-                    "operator": "==",
-                    "value": "non"
-                }
-            ],
+            "all_of": [],
             "any_of": [
                 {
                     "field": "demande.motif_principal",
@@ -230,14 +229,18 @@
             "structure_type": "DAC",
             "label": "DAC - Dispositif d'Appui à la Coordination (Dernier Recours)",
             "enabled": true,
-            "all_of": [
+            "all_of": [],
+            "any_of": [
                 {
                     "field": "complexite.niveau",
                     "operator": "==",
                     "value": "complexe"
-                }
-            ],
-            "any_of": [
+                },
+                {
+                    "field": "demande.motif_principal",
+                    "operator": "contains_any",
+                    "value": ["refus_de_soins", "refus_aide_domicile", "coordination_complexe", "rupture_de_parcours", "conflit_professionnel"]
+                },
                 {
                     "field": "vulnerabilites.social.isolement_relationnel",
                     "operator": "==",
@@ -249,11 +252,6 @@
                     "value": ["recente", "en_cours"]
                 },
                 {
-                    "field": "demande.motif_principal",
-                    "operator": "contains_any",
-                    "value": ["refus_de_soins", "refus_aide_domicile", "coordination_complexe", "rupture_de_parcours", "conflit_professionnel"]
-                },
-                {
                     "field": "vulnerabilites.social.risque_epuisement_entourage",
                     "operator": "in",
                     "value": ["probable", "eleve"]
@@ -263,8 +261,60 @@
             "result": {
                 "eligible": true,
                 "base_pertinence": "eleve",
-                "base_priority_score": 85,
+                "base_priority_score": 80,
                 "objectif_orientation": "Coordination de haut niveau : Évaluation multidimensionnelle et déblocage de situations complexes (sanitaire, social, médico-social). Plan Personnalisé de Coordination."
+            }
+        },
+        {
+            "id": "eligibility_dac_02",
+            "structure_type": "DAC",
+            "label": "DAC - Dépendance lourde sans aidant de proximité",
+            "enabled": true,
+            "all_of": [
+                {
+                    "field": "usager.situation_actuelle.GIR",
+                    "operator": "in",
+                    "value": [1, 2, 3]
+                },
+                {
+                    "field": "usager.cadre_de_vie.aidant_regulier",
+                    "operator": "==",
+                    "value": "non"
+                }
+            ],
+            "any_of": [],
+            "none_of": [],
+            "result": {
+                "eligible": true,
+                "base_pertinence": "eleve",
+                "base_priority_score": 85,
+                "objectif_orientation": "Situation de forte perte d'autonomie (GIR 1-3) sans aidant de proximité identifié. Risque majeur de rupture de maintien à domicile."
+            }
+        },
+        {
+            "id": "eligibility_dac_03",
+            "structure_type": "DAC",
+            "label": "DAC - Échec ou saturation des aides professionnelles",
+            "enabled": true,
+            "all_of": [
+                {
+                    "field": "vulnerabilites.sante.professionnels_domicile",
+                    "operator": "==",
+                    "value": "oui"
+                },
+                {
+                    "field": "complexite.niveau",
+                    "operator": "==",
+                    "value": "complexe"
+                }
+            ],
+            "any_of": [],
+            "none_of": [],
+            "result": {
+                "eligible": true,
+                "base_pertinence": "eleve",
+                "base_priority_score": 85,
+                "objectif_orientation": "Professionnels (SAAD, IDEL) déjà présents au domicile mais en situation de saturation ou d'échec face à une complexité systémique."
             }
         },
         {
