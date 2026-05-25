@@ -3,6 +3,9 @@ import os
 from infrastructure.llm_client import OllamaClient
 
 class SignalExtractor:
+    last_extracted_data = None
+    last_text = None
+
     def __init__(self, schema_path: str, comid_path: str, model="llama3.2", base_url="http://localhost:11434"):
         self.client = OllamaClient(model=model, base_url=base_url)
         self.schema_path = schema_path
@@ -27,43 +30,47 @@ Analyse la situation suivante pour structurer un dossier d'orientation.
 
 SITUATION : "{text}"
 
+### INSTRUCTIONS DE RIGUEUR CLINIQUE :
+1. Extrais UNIQUEMENT les données présentes ou directement déductibles du texte de la SITUATION ci-dessus.
+2. Si une variable administrative n'est PAS du tout évoquée dans le texte, réponds "inconnu" (pour les textes) ou null (pour les nombres). 
+3. IMPORTANT : Ne copie PAS les valeurs de l'exemple fictif ci-dessous (Marseille, Albert, 75, etc.). Remplace-les obligatoirement par les données réelles de la SITUATION (ex: Antoinette, 92, La Garde, APA oui, GIR 2).
+
 ### ÉTAPE 1 : EXTRACTION DES DONNÉES DE BASE
-- Âge de la personne (ex: 82)
-- Ville de résidence (ex: Toulon)
+- Âge de la personne (chiffre entier, ou null si non mentionné)
+- Ville de résidence (ex: "La Garde", ou null si non mentionné)
 - "apa": Statut de l'APA (choisir parmi: "oui", "non", "en_cours", "inconnu")
 - "pch": Statut de la PCH (choisir parmi: "oui", "non", "en_cours", "inconnu")
 - "medecin_traitant": Statut du médecin traitant (choisir parmi: "identifie", "absent", "incertain")
-- "malveillance": Suspicion de malveillance (IMPORTANT: choisir "spoliation_financiere" si argent extorqué ou demandé avec insistance, "violences_physiques" si coups/marques, "negligence" si manque de nourriture/hygiène, "aucune" sinon)
+- "malveillance": Suspicion de malveillance (choisir "spoliation_financiere" si argent extorqué, "violences_physiques" si coups, "negligence", ou "aucune" sinon)
 - "urgence": Urgence perçue (choisir parmi: "faible", "modere", "eleve", "critique")
-- "hospitalisation": Statut hospitalisation (IMPORTANT: choisir "en_cours" si la personne est à l'hôpital, "recente" si elle vient de sortir, sinon "aucun")
+- "hospitalisation": Statut hospitalisation (choisir parmi: "en_cours", "recente", "aucun")
 - "motif": Motif principal de la demande (choisir parmi: "recherche_medecin", "maintien_a_domicile", "sortie_hospitalisation", "aide_alimentaire", "secours_urgence", "information_aides", "maltraitance")
-- "gir": GIR estimé de la personne si mentionné (choisir parmi: 1, 2, 3, 4, 5, 6, ou null si non précisé)
-- "professionnels_domicile": Présence de professionnels au domicile comme infirmiers ou aides à domicile (choisir parmi: "oui", "non", "inconnu")
+- "gir": GIR officiel ou estimé si mentionné (choisir parmi: 1, 2, 3, 4, 5, 6, ou null si non précisé)
+- "professionnels_domicile": Présence de professionnels au domicile (choisir parmi: "oui", "non", "inconnu")
 - "aidant_regulier": Présence d'un proche aidant régulier (choisir parmi: "oui", "non", "inconnu")
 
         
 ### ÉTAPE 2 : ÉVALUATION DES CRITÈRES COMID (OUI/NON)
-Utilise ce référentiel :
+Utilise ce référentiel pour évaluer les 30 critères COMID sous forme de booléens (true / false) :
 {comid_reference}
 
-### ÉTAPE 3 : FORMAT JSON (STRICT)
-IMPORTANT : Pour la clé "raisonnement_expert", écris un résumé extrêmement court de maximum 10-15 mots.
+### ÉTAPE 3 : FORMAT JSON DE SORTIE (STRICT)
+Voici le format de réponse attendu. Les valeurs fournies ici sont celles d'un EXEMPLE FICTIF (M. Albert, 75 ans, Marseille, qui n'a pas d'aidant). Tu dois l'adapter avec les données de ta SITUATION :
 {{
-  "age": 82,
-  "ville": "Toulon",
+  "age": 75,
+  "ville": "Marseille",
   "apa": "non",
-  "gir": 4,
-  "professionnels_domicile": "oui",
+  "gir": 5,
+  "professionnels_domicile": "inconnu",
   "aidant_regulier": "non",
-  "medecin_traitant": "absent",
+  "medecin_traitant": "identifie",
   "malveillance": "aucune",
-  "urgence": "modere",
-  "motif": "recherche_medecin",
+  "urgence": "faible",
+  "motif": "maintien_a_domicile",
   "comid": {{
-    "multimorbidite": true,
-    ...
+    "multimorbidite": false
   }},
-  "raisonnement_expert": "Résumé de 10 mots maximum."
+  "raisonnement_expert": "Résumé court"
 }}
 
 REPONDS UNIQUEMENT PAR LE JSON :
@@ -79,7 +86,10 @@ REPONDS UNIQUEMENT PAR LE JSON :
         print(f"Hospitalisation : {raw_result.get('hospitalisation')}")
         print("--- FIN DEBUG ---\n")
         
-        return self._map_to_schema(raw_result)
+        result = self._map_to_schema(raw_result)
+        SignalExtractor.last_extracted_data = result
+        SignalExtractor.last_text = text
+        return result
 
     def _map_to_schema(self, raw_data: dict):
         mapped = {
