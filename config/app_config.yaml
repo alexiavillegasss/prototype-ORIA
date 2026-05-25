@@ -1,0 +1,16 @@
+# Configuration technique globale du backend ORIA
+# Ce fichier sert à stocker les paramètres système (pour éviter de les coder en dur dans les fichiers Python).
+
+ai:
+  provider: "ollama"           # Peut être changé en "openai" (GPT-4) plus tard
+  model_name: "llama3"         # Le modèle utilisé par défaut
+  base_url: "http://localhost:11434" # L'adresse locale de votre IA
+  temperature: 0.1             # Température très basse (0.1) pour forcer l'IA à être précise et éviter les hallucinations
+
+api:
+  host: "127.0.0.1"
+  port: 8000
+  debug_mode: true
+
+logging:
+  level: "INFO"                # Peut être passé en "DEBUG" pour voir toutes les étapes internes

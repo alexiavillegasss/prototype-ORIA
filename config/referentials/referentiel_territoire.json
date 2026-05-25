@@ -45,6 +45,28 @@
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
         "email": "gro-cev@var.fr"
+      },
+      "PSCG_SS_APA": {
+        "present": true,
+        "nom": "PSCG SS APA - Secrétariat Toulon",
+        "telephone": "04 83 95 79 51"
+      },
+      "SERVICE_SOCIAL_HOPITAL": {
+        "present": true,
+        "hopitaux": {
+          "Sainte_Musse": {
+            "nom": "Service social de l'hôpital Sainte Musse",
+            "telephone": "04 94 14 54 93"
+          },
+          "La_Seyne": {
+            "nom": "Service social de l'hôpital La Seyne",
+            "telephone": "04 94 11 31 10"
+          },
+          "Saint_Anne": {
+            "nom": "Service social de l'hôpital Saint Anne",
+            "telephone": "04 83 16 22 82"
+          }
+        }
       }
     }
   },
@@ -95,6 +117,28 @@
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
         "email": "gro-cev@var.fr"
+      },
+      "PSCG_SS_APA": {
+        "present": true,
+        "nom": "PSCG SS APA - Secrétariat Toulon",
+        "telephone": "04 83 95 79 51"
+      },
+      "SERVICE_SOCIAL_HOPITAL": {
+        "present": true,
+        "hopitaux": {
+          "Sainte_Musse": {
+            "nom": "Service social de l'hôpital Sainte Musse",
+            "telephone": "04 94 14 54 93"
+          },
+          "La_Seyne": {
+            "nom": "Service social de l'hôpital La Seyne",
+            "telephone": "04 94 11 31 10"
+          },
+          "Saint_Anne": {
+            "nom": "Service social de l'hôpital Saint Anne",
+            "telephone": "04 83 16 22 82"
+          }
+        }
       }
     }
   },
@@ -141,6 +185,28 @@
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
         "email": "gro-cev@var.fr"
+      },
+      "PSCG_SS_APA": {
+        "present": true,
+        "nom": "PSCG SS APA - Secrétariat Toulon",
+        "telephone": "04 83 95 79 51"
+      },
+      "SERVICE_SOCIAL_HOPITAL": {
+        "present": true,
+        "hopitaux": {
+          "Sainte_Musse": {
+            "nom": "Service social de l'hôpital Sainte Musse",
+            "telephone": "04 94 14 54 93"
+          },
+          "La_Seyne": {
+            "nom": "Service social de l'hôpital La Seyne",
+            "telephone": "04 94 11 31 10"
+          },
+          "Saint_Anne": {
+            "nom": "Service social de l'hôpital Saint Anne",
+            "telephone": "04 83 16 22 82"
+          }
+        }
       }
     }
   },
@@ -191,6 +257,28 @@
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
         "email": "gro-cev@var.fr"
+      },
+      "PSCG_SS_APA": {
+        "present": true,
+        "nom": "PSCG SS APA - Secrétariat Toulon",
+        "telephone": "04 83 95 79 51"
+      },
+      "SERVICE_SOCIAL_HOPITAL": {
+        "present": true,
+        "hopitaux": {
+          "Sainte_Musse": {
+            "nom": "Service social de l'hôpital Sainte Musse",
+            "telephone": "04 94 14 54 93"
+          },
+          "La_Seyne": {
+            "nom": "Service social de l'hôpital La Seyne",
+            "telephone": "04 94 11 31 10"
+          },
+          "Saint_Anne": {
+            "nom": "Service social de l'hôpital Saint Anne",
+            "telephone": "04 83 16 22 82"
+          }
+        }
       }
     }
   },
@@ -237,6 +325,28 @@
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
         "email": "gro-cev@var.fr"
+      },
+      "PSCG_SS_APA": {
+        "present": true,
+        "nom": "PSCG SS APA - Secrétariat Toulon",
+        "telephone": "04 83 95 79 51"
+      },
+      "SERVICE_SOCIAL_HOPITAL": {
+        "present": true,
+        "hopitaux": {
+          "Sainte_Musse": {
+            "nom": "Service social de l'hôpital Sainte Musse",
+            "telephone": "04 94 14 54 93"
+          },
+          "La_Seyne": {
+            "nom": "Service social de l'hôpital La Seyne",
+            "telephone": "04 94 11 31 10"
+          },
+          "Saint_Anne": {
+            "nom": "Service social de l'hôpital Saint Anne",
+            "telephone": "04 83 16 22 82"
+          }
+        }
       }
     }
   },
@@ -283,6 +393,28 @@
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
         "email": "gro-cev@var.fr"
+      },
+      "PSCG_SS_APA": {
+        "present": true,
+        "nom": "PSCG SS APA - Secrétariat Toulon",
+        "telephone": "04 83 95 79 51"
+      },
+      "SERVICE_SOCIAL_HOPITAL": {
+        "present": true,
+        "hopitaux": {
+          "Sainte_Musse": {
+            "nom": "Service social de l'hôpital Sainte Musse",
+            "telephone": "04 94 14 54 93"
+          },
+          "La_Seyne": {
+            "nom": "Service social de l'hôpital La Seyne",
+            "telephone": "04 94 11 31 10"
+          },
+          "Saint_Anne": {
+            "nom": "Service social de l'hôpital Saint Anne",
+            "telephone": "04 83 16 22 82"
+          }
+        }
       }
     }
   },
@@ -327,6 +459,28 @@
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
         "email": "gro-cev@var.fr"
+      },
+      "PSCG_SS_APA": {
+        "present": true,
+        "nom": "PSCG SS APA - Secrétariat Toulon",
+        "telephone": "04 83 95 79 51"
+      },
+      "SERVICE_SOCIAL_HOPITAL": {
+        "present": true,
+        "hopitaux": {
+          "Sainte_Musse": {
+            "nom": "Service social de l'hôpital Sainte Musse",
+            "telephone": "04 94 14 54 93"
+          },
+          "La_Seyne": {
+            "nom": "Service social de l'hôpital La Seyne",
+            "telephone": "04 94 11 31 10"
+          },
+          "Saint_Anne": {
+            "nom": "Service social de l'hôpital Saint Anne",
+            "telephone": "04 83 16 22 82"
+          }
+        }
       }
     }
   },
@@ -370,6 +524,28 @@
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
         "email": "gro-cev@var.fr"
+      },
+      "PSCG_SS_APA": {
+        "present": true,
+        "nom": "PSCG SS APA - Secrétariat Toulon",
+        "telephone": "04 83 95 79 51"
+      },
+      "SERVICE_SOCIAL_HOPITAL": {
+        "present": true,
+        "hopitaux": {
+          "Sainte_Musse": {
+            "nom": "Service social de l'hôpital Sainte Musse",
+            "telephone": "04 94 14 54 93"
+          },
+          "La_Seyne": {
+            "nom": "Service social de l'hôpital La Seyne",
+            "telephone": "04 94 11 31 10"
+          },
+          "Saint_Anne": {
+            "nom": "Service social de l'hôpital Saint Anne",
+            "telephone": "04 83 16 22 82"
+          }
+        }
       }
     }
   },
@@ -412,6 +588,28 @@
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
         "email": "gro-cev@var.fr"
+      },
+      "PSCG_SS_APA": {
+        "present": true,
+        "nom": "PSCG SS APA - Secrétariat Toulon",
+        "telephone": "04 83 95 79 51"
+      },
+      "SERVICE_SOCIAL_HOPITAL": {
+        "present": true,
+        "hopitaux": {
+          "Sainte_Musse": {
+            "nom": "Service social de l'hôpital Sainte Musse",
+            "telephone": "04 94 14 54 93"
+          },
+          "La_Seyne": {
+            "nom": "Service social de l'hôpital La Seyne",
+            "telephone": "04 94 11 31 10"
+          },
+          "Saint_Anne": {
+            "nom": "Service social de l'hôpital Saint Anne",
+            "telephone": "04 83 16 22 82"
+          }
+        }
       }
     }
   },
@@ -458,6 +656,28 @@
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
         "email": "gro-cev@var.fr"
+      },
+      "PSCG_SS_APA": {
+        "present": true,
+        "nom": "PSCG SS APA - Secrétariat Toulon",
+        "telephone": "04 83 95 79 51"
+      },
+      "SERVICE_SOCIAL_HOPITAL": {
+        "present": true,
+        "hopitaux": {
+          "Sainte_Musse": {
+            "nom": "Service social de l'hôpital Sainte Musse",
+            "telephone": "04 94 14 54 93"
+          },
+          "La_Seyne": {
+            "nom": "Service social de l'hôpital La Seyne",
+            "telephone": "04 94 11 31 10"
+          },
+          "Saint_Anne": {
+            "nom": "Service social de l'hôpital Saint Anne",
+            "telephone": "04 83 16 22 82"
+          }
+        }
       }
     }
   },
@@ -504,6 +724,28 @@
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
         "email": "gro-cev@var.fr"
+      },
+      "PSCG_SS_APA": {
+        "present": true,
+        "nom": "PSCG SS APA - Secrétariat Toulon",
+        "telephone": "04 83 95 79 51"
+      },
+      "SERVICE_SOCIAL_HOPITAL": {
+        "present": true,
+        "hopitaux": {
+          "Sainte_Musse": {
+            "nom": "Service social de l'hôpital Sainte Musse",
+            "telephone": "04 94 14 54 93"
+          },
+          "La_Seyne": {
+            "nom": "Service social de l'hôpital La Seyne",
+            "telephone": "04 94 11 31 10"
+          },
+          "Saint_Anne": {
+            "nom": "Service social de l'hôpital Saint Anne",
+            "telephone": "04 83 16 22 82"
+          }
+        }
       }
     }
   },
@@ -550,6 +792,28 @@
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
         "email": "gro-cev@var.fr"
+      },
+      "PSCG_SS_APA": {
+        "present": true,
+        "nom": "PSCG SS APA - Secrétariat Toulon",
+        "telephone": "04 83 95 79 51"
+      },
+      "SERVICE_SOCIAL_HOPITAL": {
+        "present": true,
+        "hopitaux": {
+          "Sainte_Musse": {
+            "nom": "Service social de l'hôpital Sainte Musse",
+            "telephone": "04 94 14 54 93"
+          },
+          "La_Seyne": {
+            "nom": "Service social de l'hôpital La Seyne",
+            "telephone": "04 94 11 31 10"
+          },
+          "Saint_Anne": {
+            "nom": "Service social de l'hôpital Saint Anne",
+            "telephone": "04 83 16 22 82"
+          }
+        }
       }
     }
   },
@@ -596,6 +860,28 @@
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
         "email": "gro-cev@var.fr"
+      },
+      "PSCG_SS_APA": {
+        "present": true,
+        "nom": "PSCG SS APA - Secrétariat Toulon",
+        "telephone": "04 83 95 79 51"
+      },
+      "SERVICE_SOCIAL_HOPITAL": {
+        "present": true,
+        "hopitaux": {
+          "Sainte_Musse": {
+            "nom": "Service social de l'hôpital Sainte Musse",
+            "telephone": "04 94 14 54 93"
+          },
+          "La_Seyne": {
+            "nom": "Service social de l'hôpital La Seyne",
+            "telephone": "04 94 11 31 10"
+          },
+          "Saint_Anne": {
+            "nom": "Service social de l'hôpital Saint Anne",
+            "telephone": "04 83 16 22 82"
+          }
+        }
       }
     }
   },
@@ -642,6 +928,28 @@
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
         "email": "gro-cev@var.fr"
+      },
+      "PSCG_SS_APA": {
+        "present": true,
+        "nom": "PSCG SS APA - Secrétariat Toulon",
+        "telephone": "04 83 95 79 51"
+      },
+      "SERVICE_SOCIAL_HOPITAL": {
+        "present": true,
+        "hopitaux": {
+          "Sainte_Musse": {
+            "nom": "Service social de l'hôpital Sainte Musse",
+            "telephone": "04 94 14 54 93"
+          },
+          "La_Seyne": {
+            "nom": "Service social de l'hôpital La Seyne",
+            "telephone": "04 94 11 31 10"
+          },
+          "Saint_Anne": {
+            "nom": "Service social de l'hôpital Saint Anne",
+            "telephone": "04 83 16 22 82"
+          }
+        }
       }
     }
   },
@@ -688,6 +996,28 @@
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
         "email": "gro-cev@var.fr"
+      },
+      "PSCG_SS_APA": {
+        "present": true,
+        "nom": "PSCG SS APA - Secrétariat Toulon",
+        "telephone": "04 83 95 79 51"
+      },
+      "SERVICE_SOCIAL_HOPITAL": {
+        "present": true,
+        "hopitaux": {
+          "Sainte_Musse": {
+            "nom": "Service social de l'hôpital Sainte Musse",
+            "telephone": "04 94 14 54 93"
+          },
+          "La_Seyne": {
+            "nom": "Service social de l'hôpital La Seyne",
+            "telephone": "04 94 11 31 10"
+          },
+          "Saint_Anne": {
+            "nom": "Service social de l'hôpital Saint Anne",
+            "telephone": "04 83 16 22 82"
+          }
+        }
       }
     }
   },
@@ -735,6 +1065,28 @@
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
         "email": "gro-cev@var.fr"
+      },
+      "PSCG_SS_APA": {
+        "present": true,
+        "nom": "PSCG SS APA - Secrétariat Toulon",
+        "telephone": "04 83 95 79 51"
+      },
+      "SERVICE_SOCIAL_HOPITAL": {
+        "present": true,
+        "hopitaux": {
+          "Sainte_Musse": {
+            "nom": "Service social de l'hôpital Sainte Musse",
+            "telephone": "04 94 14 54 93"
+          },
+          "La_Seyne": {
+            "nom": "Service social de l'hôpital La Seyne",
+            "telephone": "04 94 11 31 10"
+          },
+          "Saint_Anne": {
+            "nom": "Service social de l'hôpital Saint Anne",
+            "telephone": "04 83 16 22 82"
+          }
+        }
       }
     }
   },
@@ -781,6 +1133,28 @@
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
         "email": "gro-cev@var.fr"
+      },
+      "PSCG_SS_APA": {
+        "present": true,
+        "nom": "PSCG SS APA - Secrétariat Toulon",
+        "telephone": "04 83 95 79 51"
+      },
+      "SERVICE_SOCIAL_HOPITAL": {
+        "present": true,
+        "hopitaux": {
+          "Sainte_Musse": {
+            "nom": "Service social de l'hôpital Sainte Musse",
+            "telephone": "04 94 14 54 93"
+          },
+          "La_Seyne": {
+            "nom": "Service social de l'hôpital La Seyne",
+            "telephone": "04 94 11 31 10"
+          },
+          "Saint_Anne": {
+            "nom": "Service social de l'hôpital Saint Anne",
+            "telephone": "04 83 16 22 82"
+          }
+        }
       }
     }
   },
@@ -827,6 +1201,28 @@
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
         "email": "gro-cev@var.fr"
+      },
+      "PSCG_SS_APA": {
+        "present": true,
+        "nom": "PSCG SS APA - Secrétariat Toulon",
+        "telephone": "04 83 95 79 51"
+      },
+      "SERVICE_SOCIAL_HOPITAL": {
+        "present": true,
+        "hopitaux": {
+          "Sainte_Musse": {
+            "nom": "Service social de l'hôpital Sainte Musse",
+            "telephone": "04 94 14 54 93"
+          },
+          "La_Seyne": {
+            "nom": "Service social de l'hôpital La Seyne",
+            "telephone": "04 94 11 31 10"
+          },
+          "Saint_Anne": {
+            "nom": "Service social de l'hôpital Saint Anne",
+            "telephone": "04 83 16 22 82"
+          }
+        }
       }
     }
   },
@@ -876,6 +1272,28 @@
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
         "email": "gro-cev@var.fr"
+      },
+      "PSCG_SS_APA": {
+        "present": true,
+        "nom": "PSCG SS APA - Secrétariat Toulon",
+        "telephone": "04 83 95 79 51"
+      },
+      "SERVICE_SOCIAL_HOPITAL": {
+        "present": true,
+        "hopitaux": {
+          "Sainte_Musse": {
+            "nom": "Service social de l'hôpital Sainte Musse",
+            "telephone": "04 94 14 54 93"
+          },
+          "La_Seyne": {
+            "nom": "Service social de l'hôpital La Seyne",
+            "telephone": "04 94 11 31 10"
+          },
+          "Saint_Anne": {
+            "nom": "Service social de l'hôpital Saint Anne",
+            "telephone": "04 83 16 22 82"
+          }
+        }
       }
     }
   },
@@ -921,6 +1339,28 @@
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
         "email": "gro-cev@var.fr"
+      },
+      "PSCG_SS_APA": {
+        "present": true,
+        "nom": "PSCG SS APA - Secrétariat Toulon",
+        "telephone": "04 83 95 79 51"
+      },
+      "SERVICE_SOCIAL_HOPITAL": {
+        "present": true,
+        "hopitaux": {
+          "Sainte_Musse": {
+            "nom": "Service social de l'hôpital Sainte Musse",
+            "telephone": "04 94 14 54 93"
+          },
+          "La_Seyne": {
+            "nom": "Service social de l'hôpital La Seyne",
+            "telephone": "04 94 11 31 10"
+          },
+          "Saint_Anne": {
+            "nom": "Service social de l'hôpital Saint Anne",
+            "telephone": "04 83 16 22 82"
+          }
+        }
       }
     }
   }

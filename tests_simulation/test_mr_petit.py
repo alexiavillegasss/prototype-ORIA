@@ -1,0 +1,65 @@
+import asyncio
+import os
+import sys
+import json
+
+# Ajout du chemin pour importer les modules
+sys.path.append(os.path.join(os.getcwd(), 'backend', 'src'))
+
+from ai.extraction.extractor import SignalExtractor
+from application.scoring_engine import ScoringEngine
+from application.orientation_engine import OrientationEngine
+from application.territory_manager import TerritoryManager
+
+async def run_test():
+    BASE_DIR = os.getcwd()
+    SCHEMA_PATH = os.path.join(BASE_DIR, 'config', 'schemas', 'schema_definition.json')
+    COMID_PATH = os.path.join(BASE_DIR, 'config', 'rules', 'COMID.json')
+    ORIENTATION_RULES_PATH = os.path.join(BASE_DIR, 'config', 'rules', 'orientation_rules.json')
+    TERRITORY_PATH = os.path.join(BASE_DIR, 'config', 'referentials', 'referentiel_territoire.json')
+
+    print("--- Lancement du test ORIA : Cas M. Petit (Aidant Conjoint Epuisé) ---")
+    
+    extractor = SignalExtractor(schema_path=SCHEMA_PATH, comid_path=COMID_PATH)
+    scoring_engine = ScoringEngine(comid_rules_path=COMID_PATH)
+    orientation_engine = OrientationEngine(rules_path=ORIENTATION_RULES_PATH)
+    territory_manager = TerritoryManager(territory_rules_path=TERRITORY_PATH)
+
+    text = """Bonjour ORIA. Je suis M. Petit. Je m'occupe de ma femme (83 ans) qui a la maladie de Parkinson depuis 5 ans. Jusqu'ici on arrivait à gérer avec les aides, mais là je suis au bout du rouleau. Elle fait des malaises, je dois la porter et j'ai le dos en compote. Je ne dors plus car elle crie la nuit. On habite à Toulon au 3ème étage sans ascenseur, je n'arrive plus à la sortir pour ses rendez-vous. J'ai peur pour mon propre cœur, je sens que je fatigue. On a déjà l'APA, mais les quelques heures de ménage ne suffisent plus du tout. On a besoin d'un hébergement temporaire pour que je puisse me faire opérer du dos, ou d'un soutien bien plus fort. Je ne sais plus à qui m'adresser."""
+
+    print(f"\n1. Extraction IA pour le récit du conjoint aidant...")
+    try:
+        extracted_data = await extractor.extract(text)
+        print("Donnees extraites (JSON) :")
+        print(json.dumps(extracted_data, indent=2, ensure_ascii=False))
+    except Exception as e:
+        print(f"Erreur extraction : {e}")
+        return
+    
+    print("\n2. Calcul du score de complexité COMID...")
+    comid_results = scoring_engine.calculate_comid_score(extracted_data)
+    print(f"Score Total : {comid_results['score_total']} ({comid_results['label']})")
+
+    print("\n3. Evaluation de l'orientation...")
+    orientation_results = orientation_engine.evaluate_orientation(extracted_data, comid_results)
+
+    print(f"\n4. Recherche des contacts territoriaux (Toulon)...")
+    results_with_contacts = territory_manager.get_contacts_for_structures(orientation_results, "Toulon")
+
+    print(f"\n--- REPONSE D'ORIA POUR L'AIDANT ---")
+    if not results_with_contacts:
+        print("ORIA : 'Contactez votre médecin traitant.'")
+    else:
+        # Meilleure structure
+        best_struct = results_with_contacts[0]
+        
+        print(f"voici votre priorité :'")
+        print(f"\nVOTRE PRIORITÉ ABSOLUE : [ {best_struct['label']} ]")
+        print(f"MISSION : {best_struct.get('objectif', 'N/A')}")
+        print(f"CONTACT : {best_struct.get('telephone', 'N/A')}")
+        
+        if extracted_data.get('evaluation.comid.epuisement_aidant') == True:
+            print("\nCONSEIL POUR VOUS : 'Prenez soin de vous également. En plus de votre référent APA, sachez que les plateformes de répit peuvent vous soutenir pendant votre hospitalisation.'")
+
+if __name__ == "__main__":
+    asyncio.run(run_test())

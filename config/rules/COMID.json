@@ -3,400 +3,50 @@
     "id": "comid_v1",
     "nom": "Complexité Multidimensionnelle à Domicile",
     "source": "COMID",
-    "description": "Règles métier de calcul de la complexité ORIA basées sur le questionnaire COMID. Chaque item positif vaut 1 point. Chaque item négatif vaut 0 point.",
+    "description": "Règles métier simplifiées pour l'IA.",
     "mode_scoring": "binaire",
     "score_min": 0,
     "score_max": 30,
     "valeur_item_positif": 1,
     "valeur_item_negatif": 0
   },
-  "domaines": [
-    {
-      "id": "sante_physique",
-      "label": "Santé physique",
-      "description": "Domaines liés aux maladies chroniques, douleurs, traitements, cognition et finances influençant la prise en charge à domicile."
-    },
-    {
-      "id": "environnement_social",
-      "label": "Environnement social",
-      "description": "Domaines liés au soutien social, à l’isolement, à la littératie et à l’environnement de vie."
-    },
-    {
-      "id": "sante_mentale",
-      "label": "Santé mentale",
-      "description": "Domaines liés à la dépression, la psychiatrie, l’addiction, l’anxiété et la variabilité des fonctions mentales."
-    },
-    {
-      "id": "comportements_attitudes",
-      "label": "Comportements et attitudes",
-      "description": "Domaines liés aux interactions avec le réseau, à l’agressivité, à l’opposition aux soins et à l’inquiétude."
-    },
-    {
-      "id": "evolution_instabilite",
-      "label": "Évolution et instabilité",
-      "description": "Domaines liés aux changements récents, aux transitions, aux dégradations et à l’imprévisibilité."
-    },
-    {
-      "id": "coordination_reseau",
-      "label": "Coordination et réseau",
-      "description": "Domaines liés au nombre d’intervenants, au partenariat, à la cohérence de la prise en charge et à la charge ressentie."
-    }
-  ],
   "items": [
-    {
-      "id": "comid_01",
-      "code": "plusieurs_maladies_chroniques_ou_symptomes_inexpliques",
-      "label": "Plusieurs maladies chroniques (>2) et/ou symptômes inexpliqués",
-      "domaine": "sante_physique",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Présence de plusieurs maladies chroniques ou de symptômes inexpliqués."
-    },
-    {
-      "id": "comid_02",
-      "code": "douleurs_chroniques",
-      "label": "Douleurs chroniques",
-      "domaine": "sante_physique",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Douleurs persistantes ou récurrentes impactant le quotidien."
-    },
-    {
-      "id": "comid_03",
-      "code": "allergie_ou_intolerance_medicamenteuse",
-      "label": "Allergie et/ou intolérance médicamenteuse",
-      "domaine": "sante_physique",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Présence d’une allergie ou intolérance médicamenteuse connue."
-    },
-    {
-      "id": "comid_04",
-      "code": "polymedication_superieure_a_5",
-      "label": "Polymédication (>5)",
-      "domaine": "sante_physique",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Administration de plus de 5 substances différentes sur 7 jours."
-    },
-    {
-      "id": "comid_05",
-      "code": "troubles_cognitifs",
-      "label": "Troubles cognitifs",
-      "domaine": "sante_physique",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Présence de troubles cognitifs impactant les AVQ/AIVQ."
-    },
-    {
-      "id": "comid_06",
-      "code": "difficultes_financieres_ou_incapacite_a_supporter_les_couts",
-      "label": "Difficultés financières et/ou incapacité à supporter financièrement les prestations, soins, traitements, moyens auxiliaires, transports ou alimentation",
-      "domaine": "sante_physique",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Difficultés financières ou incapacité à gérer/assumer les coûts liés à la prise en charge."
-    },
-    {
-      "id": "comid_07",
-      "code": "absence_ou_epuisement_du_proche_aidant_ou_tensions_familiales",
-      "label": "Absence ou épuisement du proche aidant et/ou tensions familiales",
-      "domaine": "environnement_social",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Absence, épuisement ou tensions importantes dans l’entourage aidant."
-    },
-    {
-      "id": "comid_08",
-      "code": "faible_niveau_de_litteratie",
-      "label": "Faible niveau de littératie",
-      "domaine": "environnement_social",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Difficulté à comprendre et utiliser les informations, pouvant être liée à l’alphabétisation, la langue ou la culture."
-    },
-    {
-      "id": "comid_09",
-      "code": "isolement_social",
-      "label": "Isolement social",
-      "domaine": "environnement_social",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Absence involontaire ou faiblesse marquée des liens sociaux."
-    },
-    {
-      "id": "comid_10",
-      "code": "logement_inadapte_ou_barriere_environnementale",
-      "label": "Logement inadapté et/ou barrière environnementale",
-      "domaine": "environnement_social",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Présence d’obstacles ou de dangers dans le logement ou son environnement immédiat."
-    },
-    {
-      "id": "comid_11",
-      "code": "depression_ou_idees_suicidaires",
-      "label": "Dépression et/ou idées suicidaires",
-      "domaine": "sante_mentale",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Présence de dépression objectivable ou d’idées suicidaires."
-    },
-    {
-      "id": "comid_12",
-      "code": "maladie_psychiatrique_ou_troubles_psychiques",
-      "label": "Maladie psychiatrique et/ou troubles psychiques",
-      "domaine": "sante_mentale",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Diagnostic psychiatrique établi ou symptomatologie objectivable."
-    },
-    {
-      "id": "comid_13",
-      "code": "addiction",
-      "label": "Addiction",
-      "domaine": "sante_mentale",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Rapport pathologique à une substance ou un comportement."
-    },
-    {
-      "id": "comid_14",
-      "code": "anxiete_ou_angoisse_rendant_le_tableau_clinique_confus",
-      "label": "Anxiété ou angoisse rendant le tableau clinique confus",
-      "domaine": "sante_mentale",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Anxiété ou angoisse compliquant la lecture clinique de la situation."
-    },
-    {
-      "id": "comid_15",
-      "code": "fonctions_mentales_variant_au_cours_de_la_journee",
-      "label": "Fonctions mentales variant au cours de la journée",
-      "domaine": "sante_mentale",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Variabilité marquée du comportement, de l’humeur ou des fonctions mentales."
-    },
-    {
-      "id": "comid_16",
-      "code": "sollicitations_recurrentes_du_reseau_primaire_ou_secondaire",
-      "label": "Sollicitations récurrentes du réseau primaire et/ou secondaire",
-      "domaine": "comportements_attitudes",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Demandes répétées et fréquentes de soutien, présence, information ou réassurance."
-    },
-    {
-      "id": "comid_17",
-      "code": "communication_ambivalente_ou_conflictuelle_avec_un_membre_du_reseau",
-      "label": "Communication ambivalente et/ou conflictuelle avec l’un des membres du réseau primaire et/ou secondaire",
-      "domaine": "comportements_attitudes",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Communication contradictoire, instable ou conflictuelle avec un membre du réseau."
-    },
-    {
-      "id": "comid_18",
-      "code": "inquietude_face_aux_symptomes_etat_de_sante_ou_informations_medicales",
-      "label": "Inquiétude face à ses symptômes et/ou état de santé et/ou aux informations médicales reçues",
-      "domaine": "comportements_attitudes",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Préoccupation marquée concernant l’état de santé ou les informations médicales."
-    },
-    {
-      "id": "comid_19",
-      "code": "agressivite_ou_mutisme",
-      "label": "Agressivité (verbale et/ou physique) ou mutisme",
-      "domaine": "comportements_attitudes",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Présence d’agressivité, de comportements menaçants ou de mutisme."
-    },
-    {
-      "id": "comid_20",
-      "code": "resistance_ou_opposition_aux_soins",
-      "label": "Résistance ou opposition aux soins, qu’elles soient actives ou passives",
-      "domaine": "comportements_attitudes",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Refus, négociations répétées ou évitement des soins."
-    },
-    {
-      "id": "comid_21",
-      "code": "degradation_recente_de_l_etat_de_sante_ressentie_par_le_client",
-      "label": "Dégradation récente de l’état de santé ressentie par le client",
-      "domaine": "evolution_instabilite",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Perception d’une aggravation de l’état de santé au cours du dernier mois."
-    },
-    {
-      "id": "comid_22",
-      "code": "changement_global_du_degre_d_independance_dans_le_dernier_mois",
-      "label": "Changement global du degré d’indépendance (AVQ/AIVQ) lors du dernier mois",
-      "domaine": "evolution_instabilite",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Modification du degré d’indépendance dans les AVQ/AIVQ."
-    },
-    {
-      "id": "comid_23",
-      "code": "periode_de_transition",
-      "label": "Période de transition",
-      "domaine": "evolution_instabilite",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Présence d’un changement majeur de vie ou de parcours affectant les besoins."
-    },
-    {
-      "id": "comid_24",
-      "code": "changement_aigu_des_capacites_cognitives",
-      "label": "Changement aigu des capacités cognitives",
-      "domaine": "evolution_instabilite",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Changement rapide du comportement ou des capacités cognitives habituelles."
-    },
-    {
-      "id": "comid_25",
-      "code": "non_previsibilite_de_l_etat_de_sante",
-      "label": "Non prévisibilité de l’état de santé",
-      "domaine": "evolution_instabilite",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Évolution de l’état de santé ou des comportements difficilement prévisible."
-    },
-    {
-      "id": "comid_26",
-      "code": "multitude_d_intervenants_dans_le_reseau_secondaire",
-      "label": "Multitude d’intervenants dans le réseau secondaire",
-      "domaine": "coordination_reseau",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Présence d’au moins 3 professionnels intervenant régulièrement dans la situation."
-    },
-    {
-      "id": "comid_27",
-      "code": "absence_ou_faible_degre_de_partenariat_entre_les_intervenants",
-      "label": "Absence ou faible degré de partenariat entre les différents intervenants du réseau primaire et/ou secondaire",
-      "domaine": "coordination_reseau",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Communication ou partenariat faible entre les intervenants."
-    },
-    {
-      "id": "comid_28",
-      "code": "incoherence_therapeutique_ou_perte_de_sens_dans_la_prise_en_charge",
-      "label": "Incohérence thérapeutique et/ou perte de sens dans la prise en charge du point de vue du professionnel",
-      "domaine": "coordination_reseau",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Absence de cohérence, de continuité ou de sens partagé dans la prise en charge."
-    },
-    {
-      "id": "comid_29",
-      "code": "probleme_d_assurance",
-      "label": "Problème d’assurance",
-      "domaine": "coordination_reseau",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Problème d’assurance impactant la prise en charge."
-    },
-    {
-      "id": "comid_30",
-      "code": "lourdeur_emotionnelle_ou_physique_de_la_prise_en_charge_ressentie_par_le_reseau_secondaire",
-      "label": "Lourdeur émotionnelle et/ou physique de la prise en charge ressentie par les membres du réseau secondaire",
-      "domaine": "coordination_reseau",
-      "type_reponse": "binaire",
-      "score_si_oui": 1,
-      "score_si_non": 0,
-      "description": "Charge émotionnelle ou physique importante ressentie par les professionnels ou intervenants."
-    }
+    { "code": "multimorbidite", "label": "Plusieurs maladies chroniques (>2)", "exemples": ["diabète", "hypertension", "insuffisance cardiaque", "plusieurs pathologies"], "score_si_oui": 1 },
+    { "code": "douleurs", "label": "Douleurs chroniques", "exemples": ["souffre en permanence", "douleurs rebelles", "mal partout", "EVA élevée", "fond douloureux"], "score_si_oui": 1 },
+    { "code": "allergies", "label": "Allergies médicamenteuses", "exemples": ["allergie pénicilline", "intolérance iode", "choc anaphylactique"], "score_si_oui": 1 },
+    { "code": "polymedication", "label": "Polymédication (>5 médicaments)", "exemples": ["beaucoup de cachets", "ordonnance longue", "pilulier complexe"], "score_si_oui": 1 },
+    { "code": "troubles_cognitifs", "label": "Troubles cognitifs", "exemples": ["Alzheimer", "démence", "perte de mémoire", "désorientation", "confusion", "oublis"], "score_si_oui": 1 },
+    { "code": "precarite_financiere", "label": "Difficultés financières", "exemples": ["loyer impayé", "factures en retard", "découvert bancaire", "petite retraite", "finit pas le mois", "difficulté à payer"], "score_si_oui": 1 },
+    { "code": "epuisement_aidant", "label": "Absence ou épuisement de l'aidant", "exemples": ["fille épuisée", "conjoint à bout", "famille inquiète", "personne pour aider"], "score_si_oui": 1 },
+    { "code": "litteratie_faible", "label": "Faible niveau de littératie / Compréhension", "exemples": ["ne comprend pas les consignes", "ne sait pas lire", "barrière de la langue", "illettrisme"], "score_si_oui": 1 },
+    { "code": "isolement_social", "label": "Isolement social", "exemples": ["vit seule", "pas de visite", "famille éloignée", "ne sort plus"], "score_si_oui": 1 },
+    { "code": "logement_inadapte", "label": "Logement inadapté ou barrières", "exemples": ["étages sans ascenseur", "baignoire haute", "insalubrité", "trop grand", "dangereux"], "score_si_oui": 1 },
+    { "code": "depression", "label": "Dépression ou idées suicidaires", "exemples": ["tristesse infinie", "ne veut plus vivre", "pleure", "propos noirs", "syndrome de glissement"], "score_si_oui": 1 },
+    { "code": "psychiatrie", "label": "Maladie ou troubles psychiatriques", "exemples": ["schizophrénie", "bipolarité", "psychose", "suivi CMP"], "score_si_oui": 1 },
+    { "code": "addiction", "label": "Addiction", "exemples": ["alcoolisme", "dépendance alcool", "consommation excessive", "tabagisme lourd"], "score_si_oui": 1 },
+    { "code": "anxiete", "label": "Anxiété ou angoisse clinique", "exemples": ["très inquiet", "angoisse", "attaque de panique", "peur de l'avenir"], "score_si_oui": 1 },
+    { "code": "fluctuation_mentale", "label": "Fonctions mentales variant dans la journée", "exemples": ["lucide le matin", "agité le soir", "syndrome crépusculaire"], "score_si_oui": 1 },
+    { "code": "sollicitations_recurrentes", "label": "Sollicitations fréquentes du réseau", "exemples": ["appelle plusieurs fois", "sollicite sans cesse", "demandes incessantes", "harcèlement téléphonique"], "score_si_oui": 1 },
+    { "code": "conflit_reseau", "label": "Communication conflictuelle ou ambivalente", "exemples": ["tensions entre soignants", "famille en conflit", "désaccord sur les soins"], "score_si_oui": 1 },
+    { "code": "inquietude_sante", "label": "Inquiétude marquée face à la santé", "exemples": ["hypocondrie", "peur de mourir", "focus sur les symptômes"], "score_si_oui": 1 },
+    { "code": "agressivite", "label": "Agressivité ou mutisme", "exemples": ["cris", "hostilité", "menaces", "mutisme hostile", "colère"], "score_si_oui": 1 },
+    { "code": "opposition_soins", "label": "Résistance ou opposition aux soins", "exemples": ["refuse l'aide", "refuse l'entrée", "dit que tout va bien", "ne veut rien entendre"], "score_si_oui": 1 },
+    { "code": "degradation_recente", "label": "Dégradation santé ressentie (<1 mois)", "exemples": ["fatigue brutale", "perte d'appétit", "état dégradé en 15 jours", "moins bien depuis peu"], "score_si_oui": 1 },
+    { "code": "perte_autonomie_recente", "label": "Perte d'indépendance récente (AVQ/AIVQ)", "exemples": ["ne peut plus se laver", "chute récente", "dépendance nouvelle", "toilette difficile"], "score_si_oui": 1 },
+    { "code": "transition_parcours", "label": "Période de transition majeure", "exemples": ["veuf récent", "sortie d'hôpital", "déménagement imposé", "retraite"], "score_si_oui": 1 },
+    { "code": "trouble_cognitif_aigu", "label": "Changement aigu des capacités cognitives", "exemples": ["confusion brutale", "ne reconnaît plus personne subitement"], "score_si_oui": 1 },
+    { "code": "imprevisibilite", "label": "Non prévisibilité de l'état de santé", "exemples": ["état en dents de scie", "instable", "imprévisible"], "score_si_oui": 1 },
+    { "code": "multitude_intervenants", "label": "Multitude d'intervenants (>3)", "exemples": ["beaucoup de passages", "valse des intervenants", "trop de gens à la maison"], "score_si_oui": 1 },
+    { "code": "manque_partenariat", "label": "Faible partenariat entre intervenants", "exemples": ["on ne se parle pas", "manque de lien", "chacun dans son coin"], "score_si_oui": 1 },
+    { "code": "incoherence_soins", "label": "Incohérence ou perte de sens des soins", "exemples": ["soins absurdes", "acharnement", "contradiction médicale"], "score_si_oui": 1 },
+    { "code": "probleme_assurance", "label": "Problème d'assurance", "exemples": ["pas de mutuelle", "droits fermés", "problème sécurité sociale"], "score_si_oui": 1 },
+    { "code": "lourdeur_reseau", "label": "Lourdeur émotionnelle/physique pour le réseau", "score_si_oui": 1 }
   ],
-  "calcul_score": {
-    "methode": "somme_des_items_positifs",
-    "formule": "score_total = somme(score_si_oui pour chaque item coche a oui)",
-    "regles": [
-      {
-        "id": "score_total",
-        "description": "Chaque item COMID positif ajoute 1 point. Chaque item négatif ajoute 0 point."
-      }
-    ]
-  },
   "interpretation_score": {
     "regles_niveau_complexite": [
-      {
-        "id": "niveau_non_complexe",
-        "condition": "score_total >= 0 && score_total <= 5",
-        "niveau": "non_complexe",
-        "label": "Situation non complexe"
-      },
-      {
-        "id": "niveau_a_risque_de_complexite",
-        "condition": "score_total >= 6 && score_total <= 9",
-        "niveau": "a_risque_de_complexite",
-        "label": "Situation à risque de complexité"
-      },
-      {
-        "id": "niveau_complexe",
-        "condition": "score_total >= 10",
-        "niveau": "complexe",
-        "label": "Situation complexe"
-      }
-    ],
-    "note_interpretation": "Le score constitue une indication et doit conduire a une analyse plus approfondie de la situation par item et par domaine."
-  },
-  "champs_calcules_sortie": {
-    "complexite.referentiel": "comid_v1",
-    "complexite.score_total": "integer",
-    "complexite.niveau": [
-      "non_complexe",
-      "a_risque_de_complexite",
-      "complexe"
-    ],
-    "complexite.facteurs_contributifs": [
-      {
-        "facteur": "code_item_comid",
-        "poids": 1,
-        "commentaire": "item positif"
-      }
+      { "id": "non_complexe", "condition": "score_total >= 0 && score_total <= 5", "niveau": "non_complexe", "label": "Situation non complexe" },
+      { "id": "a_risque", "condition": "score_total >= 6 && score_total <= 9", "niveau": "a_risque_de_complexite", "label": "Situation à risque de complexité" },
+      { "id": "complexe", "condition": "score_total >= 10", "niveau": "complexe", "label": "Situation complexe" }
     ]
-  },
-  "traceabilite": {
-    "conserver_items_positifs": true,
-    "conserver_score_par_domaine": true,
-    "conserver_score_total": true,
-    "conserver_version_referentiel": true
   }
 }

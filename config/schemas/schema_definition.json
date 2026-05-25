@@ -17,7 +17,12 @@
     "type": "string",
     "required": true,
     "source": "systeme",
-    "enum": ["note_vocale", "texte_libre", "formulaire", "fiche_importee"],
+    "enum": [
+      "note_vocale",
+      "texte_libre",
+      "formulaire",
+      "fiche_importee"
+    ],
     "description": "Canal d’entrée ayant servi à créer le dossier."
   },
   "meta.date_creation": {
@@ -62,7 +67,6 @@
     "maximum": 1,
     "description": "Niveau de confiance global du dossier après extraction et analyse."
   },
-
   "adresseur.categorie": {
     "type": "string",
     "required": true,
@@ -136,10 +140,15 @@
     "type": "string",
     "required": false,
     "source": "voix_ou_extraction",
-    "enum": ["faible", "modere", "eleve", "critique", "non_evaluable"],
+    "enum": [
+      "faible",
+      "modere",
+      "eleve",
+      "critique",
+      "non_evaluable"
+    ],
     "description": "Niveau d’urgence perçu exprimé par l’adresseur."
   },
-
   "usager.identite.nom_usage": {
     "type": "string",
     "required": false,
@@ -162,14 +171,24 @@
     "type": "string",
     "required": false,
     "source": "voix_ou_extraction",
-    "enum": ["madame", "monsieur", "autre", "non_renseigne"],
+    "enum": [
+      "madame",
+      "monsieur",
+      "autre",
+      "non_renseigne"
+    ],
     "description": "Civilité de la personne."
   },
   "usager.identite.sexe": {
     "type": "string",
     "required": false,
     "source": "voix_ou_extraction",
-    "enum": ["feminin", "masculin", "autre", "indetermine"],
+    "enum": [
+      "feminin",
+      "masculin",
+      "autre",
+      "non_renseigne"
+    ],
     "description": "Sexe de la personne."
   },
   "usager.identite.age_estime": {
@@ -180,7 +199,6 @@
     "maximum": 130,
     "description": "Âge estimé ou explicitement mentionné."
   },
-  
   "usager.identite.mode_obtention_age": {
     "type": "string",
     "required": false,
@@ -203,7 +221,14 @@
     "type": "string",
     "required": false,
     "source": "voix_ou_extraction",
-    "enum": ["celibataire", "marie", "veuf", "divorce", "pacse", "non_precise"],
+    "enum": [
+      "celibataire",
+      "marie",
+      "veuf",
+      "divorce",
+      "pacse",
+      "non_renseigne"
+    ],
     "description": "Situation familiale de l’usager."
   },
   "usager.identite.commune_naissance": {
@@ -219,7 +244,6 @@
     "minimum": 0,
     "description": "Nombre d’enfants mentionné."
   },
-
   "usager.identite.mail": {
     "type": "string",
     "required": false,
@@ -236,17 +260,26 @@
     "type": "string",
     "required": false,
     "source": "voix_ou_extraction",
-    "enum": ["oui", "non", "aucune indication"],
+    "enum": [
+      "oui",
+      "non",
+      "non_renseigne"
+    ],
     "description": "La personne est elle consentante de cette orientation"
   },
   "usager.identite.mesure_protection": {
     "type": "string",
     "required": false,
     "source": "voix_ou_extraction",
-    "enum": ["aucune", "sauvegarde de justice", "tutelle", "curatelle simple", "curatelle renforcée"],
+    "enum": [
+      "aucune",
+      "sauvegarde de justice",
+      "tutelle",
+      "curatelle simple",
+      "curatelle renforcée"
+    ],
     "description": "La personne est elle sous mesure de protection ?"
   },
-
   "usager.localisation.commune_residence": {
     "type": "string",
     "required": true,
@@ -286,7 +319,6 @@
     "maximum": 1,
     "description": "Confiance dans la qualité de la localisation extraite."
   },
-
   "usager.cadre_de_vie.lieu_de_vie_principal": {
     "type": "string",
     "required": true,
@@ -310,7 +342,7 @@
       "vit_en_couple",
       "vit_avec_famille",
       "vie_collective",
-      "non_precise"
+      "non_renseigne"
     ],
     "description": "Composition du foyer."
   },
@@ -331,21 +363,41 @@
     "type": "string",
     "required": false,
     "source": "voix_ou_extraction",
-    "enum": ["quotidienne", "reguliere", "ponctuelle", "rare", "inconnue"],
+    "enum": [
+      "quotidienne",
+      "reguliere",
+      "ponctuelle",
+      "autre",
+      "non_renseigne"
+    ],
     "description": "Fréquence de soutien de l’entourage."
   },
   "usager.cadre_de_vie.type_habitat": {
     "type": "string",
     "required": false,
     "source": "voix_ou_extraction",
-    "enum": ["appartement", "maison", "logement_collectif", "autre", "non_precise"],
-    "description": "Type d’habitat."
+    "enum": [
+      "appartement",
+      "maison",
+      "logement_collectif",
+      "autre",
+      "non_renseigne"
+    ],
+    "description": "Type d'habitat."
   },
   "usager.cadre_de_vie.type_bail": {
     "type": "string",
     "required": false,
     "source": "voix_ou_extraction",
-    "enum": ["propriétaire", "locataire", "bailleur social", "bailleur privé", "centre d hebergement", "domiciliation CCAS", "hebergement chez un tiers"],
+    "enum": [
+      "propriétaire",
+      "locataire",
+      "bailleur social",
+      "bailleur privé",
+      "centre d hebergement",
+      "domiciliation CCAS",
+      "hebergement chez un tiers"
+    ],
     "description": "Type de bail."
   },
   "usager.cadre_de_vie.adequation_logement_situation": {
@@ -359,7 +411,7 @@
       "incertain",
       "a_evaluer"
     ],
-    "description": "Degré d’adéquation du logement à la situation."
+    "description": "Degré d'adéquation du logement à la situation."
   },
   "usager.cadre_de_vie.etat_logement": {
     "type": "string",
@@ -367,15 +419,16 @@
     "source": "analyse",
     "enum": [
       "propre",
-      "corecte",
+      "correcte",
       "sale",
       "incurie",
       "diogene",
       "insalubre",
-      "présence de nuisibles",
-      "présence d'animaux"
+      "presence_nuisibles",
+      "presence_animaux",
+      "non_renseigne"
     ],
-    "description": "Etat du logement "
+    "description": "État du logement."
   },
   "usager.cadre_de_vie.animaux": {
     "type": "string",
@@ -388,14 +441,19 @@
     "required": false,
     "source": "voix_ou_extraction",
     "minimum": 0,
-    "description": "Nombre d’animaux mentionnés."
+    "description": "Nombre d'animaux mentionnés."
   },
-
   "usager.situation_actuelle.lieu_ou_se_trouve_la_personne": {
     "type": "string",
     "required": false,
     "source": "voix_ou_extraction",
-    "enum": ["domicile", "hopital", "etablissement", "autre", "non_precise"],
+    "enum": [
+      "domicile",
+      "hopital",
+      "etablissement",
+      "autre",
+      "non_renseigne"
+    ],
     "description": "Lieu où se trouve actuellement la personne."
   },
   "usager.situation_actuelle.contexte_recent": {
@@ -415,7 +473,7 @@
       "moins_de_10_jours",
       "moins_de_30_jours",
       "ancien",
-      "inconnue"
+      "non_renseigne"
     ],
     "description": "Temporalité de l’événement déclencheur."
   },
@@ -423,7 +481,12 @@
     "type": "string",
     "required": false,
     "source": "analyse",
-    "enum": ["stable", "fragile", "instable", "non_evaluable"],
+    "enum": [
+      "stable",
+      "fragile",
+      "instable",
+      "non_evaluable"
+    ],
     "description": "Appréciation globale de la stabilité de la situation."
   },
   "usager.situation_actuelle.GIR": {
@@ -434,43 +497,72 @@
     "maximum": 6,
     "description": "Niveau GIR si connu."
   },
-
   "usager.situation_actuelle.isolement": {
     "type": "string",
     "required": false,
     "source": "voix_ou_analyse",
-    "enum": ["isolement_social", "isolement_famillial", "pas_isolement", "non_evaluable"],
+    "enum": [
+      "isolement_social",
+      "isolement_famillial",
+      "pas_isolement",
+      "non_evaluable"
+    ],
     "description": "Appréciation globale de l'isolement de la personne."
   },
   "usager.situation_actuelle.raison_isolement": {
     "type": "string",
     "required": false,
     "source": "voix_ou_analyse",
-    "enum": ["hospitalisation_aidant", "deces_aidant", "dispute", "pas_de_famille", "géographie", "autre", "non_defini"],
+    "enum": [
+      "hospitalisation_aidant",
+      "deces_aidant",
+      "dispute",
+      "pas_de_famille",
+      "géographie",
+      "autre",
+      "non_renseigne"
+    ],
     "description": "Raison de l'isolement de la personne."
   },
   "usager.situation_actuelle.vulnerabilite": {
     "type": "string",
     "required": false,
     "source": "voix_ou_analyse",
-    "enum": ["oui", "non", "non_defini"],
+    "enum": [
+      "oui",
+      "non",
+      "non_renseigne"
+    ],
     "description": "La personne est-elle vulnérable ?"
   },
   "usager.situation_actuelle.suspicion_malveillance": {
     "type": "string",
     "required": false,
     "source": "voix_ou_analyse",
-    "enum": ["aucune", "violences psychologiques", "violence physique", "spoliation", "maltraitance"],
-    "description": "Raison de l'isolement de la personne."
+    "enum": [
+      "aucune",
+      "violences_psychologiques",
+      "violences_physiques",
+      "violences_sexuelles",
+      "negligence",
+      "spoliation_financiere",
+      "abus_de_confiance_ou_faiblesse",
+      "privation_de_droits",
+      "maltraitance_institutionnelle"
+    ],
+    "description": "Indique une suspicion de malveillance ou de maltraitance envers l’usager."
   },
   "usager.situation_actuelle.APA": {
     "type": "string",
     "required": false,
     "source": "voix_ou_analyse",
-    "enum": ["oui", "non", "non_defini"],
+    "enum": [
+      "oui",
+      "non",
+      "non_renseigne"
+    ],
     "description": "La personne est-elle bénéficiaire de l'APA ou non"
   },
-
   "demande.resume_structuré": {
     "type": "string",
     "required": true,
@@ -500,28 +592,42 @@
     "type": "string",
     "required": false,
     "source": "analyse",
-    "enum": ["preservee", "diminuee", "fortement_diminuee", "non_evaluable"],
+    "enum": [
+      "preservee",
+      "diminuee",
+      "fortement_diminuee",
+      "non_evaluable"
+    ],
     "description": "Niveau d’autonomie observé dans le récit."
   },
   "demande.description_factuelle.etat_general_decrit": {
     "type": "string",
     "required": false,
     "source": "analyse",
-    
     "description": "Description textuelle synthétique de l’état général."
   },
   "demande.description_factuelle.capacite_organisationnelle": {
     "type": "string",
     "required": false,
     "source": "analyse",
-    "enum": ["adequate", "limitee", "tres_limitee", "non_evaluable"],
+    "enum": [
+      "adequate",
+      "limitee",
+      "tres_limitee",
+      "non_evaluable"
+    ],
     "description": "Capacité de la personne à organiser son quotidien ou ses soins."
   },
   "demande.description_factuelle.adhesion_presumee_aux_aides": {
     "type": "string",
     "required": false,
     "source": "analyse",
-    "enum": ["bonne", "incertaine", "faible", "a_confirmer"],
+    "enum": [
+      "bonne",
+      "incertaine",
+      "faible",
+      "a_confirmer"
+    ],
     "description": "Adhésion présumée aux aides proposées."
   },
   "demande.actions_deja_menees": {
@@ -552,10 +658,14 @@
     "type": "string",
     "required": false,
     "source": "analyse",
-    "enum": ["general", "operationnel", "urgent", "a_preciser"],
+    "enum": [
+      "general",
+      "operationnel",
+      "urgent",
+      "a_preciser"
+    ],
     "description": "Niveau de précision attendu dans la réponse."
   },
-
   "vulnerabilites.autonomie.niveau_global": {
     "type": "string",
     "required": false,
@@ -566,21 +676,41 @@
     "type": "string",
     "required": false,
     "source": "analyse",
-    "enum": ["normale", "ralentie", "limitee", "tres_limitee", "non_evaluable", "avec_aide_matérielle", "avec_aide_humaine"],
+    "enum": [
+      "normale",
+      "ralentie",
+      "limitee",
+      "tres_limitee",
+      "non_evaluable",
+      "avec_aide_matérielle",
+      "avec_aide_humaine"
+    ],
     "description": "Niveau de mobilité."
   },
   "vulnerabilites.autonomie.transferts": {
     "type": "string",
     "required": false,
     "source": "analyse",
-    "enum": ["autonome", "avec_aide", "dependant", "a_preciser"],
+    "enum": [
+      "autonome",
+      "avec_aide",
+      "dependant",
+      "a_preciser"
+    ],
     "description": "Capacité de transferts."
   },
   "vulnerabilites.autonomie.deplacements_exterieurs": {
     "type": "string",
     "required": false,
     "source": "analyse",
-    "enum": ["autonomes", "limites", "impossibles", "avec_aide_materielle", "avec_aide_humaine", "a_preciser"],
+    "enum": [
+      "autonomes",
+      "limites",
+      "impossibles",
+      "avec_aide_materielle",
+      "avec_aide_humaine",
+      "a_preciser"
+    ],
     "description": "Capacité de déplacement à l’extérieur."
   },
   "vulnerabilites.autonomie.gestion_du_quotidien": {
@@ -613,13 +743,17 @@
     ],
     "description": "Capacité d'autonomie decisionnelle."
   },
-  
-
   "vulnerabilites.sante.hospitalisation.statut": {
     "type": "string",
     "required": false,
     "source": "analyse",
-    "enum": ["aucune", "recente", "en_cours", "ancienne", "inconnue"],
+    "enum": [
+      "aucune",
+      "recente",
+      "en_cours",
+      "ancienne",
+      "non_renseigne"
+    ],
     "description": "Statut de l’hospitalisation."
   },
   "vulnerabilites.sante.hospitalisation.motif": {
@@ -650,7 +784,11 @@
     "type": "string",
     "required": false,
     "source": "analyse",
-    "enum": ["vehicules", "materiel a domicile", "aucun"],
+    "enum": [
+      "vehicules",
+      "materiel a domicile",
+      "aucun"
+    ],
     "description": "N'importe qu'elle problematique de sante : pathologies, santé mentale, addictions, troubles cognitifs, ..."
   },
   "vulnerabilites.sante.suivi_medical.medecin_traitant": {
@@ -685,12 +823,17 @@
     "source": "analyse",
     "description": "Synthèse clinique perçue à partir du récit."
   },
-
   "vulnerabilites.social.isolement_relationnel": {
     "type": "string",
     "required": false,
     "source": "analyse",
-    "enum": ["faible", "modere", "important", "critique", "non_evaluable"],
+    "enum": [
+      "faible",
+      "modere",
+      "important",
+      "critique",
+      "non_evaluable"
+    ],
     "description": "Niveau d’isolement relationnel."
   },
   "vulnerabilites.social.soutien_familial": {
@@ -744,19 +887,30 @@
     "source": "analyse",
     "description": "suivis par un travailleur social et qui ?"
   },
-
   "vulnerabilites.administratif.lisibilite_du_parcours": {
     "type": "string",
     "required": false,
     "source": "analyse",
-    "enum": ["bonne", "moyenne", "faible", "opaque", "non_evaluable"],
+    "enum": [
+      "bonne",
+      "moyenne",
+      "faible",
+      "opaque",
+      "non_evaluable"
+    ],
     "description": "Lisibilité globale du parcours de la personne."
   },
   "vulnerabilites.administratif.coordination_existante": {
     "type": "string",
     "required": false,
     "source": "analyse",
-    "enum": ["solide", "partielle", "insuffisante", "absente", "non_documentee"],
+    "enum": [
+      "solide",
+      "partielle",
+      "insuffisante",
+      "absente",
+      "non_documentee"
+    ],
     "description": "Niveau de coordination déjà existant."
   },
   "vulnerabilites.administratif.ouverture_des_droits": {
@@ -776,38 +930,57 @@
     "type": "string",
     "required": false,
     "source": "analyse",
-    "enum": ["faible", "modere", "important", "critique"],
+    "enum": [
+      "faible",
+      "modere",
+      "important",
+      "critique"
+    ],
     "description": "Niveau global de complexité administrative."
   },
   "vulnerabilites.administratif.probleme_financier": {
     "type": "string",
-    "required": false,                                                                                      
-    "source": "analyse",                                                                                                                                                                                                                                                                                                  
+    "required": false,
+    "source": "analyse",
     "description": "Differents probleme financier"
   },
-
   "vulnerabilites.habitat.securite_du_domicile": {
     "type": "string",
     "required": false,
     "source": "analyse",
-    "enum": ["satisfaisante", "fragile", "problematique", "a_evaluer"],
+    "enum": [
+      "satisfaisante",
+      "fragile",
+      "problematique",
+      "a_evaluer"
+    ],
     "description": "Niveau de sécurité du domicile."
   },
   "vulnerabilites.habitat.adequation_aux_limites_fonctionnelles": {
     "type": "string",
     "required": false,
     "source": "analyse",
-    "enum": ["adaptee", "partiellement_adaptee", "inadequate", "incertaine"],
+    "enum": [
+      "adaptee",
+      "partiellement_adaptee",
+      "inadequate",
+      "incertaine"
+    ],
     "description": "Adéquation du logement aux capacités fonctionnelles."
   },
   "vulnerabilites.habitat.besoin_d_amenagement": {
     "type": "string",
     "required": false,
     "source": "analyse",
-    "enum": ["aucun", "possible", "probable", "urgent", "a_evaluer"],
+    "enum": [
+      "aucun",
+      "possible",
+      "probable",
+      "urgent",
+      "a_evaluer"
+    ],
     "description": "Besoin d’aménagement du logement."
   },
-
   "signaux_detectes": {
     "type": "array",
     "required": false,
@@ -820,7 +993,6 @@
     },
     "description": "Liste des signaux détectés dans la transcription."
   },
-
   "cercle_de_soins.professionnels_identifies": {
     "type": "array",
     "required": false,
@@ -858,7 +1030,7 @@
       "mail": "string",
       "numero": "string",
       "age": "number",
-      "niveau_epuisement":"string"
+      "niveau_epuisement": "string"
     },
     "description": "Aidants et proches identifiés."
   },
@@ -866,10 +1038,15 @@
     "type": "string",
     "required": false,
     "source": "analyse",
-    "enum": ["solide", "partiel", "insuffisamment_coordonne", "absent", "non_evaluable"],
+    "enum": [
+      "solide",
+      "partiel",
+      "insuffisamment_coordonne",
+      "absent",
+      "non_evaluable"
+    ],
     "description": "Niveau global de structuration du cercle de soins."
   },
-
   "complexite.referentiel": {
     "type": "string",
     "required": true,
@@ -898,7 +1075,11 @@
     "type": "string",
     "required": true,
     "source": "calcule",
-    "enum": ["non_complexe", "a_risque_de_complexite", "complexe"],
+    "enum": [
+      "non_complexe",
+      "a_risque_de_complexite",
+      "complexe"
+    ],
     "description": "Niveau global de complexité calculé."
   },
   "complexite.lecture_clinico_organisationnelle": {
@@ -913,7 +1094,6 @@
     "source": "genere",
     "description": "Phrase synthétique expliquant le score."
   },
-
   "orientation.proposition_principale.type_structure": {
     "type": "string",
     "required": true,
@@ -936,14 +1116,24 @@
     "type": "string",
     "required": false,
     "source": "calcule",
-    "enum": ["faible", "modere", "eleve", "tres_eleve"],
+    "enum": [
+      "faible",
+      "modere",
+      "eleve",
+      "tres_eleve"
+    ],
     "description": "Niveau de pertinence de l’orientation."
   },
   "orientation.proposition_principale.priorite_traitement": {
     "type": "string",
     "required": false,
     "source": "calcule",
-    "enum": ["standard", "rapide", "prioritaire", "immediate"],
+    "enum": [
+      "standard",
+      "rapide",
+      "prioritaire",
+      "immediate"
+    ],
     "description": "Priorité de traitement proposée."
   },
   "orientation.proposition_principale.objectif_orientation": {
@@ -982,7 +1172,11 @@
     "type": "string",
     "required": true,
     "source": "systeme",
-    "enum": ["requise", "en_cours", "effectuee"],
+    "enum": [
+      "requise",
+      "en_cours",
+      "effectuee"
+    ],
     "description": "Statut de validation humaine de l’orientation."
   },
   "orientation.validation_humaine.motif": {
@@ -991,7 +1185,6 @@
     "source": "analyse",
     "description": "Motif justifiant la nécessité de validation humaine."
   },
-
   "relecture_metier.champs_a_confirmer": {
     "type": "array",
     "required": false,
@@ -1007,7 +1200,12 @@
     "type": "string",
     "required": false,
     "source": "analyse",
-    "enum": ["faible", "moyenne", "bonne", "excellente"],
+    "enum": [
+      "faible",
+      "moyenne",
+      "bonne",
+      "excellente"
+    ],
     "description": "Appréciation globale de la cohérence du dossier."
   },
   "relecture_metier.niveau_de_relecture_recommande": {
@@ -1021,28 +1219,41 @@
     ],
     "description": "Niveau de revue métier recommandé."
   },
-
   "validation.etat_validation": {
     "type": "string",
     "required": true,
     "source": "systeme",
-    "enum": ["en_attente", "valide", "corrige", "rejete"],
+    "enum": [
+      "en_attente",
+      "valide",
+      "corrige",
+      "rejete"
+    ],
     "description": "État final de validation du dossier."
   },
   "validation.orientation_finale": {
-    "type": ["object", "null"],
+    "type": [
+      "object",
+      "null"
+    ],
     "required": false,
     "source": "validation_humaine",
     "description": "Orientation finale retenue après validation humaine."
   },
   "validation.validateur": {
-    "type": ["object", "null"],
+    "type": [
+      "object",
+      "null"
+    ],
     "required": false,
     "source": "validation_humaine",
     "description": "Utilisateur ayant validé le dossier."
   },
   "validation.commentaire_validateur": {
-    "type": ["string", "null"],
+    "type": [
+      "string",
+      "null"
+    ],
     "required": false,
     "source": "validation_humaine",
     "description": "Commentaire libre du validateur."
@@ -1053,7 +1264,6 @@
     "source": "systeme",
     "description": "Historique des modifications apportées au dossier."
   },
-
   "export.etat_pre_remplissage_fiche": {
     "type": "string",
     "required": false,
@@ -1076,7 +1286,192 @@
     "type": "string",
     "required": false,
     "source": "systeme",
-    "enum": ["non_lance", "en_cours", "genere", "echec"],
+    "enum": [
+      "non_lance",
+      "en_cours",
+      "genere",
+      "echec"
+    ],
     "description": "Statut de génération du document final."
+  },
+  "evaluation.comid.multimorbidite": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Plusieurs maladies chroniques (>2) et/ou symptômes inexpliqués"
+  },
+  "evaluation.comid.douleurs": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Douleurs persistantes ou récurrentes impactant le quotidien."
+  },
+  "evaluation.comid.allergies": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Présence d’une allergie ou intolérance médicamenteuse connue."
+  },
+  "evaluation.comid.polymedication": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Administration de plus de 5 substances différentes sur 7 jours."
+  },
+  "evaluation.comid.troubles_cognitifs": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Présence de troubles cognitifs impactant les AVQ/AIVQ."
+  },
+  "evaluation.comid.precarite_financiere": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Difficultés financières ou incapacité à gérer/assumer les coûts liés à la prise en charge."
+  },
+  "evaluation.comid.epuisement_aidant": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Absence, épuisement ou tensions importantes dans l’entourage aidant."
+  },
+  "evaluation.comid.litteratie_faible": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Difficulté à comprendre et utiliser les informations, pouvant être liée à l’alphabétisation, la langue ou la culture."
+  },
+  "evaluation.comid.isolement_social": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Absence involontaire ou faiblesse marquée des liens sociaux."
+  },
+  "evaluation.comid.logement_inadapte": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Présence d’obstacles ou de dangers dans le logement ou son environnement immédiat."
+  },
+  "evaluation.comid.depression": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Présence de dépression objectivable ou d’idées suicidaires."
+  },
+  "evaluation.comid.psychiatrie": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Diagnostic psychiatrique établi ou symptomatologie objectivable."
+  },
+  "evaluation.comid.addiction": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Rapport pathologique à une substance ou un comportement."
+  },
+  "evaluation.comid.anxiete": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Anxiété ou angoisse compliquant la lecture clinique de la situation."
+  },
+  "evaluation.comid.fluctuation_mentale": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Variabilité marquée du comportement, de l’humeur ou des fonctions mentales."
+  },
+  "evaluation.comid.sollicitations_recurrentes": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Demandes répétées et fréquentes de soutien, présence, information ou réassurance."
+  },
+  "evaluation.comid.conflit_reseau": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Communication contradictoire, instable ou conflictuelle avec un membre du réseau."
+  },
+  "evaluation.comid.inquietude_sante": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Préoccupation marquée concernant l’état de santé ou les informations médicales."
+  },
+  "evaluation.comid.agressivite": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Présence d’agressivité, de comportements menaçants ou de mutisme."
+  },
+  "evaluation.comid.opposition_soins": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Refus, négociations répétées ou évitement des soins."
+  },
+  "evaluation.comid.degradation_recente": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Perception d’une aggravation de l’état de santé au cours du dernier mois."
+  },
+  "evaluation.comid.perte_autonomie_recente": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Modification du degré d’indépendance dans les AVQ/AIVQ."
+  },
+  "evaluation.comid.transition_parcours": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Présence d’un changement majeur de vie ou de parcours affectant les besoins."
+  },
+  "evaluation.comid.trouble_cognitif_aigu": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Changement rapide du comportement ou des capacités cognitives habituelles."
+  },
+  "evaluation.comid.imprevisibilite": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Évolution de l’état de santé ou des comportements difficilement prévisible."
+  },
+  "evaluation.comid.multitude_intervenants": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Présence d’au moins 3 professionnels intervenant régulièrement dans la situation."
+  },
+  "evaluation.comid.manque_partenariat": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Communication ou partenariat faible entre les intervenants."
+  },
+  "evaluation.comid.incoherence_soins": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Absence de cohérence, de continuité ou de sens partagé dans la prise en charge."
+  },
+  "evaluation.comid.probleme_d_assurance": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Problème d’assurance impactant la prise en charge."
+  },
+  "evaluation.comid.lourdeur_reseau": {
+    "type": "boolean",
+    "required": false,
+    "source": "analyse",
+    "description": "Charge émotionnelle ou physique importante ressentie par les professionnels ou intervenants."
   }
 }
