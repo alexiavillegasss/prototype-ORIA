@@ -10,7 +10,6 @@ from ai.extraction.extractor import SignalExtractor
 from application.scoring_engine import ScoringEngine
 from application.orientation_engine import OrientationEngine
 from application.territory_manager import TerritoryManager
-from infrastructure.database import DatabaseManager
 
 async def run_test():
     BASE_DIR = os.getcwd()
@@ -63,7 +62,6 @@ async def run_test():
             print("Contact : Non trouve dans le referentiel territorial (Structure absente sur cette commune)")
 
     print("\n5. Sauvegarde en Base de Données...")
-    db = DatabaseManager(db_path=os.path.join(BASE_DIR, 'oria_database.db'))
     dossier_id = db.save_dossier(
         texte_original=text,
         donnees_extraites=extracted_data,
@@ -72,7 +70,6 @@ async def run_test():
         structures_orientations=results_with_contacts
     )
     print(f"[💾] Succès ! Dossier sauvegardé dans 'oria_database.db' avec l'ID numéro {dossier_id}")
-
 
 if __name__ == "__main__":
     asyncio.run(run_test())

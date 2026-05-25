@@ -10,7 +10,6 @@ from ai.extraction.extractor import SignalExtractor
 from application.scoring_engine import ScoringEngine
 from application.orientation_engine import OrientationEngine
 from application.territory_manager import TerritoryManager
-from infrastructure.database import DatabaseManager
 
 async def run_test():
     BASE_DIR = os.getcwd()
@@ -26,7 +25,6 @@ async def run_test():
     scoring_engine = ScoringEngine(comid_rules_path=COMID_PATH)
     orientation_engine = OrientationEngine(rules_path=ORIENTATION_RULES_PATH)
     territory_manager = TerritoryManager(territory_rules_path=TERRITORY_PATH)
-    db = DatabaseManager(db_path=os.path.join(BASE_DIR, 'oria_database.db'))
 
     text = (
         "Mme Huguette, 79 ans, vit seule dans un logement insalubre et humide à La Valette du Var. "
@@ -67,16 +65,6 @@ async def run_test():
             print(f"Contact : {struct.get('telephone', 'N/A')} | {struct.get('adresse', 'N/A')}")
         else:
             print("Contact : Non trouvé dans le référentiel territorial")
-
-    print("\n5. Sauvegarde en Base de Données...")
-    dossier_id = db.save_dossier(
-        texte_original=text,
-        donnees_extraites=extracted_data,
-        score_comid=comid_results['score_total'],
-        niveau_comid=comid_results['label'],
-        structures_orientations=results_with_contacts
-    )
-    print(f"[DB] Succès ! Dossier sauvegardé dans 'oria_database.db' avec l'ID numéro {dossier_id}")
 
 if __name__ == "__main__":
     asyncio.run(run_test())

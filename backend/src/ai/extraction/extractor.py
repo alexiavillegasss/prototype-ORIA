@@ -3,7 +3,7 @@ import os
 from infrastructure.llm_client import OllamaClient
 
 class SignalExtractor:
-    def __init__(self, schema_path: str, comid_path: str, model="llama3", base_url="http://localhost:11434"):
+    def __init__(self, schema_path: str, comid_path: str, model="llama3.2", base_url="http://localhost:11434"):
         self.client = OllamaClient(model=model, base_url=base_url)
         self.schema_path = schema_path
         self.comid_path = comid_path
@@ -41,13 +41,13 @@ SITUATION : "{text}"
 - "professionnels_domicile": Présence de professionnels au domicile comme infirmiers ou aides à domicile (choisir parmi: "oui", "non", "inconnu")
 - "aidant_regulier": Présence d'un proche aidant régulier (choisir parmi: "oui", "non", "inconnu")
 
-
         
 ### ÉTAPE 2 : ÉVALUATION DES CRITÈRES COMID (OUI/NON)
 Utilise ce référentiel :
 {comid_reference}
 
 ### ÉTAPE 3 : FORMAT JSON (STRICT)
+IMPORTANT : Pour la clé "raisonnement_expert", écris un résumé extrêmement court de maximum 10-15 mots.
 {{
   "age": 82,
   "ville": "Toulon",
@@ -63,7 +63,7 @@ Utilise ce référentiel :
     "multimorbidite": true,
     ...
   }},
-  "raisonnement_expert": "Résumé synthétique"
+  "raisonnement_expert": "Résumé de 10 mots maximum."
 }}
 
 REPONDS UNIQUEMENT PAR LE JSON :
