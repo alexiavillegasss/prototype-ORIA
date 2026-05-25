@@ -1,10 +1,12 @@
 import json
 import os
 from infrastructure.llm_client import OllamaClient
+from ai.security.anonymizer import Anonymizer
 
 class SignalExtractor:
     def __init__(self, schema_path: str, comid_path: str, model="llama3.2", base_url="http://localhost:11434"):
         self.client = OllamaClient(model=model, base_url=base_url)
+        self.anonymizer = Anonymizer()
         self.schema_path = schema_path
         self.comid_path = comid_path
         self._comid_items = self._load_comid_items()
@@ -15,6 +17,9 @@ class SignalExtractor:
             return data.get("items", [])
 
     async def extract(self, text: str):
+        # Pseudonymisation du récit patient avant traitement
+        safe_text = self.anonymizer.pseudonymize(text)
+        
         # Construction dynamique de la liste des critères avec leurs exemples, l'IA prefere lire une liste donc on la transforme sous cette forme, on l'utilisera ligne 45.
         comid_reference = ""
         for item in self._comid_items:
@@ -25,7 +30,7 @@ class SignalExtractor:
 ### EXPERT ORIA - ÉVALUATION CLINIQUE ET SOCIALE
 Analyse la situation suivante pour structurer un dossier d'orientation.
 
-SITUATION : "{text}"
+SITUATION : "{safe_text}"
 
 ### ÉTAPE 1 : EXTRACTION DES DONNÉES DE BASE
 - Âge de la personne (ex: 82)

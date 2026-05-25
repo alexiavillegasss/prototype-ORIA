@@ -77,8 +77,8 @@ async def main():
     print("=============================================================")
     
     test_dir = 'tests_simulation'
-    # List all files starting with test_ and ending with .py, excluding run_all_simulations.py itself
-    files = [f for f in os.listdir(test_dir) if f.startswith('test_') and f.endswith('.py') and f != 'run_all_simulations.py']
+    # List all files starting with test_ and ending with .py, excluding run_all_simulations.py and test_anonymizer.py
+    files = [f for f in os.listdir(test_dir) if f.startswith('test_') and f.endswith('.py') and f not in ['run_all_simulations.py', 'test_anonymizer.py']]
     files.sort()
     
     print(f"Détection de {len(files)} simulations cliniques.")
