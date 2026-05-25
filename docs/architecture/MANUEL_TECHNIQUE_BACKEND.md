@@ -320,3 +320,27 @@ Cette échelle n'est pas calculée par l'IA, elle est définie à l'avance par d
 9. **CCAS - Premier Accueil (Priorité 60)**
    - Condition : APA = NON.
    - Signaux : Demandes d'informations générales, aides facultatives communales.
+
+---
+
+## 9. CONFIGURATION DE L'ACCÉLÉRATION MATÉRIELLE (GPU vs CPU)
+
+Pour garantir une expérience fluide lors de l'évaluation clinique en temps réel, le moteur d'inférence local d'ORIA a été optimisé pour s'exécuter sur le **processeur graphique dédié (GPU)** de l'ordinateur portable plutôt que sur le **processeur central (CPU)**.
+
+### Le Problème du CPU-only (Par défaut)
+Sur les ordinateurs portables équipés de doubles puces graphiques (une puce intégrée de base pour l'autonomie et une carte dédiée haute performance), Windows et Ollama tendent à ignorer la carte dédiée.
+* **Inférence CPU** : L'exécution du modèle Llama 3.2 (3B) sur le processeur central (CPU) requiert d'intenses calculs vectoriels partagés. L'analyse d'un seul récit de patient prenait environ **1 minute et 40 secondes**.
+* **Impact** : Cela rendait l'analyse de dossiers en temps réel inconfortable et ralentissait considérablement la validation à grande échelle des 23 cas de simulation clinique.
+
+### La Solution : Accélération CUDA sur NVIDIA RTX 4070 Laptop
+L'activation complète des cœurs CUDA dédiés de la carte graphique NVIDIA GeForce RTX 4070 a permis de franchir un cap d'optimisation majeur :
+1. **Résolution du pilote hybride Windows** : Installation de la dernière mise à jour du pilote NVIDIA Studio pour enregistrer et exposer la DLL système `nvcudart_hybrid64.dll` requise par le moteur de calcul CUDA d'Ollama (`ggml-cuda.dll`).
+2. **Forçage des préférences graphiques de Windows** : Inscription de la préférence haute performance (`GpuPreference=2`) dans la base de registre Windows (`HKCU:\Software\Microsoft\DirectX\UserGpuPreferences`) pour les exécutables d'Ollama :
+   - `C:\Users\alexi\AppData\Local\Programs\Ollama\ollama.exe`
+   - `C:\Users\alexi\AppData\Local\Programs\Ollama\ollama app.exe`
+
+### Résultats de l'Optimisation
+* **Vitesse de calcul** : L'analyse complète d'un patient (comprenant la chaîne de pensée CoT, l'extraction de 30 variables du schéma pivot et la génération de plus de 1000 jetons JSON) est passée de **1m40s** à seulement **25 secondes** (soit un **gain de vitesse de 4x à 5x**).
+* **Consommation mémoire** : Le modèle est entièrement déporté dans la VRAM dédiée du GPU (~3 Go alloués de façon permanente), libérant ainsi 100% de la puissance du CPU système pour l'orchestrateur de l'application.
+* **Exécution globale** : Le lanceur de simulations (`run_all_simulations.py`) peut désormais exécuter l'ensemble de la base des 23 patients de test de façon fluide et fiable.
+
