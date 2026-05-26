@@ -1,34 +1,34 @@
 # 📋 Rapport d'Évaluation Clinique ORIA
 
-Généré automatiquement le : `2026-05-26 09:39:33`  
+Généré automatiquement le : `2026-05-26 10:13:26`  
 Nombre de cas exécutés : **20**  
 Taux de succès : **20/20**  
-Temps d'exécution total : **530.05 secondes**  
+Temps d'exécution total : **532.91 secondes**  
 
 ## 📊 Tableau récapitulatif des Orientations
 
 | Patient | Status | Score COMID | Orientation Principale | Temps d'exécution |
 | :--- | :---: | :---: | :--- | :---: |
-| **Mme Huguette** | ✅ SUCCESS | 6 | `CCAS - Centre Communal d'Action Sociale` | 29.60s |
-| **Mme Antoinette** | ✅ SUCCESS | 9 | `Service Social de l'Hôpital` | 27.05s |
-| **Mme Rossi** | ✅ SUCCESS | 6 | `N/A` | 24.38s |
-| **Mme Martin** | ✅ SUCCESS | 5 | `CRT - Centre de Ressources Territorial (Volet 2 - Accompagnement Renforcé)` | 25.43s |
-| **Mme Durand** | ✅ SUCCESS | 7 | `N/A` | 25.99s |
-| **Mme Michu** | ✅ SUCCESS | 4 | `N/A` | 25.19s |
-| **Mr Martin** | ✅ SUCCESS | 5 | `CCAS - Centre Communal d'Action Sociale` | 25.98s |
-| **Mme Vial** | ✅ SUCCESS | 4 | `N/A` | 26.99s |
-| **Mme Morel** | ✅ SUCCESS | 2 | `N/A` | 26.08s |
-| **Mr Petit** | ✅ SUCCESS | 6 | `CRT - Centre de Ressources Territorial (Volet 2 - Accompagnement Renforcé)` | 24.75s |
-| **Mr Chen** | ✅ SUCCESS | 5 | `CCAS - Centre Communal d'Action Sociale` | 27.23s |
-| **Mme Fontaine** | ✅ SUCCESS | 5 | `N/A` | 25.98s |
-| **Mme Mouton** | ✅ SUCCESS | 7 | `N/A` | 27.57s |
-| **Mr Vacek** | ✅ SUCCESS | 7 | `CEV - Cellule Écoute et Vigilance (Urgence & Danger)` | 26.28s |
-| **Mr Dubois** | ✅ SUCCESS | 8 | `N/A` | 26.64s |
-| **Mme Bernard** | ✅ SUCCESS | 7 | `CCAS - Centre Communal d'Action Sociale` | 27.62s |
-| **Mme Petit** | ✅ SUCCESS | 2 | `CCAS - Centre Communal d'Action Sociale` | 25.16s |
-| **Mme Lefebvre** | ✅ SUCCESS | 8 | `Service Social de l'Hôpital` | 30.27s |
-| **Mr Lambert** | ✅ SUCCESS | 7 | `N/A` | 26.06s |
-| **Mr Leroy** | ✅ SUCCESS | 10 | `CCAS - Centre Communal d'Action Sociale` | 25.79s |
+| **Mme Huguette** | ✅ SUCCESS | 6 | `CCAS - Centre Communal d'Action Sociale` | 26.89s |
+| **Mme Antoinette** | ✅ SUCCESS | 9 | `Service Social de l'Hôpital` | 27.45s |
+| **Mme Rossi** | ✅ SUCCESS | 6 | `N/A` | 26.29s |
+| **Mme Martin** | ✅ SUCCESS | 5 | `CRT - Centre de Ressources Territorial (Volet 2 - Accompagnement Renforcé)` | 28.62s |
+| **Mme Durand** | ✅ SUCCESS | 7 | `N/A` | 25.19s |
+| **Mme Michu** | ✅ SUCCESS | 4 | `N/A` | 26.15s |
+| **Mr Martin** | ✅ SUCCESS | 5 | `CCAS - Centre Communal d'Action Sociale` | 27.86s |
+| **Mme Vial** | ✅ SUCCESS | 4 | `N/A` | 27.74s |
+| **Mme Morel** | ✅ SUCCESS | 2 | `N/A` | 27.90s |
+| **Mr Petit** | ✅ SUCCESS | 6 | `CRT - Centre de Ressources Territorial (Volet 2 - Accompagnement Renforcé)` | 29.22s |
+| **Mr Chen** | ✅ SUCCESS | 5 | `CCAS - Centre Communal d'Action Sociale` | 29.26s |
+| **Mme Fontaine** | ✅ SUCCESS | 5 | `N/A` | 26.12s |
+| **Mme Mouton** | ✅ SUCCESS | 7 | `N/A` | 27.97s |
+| **Mr Vacek** | ✅ SUCCESS | 7 | `CEV - Cellule Écoute et Vigilance (Urgence & Danger)` | 25.81s |
+| **Mr Dubois** | ✅ SUCCESS | 8 | `N/A` | 25.85s |
+| **Mme Bernard** | ✅ SUCCESS | 7 | `CCAS - Centre Communal d'Action Sociale` | 28.03s |
+| **Mme Petit** | ✅ SUCCESS | 2 | `CCAS - Centre Communal d'Action Sociale` | 22.76s |
+| **Mme Lefebvre** | ✅ SUCCESS | 8 | `Service Social de l'Hôpital` | 24.91s |
+| **Mr Lambert** | ✅ SUCCESS | 7 | `N/A` | 24.76s |
+| **Mr Leroy** | ✅ SUCCESS | 10 | `CCAS - Centre Communal d'Action Sociale` | 24.11s |
 
 ---
 
@@ -43,7 +43,7 @@ Temps d'exécution total : **530.05 secondes**
 1. Extraction IA (Temp=0.0) pour : 'Mme Huguette, 79 ans, vit seule dans un logement insalubre et humide à La Valett...'
 
 --- DEBUG : ANALYSE EXPERTE ---
-Situation de Mme H. : solitude, mauvaise santé financière et risque de malveillance.
+Mme H. vit dans des conditions de précarité financière et d'isolement social, avec une suspicion de malveillance liée à son neveu.
 Ville extraite : La Valette du Var
 Médecin : absent
 Malveillance : spoliation_financiere
@@ -63,7 +63,7 @@ Données extraites (JSON) :
   "vulnerabilites.sante.hospitalisation.statut": "aucun",
   "demande.motif_principal": "secours_urgence",
   "vulnerabilites.sante.professionnels_domicile": "inconnu",
-  "usager.cadre_de_vie.aidant_regulier": "non",
+  "usager.cadre_de_vie.aidant_regulier": "oui",
   "evaluation.comid.multimorbidite": false,
   "evaluation.comid.douleurs": true,
   "evaluation.comid.allergies": false,
@@ -129,6 +129,8 @@ Contact : 06 63 63 63 91 | 3 Rue Aspirant François Philippe 83260 La Crau
 [ CCAS - Centre Communal d'Action Sociale ] - Priorité : 60
 Objectif : Information et premier accueil social : Se renseigner sur les aides légales (RSA), les secours d'urgence (alimentaire, factures) et les logements seniors de la commune.
 Contact : 04 94 20 92 70 | place Général de Gaulle 83160 la Valette du Var
+
+BDD - Dossier sauvegardé avec succès en base de données de manière anonymisée.
 
 ```
 
@@ -229,6 +231,8 @@ Contact : 04 94 35 32 01 | None
 [ CPTS - Communauté Professionnelle Territoriale de Santé ] - Priorité : 65
 Objectif : Accès aux soins : Recherche de médecin traitant (justifiée par retraite/déménagement) et dispositif MISAS pour éviter le renoncement aux soins.
 Contact : 06 63 63 63 91 | 3 Rue Aspirant François Philippe 83260 La Crau
+
+BDD - Dossier sauvegardé avec succès en base de données de manière anonymisée.
 
 ```
 
@@ -325,6 +329,8 @@ Contact : 04 83 95 24 42 | 100, traverse des minimes 83000 Toulon
 [ CPTS - Communauté Professionnelle Territoriale de Santé ] - Priorite : 65
 Objectif : Accès aux soins : Recherche de médecin traitant (justifiée par retraite/déménagement) et dispositif MISAS pour éviter le renoncement aux soins.
 Contact : 06 81 10 57 70 | 198 rue de Lisbonne 83500 La Seyne-sur-Mer
+
+BDD - Dossier sauvegardé avec succès en base de données de manière anonymisée.
 
 ```
 
@@ -406,6 +412,8 @@ ORIA : 'Je comprends votre épuisement. La situation de votre mère est Situatio
 VOTRE PRIORITÉ ABSOLUE : [ CRT - Centre de Ressources Territorial (Volet 2 - Accompagnement Renforcé) ]
 MISSION : Maintien à domicile renforcé : Alternative à l'EHPAD pour les situations en perte d'autonomie importante ou complexité technique.
 CONTACT : 06 84 99 32 49
+
+BDD - Dossier sauvegardé avec succès en base de données de manière anonymisée.
 
 ```
 
@@ -494,6 +502,8 @@ Contact : Non trouve dans le referentiel territorial
 [ CPTS - Communauté Professionnelle Territoriale de Santé ] - Priorite : 65
 Objectif : Accès aux soins : Recherche de médecin traitant (justifiée par retraite/déménagement) et dispositif MISAS pour éviter le renoncement aux soins.
 Contact : Non trouve dans le referentiel territorial
+
+BDD - Dossier sauvegardé avec succès en base de données de manière anonymisée.
 
 ```
 
@@ -582,6 +592,8 @@ Contact : 04 94 24 65 25 | None
 [ CPTS - Communauté Professionnelle Territoriale de Santé ] - Priorite : 65
 Objectif : Accès aux soins : Recherche de médecin traitant (justifiée par retraite/déménagement) et dispositif MISAS pour éviter le renoncement aux soins.
 Contact : 06 81 10 57 70 | 198 rue de Lisbonne 83500 La Seyne-sur-Mer
+
+BDD - Dossier sauvegardé avec succès en base de données de manière anonymisée.
 
 ```
 
@@ -678,6 +690,8 @@ Contact : 06 81 10 57 70 | 198 rue de Lisbonne 83500 La Seyne-sur-Mer
 [ CCAS - Centre Communal d'Action Sociale ] - Priorite : 60
 Objectif : Information et premier accueil social : Se renseigner sur les aides légales (RSA), les secours d'urgence (alimentaire, factures) et les logements seniors de la commune.
 Contact : 04 94 06 97 18 | Espace Hermès 2 avenue Charles-Gide 83500 La Seyne-sur-Mer
+
+BDD - Dossier sauvegardé avec succès en base de données de manière anonymisée.
 
 ```
 
@@ -767,6 +781,8 @@ Contact : 04 94 24 65 25 | None
 [ CPTS - Communauté Professionnelle Territoriale de Santé ] - Priorite : 65
 Objectif : Accès aux soins : Recherche de médecin traitant (justifiée par retraite/déménagement) et dispositif MISAS pour éviter le renoncement aux soins.
 Contact : 06 81 10 57 70 | 198 rue de Lisbonne 83500 La Seyne-sur-Mer
+
+BDD - Dossier sauvegardé avec succès en base de données de manière anonymisée.
 
 ```
 
@@ -855,6 +871,8 @@ Contact : 04 94 24 65 25 | None
 [ CPTS - Communauté Professionnelle Territoriale de Santé ] - Priorite : 65
 Objectif : Accès aux soins : Recherche de médecin traitant (justifiée par retraite/déménagement) et dispositif MISAS pour éviter le renoncement aux soins.
 Contact : 06 81 10 57 70 | 198 rue de Lisbonne 83500 La Seyne-sur-Mer
+
+BDD - Dossier sauvegardé avec succès en base de données de manière anonymisée.
 
 ```
 
@@ -938,6 +956,8 @@ MISSION : Maintien à domicile renforcé : Alternative à l'EHPAD pour les situa
 CONTACT : 06 84 99 32 49
 
 CONSEIL POUR VOUS : 'Prenez soin de vous également. En plus de votre référent APA, sachez que les plateformes de répit peuvent vous soutenir pendant votre hospitalisation.'
+
+BDD - Dossier sauvegardé avec succès en base de données de manière anonymisée.
 
 ```
 
@@ -1026,6 +1046,8 @@ Contact : 04 94 35 32 01 | None
 [ CCAS - Centre Communal d'Action Sociale ] - Priorite : 60
 Objectif : Information et premier accueil social : Se renseigner sur les aides légales (RSA), les secours d'urgence (alimentaire, factures) et les logements seniors de la commune.
 Contact : 04 94 24 65 00 | 100 rue des remparts - CS 20813 83051 Toulon Cedex
+
+BDD - Dossier sauvegardé avec succès en base de données de manière anonymisée.
 
 ```
 
@@ -1123,6 +1145,8 @@ CONTACT : 04 83 95 83 10
 ACTION : [ CPTS - Communauté Professionnelle Territoriale de Santé ]
 MOTIF : Accès aux soins : Recherche de médecin traitant (justifiée par retraite/déménagement) et dispositif MISAS pour éviter le renoncement aux soins.
 CONTACT : 06 44 18 95 44
+
+BDD - Dossier sauvegardé avec succès en base de données de manière anonymisée.
 
 ```
 
@@ -1219,6 +1243,8 @@ Contact : 04 83 95 58 50 | Espace Pierre Puget 2 Place Marius Trotobas 83190 Oll
 [ CPTS - Communauté Professionnelle Territoriale de Santé ] - Priorité : 65
 Objectif : Accès aux soins : Recherche de médecin traitant (justifiée par retraite/déménagement) et dispositif MISAS pour éviter le renoncement aux soins.
 Contact : 06 81 10 57 70 | 198 rue de Lisbonne 83500 La Seyne-sur-Mer
+
+BDD - Dossier sauvegardé avec succès en base de données de manière anonymisée.
 
 ```
 
@@ -1303,6 +1329,8 @@ CONTACT : 04 83 95 16 01
 
 ENSUITE (VOLET SOCIAL) : [ Service Social de l'Hôpital ]
 MISSION : Accompagnement social en milieu hospitalier : Organisation de la sortie, aide aux démarches et lien avec les services extérieurs.
+
+BDD - Dossier sauvegardé avec succès en base de données de manière anonymisée.
 
 ```
 
@@ -1395,6 +1423,8 @@ Contact : 04 83 95 24 42 | 100, traverse des minimes 83000 Toulon
 [ CPTS - Communauté Professionnelle Territoriale de Santé ] - Priorite : 65
 Objectif : Accès aux soins : Recherche de médecin traitant (justifiée par retraite/déménagement) et dispositif MISAS pour éviter le renoncement aux soins.
 Contact : 06 81 10 57 70 | 198 rue de Lisbonne 83500 La Seyne-sur-Mer
+
+BDD - Dossier sauvegardé avec succès en base de données de manière anonymisée.
 
 ```
 
@@ -1496,6 +1526,8 @@ Contact : 06 81 10 57 70 | 198 rue de Lisbonne 83500 La Seyne-sur-Mer
 [ CCAS - Centre Communal d'Action Sociale ] - Priorite : 60
 Objectif : Information et premier accueil social : Se renseigner sur les aides légales (RSA), les secours d'urgence (alimentaire, factures) et les logements seniors de la commune.
 Contact : 04 94 06 97 18 | Espace Hermès 2 avenue Charles-Gide 83500 La Seyne-sur-Mer
+
+BDD - Dossier sauvegardé avec succès en base de données de manière anonymisée.
 
 ```
 
@@ -1596,6 +1628,8 @@ Contact : 06 63 63 63 91 | 3 Rue Aspirant François Philippe 83260 La Crau
 [ CCAS - Centre Communal d'Action Sociale ] - Priorite : 60
 Objectif : Information et premier accueil social : Se renseigner sur les aides légales (RSA), les secours d'urgence (alimentaire, factures) et les logements seniors de la commune.
 Contact : 04 94 08 98 34 | 81 Rue Marius Tardivier 83130 La garde
+
+BDD - Dossier sauvegardé avec succès en base de données de manière anonymisée.
 
 ```
 
@@ -1696,6 +1730,8 @@ Contact : 06 63 63 63 91 | 3 Rue Aspirant François Philippe 83260 La Crau
 [ CCAS - Centre Communal d'Action Sociale ] - Priorite : 60
 Objectif : Information et premier accueil social : Se renseigner sur les aides légales (RSA), les secours d'urgence (alimentaire, factures) et les logements seniors de la commune.
 Contact : 04 94 08 98 34 | 81 Rue Marius Tardivier 83130 La garde
+
+BDD - Dossier sauvegardé avec succès en base de données de manière anonymisée.
 
 ```
 
@@ -1793,6 +1829,8 @@ CONTACT : 04 94 06 97 04 | None
 CONTACTER : [ CPTS - Communauté Professionnelle Territoriale de Santé ]
 POURQUOI : Accès aux soins : Recherche de médecin traitant (justifiée par retraite/déménagement) et dispositif MISAS pour éviter le renoncement aux soins.
 CONTACT : 06 81 10 57 70 | 198 rue de Lisbonne 83500 La Seyne-sur-Mer
+
+BDD - Dossier sauvegardé avec succès en base de données de manière anonymisée.
 
 ```
 
@@ -1891,6 +1929,8 @@ Contact : 06 81 10 57 70 | 198 rue de Lisbonne 83500 La Seyne-sur-Mer
 [ CCAS - Centre Communal d'Action Sociale ] - Priorite : 60
 Objectif : Information et premier accueil social : Se renseigner sur les aides légales (RSA), les secours d'urgence (alimentaire, factures) et les logements seniors de la commune.
 Contact : 04 94 24 65 00 | 100 rue des remparts - CS 20813 83051 Toulon Cedex
+
+BDD - Dossier sauvegardé avec succès en base de données de manière anonymisée.
 
 ```
 
