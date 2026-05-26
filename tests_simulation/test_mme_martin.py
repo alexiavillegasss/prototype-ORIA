@@ -46,20 +46,15 @@ async def run_test():
     print(f"\n4. Recherche des contacts territoriaux (Toulon)...")
     results_with_contacts = territory_manager.get_contacts_for_structures(orientation_results, "Toulon")
 
-    print(f"\n--- REPONSE D'ORIA POUR L'AIDANTE ---")
+    from oria_display import afficher_orientations
     if not results_with_contacts:
-        print("ORIA : 'Je ne trouve pas de solution immédiate, parlez-en au médecin traitant.'")
+        print("ORIA : 'Je ne trouve pas de solution immediate, parlez-en au medecin traitant.'")
     else:
-        # On ne garde que la meilleure structure (la première de la liste triée par priorité)
-        best_struct = results_with_contacts[0]
-        
-        print(f"ORIA : 'Je comprends votre épuisement. La situation de votre mère est {comid_results['label']}.'")
-        print(f"\nVOTRE PRIORITÉ ABSOLUE : [ {best_struct['label']} ]")
-        print(f"MISSION : {best_struct.get('objectif', 'N/A')}")
-        print(f"CONTACT : {best_struct.get('telephone', 'N/A')}")
+        print(f"ORIA : 'Je comprends votre epuisement. La situation de votre mere est {comid_results['label']}.'")
+        afficher_orientations(results_with_contacts)
         
         if extracted_data.get('evaluation.comid.epuisement_aidant') == True:
-            print("\nCONSEIL POUR VOUS : 'Pensez également à contacter une plateforme de répit pour aidants. Ces structures proposent du soutien psychologique pour vous permettre de souffler.'")
+            print("\nCONSEIL POUR VOUS : 'Pensez egalement a contacter une plateforme de repit pour aidants. Ces structures proposent du soutien psychologique pour vous permettre de souffler.'")
 
 if __name__ == "__main__":
     asyncio.run(run_test())

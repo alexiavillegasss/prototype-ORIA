@@ -15,19 +15,8 @@
             "structure_type": "CRT",
             "label": "CRT - Centre de Ressources Territorial (Volet 2 - Accompagnement Renforcé)",
             "enabled": true,
-            "all_of": [
-                {
-                    "field": "usager.identite.age_estime",
-                    "operator": ">=",
-                    "value": 60
-                }
-            ],
+            "all_of": [],
             "any_of": [
-                {
-                    "field": "usager.situation_actuelle.GIR",
-                    "operator": "in",
-                    "value": [1, 2, 3, 4]
-                },
                 {
                     "field": "complexite.niveau",
                     "operator": "==",
@@ -49,12 +38,22 @@
                     "field": "demande.motif_principal",
                     "operator": "in",
                     "value": ["information_aides"]
+                },
+                {
+                    "field": "usager.identite.age_estime",
+                    "operator": "<=",
+                    "value": 60
+                },
+                {
+                    "field": "usager.situation_actuelle.GIR",
+                    "operator": "not_in",
+                    "value": [1, 2, 3, 4]
                 }
             ],
             "result": {
                 "eligible": true,
                 "base_pertinence": "eleve",
-                "base_priority_score": 85,
+                "base_priority_score": 90,
                 "objectif_orientation": "Maintien à domicile renforcé : Alternative à l'EHPAD pour les situations en perte d'autonomie importante ou complexité technique."
             }
         },
@@ -83,14 +82,16 @@
                     "field": "vulnerabilites.habitat.securite_du_domicile",
                     "operator": "in",
                     "value": ["problematique", "critique", "danger_imminent"]
-                },
-                {
-                    "field": "adresseur.degre_urgence_percu",
-                    "operator": "in",
-                    "value": ["eleve", "critique"]
                 }
             ],
-            "none_of": [],
+            "none_of": [
+                {
+                    "comment": "Ces motifs purement administratifs ou d'accès aux soins ne peuvent pas coexister avec une situation de danger réel justifiant la CEV.",
+                    "field": "demande.motif_principal",
+                    "operator": "in",
+                    "value": ["recherche_medecin", "acces_aux_soins", "information_aides"]
+                }
+            ],
             "result": {
                 "eligible": true,
                 "base_pertinence": "eleve",
@@ -111,7 +112,13 @@
                 }
             ],
             "any_of": [],
-            "none_of": [],
+            "none_of": [
+                {
+                    "field": "usager.identite.age_estime",
+                    "operator": "<=",
+                    "value": 60
+                }
+            ],
             "result": {
                 "eligible": true,
                 "base_pertinence": "eleve",
@@ -125,18 +132,10 @@
             "label": "CLIC - Centre Local d'Information et de Coordination",
             "enabled": true,
             "all_of": [
-                {
-                    "field": "usager.situation_actuelle.APA",
-                    "operator": "==",
-                    "value": "non"
-                }
+                
             ],
             "any_of": [
-                {
-                    "field": "usager.identite.age_estime",
-                    "operator": ">=",
-                    "value": 60
-                },
+                
                 {
                     "field": "usager.situation_actuelle.PCH",
                     "operator": "==",
@@ -157,13 +156,23 @@
                 {
                     "field": "demande.motif_principal",
                     "operator": "in",
-                    "value": ["entree_en_etablissement", "ehpad"]
+                    "value": ["entree_en_etablissement", "ehpad", "recherche_medecin", "acces_aux_soins"]
+                },
+                {
+                    "field": "usager.situation_actuelle.APA",
+                    "operator": "==",
+                    "value": "oui"
+                },
+                {
+                    "field": "usager.identite.age_estime",
+                    "operator": "<=",
+                    "value": 60
                 }
             ],
             "result": {
                 "eligible": true,
                 "base_pertinence": "eleve",
-                "base_priority_score": 90,
+                "base_priority_score": 80,
                 "objectif_orientation": "Maintien à domicile : Information, évaluation, ouverture des droits (APA, CARSAT) et aide administrative (impôts, retraite). UNIQUEMENT si l'APA n'est pas déjà en place."
             }
         },
@@ -318,6 +327,120 @@
             }
         },
         {
+            "id": "eligibility_dac_04",
+            "structure_type": "DAC",
+            "label": "DAC - Situation de complexité multidimensionnelle (Sanitaire, Social, Médico-social)",
+            "enabled": true,
+            "all_of": [
+                {
+                    "field": "complexite.score_total",
+                    "operator": ">=",
+                    "value": 4
+                }
+            ],
+            "any_of": [
+                {
+                    "field": "evaluation.comid.psychiatrie",
+                    "operator": "==",
+                    "value": true
+                },
+                {
+                    "field": "evaluation.comid.addiction",
+                    "operator": "==",
+                    "value": true
+                },
+                {
+                    "field": "evaluation.comid.troubles_cognitifs",
+                    "operator": "==",
+                    "value": true
+                },
+                {
+                    "field": "evaluation.comid.epuisement_aidant",
+                    "operator": "==",
+                    "value": true
+                },
+                {
+                    "field": "evaluation.comid.logement_inadapte",
+                    "operator": "==",
+                    "value": true
+                },
+                {
+                    "field": "evaluation.comid.opposition_soins",
+                    "operator": "==",
+                    "value": true
+                },
+                {
+                    "field": "evaluation.comid.precarite_financiere",
+                    "operator": "==",
+                    "value": true
+                },
+                {
+                    "field": "evaluation.comid.isolement_social",
+                    "operator": "==",
+                    "value": true
+                },
+                {
+                    "field": "complexite.niveau",
+                    "operator": "==",
+                    "value": "complexe"
+                }
+            ],
+            "none_of": [],
+            "result": {
+                "eligible": true,
+                "base_pertinence": "eleve",
+                "base_priority_score": 92,
+                "objectif_orientation": "Situation de forte complexité multidimensionnelle (sanitaire, social et médico-social) : Évaluation globale et coordination intensive par le DAC pour débloquer le parcours de vie à domicile."
+            }
+        },
+        {
+            "id": "eligibility_dac_05",
+            "structure_type": "DAC",
+            "label": "DAC - Refus de soins ou d'aide (Priorité Absolue)",
+            "enabled": true,
+            "all_of": [],
+            "any_of": [
+                {
+                    "field": "demande.motif_principal",
+                    "operator": "in",
+                    "value": ["refus_de_soins", "refus_aide_domicile"]
+                },
+                {
+                    "field": "evaluation.comid.opposition_soins",
+                    "operator": "==",
+                    "value": true
+                }
+            ],
+            "none_of": [],
+            "result": {
+                "eligible": true,
+                "base_pertinence": "eleve",
+                "base_priority_score": 102,
+                "objectif_orientation": "Priorité Absolue - Crise par refus ou opposition de soins/aides : Rupture critique de parcours nécessitant l'intervention immédiate du DAC pour évaluer et débloquer la situation."
+            }
+        },
+        {
+            "id": "eligibility_dac_06",
+            "structure_type": "DAC",
+            "label": "DAC - Suspicion de Diogène ou incurie",
+            "enabled": true,
+            "all_of": [],
+            "any_of": [
+                {
+                    "field": "usager.cadre_de_vie.etat_logement",
+                    "operator": "in",
+                    "value": ["diogene", "incurie"]
+                }
+            ],
+            "none_of": [],
+            "result": {
+                "eligible": true,
+                "base_pertinence": "eleve",
+                "base_priority_score": 92,
+                "objectif_orientation": "Insalubrité ou négligence critique à domicile : Suspicion ou syndrome de Diogène/incurie avéré nécessitant une coordination multidimensionnelle renforcée par le DAC."
+            }
+        },
+        {
             "id": "eligibility_cpts_01",
             "structure_type": "CPTS",
             "label": "CPTS - Communauté Professionnelle Territoriale de Santé",
@@ -333,14 +456,15 @@
                     "field": "demande.motif_principal",
                     "operator": "contains_any",
                     "value": ["recherche_medecin", "acces_aux_soins", "misas", "renoncement_aux_soins", "demenagement", "retraite_medecin"]
-                },
+                }
+            ],
+            "none_of": [
                 {
                     "field": "usager.identite.age_estime",
-                    "operator": ">=",
+                    "operator": "<=",
                     "value": 60
                 }
             ],
-            "none_of": [],
             "result": {
                 "eligible": true,
                 "base_pertinence": "moyenne",
@@ -351,7 +475,40 @@
         {
             "id": "eligibility_hopital_01",
             "structure_type": "SERVICE_SOCIAL_HOPITAL",
-            "label": "Service Social de l'Hôpital",
+            "label": "Service Social de l'Hôpital (Transition Sociale Urgente)",
+            "enabled": true,
+            "all_of": [
+                {
+                    "field": "demande.motif_principal",
+                    "operator": "in",
+                    "value": ["sortie_hospitalisation", "maintien_a_domicile", "aide_alimentaire", "secours_urgence", "information_aides", "refus_aide_domicile", "refus_de_soins"]
+                },
+                {
+                    "field": "vulnerabilites.sante.hospitalisation.statut",
+                    "operator": "in",
+                    "value": ["en_cours", "recente"]
+                }
+            ],
+            "any_of": [],
+            "none_of": [
+                {
+                    "comment": "Recherche de médecin = problème d'accès aux soins (CPTS), pas une transition hospitalière sociale.",
+                    "field": "demande.motif_principal",
+                    "operator": "in",
+                    "value": ["recherche_medecin", "acces_aux_soins"]
+                }
+            ],
+            "result": {
+                "eligible": true,
+                "base_pertinence": "eleve",
+                "base_priority_score": 98,
+                "objectif_orientation": "Accompagnement social hospitalier d'urgence : Organisation de la sortie complexe et gestion des problématiques sociales (perte de papiers, isolement, logement, aides) en lien direct avec le service social de l'établissement."
+            }
+        },
+        {
+            "id": "eligibility_hopital_02",
+            "structure_type": "SERVICE_SOCIAL_HOPITAL",
+            "label": "Service Social de l'Hôpital (Standard)",
             "enabled": true,
             "all_of": [],
             "any_of": [
@@ -361,7 +518,14 @@
                     "value": ["en_cours", "recente"]
                 }
             ],
-            "none_of": [],
+            "none_of": [
+                {
+                    "comment": "Recherche de médecin = problème d'accès aux soins (CPTS), pas un accompagnement hospitalier.",
+                    "field": "demande.motif_principal",
+                    "operator": "in",
+                    "value": ["recherche_medecin", "acces_aux_soins"]
+                }
+            ],
             "result": {
                 "eligible": true,
                 "base_pertinence": "eleve",

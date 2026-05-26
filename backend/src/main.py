@@ -32,7 +32,8 @@ extractor = SignalExtractor(
     schema_path=SCHEMA_PATH, 
     comid_path=COMID_PATH,
     model=ai_config.get('model_name', 'llama3'),
-    base_url=ai_config.get('base_url', 'http://localhost:11434')
+    base_url=ai_config.get('base_url', 'http://localhost:11434'),
+    temperature=float(ai_config.get('temperature', 0.1))
 )
 scoring_engine = ScoringEngine(comid_rules_path=COMID_PATH)
 orientation_engine = OrientationEngine(rules_path=ORIENTATION_RULES_PATH)

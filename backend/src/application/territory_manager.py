@@ -90,10 +90,11 @@ class TerritoryManager:
                     print(f"Contact : {struct.get('telephone', 'N/A')} | {struct.get('adresse', 'N/A')}")
                 else:
                     print("Contact : Non trouvé dans le référentiel territorial")
+                self._print_struct_explication(struct)
         print("=====================================================================\n")
         
         # 2. Récupération des questions de clarification
-        questions = clarification_engine.get_clarification_questions(extracted_data, initial_contacts, SignalExtractor.last_text)
+        questions = clarification_engine.get_clarification_questions(extracted_data, initial_contacts, SignalExtractor.last_text, scoring_engine, orientation_engine)
         
         if not questions:
             print(" Toutes les informations critiques sont complètes. Aucune clarification requise.")
@@ -185,12 +186,92 @@ class TerritoryManager:
                     print(f"      - {struct['label']} (Priorité : {struct['priorite']})")
                     
         print("\n=====================================================================")
-        print("🎉 VALIDATION INTERACTIVE COMPLETE ! ORIENTATION FINALE")
+        print("   VALIDATION INTERACTIVE COMPLETE ! ORIENTATION FINALE")
         print("=====================================================================")
+        if not new_contacts:
+            print("Aucune structure éligible finale.")
+        else:
+            for struct in new_contacts:
+                print(f"\n[ {struct['label']} ] - Priorité : {struct['priorite']}")
+                print(f"Objectif : {struct['objectif']}")
+                if struct.get("telephone") or struct.get("adresse"):
+                    print(f"Contact : {struct.get('telephone', 'N/A')} | {struct.get('adresse', 'N/A')}")
+                else:
+                    print("Contact : Non trouvé dans le référentiel territorial")
+                self._print_struct_explication(struct)
+        print("=====================================================================\n")
         
         SignalExtractor.last_extracted_data = current_data
         
         return new_contacts
+
+    def _print_struct_explication(self, struct: dict):
+        field_labels = {
+            "usager.situation_actuelle.APA":              "Statut APA",
+            "usager.situation_actuelle.PCH":              "Statut PCH",
+            "usager.situation_actuelle.GIR":              "Niveau GIR",
+            "usager.situation_actuelle.suspicion_malveillance": "Suspicion de malveillance",
+            "usager.identite.age_estime":                 "Âge estimé",
+            "usager.localisation.commune_residence":       "Commune de résidence",
+            "usager.cadre_de_vie.aidant_regulier":        "Aidant régulier",
+            "demande.motif_principal":                    "Motif principal de la demande",
+            "vulnerabilites.sante.hospitalisation.statut": "Statut d'hospitalisation",
+            "vulnerabilites.sante.suivi_medical.medecin_traitant": "Médecin traitant",
+            "vulnerabilites.sante.professionnels_domicile": "Professionnels au domicile",
+            "vulnerabilites.habitat.securite_du_domicile": "Sécurité du domicile",
+            "vulnerabilites.social.precarite":            "Précarité sociale",
+            "vulnerabilites.social.isolement_relationnel": "Isolement relationnel",
+            "vulnerabilites.social.risque_epuisement_entourage": "Risque épuisement entourage",
+            "evaluation.comid.epuisement_aidant":         "Épuisement de l'aidant",
+            "evaluation.comid.precarite_financiere":      "Précarité financière",
+            "evaluation.comid.isolement_social":          "Isolement social",
+            "evaluation.comid.troubles_cognitifs":        "Troubles cognitifs",
+            "evaluation.comid.opposition_soins":          "Opposition aux soins",
+            "evaluation.comid.logement_inadapte":         "Logement inadapté",
+            "evaluation.comid.multimorbidite":            "Multimorbidité",
+            "evaluation.comid.psychiatrie":               "Problème psychiatrique",
+            "evaluation.comid.addiction":                 "Addiction",
+            "evaluation.comid.transition_parcours":       "Transition de parcours",
+            "complexite.niveau":                          "Niveau de complexité COMID",
+            "complexite.score_total":                     "Score COMID total",
+            "adresseur.degre_urgence_percu":              "Urgence perçue",
+        }
+
+        operator_labels = {
+            "==":           "est",
+            ">=":           "est >=",
+            "<=":           "est <=",
+            "in":           "est parmi",
+            "not_in":       "n'est pas parmi",
+            "contains_any": "contient l'un de",
+        }
+
+        def format_valeur(valeur):
+            if isinstance(valeur, bool):
+                return "OUI" if valeur else "NON"
+            if valeur is None:
+                return "(non renseigné)"
+            return f'"{valeur}"'
+
+        def format_attendu(attendu):
+            if isinstance(attendu, list):
+                if len(attendu) <= 4:
+                    return "[" + ", ".join(f'"{v}"' for v in attendu) + "]"
+                else:
+                    return "[" + ", ".join(f'"{v}"' for v in attendu[:4]) + f", ... +{len(attendu)-4}]"
+            if isinstance(attendu, bool):
+                return "OUI" if attendu else "NON"
+            return f'"{attendu}"'
+
+        raisons = struct.get("pourquoi", [])
+        if raisons:
+            print("\n  Pourquoi cette orientation :")
+            for r in raisons:
+                champ_label = field_labels.get(r["champ"], r["champ"])
+                op_label    = operator_labels.get(r["operateur"], r["operateur"])
+                valeur_str  = format_valeur(r["valeur"])
+                attendu_str = format_attendu(r["attendu"])
+                print(f"    -> {champ_label} = {valeur_str}  ({op_label} {attendu_str})")
 
     def _find_area(self, city: str):
         """

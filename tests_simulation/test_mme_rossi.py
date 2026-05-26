@@ -41,25 +41,15 @@ async def run_test():
     print(f"Score Total : {comid_results['score_total']} ({comid_results['label']})")
 
     print("\n3. Evaluation de l'orientation...")
-    # On s'assure que le motif spécifique est bien pris en compte
-    if "violent" in text.lower():
-         extracted_data["usager.situation_actuelle.suspicion_malveillance"] = "violences_conjugales"
-
+    # L'IA extrait naturellement 'violences_physiques' qui correspond à la règle CEV.
     orientation_results = orientation_engine.evaluate_orientation(extracted_data, comid_results)
 
     print(f"\n4. Recherche des contacts territoriaux (Toulon)...")
     results_with_contacts = territory_manager.get_contacts_for_structures(orientation_results, "Toulon")
 
     print(f"\n--- RESULTATS DE L'ORIENTATION (Protection / Violences) ---")
-    if not results_with_contacts:
-        print("Aucune structure eligible detectee.")
-    for struct in results_with_contacts:
-        print(f"\n[ {struct['label']} ] - Priorite : {struct.get('priorite', 'N/A')}")
-        print(f"Objectif : {struct.get('objectif', 'N/A')}")
-        if struct.get("telephone") or struct.get("adresse"):
-            print(f"Contact : {struct.get('telephone', 'N/A')} | {struct.get('adresse', 'N/A')}")
-        else:
-            print("Contact : Non trouve dans le referentiel territorial")
+    from oria_display import afficher_orientations
+    afficher_orientations(results_with_contacts)
 
 if __name__ == "__main__":
     asyncio.run(run_test())

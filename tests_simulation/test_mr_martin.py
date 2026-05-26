@@ -47,15 +47,8 @@ async def run_test():
     results_with_contacts = territory_manager.get_contacts_for_structures(orientation_results, extracted_data.get('usager.localisation.commune_residence'))
 
     print("\n--- RESULTATS DE L'ORIENTATION ---")
-    if not results_with_contacts:
-        print("Aucune structure eligible detectee.")
-    for struct in results_with_contacts:
-        print(f"\n[ {struct['label']} ] - Priorite : {struct.get('priorite', 'N/A')}")
-        print(f"Objectif : {struct.get('objectif', 'N/A')}")
-        if struct.get("telephone") or struct.get("adresse"):
-            print(f"Contact : {struct.get('telephone', 'N/A')} | {struct.get('adresse', 'N/A')}")
-        else:
-            print("Contact : Non trouve dans le referentiel territorial")
+    from oria_display import afficher_orientations
+    afficher_orientations(results_with_contacts)
 
 if __name__ == "__main__":
     asyncio.run(run_test())

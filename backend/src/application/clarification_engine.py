@@ -34,10 +34,11 @@ class ClarificationEngine:
             }
         }
 
-    def get_clarification_questions(self, extracted_data: dict, eligible_structures: list, text: str = None) -> list:
+    def get_clarification_questions(self, extracted_data: dict, eligible_structures: list, text: str = None, scoring_engine = None, orientation_engine = None) -> list:
         """
         Détermine si des informations critiques sont manquantes dans les données extraites
-        ou dans le texte original, et génère des questions ciblées.
+        ou dans le texte original, et génère des questions ciblées UNIQUEMENT si y répondre
+        a un impact réel sur la décision d'orientation finale.
         """
         questions = []
         
@@ -50,7 +51,33 @@ class ClarificationEngine:
             "vulnerabilites.sante.suivi_medical.medecin_traitant": ["médecin", "medecin", "docteur", "généraliste", "generaliste"]
         }
 
+        # Valeurs alternatives de test pour vérifier l'impact sur l'orientation
+        test_values = {
+            "usager.situation_actuelle.APA": ["oui", "non"],
+            "usager.situation_actuelle.GIR": [2, 6],
+            "usager.identite.age_estime": [80, 45],
+            "usager.cadre_de_vie.aidant_regulier": ["oui", "non"],
+            "vulnerabilites.sante.suivi_medical.medecin_traitant": ["identifie", "absent"]
+        }
+
+        # On extrait la situation initiale des types recommandés et de leurs priorités
+        initial_types = {s["structure_type"] for s in eligible_structures}
+        initial_priorities = {s["structure_type"]: s["priorite"] for s in eligible_structures}
+
         for field_path, field_info in self.critical_fields.items():
+            # Filtre intelligent pour éviter les questions d'autonomie hors-sujet
+            if field_path == "usager.situation_actuelle.GIR" and scoring_engine:
+                motif = extracted_data.get("demande.motif_principal")
+                comid_results = scoring_engine.calculate_comid_score(extracted_data)
+                
+                has_cognitive = extracted_data.get("evaluation.comid.troubles_cognitifs") is True or extracted_data.get("evaluation.comid.trouble_cognitif_aigu") is True
+                has_autonomie_loss = extracted_data.get("evaluation.comid.perte_autonomie_recente") is True
+                
+                is_purely_social = motif in ["aide_alimentaire", "secours_urgence", "information_aides"]
+                
+                if is_purely_social and not has_cognitive and not has_autonomie_loss and comid_results.get("score_total", 0) <= 3:
+                    continue # On ignore la question du GIR pour les dossiers purement sociaux
+            
             value = extracted_data.get(field_path)
             
             # Normalisation
@@ -61,7 +88,6 @@ class ClarificationEngine:
             is_missing = value in field_info["trigger_values"]
             
             # Validation par mot-clé dans le texte original (si disponible) :
-            # Si le sujet n'est pas du tout évoqué dans le texte, on considère l'info manquante.
             if text and not is_missing:
                 text_lower = text.lower()
                 field_keywords = keywords.get(field_path, [])
@@ -69,12 +95,36 @@ class ClarificationEngine:
                     is_missing = True
                     
             if is_missing:
-                questions.append({
-                    "champ": field_path,
-                    "libelle": field_info["label"],
-                    "question": field_info["question"],
-                    "impact": field_info["impact"],
-                    "valeur_actuelle": "Non renseignée / Inconnue"
-                })
+                # VÉRIFICATION DYNAMIQUE DE L'IMPACT :
+                # Si les moteurs sont passés en paramètre, on simule des réponses pour voir si l'orientation change
+                has_impact = True
+                if scoring_engine and orientation_engine:
+                    has_impact = False
+                    for test_val in test_values.get(field_path, []):
+                        # On simule un changement de valeur
+                        test_data = {**extracted_data}
+                        test_data[field_path] = test_val
+                        
+                        # Recalcul des orientations
+                        test_comid = scoring_engine.calculate_comid_score(test_data)
+                        test_orientations = orientation_engine.evaluate_orientation(test_data, test_comid)
+                        
+                        # Extraction des résultats simulés
+                        test_types = {s["structure_type"] for s in test_orientations}
+                        test_priorities = {s["structure_type"]: s["priorite"] for s in test_orientations}
+                        
+                        # Si l'orientation simulée est différente de l'initiale, il y a un impact réel !
+                        if initial_types != test_types or initial_priorities != test_priorities:
+                            has_impact = True
+                            break # Inutile de tester d'autres valeurs, l'impact est prouvé
+                
+                if has_impact:
+                    questions.append({
+                        "champ": field_path,
+                        "libelle": field_info["label"],
+                        "question": field_info["question"],
+                        "impact": field_info["impact"],
+                        "valeur_actuelle": "Non renseignée / Inconnue"
+                    })
                 
         return questions
