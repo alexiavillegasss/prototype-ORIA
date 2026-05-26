@@ -29,8 +29,11 @@ class DatabaseManager:
             ''')
             conn.commit()
 
-    def save_dossier(self, texte_original: str, donnees_extraites: dict, score_comid: int, niveau_comid: str, structures_orientations: list) -> Optional[int]:
-        """Sauvegarde une nouvelle analyse dans la base et retourne son numéro de dossier (ID)."""
+    def save_dossier(self, texte_original: str, donnees_extraites: dict, score_comid: int, niveau_comid: str, structures_orientations: list, details_complet: dict = None) -> Optional[int]:
+        """Sauvegarde une nouvelle analyse dans la base et retourne son numéro de dossier (ID).
+        Le paramètre ``details_complet`` contient toutes les informations additionnelles d'orientation
+        sous forme de dictionnaire qui sera sérialisé en JSON.
+        """
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             date_creation = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -39,23 +42,25 @@ class DatabaseManager:
             # On convertit donc nos dictionnaires Python en chaînes de texte JSON.
             cursor.execute('''
                 INSERT INTO dossiers_patients (
-                    date_creation, 
-                    texte_original, 
-                    donnees_extraites, 
-                    score_comid, 
-                    niveau_comid, 
-                    structures_orientations
-                ) VALUES (?, ?, ?, ?, ?, ?)
+                    date_creation,
+                    texte_original,
+                    donnees_extraites,
+                    score_comid,
+                    niveau_comid,
+                    structures_orientations,
+                    details_complet
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)
             ''', (
                 date_creation,
                 texte_original,
                 json.dumps(donnees_extraites, ensure_ascii=False),
                 score_comid,
                 niveau_comid,
-                json.dumps(structures_orientations, ensure_ascii=False)
+                json.dumps(structures_orientations, ensure_ascii=False),
+                json.dumps(details_complet or {}, ensure_ascii=False)
             ))
             conn.commit()
-            return cursor.lastrowid # Retourne l'ID qui vient d'être créé
+            return cursor.lastrowid  # Retourne l'ID qui vient d'être créé
 
     def get_all_dossiers(self):
         """Récupère tout l'historique des dossiers patients."""
@@ -72,6 +77,8 @@ class DatabaseManager:
                 try:
                     dossier['donnees_extraites'] = json.loads(dossier['donnees_extraites'])
                     dossier['structures_orientations'] = json.loads(dossier['structures_orientations'])
+                    if dossier.get('details_complet'):
+                        dossier['details_complet'] = json.loads(dossier['details_complet'])
                 except Exception:
                     pass
                 result.append(dossier)

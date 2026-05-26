@@ -76,15 +76,23 @@ async def analyze(request: AnalyzeRequest):
     patient_city = extracted_data.get("usager.localisation.commune_residence")
     orientation_with_contacts = territory_manager.get_contacts_for_structures(orientation_results, patient_city)
 
-    # 5. Sauvegarde en Base de Données
+    # 5. Sauvegarde en Base de Données (Pseudonymisée)
     dossier_id = None
     try:
+        # On pseudonymise le texte d'entrée en clair (ex: Mme Antoinette Durand -> Mme A. D.)
+        safe_text = extractor.anonymizer.pseudonymize(request.text)
+        # Assemble all orientation details to store in a single JSON column
+        details = {
+            "orientation_results": orientation_results,
+            "orientation_with_contacts": orientation_with_contacts
+        }
         dossier_id = db_manager.save_dossier(
-            texte_original=request.text,
+            texte_original=safe_text,
             donnees_extraites=extracted_data,
             score_comid=comid_results["score_total"],
             niveau_comid=comid_results["label"],
-            structures_orientations=orientation_with_contacts
+            structures_orientations=orientation_with_contacts,
+            details_complet=details
         )
     except Exception as e:
         print(f"Erreur de sauvegarde en base de données : {e}")

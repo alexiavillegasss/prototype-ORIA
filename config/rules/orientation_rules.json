@@ -54,7 +54,7 @@
             "result": {
                 "eligible": true,
                 "base_pertinence": "eleve",
-                "base_priority_score": 85,
+                "base_priority_score": 90,
                 "objectif_orientation": "Maintien à domicile renforcé : Alternative à l'EHPAD pour les situations en perte d'autonomie importante ou complexité technique."
             }
         },
@@ -163,7 +163,7 @@
             "result": {
                 "eligible": true,
                 "base_pertinence": "eleve",
-                "base_priority_score": 90,
+                "base_priority_score": 80,
                 "objectif_orientation": "Maintien à domicile : Information, évaluation, ouverture des droits (APA, CARSAT) et aide administrative (impôts, retraite). UNIQUEMENT si l'APA n'est pas déjà en place."
             }
         },
@@ -261,7 +261,7 @@
             "result": {
                 "eligible": true,
                 "base_pertinence": "eleve",
-                "base_priority_score": 80,
+                "base_priority_score": 85,
                 "objectif_orientation": "Coordination de haut niveau : Évaluation multidimensionnelle et déblocage de situations complexes (sanitaire, social, médico-social). Plan Personnalisé de Coordination."
             }
         },
