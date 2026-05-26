@@ -5,7 +5,7 @@ import time
 import re
 
 # Global semaphore to limit parallel executions (prevent CPU/Ollama overload)
-CONCURRENCY_LIMIT = 4
+CONCURRENCY_LIMIT = 1
 sem = asyncio.Semaphore(CONCURRENCY_LIMIT)
 
 async def run_single_simulation(file_name, file_path):
