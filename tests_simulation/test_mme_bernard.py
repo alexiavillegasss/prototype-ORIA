@@ -69,12 +69,17 @@ async def run_test():
         db_path = os.path.join(BASE_DIR, 'oria_database.db')
         db_manager = DatabaseManager(db_path=db_path)
         safe_text = extractor.anonymizer.pseudonymize(text)
+        details = {
+            "orientation_results": orientation_results,
+            "orientation_with_contacts": results_with_contacts
+        }
         db_manager.save_dossier(
             texte_original=safe_text,
             donnees_extraites=extracted_data,
             score_comid=comid_results["score_total"],
             niveau_comid=comid_results["label"],
-            structures_orientations=results_with_contacts
+            structures_orientations=results_with_contacts,
+            details_complet=details
         )
         print("\nBDD - Dossier sauvegardé avec succès en base de données de manière anonymisée.")
     except Exception as e:

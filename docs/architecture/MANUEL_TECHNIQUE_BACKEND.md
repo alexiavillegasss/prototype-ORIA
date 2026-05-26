@@ -340,7 +340,73 @@ L'activation complète des cœurs CUDA dédiés de la carte graphique NVIDIA GeF
    - `C:\Users\alexi\AppData\Local\Programs\Ollama\ollama app.exe`
 
 ### Résultats de l'Optimisation
-* **Vitesse de calcul** : L'analyse complète d'un patient (comprenant la chaîne de pensée CoT, l'extraction de 30 variables du schéma pivot et la génération de plus de 1000 jetons JSON) est passée de **1m40s** à seulement **25 secondes** (soit un **gain de vitesse de 4x à 5x**).
-* **Consommation mémoire** : Le modèle est entièrement déporté dans la VRAM dédiée du GPU (~3 Go alloués de façon permanente), libérant ainsi 100% de la puissance du CPU système pour l'orchestrateur de l'application.
-* **Exécution globale** : Le lanceur de simulations (`run_all_simulations.py`) peut désormais exécuter l'ensemble de la base des 23 patients de test de façon fluide et fiable.
+* **
+---
+## Annexe – Anonymisation et intégration de la base de données
 
+### 1. Vue d'ensemble
+Ce texte explique comment les données du patient sont **anonymisées** avant d’être stockées dans la base SQLite `oria_database.db`.
+
+### 2. Module d’anonymisation
+- **Emplacement** : `backend/src/ai/security/anonymizer.py`
+- **Fonction principale** : `Anonymizer.pseudonymize(text)` – remplace les noms et civilités par leurs initiales (ex. « Mme Dupont » → « Mme D. »). Le texte retourné ne contient plus aucune information personnelle.
+- **Utilisation** :
+```python
+from ai.security.anonymizer import Anonymizer
+anonymizer = Anonymizer()
+texte_brut = "Mme Dupont, 70 ans, habite à Nice. Son médecin est le Dr Martin."
+texte_safe = anonymizer.pseudonymize(texte_brut)
+print(texte_safe)  # -> "Mme D., 70 ans, habite à Nice. Son médecin est le Dr M."
+```
+Tous les pipelines d’extraction appellent cette fonction avant d’enregistrer les données.
+
+### 3. Gestionnaire de base de données
+- **Fichier** : `backend/src/infrastructure/database.py`
+- **Table principale** : `dossiers_patients`
+```sql
+CREATE TABLE IF NOT EXISTS dossiers_patients (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date_creation TEXT NOT NULL,
+    texte_original TEXT NOT NULL,      -- texte déjà anonymisé
+    donnees_extraites TEXT NOT NULL,   -- JSON
+    score_comid INTEGER,
+    niveau_comid TEXT,
+    structures_orientations TEXT,      -- JSON
+    details_complet TEXT               -- JSON (Toutes les informations utiles à l'orientation : grille COMID, GIR, APA, médecin, etc.)
+);
+```
+- **Méthodes clés** :
+  - `save_dossier(texte_original, donnees_extraites, score_comid, niveau_comid, structures_orientations, details_complet)` : insère un nouveau dossier (y compris le dictionnaire complet de l'orientation) et renvoie son `id`.
+  - `get_all_dossiers()` : récupère tous les dossiers, en convertissant les champs JSON (y compris `details_complet`) en dictionnaires Python.
+
+### 4. Flux de travail simplifié
+1️⃣ Extraction du texte avec `SignalExtractor`.
+2️⃣ Anonymisation du texte brut via `Anonymizer.pseudonymize`.
+3️⃣ Calcul du score COMID, détermination de l’orientation, et agrégation de toutes les informations dans `details_complet`.
+4️⃣ Enregistrement du dossier anonymisé et des détails JSON dans la base avec `DatabaseManager.save_dossier`.
+
+Aucun renseignement personnel ne circule dans la base ; seul le texte déjà **pseudonymisé** y est stocké.
+
+### 5. Configuration rapide
+- Le chemin de la base peut être changé en passant `db_path` au constructeur : `DatabaseManager(db_path="chemin/vers/ma.db")`.
+- Les règles d’anonymisation se trouvent dans le dictionnaire `self.patterns` du fichier `anonymizer.py`. Ajouter un nouveau motif suffit à étendre la protection.
+
+### 6. Vérification et Utilisation
+- **Nouveau terminal interactif** : Le script `tester_interactivement.py` à la racine permet d'entrer librement le texte d'un dossier, de l'analyser et de l'enregistrer automatiquement en base. C'est le moyen le plus simple de tester le prototype.
+- **Vérification BDD** : Le script `scratch/check_rows.py` compte le nombre d’enregistrements. Les scripts de test dans `tests_simulation/` insèrent tous correctement la colonne `details_complet`.
+
+### 7. Extensions possibles
+- Ajouter des colonnes à la table en modifiant le `CREATE TABLE` puis en adaptant `save_dossier` / `get_all_dossiers`.
+- Ajouter d’autres expressions régulières dans `Anonymizer` pour couvrir de nouveaux types de données sensibles.
+- Remplacer SQLite par une autre base (PostgreSQL, MySQL) en ne changeant que l’implémentation de `DatabaseManager`.
+---
+_db.py`** (under `scratch/`) can be used to inspect a sample of rows and confirm that `texte_original` contains only pseudonymised placeholders.
+---
+
+## Extending the Model <a name="extending-the-model"></a>
+1. **Add new columns** – modify the `CREATE TABLE` statement, run a migration script that adds the column with a default value, and update `save_dossier`/`get_all_dossiers` accordingly.
+2. **New anonymisation patterns** – add regexes to `Anonymizer.patterns` and add unit tests that check the transformation.
+3. **Alternative storage** – the `DatabaseManager` is deliberately thin; swapping SQLite for Postgres only requires redefining the connection logic while keeping the public API unchanged.
+---
+
+*End of annex.*
