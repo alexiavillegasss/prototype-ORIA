@@ -1,0 +1,653 @@
+[
+  {
+    "name": "Texte2",
+    "page": 1,
+    "y_top": 677.905,
+    "x_left": 225.312,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte3",
+    "page": 1,
+    "y_top": 677.905,
+    "x_left": 428.887,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte4",
+    "page": 1,
+    "y_top": 660.94,
+    "x_left": 57.1053,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte5",
+    "page": 1,
+    "y_top": 658.29,
+    "x_left": 227.432,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte6",
+    "page": 1,
+    "y_top": 659.35,
+    "x_left": 465.498,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte7",
+    "page": 1,
+    "y_top": 641.855,
+    "x_left": 82.7026,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte8",
+    "page": 1,
+    "y_top": 641.325,
+    "x_left": 296.351,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte9",
+    "page": 1,
+    "y_top": 589.1,
+    "x_left": 93.8357,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte16",
+    "page": 1,
+    "y_top": 571.968,
+    "x_left": 360.748,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte17",
+    "page": 1,
+    "y_top": 557.304,
+    "x_left": 119.688,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte14",
+    "page": 1,
+    "y_top": 541.806,
+    "x_left": 388.138,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte15",
+    "page": 1,
+    "y_top": 512.55,
+    "x_left": 277.535,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte18",
+    "page": 1,
+    "y_top": 486.993,
+    "x_left": 388.596,
+    "type": "/Tx"
+  },
+  {
+    "name": "Oui",
+    "page": 1,
+    "y_top": 479.52,
+    "x_left": 139.08,
+    "type": "/Btn"
+  },
+  {
+    "name": "Non",
+    "page": 1,
+    "y_top": 479.52,
+    "x_left": 180.0,
+    "type": "/Btn"
+  },
+  {
+    "name": "A domicile",
+    "page": 1,
+    "y_top": 460.32,
+    "x_left": 268.68,
+    "type": "/Btn"
+  },
+  {
+    "name": "En \u00e9tablissement",
+    "page": 1,
+    "y_top": 459.96,
+    "x_left": 352.44,
+    "type": "/Btn"
+  },
+  {
+    "name": "Texte19",
+    "page": 1,
+    "y_top": 447.822,
+    "x_left": 59.3763,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte74",
+    "page": 1,
+    "y_top": 428.233,
+    "x_left": 465.128,
+    "type": "/Tx"
+  },
+  {
+    "name": "Case \u00e0 cocher25",
+    "page": 1,
+    "y_top": 383.675,
+    "x_left": 55.5446,
+    "type": "/Btn"
+  },
+  {
+    "name": "Texte75",
+    "page": 1,
+    "y_top": 383.63,
+    "x_left": 99.5153,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte23",
+    "page": 1,
+    "y_top": 382.084,
+    "x_left": 185.551,
+    "type": "/Tx"
+  },
+  {
+    "name": "Case \u00e0 cocher74",
+    "page": 1,
+    "y_top": 383.421,
+    "x_left": 335.151,
+    "type": "/Btn"
+  },
+  {
+    "name": "Texte24",
+    "page": 1,
+    "y_top": 381.432,
+    "x_left": 417.173,
+    "type": "/Tx"
+  },
+  {
+    "name": "Case \u00e0 cocher27",
+    "page": 1,
+    "y_top": 383.754,
+    "x_left": 534.936,
+    "type": "/Btn"
+  },
+  {
+    "name": "Texte20",
+    "page": 1,
+    "y_top": 348.472,
+    "x_left": 25.9568,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte21",
+    "page": 1,
+    "y_top": 143.147,
+    "x_left": 27.4172,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte22",
+    "page": 1,
+    "y_top": 80.0823,
+    "x_left": 28.0977,
+    "type": "/Tx"
+  },
+  {
+    "name": "Case \u00e0 cocher1",
+    "page": 1,
+    "y_top": 47.5082,
+    "x_left": 30.4181,
+    "type": "/Btn"
+  },
+  {
+    "name": "Texte28",
+    "page": 2,
+    "y_top": 794.458,
+    "x_left": 165.744,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte29",
+    "page": 2,
+    "y_top": 794.468,
+    "x_left": 286.873,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte31",
+    "page": 2,
+    "y_top": 775.486,
+    "x_left": 165.744,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte32",
+    "page": 2,
+    "y_top": 773.523,
+    "x_left": 286.873,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte33",
+    "page": 2,
+    "y_top": 774.032,
+    "x_left": 397.49,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte34",
+    "page": 2,
+    "y_top": 757.504,
+    "x_left": 165.744,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte35",
+    "page": 2,
+    "y_top": 756.341,
+    "x_left": 286.873,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte36",
+    "page": 2,
+    "y_top": 756.868,
+    "x_left": 397.001,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte37",
+    "page": 2,
+    "y_top": 741.123,
+    "x_left": 165.744,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte38",
+    "page": 2,
+    "y_top": 741.232,
+    "x_left": 286.873,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte39",
+    "page": 2,
+    "y_top": 740.686,
+    "x_left": 396.735,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte40",
+    "page": 2,
+    "y_top": 724.177,
+    "x_left": 165.744,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte41",
+    "page": 2,
+    "y_top": 723.123,
+    "x_left": 286.873,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte42",
+    "page": 2,
+    "y_top": 722.868,
+    "x_left": 396.613,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte43",
+    "page": 2,
+    "y_top": 707.414,
+    "x_left": 165.744,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte44",
+    "page": 2,
+    "y_top": 705.123,
+    "x_left": 286.873,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte45",
+    "page": 2,
+    "y_top": 705.05,
+    "x_left": 396.979,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte48",
+    "page": 2,
+    "y_top": 687.232,
+    "x_left": 396.491,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte49",
+    "page": 2,
+    "y_top": 670.632,
+    "x_left": 165.744,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte50",
+    "page": 2,
+    "y_top": 670.632,
+    "x_left": 286.873,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte51",
+    "page": 2,
+    "y_top": 669.414,
+    "x_left": 396.857,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte52",
+    "page": 2,
+    "y_top": 652.632,
+    "x_left": 165.744,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte53",
+    "page": 2,
+    "y_top": 652.486,
+    "x_left": 286.873,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte54",
+    "page": 2,
+    "y_top": 651.596,
+    "x_left": 397.285,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte56",
+    "page": 2,
+    "y_top": 634.705,
+    "x_left": 286.873,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte57",
+    "page": 2,
+    "y_top": 633.777,
+    "x_left": 397.101,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte59",
+    "page": 2,
+    "y_top": 617.396,
+    "x_left": 286.873,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte60",
+    "page": 2,
+    "y_top": 615.959,
+    "x_left": 397.04,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte61",
+    "page": 2,
+    "y_top": 599.687,
+    "x_left": 165.744,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte62",
+    "page": 2,
+    "y_top": 599.759,
+    "x_left": 286.873,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte63",
+    "page": 2,
+    "y_top": 598.141,
+    "x_left": 396.552,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte64",
+    "page": 2,
+    "y_top": 581.395,
+    "x_left": 165.744,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte65",
+    "page": 2,
+    "y_top": 581.141,
+    "x_left": 286.873,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte66",
+    "page": 2,
+    "y_top": 580.323,
+    "x_left": 396.918,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte67",
+    "page": 2,
+    "y_top": 563.105,
+    "x_left": 165.744,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte68",
+    "page": 2,
+    "y_top": 563.505,
+    "x_left": 286.873,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte69",
+    "page": 2,
+    "y_top": 562.505,
+    "x_left": 397.223,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte70",
+    "page": 2,
+    "y_top": 545.468,
+    "x_left": 165.744,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte71",
+    "page": 2,
+    "y_top": 545.214,
+    "x_left": 286.873,
+    "type": "/Tx"
+  },
+  {
+    "name": "Texte72",
+    "page": 2,
+    "y_top": 544.687,
+    "x_left": 396.796,
+    "type": "/Tx"
+  },
+  {
+    "name": "Probl\u00e8mes li\u00e9s aux actes essentiels de la vie se nourrir se v\u00eatir se laver se d\u00e9placer",
+    "page": 2,
+    "y_top": 494.88,
+    "x_left": 27.72,
+    "type": "/Btn"
+  },
+  {
+    "name": "Probl\u00e8mes li\u00e9s dans les activit\u00e9s de la vie domestiques courses m\u00e9nages pr\u00e9paration des repas des m\u00e9dicaments",
+    "page": 2,
+    "y_top": 483.12,
+    "x_left": 27.72,
+    "type": "/Btn"
+  },
+  {
+    "name": "Pathologie(s) chronique(s) ou \u00e9volutive(s)",
+    "page": 2,
+    "y_top": 439.99,
+    "x_left": 27.8667,
+    "type": "/Btn"
+  },
+  {
+    "name": "Probl\u00e8mes d'autonomie d\u00e9cisionnelle ( troubles de la m\u00e9moire, risque d'abus de faiblesse)",
+    "page": 2,
+    "y_top": 429.129,
+    "x_left": 27.5164,
+    "type": "/Btn"
+  },
+  {
+    "name": "Troubles cognitifs",
+    "page": 2,
+    "y_top": 418.727,
+    "x_left": 27.42,
+    "type": "/Btn"
+  },
+  {
+    "name": "Conduites addictives",
+    "page": 2,
+    "y_top": 396.0,
+    "x_left": 27.72,
+    "type": "/Btn"
+  },
+  {
+    "name": "Prise de m\u00e9dicaments 5",
+    "page": 2,
+    "y_top": 384.6,
+    "x_left": 27.72,
+    "type": "/Btn"
+  },
+  {
+    "name": "Troubles psychiatriques  psychiques",
+    "page": 2,
+    "y_top": 373.2,
+    "x_left": 27.72,
+    "type": "/Btn"
+  },
+  {
+    "name": "Risque de chute",
+    "page": 2,
+    "y_top": 339.587,
+    "x_left": 27.7472,
+    "type": "/Btn"
+  },
+  {
+    "name": "Hospitalisation r\u00e9cente en urgence",
+    "page": 2,
+    "y_top": 328.2,
+    "x_left": 27.72,
+    "type": "/Btn"
+  },
+  {
+    "name": "Texte25",
+    "page": 2,
+    "y_top": 319.923,
+    "x_left": 136.473,
+    "type": "/Tx"
+  },
+  {
+    "name": "Autre",
+    "page": 2,
+    "y_top": 305.52,
+    "x_left": 27.72,
+    "type": "/Btn"
+  },
+  {
+    "name": "Texte26",
+    "page": 2,
+    "y_top": 304.214,
+    "x_left": 69.0545,
+    "type": "/Tx"
+  },
+  {
+    "name": "Isolement social ou familial ruptures des liens",
+    "page": 2,
+    "y_top": 265.68,
+    "x_left": 27.72,
+    "type": "/Btn"
+  },
+  {
+    "name": "Epuisement absence  indisponibilit\u00e9 de laidant",
+    "page": 2,
+    "y_top": 254.28,
+    "x_left": 27.72,
+    "type": "/Btn"
+  },
+  {
+    "name": "Epuisement professionnel",
+    "page": 2,
+    "y_top": 242.76,
+    "x_left": 27.72,
+    "type": "/Btn"
+  },
+  {
+    "name": "Difficult\u00e9s \u00e0 la gestion administrative et financi\u00e8re",
+    "page": 2,
+    "y_top": 188.4,
+    "x_left": 27.72,
+    "type": "/Btn"
+  },
+  {
+    "name": "Risque de pr\u00e9carit\u00e9",
+    "page": 2,
+    "y_top": 177.0,
+    "x_left": 27.72,
+    "type": "/Btn"
+  },
+  {
+    "name": "Dettes  Impay\u00e9s",
+    "page": 2,
+    "y_top": 165.6,
+    "x_left": 27.72,
+    "type": "/Btn"
+  },
+  {
+    "name": "Perte  Difficult\u00e9s dacc\u00e8s au droit",
+    "page": 2,
+    "y_top": 154.2,
+    "x_left": 27.72,
+    "type": "/Btn"
+  },
+  {
+    "name": "Logement inadapt\u00e9 probl\u00e8me daccessibilit\u00e9 isolement g\u00e9ographique",
+    "page": 2,
+    "y_top": 113.28,
+    "x_left": 27.72,
+    "type": "/Btn"
+  },
+  {
+    "name": "Incurie encombrement insalubrit\u00e9",
+    "page": 2,
+    "y_top": 102.6,
+    "x_left": 27.72,
+    "type": "/Btn"
+  },
+  {
+    "name": "Autre_2",
+    "page": 2,
+    "y_top": 91.2,
+    "x_left": 27.72,
+    "type": "/Btn"
+  },
+  {
+    "name": "Texte27",
+    "page": 2,
+    "y_top": 89.5244,
+    "x_left": 62.8362,
+    "type": "/Tx"
+  }
+]

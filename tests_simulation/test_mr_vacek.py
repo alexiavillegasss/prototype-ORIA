@@ -47,12 +47,20 @@ async def run_test():
     results_with_contacts = territory_manager.get_contacts_for_structures(orientation_results, "Toulon")
 
     print(f"\n--- REPONSE D'ORIA (URGENCE HABITAT) ---")
-    from oria_display import afficher_orientations
     if not results_with_contacts:
-        print("ORIA : 'Contactez les pompiers ou la police immediatement.'")
+        print("ORIA : 'Contactez les pompiers ou la police immédiatement.'")
     else:
-        print("ORIA : 'La situation de M. Vacek presente un DANGER IMMINENT.'")
-        afficher_orientations(results_with_contacts)
+        best_struct = results_with_contacts[0]
+        print(f"ORIA : 'La situation de M. Vacek présente un DANGER IMMINENT.'")
+        print(f"\nVOTRE PRIORITÉ ABSOLUE : [ {best_struct['label']} ]")
+        print(f"MISSION : {best_struct.get('objectif', 'N/A')}")
+        print(f"CONTACT : {best_struct.get('telephone', 'N/A')}")
+        
+        # On affiche quand même le social car c'est la suite logique
+        if len(results_with_contacts) > 1:
+            second_struct = results_with_contacts[1]
+            print(f"\nENSUITE (VOLET SOCIAL) : [ {second_struct['label']} ]")
+            print(f"MISSION : {second_struct.get('objectif', 'N/A')}")
 
     # Sauvegarde en Base de Données (anonymisée)
     try:

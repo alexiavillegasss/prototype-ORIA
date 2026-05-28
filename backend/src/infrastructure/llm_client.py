@@ -2,10 +2,9 @@ import httpx
 import json
 
 class OllamaClient:
-    def __init__(self, base_url="http://localhost:11434", model="llama3", temperature=0.1):
+    def __init__(self, base_url="http://localhost:11434", model="llama3"):
         self.base_url = base_url
         self.model = model
-        self.temperature = temperature
 
     async def generate_json(self, prompt: str):
         url = f"{self.base_url}/api/generate"
@@ -15,10 +14,7 @@ class OllamaClient:
             "stream": False,
             "format": "json",
             "options": {
-                "temperature": self.temperature,
-                "top_k": 20,
-                "top_p": 0.9,
-                "seed": 42
+                "temperature": 0.0
             }
         }
         

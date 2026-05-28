@@ -57,8 +57,13 @@ async def run_test():
     print("\n--- RÉSULTATS DE L'ORIENTATION POUR MME GEORGETTE MOUTON ---")
     if not results_with_contacts:
         print("Aucune structure éligible détectée.")
-    from oria_display import afficher_orientations
-    afficher_orientations(results_with_contacts)
+    for struct in results_with_contacts:
+        print(f"\n[ {struct['label']} ] - Priorité : {struct.get('priorite', 'N/A')}")
+        print(f"Objectif : {struct.get('objectif', 'N/A')}")
+        if struct.get("telephone") or struct.get("adresse"):
+            print(f"Contact : {struct.get('telephone', 'N/A')} | {struct.get('adresse', 'N/A')}")
+        else:
+            print("Contact : Non trouvé dans le référentiel territorial")
 
     # Sauvegarde en Base de Données (anonymisée)
     try:

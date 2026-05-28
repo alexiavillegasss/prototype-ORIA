@@ -47,15 +47,19 @@ async def run_test():
     results_with_contacts = territory_manager.get_contacts_for_structures(orientation_results, "Toulon")
 
     print(f"\n--- REPONSE D'ORIA POUR L'AIDANT ---")
-    from oria_display import afficher_orientations
     if not results_with_contacts:
-        print("ORIA : 'Contactez votre medecin traitant.'")
+        print("ORIA : 'Contactez votre médecin traitant.'")
     else:
-        print(f"voici votre priorite :'")
-        afficher_orientations(results_with_contacts)
+        # Meilleure structure
+        best_struct = results_with_contacts[0]
+        
+        print(f"voici votre priorité :'")
+        print(f"\nVOTRE PRIORITÉ ABSOLUE : [ {best_struct['label']} ]")
+        print(f"MISSION : {best_struct.get('objectif', 'N/A')}")
+        print(f"CONTACT : {best_struct.get('telephone', 'N/A')}")
         
         if extracted_data.get('evaluation.comid.epuisement_aidant') == True:
-            print("\nCONSEIL POUR VOUS : 'Prenez soin de vous egalement. En plus de votre referent APA, sachez que les plateformes de repit peuvent vous soutenir pendant votre hospitalisation.'")
+            print("\nCONSEIL POUR VOUS : 'Prenez soin de vous également. En plus de votre référent APA, sachez que les plateformes de répit peuvent vous soutenir pendant votre hospitalisation.'")
 
     # Sauvegarde en Base de Données (anonymisée)
     try:

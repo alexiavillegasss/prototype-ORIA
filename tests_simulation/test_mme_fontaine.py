@@ -30,12 +30,10 @@ async def run_test():
     print(f"\n1. Extraction IA pour l'alerte du kiné...")
     try:
         extracted_data = await extractor.extract(text)
-        print("Données extraites (JSON) :")
+        print("Donnees extraites (JSON) :")
         print(json.dumps(extracted_data, indent=2, ensure_ascii=False))
     except Exception as e:
-        import traceback
-        print("Erreur d'extraction de l'IA :")
-        traceback.print_exc()
+        print(f"Erreur extraction : {e}")
         return
     
     print("\n2. Calcul du score de complexité COMID...")
@@ -53,8 +51,10 @@ async def run_test():
         print("ORIA : 'Alerte non traitée, contactez les services d'urgence.'")
     else:
         print(f"ORIA : 'Situation identifiée comme {comid_results['label']}. Voici les actions prioritaires :'")
-    from oria_display import afficher_orientations
-    afficher_orientations(results_with_contacts)
+        for struct in results_with_contacts:
+            print(f"\nACTION : [ {struct['label']} ]")
+            print(f"MOTIF : {struct.get('objectif', 'N/A')}")
+            print(f"CONTACT : {struct.get('telephone', 'N/A')}")
 
     # Sauvegarde en Base de Données (anonymisée)
     try:
