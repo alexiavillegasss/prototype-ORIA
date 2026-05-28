@@ -64,6 +64,11 @@ class AnalyzeRequest(BaseModel):
     medecin_traitant: Optional[str] = None
 
 
+class ValidateRequest(BaseModel):
+    status: str
+    structure_choisie: str
+
+
 # -----------------------------
 # ROOT ENDPOINT
 # -----------------------------
@@ -174,6 +179,27 @@ def dashboard():
     with open(html_path, "r", encoding="utf-8") as f:
         return f.read()
 
+# -----------------------------
+# INTERFACE DE TEST D'ORIENTATION
+# -----------------------------
+@app.get("/orienter", response_class=HTMLResponse)
+def orienter():
+    """Sert la page HTML du moteur d'orientation interactif."""
+    html_path = os.path.join(STATIC_DIR, "orienter.html")
+    with open(html_path, "r", encoding="utf-8") as f:
+        return f.read()
+
+@app.post("/api/dossiers/{dossier_id}/validate")
+def validate_dossier(dossier_id: int, request: ValidateRequest):
+    """Valide l'orientation d'un dossier par le professionnel."""
+    success = db_manager.update_dossier_validation(
+        dossier_id=dossier_id,
+        status=request.status,
+        structure_choisie=request.structure_choisie
+    )
+    if not success:
+        return {"error": "Dossier introuvable."}
+    return {"message": "Orientation enregistrée avec succès en base de données !"}
 
 # -----------------------------
 # API SANKEY DATA

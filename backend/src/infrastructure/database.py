@@ -84,3 +84,34 @@ class DatabaseManager:
                 result.append(dossier)
                 
             return result
+
+    def update_dossier_validation(self, dossier_id: int, status: str, structure_choisie: str) -> bool:
+        """Met à jour le statut du dossier et la structure finale choisie par l'utilisateur."""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            # On vérifie si le dossier existe
+            cursor.execute('SELECT details_complet FROM dossiers_patients WHERE id = ?', (dossier_id,))
+            row = cursor.fetchone()
+            if not row:
+                return False
+                
+            try:
+                details = json.loads(row[0]) if row[0] else {}
+            except Exception:
+                details = {}
+                
+            details["validation_utilisateur"] = {
+                "status": status,
+                "structure_choisie": structure_choisie,
+                "date_validation": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            }
+            
+            # On met à jour details_complet et le statut (niveau_comid)
+            cursor.execute('''
+                UPDATE dossiers_patients 
+                SET details_complet = ?, niveau_comid = ?
+                WHERE id = ?
+            ''', (json.dumps(details, ensure_ascii=False), status, dossier_id))
+            conn.commit()
+            return True

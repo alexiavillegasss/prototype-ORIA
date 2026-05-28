@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ORIA – Outil d'orientation et d'analyse de situation pour personnes âgées">
+    <title>ORIA – Moteur d'Orientation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    
+    <style>
+        /* Styles Premium additionnels pour le diagnostic interactif */
+        
+        .feedback-pane {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-glass);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .feedback-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .feedback-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .btn-success {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            border-radius: var(--radius-sm);
+            padding: 0.8rem 1.2rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .btn-success:hover {
+            background: #22c55e;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-warning-action {
+            background: rgba(249, 115, 22, 0.1);
+            color: #f97316;
+            border: 1px solid rgba(249, 115, 22, 0.4);
+            border-radius: var(--radius-sm);
+            padding: 0.8rem 1.2rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .btn-warning-action:hover {
+            background: #f97316;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+            transform: translateY(-1px);
+        }
+
+        /* Bouton "Pourquoi cette orientation ?" */
+        .btn-explain {
+            background: rgba(74, 109, 245, 0.06);
+            color: var(--accent-blue);
+            border: 1px solid rgba(74, 109, 245, 0.25);
+            border-radius: var(--radius-sm);
+            padding: 0.6rem 1rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s;
+            margin-bottom: 0.5rem;
+            align-self: flex-start;
+        }
+
+        .btn-explain:hover {
+            background: rgba(74, 109, 245, 0.12);
+            border-color: var(--accent-blue);
+        }
+
+        /* Panneau de détails (Explications cliniques) */
+        .explanation-pane {
+            background: rgba(15, 23, 42, 0.02);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-sm);
+            padding: 1.25rem;
+            margin-top: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            animation: slideDown 0.25s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .explain-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .explain-subtitle {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        /* Grille des signaux pivot */
+        .signals-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .signal-item {
+            background: #ffffff;
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-sm);
+            padding: 0.6rem 0.8rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .signal-title {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Liste des critères COMID prouvés */
+        .comid-proof-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .comid-proof-card {
+            background: rgba(74, 109, 245, 0.03);
+            border-left: 3px solid var(--accent-blue);
+            padding: 0.75rem 1rem;
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .comid-proof-label {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .comid-proof-quote {
+            font-style: italic;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.7);
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-top: 2px;
+            border: 1px solid rgba(15, 23, 42, 0.04);
+        }
+
+        /* Carte de validation succès */
+        .success-card {
+            background: rgba(34, 197, 94, 0.06);
+            border: 1px solid rgba(34, 197, 94, 0.35) !important;
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 1.25rem;
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.08);
+        }
+
+        .success-icon {
+            font-size: 3.5rem;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header (Identique au Sankey) -->
+    <header id="dashboard-header">
+        <div class="header-content">
+            <div class="logo-group">
+                <img src="/static/logo.png" alt="Logo ORIA" class="logo-img">
+            </div>
+            <div class="header-title-center">
+                <h2 class="subtitle">Moteur d'Orientation Interactif</h2>
+            </div>
+            <div class="header-badge">
+                <span class="badge-label">Mode</span>
+                <span class="badge-value" style="font-size: 1.1rem; color: var(--accent-purple);">Test Temps Réel</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="orientation-container">
+        
+        <!-- Colonne Gauche : Saisie -->
+        <section class="input-pane">
+            <div class="section-header">
+                <h2>Description de la situation</h2>
+                <p class="section-desc">Décrivez librement la situation de la personne âgée (âge, GIR, aides actuelles, alertes de son entourage...).</p>
+            </div>
+            
+            <div class="glass-card">
+                <textarea id="situation-input" placeholder="Exemple : Mme Marie Durant a 82 ans, elle réside à Saint-Gilles. Son médecin traitant s'inquiète car elle a fait deux chutes ce mois-ci. Elle refuse l'APA mais sa fille nous signale que sa situation à domicile devient instable..."></textarea>
+                
+                <button id="btn-submit" class="btn-primary">
+                    <span class="btn-text">Lancer l'Analyse</span>
+                    <!-- Spinner de chargement masqué par défaut -->
+                    <span class="spinner" id="btn-spinner" style="display: none;"></span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Colonne Droite : Résultats d'orientation -->
+        <section class="results-pane">
+            
+            <!-- État vide (affiché au départ) -->
+            <div id="results-placeholder" class="empty-state">
+                <div class="empty-icon">🧭</div>
+                <p>En attente d'une description de cas à analyser.</p>
+                <span class="empty-hint">Saisissez un texte à gauche puis cliquez sur <strong>Lancer l'Analyse</strong>.</span>
+            </div>
+
+            <!-- Conteneur des résultats réels (masqué par défaut) -->
+            <div id="results-content" style="display: none;">
+                
+                <div class="section-header">
+                    <h2>Diagnostic & Orientations</h2>
+                    <p class="section-desc">Voici l'analyse générée automatiquement par le moteur d'orientation ORIA.</p>
+                </div>
+
+                <!-- Petites cartes KPI d'analyse de situation (style tableau de bord) -->
+                <div class="mini-kpi-grid">
+                    <div class="mini-kpi-card">
+                        <span class="kpi-label">Score COMID</span>
+                        <span class="kpi-value" id="res-score">–</span>
+                    </div>
+                    <div class="mini-kpi-card">
+                        <span class="kpi-label">Complexité</span>
+                        <span class="kpi-value" id="res-level" style="font-size: 1.1rem;">–</span>
+                    </div>
+                    <div class="mini-kpi-card">
+                        <span class="kpi-label">Commune Détectée</span>
+                        <span class="kpi-value" id="res-commune" style="font-size: 1.1rem;">–</span>
+                    </div>
+                </div>
+
+                <!-- Structures recommandées (Unique ou Fallback) -->
+                <h3 class="subsection-title" id="structures-title">Orientation recommandée :</h3>
+                <div id="structures-list" class="structures-container">
+                    <!-- Généré dynamiquement en JS -->
+                </div>
+
+                <!-- Accordéon pour voir les signaux faibles extraits -->
+                <details class="raw-data-accordion" style="margin-top: 1.5rem;">
+                    <summary>🔍 Voir le schéma pivot brut (JSON)</summary>
+                    <pre><code id="raw-json-output"></code></pre>
+                </details>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer id="dashboard-footer">
+        <p>Prototype ORIA – Module d'évaluation interactif</p>
+    </footer>
+
+    <script src="/static/orienter.js"></script>
+</body>
+</html>

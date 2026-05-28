@@ -182,6 +182,7 @@ Format JSON attendu (Ne contiendrait que les critères présents, vide si aucun)
                     positive_codes.add(str(c["code"]).strip().lower())
                 elif isinstance(c, str):
                     positive_codes.add(c.strip().lower())
+        mapped["evaluation.comid.justifications"] = criteres_list if isinstance(criteres_list, list) else []
 
         # 2. Remplissage des items COMID
         for item in self._comid_items:
