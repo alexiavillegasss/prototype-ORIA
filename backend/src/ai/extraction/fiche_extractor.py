@@ -74,9 +74,9 @@ Alertes (mettre `true` si le problème est mentionné, sinon `false`) :
 Extraire TOUS les intervenants et professionnels EXPLICITEMENT mentionnés dans le récit (ex: médecin, infirmier, aide à domicile, ADMR, kiné, etc.) sous forme d'une liste `cercle_de_soins`. Il est TRÈS IMPORTANT d'inclure les aides à domicile. N'INVENTE PAS de professionnel.
 Chaque élément doit être un objet avec :
 - type (chaîne STRICTE parmi : "medecin_traitant", "specialiste", "infirmier", "ssiad_had", "saad" (pour aide à domicile, ADMR), "palliatifs", "pharmacien", "kine", "repas", "telealarme", "social", "autre")
-- nom (chaîne)
+- nom (chaîne, sans AUCUN titre. Retire "docteur", "Dr", "le docteur")
 - tel (chaîne)
-- email (chaîne)
+- email (chaîne, laisse STRICTEMENT vide `""` si non précisé. N'invente JAMAIS d'exemple)
 
 ### FORMAT JSON (STRICT)
 Réponds UNIQUEMENT par ce JSON complet :
@@ -151,6 +151,20 @@ Réponds UNIQUEMENT par ce JSON complet :
         adresse = parsed.get("adresse_complete", "")
         if " à " in adresse:
             parsed["adresse_complete"] = adresse.replace(" à ", ", ")
+            
+        cercle = parsed.get("cercle_de_soins", [])
+        for pro in cercle:
+            # Nettoyage des titres dans le nom
+            pro_nom = pro.get("nom", "")
+            for titre in ["le docteur", "docteur", "dr.", "dr", "monsieur", "madame"]:
+                # On utilise regex pour remplacer le titre entier sans toucher aux autres lettres
+                pro_nom = re.sub(r'(?i)\b' + titre + r'\b', "", pro_nom)
+            pro["nom"] = pro_nom.replace(",", "").strip()
+            
+            # Nettoyage des emails hallucinés
+            pro_email = pro.get("email", "")
+            if "exemple" in pro_email.lower() or "example" in pro_email.lower():
+                pro["email"] = ""
         
         # POST-PROCESSING DE SÉCURITÉ :
         # L'IA a tendance à halluciner des hospitalisations. On force à False si les mots clés sont absents.
