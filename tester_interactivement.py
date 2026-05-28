@@ -186,7 +186,8 @@ async def run_interactive():
                             if rep:
                                 precisions += f"\n- Pour {info} : {rep}"
                     elif choix != '2' and len(choix) > 2:
-                        precisions = choix
+                        context_manquant = "\n".join([f"- {info}" for info in missing_info])
+                        precisions = f"\n[CONTEXTE DES INFORMATIONS DEMANDEES] :\n{context_manquant}\n\n[REPONSE DE L'UTILISATEUR] : {choix}"
                     else:
                         precisions = None
                         
