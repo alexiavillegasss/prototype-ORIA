@@ -45,6 +45,7 @@ SITUATION : "{text}"
    - EXCLUSION CRITIQUE : Si le CONJOINT ou l'AIDANT de l'usager est hospitalisé mais que l'usager lui-même reste à domicile, l'hospitalisation de l'usager est "aucun".
 10. "motif" : Choisir impérativement le motif principal :
     - "refus_de_soins" uniquement si la personne refuse activement de manière hostile d'ouvrir sa porte aux soignants/aides, s'oppose aux soins, ou dit expressément qu'elle n'en veut pas. Les oublis de médicaments dus à des troubles cognitifs ou de la mémoire ne sont PAS du refus de soins. De plus, si le cas décrit des maltraitances (spoliation, cris, violence, chantage) commises par un fils ou proche et signalées par un tiers (kiné, médecin, assistante sociale), le motif principal est "secours_urgence" ou "maintien_a_domicile" et JAMAIS "refus_de_soins".
+    - "refus_aide_domicile" si l'usager lui-même refuse l'aide à domicile, dit qu'il peut tout faire seul ou s'oppose activement à la mise en place d'auxiliaires de vie/ménage à domicile alors qu'il y a une perte d'autonomie importante.
     - "sortie_hospitalisation" si la demande concerne l'organisation de sa sortie d'hôpital ou le retour/maintien à domicile post-hospitalisation (récente de moins d'un mois, ex: suite AVC récent il y a 3 semaines).
     - "aide_alimentaire" si elle n'a plus rien à manger.
     - "secours_urgence" uniquement en cas d'agression physique active en cours (coups en train d'être portés), d'incendie, de détresse vitale médicale immédiate (arrêt cardiaque), ou de fuite active du domicile en cours pour échapper à des violences physiques graves. Pour des menaces (mêmes physiques) d'un propriétaire ou marchand de sommeil, ou pour l'insalubrité du logement, choisissez impérativement "maintien_a_domicile".
@@ -90,31 +91,33 @@ SITUATION : "{text}"
 ### LISTE DES CRITÈRES COMID DISPONIBLES :
 {comid_reference}
 
-### DIRECTIVES DE RIGUEUR ET DE JUSTIFICATION CLINIQUE :
-Vous devez retourner uniquement un JSON contenant les codes des critères COMID qui sont explicitement et indubitablement présents dans la situation.
-- Pour chaque critère que vous considérez comme présent, vous devez impérativement justifier sa présence par une courte phrase citant ou s'appuyant rigoureusement sur le texte.
-- Si un critère n'est pas mentionné, s'il y a le moindre doute, ou s'il n'est pas présent, vous ne devez PAS l'inclure dans le JSON (il restera à false).
+### DIRECTIVES DE RIGUEUR ET DE JUSTIFICATION CLINIQUE (ZÉRO-HALLUCINATION) :
+Vous devez retourner uniquement les critères COMID qui sont explicitement et indubitablement présents dans la situation sous la forme d'un tableau JSON nommé "criteres_presents".
+- Pour chaque critère considéré comme présent, indiquez son code et justifiez par une preuve textuelle tirée directement et mot à mot du texte.
+- Si un critère n'est pas mentionné, s'il y a le moindre doute, ou s'il n'est pas présent avec certitude, ne l'incluez JAMAIS dans le tableau JSON.
 - Ne faites aucune supposition ou extrapolation. Ne devinez pas.
 
 DIRECTIVES SPÉCIFIQUES POUR ÉVITER LES HALLUCINATIONS COURANTES :
-1. "multimorbidite" : DANGER D'HALLUCINATION ! N'inclure que si l'usager souffre de STRICTEMENT PLUS de 2 maladies chroniques distinctes (c'est-à-dire 3 maladies ou plus, par exemple : diabète + hypertension + insuffisance rénale). Si le texte ne mentionne qu'une seule maladie (ex: hypertension uniquement, ou arthrose uniquement), ou deux maladies seulement, laissez rigoureusement ABSENT.
-2. "opposition_soins" : DANGER D'HALLUCINATION ! Inclure uniquement si l'usager lui-même s'oppose ou refuse activement et avec hostilité les soins ou l'entrée des intervenants à domicile (ex: refuse d'ouvrir la porte, déclare hostilement qu'il ne veut pas d'aide). Être confus ou victime passive d'une agression physique ou d'une maltraitance sans refus d'aide caractérisé n'est PAS de l'opposition aux soins. Laissez rigoureusement ABSENT sinon.
-3. "agressivite" : DANGER D'HALLUCINATION ! Inclure uniquement si l'usager lui-même se montre agressif, hostile, crie ou menace autrui. Si c'est un conjoint, un fils, ou un agresseur tiers qui est agressif envers l'usager (maltraitance subie), laissez rigoureusement ABSENT.
-4. "isolement_social" : DANGER D'HALLUCINATION ! Inclure uniquement si l'usager vit seul ET n'a aucun enfant, aucun proche, ni famille présente pour l'aider dans sa région. S'il a de la famille ou un proche mentionné (même s'il est malveillant ou éloigné géographiquement mais passe le voir de temps en temps), laissez rigoureusement ABSENT.
+1. "multimorbidite" : DANGER D'HALLUCINATION ! N'inclure que si l'usager souffre de STRICTEMENT PLUS de 2 maladies chroniques distinctes (c'est-à-dire 3 maladies ou plus, par exemple : diabète + hypertension + insuffisance rénale). Si le texte ne mentionne qu'une seule maladie (ex: hypertension uniquement, ou arthrose uniquement), ou deux maladies seulement, laissez rigoureusement ABSENT du tableau JSON.
+2. "opposition_soins" : DANGER D'HALLUCINATION ! Inclure uniquement si l'usager lui-même refuse l'aide à domicile, s'oppose aux soignants ou refuse que les professionnels entrent chez lui pour l'aider (ex: "elle refuse catégoriquement l'aide des auxiliaires de vie", "Elle refuse l'aide à domicile car elle dit qu'elle peut tout faire seule", "refuse qu'ils entrent"). ATTENTION : Être victime passive d'agression ou de violence (ex: violence conjugale subie), être inquiet ou simplement fatigué n'est PAS de l'opposition aux soins (laisser rigoureusement ABSENT sinon).
+3. "agressivite" : DANGER D'HALLUCINATION ! Inclure uniquement si l'usager lui-même se montre agressif ou menaçant envers autrui (crie sur les soignants, est hostile verbalement ou physiquement). Si c'est un conjoint, un fils, ou un agresseur tiers qui est agressif envers l'usager (maltraitance subie), laissez rigoureusement ABSENT.
+4. "isolement_social" : DANGER D'HALLUCINATION ! Inclure uniquement si l'usager vit seul ET n'a aucun enfant, aucun proche, ni famille présente pour l'aider dans sa région. S'il a de la famille, un neveu, un enfant, ou un conjoint présent (même s'ils sont épuisés ou malveillants), laissez rigoureusement ABSENT.
 5. "perte_autonomie_recente" : DANGER D'HALLUCINATION ! Inclure uniquement s'il y a des preuves physiques de perte de capacités physiques ou motrices récentes (ex: chutes récentes, AVC récent avec incapacité physique pour la toilette/repas). Si l'usager est décrit comme autonome (ex: "elle est tout à fait autonome à la maison"), laissez rigoureusement ABSENT.
-6. "epuisement_aidant" : Inclure uniquement si le conjoint ou l'enfant aidant régulier est décrit comme fatigué, à bout, épuisé ou ayant des problèmes physiques liés à l'aide (ex: dos fatigué). S'il n'y a pas d'aidant ou s'il est juste inquiet, laissez ABSENT.
+6. "epuisement_aidant" : Inclure uniquement si le conjoint ou l'enfant aidant régulier est décrit comme fatigué, à bout, épuisé ou ayant des problèmes physiques liés à l'aide (ex: dos fatigué, je n'en peux plus, je craque). S'il n'y a pas d'aidant ou s'il est juste inquiet, laissez ABSENT.
 7. "precarite_financiere" : Inclure uniquement si l'usager a des dettes, un découvert bancaire, n'a plus rien pour manger, ou une très petite retraite (900€).
 
 Format JSON attendu (Ne contiendrait que les critères présents, vide si aucun) :
 {{
-  "code_du_critere_present_1": {{
-    "presence": true,
-    "justification": "Citation ou preuve stricte tirée du texte"
-  }},
-  "code_du_critere_present_2": {{
-    "presence": true,
-    "justification": "Citation ou preuve stricte tirée du texte"
-  }}
+  "criteres_presents": [
+    {{
+      "code": "code_du_critere_present_1",
+      "justification": "Citation mot à mot prouvant la présence"
+    }},
+    {{
+      "code": "code_du_critere_present_2",
+      "justification": "Citation mot à mot prouvant la présence"
+    }}
+  ]
 }}
 """
         raw_comid = await self.client.generate_json(prompt_comid)
@@ -154,21 +157,45 @@ Format JSON attendu (Ne contiendrait que les critères présents, vide si aucun)
             "usager.cadre_de_vie.etat_logement": raw_data.get("etat_logement", "non_renseigne")
         }
 
-        # Mapping flexible (cherche dans "comid" ou à la racine). On formate le résultat de l'IA : true ou false dans le dictionnaire final
+        # Mapping flexible (cherche dans "comid" ou à la racine)
         comid_data = raw_data.get("comid", raw_data)
+        
+        # 1. Extraction des codes positifs depuis une liste
+        positive_codes = set()
+        criteres_list = None
+        if isinstance(comid_data, dict):
+            if "criteres_presents" in comid_data:
+                criteres_list = comid_data["criteres_presents"]
+            elif "criteres" in comid_data:
+                criteres_list = comid_data["criteres"]
+        elif isinstance(comid_data, list):
+            criteres_list = comid_data
+            
+        if isinstance(criteres_list, list):
+            for c in criteres_list:
+                if isinstance(c, dict) and "code" in c:
+                    positive_codes.add(str(c["code"]).strip().lower())
+                elif isinstance(c, str):
+                    positive_codes.add(c.strip().lower())
+
+        # 2. Remplissage des items COMID
         for item in self._comid_items:
             code = item["code"]
-            val = comid_data.get(code)
             
-            # Support du format structuré avec justification
-            if isinstance(val, dict):
-                val = val.get("presence")
+            # Si le code est présent dans notre ensemble positif extrait
+            if code in positive_codes:
+                is_positive = True
+            else:
+                # Sinon, recherche classique par clé directe
+                val = comid_data.get(code) if isinstance(comid_data, dict) else None
+                if isinstance(val, dict):
+                    val = val.get("presence")
                 
-            is_positive = False
-            if isinstance(val, bool):
-                is_positive = val
-            elif isinstance(val, str):
-                is_positive = val.lower() in ["oui", "yes", "true", "o", "1"]
+                is_positive = False
+                if isinstance(val, bool):
+                    is_positive = val
+                elif isinstance(val, str):
+                    is_positive = val.lower() in ["oui", "yes", "true", "o", "1"]
             
             mapped[f"evaluation.comid.{code}"] = is_positive
 
