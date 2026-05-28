@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, FileResponse
 from pydantic import BaseModel
+from typing import Optional
 from collections import Counter
 
 import os
@@ -11,6 +12,7 @@ from ai.extraction.extractor import SignalExtractor
 from application.scoring_engine import ScoringEngine
 from application.orientation_engine import OrientationEngine
 from application.territory_manager import TerritoryManager
+from application.clarification_engine import ClarificationEngine
 from infrastructure.database import DatabaseManager
 
 app = FastAPI()
@@ -38,11 +40,13 @@ extractor = SignalExtractor(
     schema_path=SCHEMA_PATH, 
     comid_path=COMID_PATH,
     model=ai_config.get('model_name', 'llama3'),
-    base_url=ai_config.get('base_url', 'http://localhost:11434')
+    base_url=ai_config.get('base_url', 'http://localhost:11434'),
+    temperature=float(ai_config.get('temperature', 0.1))
 )
 scoring_engine = ScoringEngine(comid_rules_path=COMID_PATH)
 orientation_engine = OrientationEngine(rules_path=ORIENTATION_RULES_PATH)
 territory_manager = TerritoryManager(territory_rules_path=TERRITORY_PATH)
+clarification_engine = ClarificationEngine()
 
 db_manager = DatabaseManager(db_path=os.path.join(BASE_DIR, 'oria_database.db'))
 
@@ -51,6 +55,13 @@ db_manager = DatabaseManager(db_path=os.path.join(BASE_DIR, 'oria_database.db'))
 # -----------------------------
 class AnalyzeRequest(BaseModel):
     text: str
+    # Overrides optionnels de validation humaine
+    age: Optional[int] = None
+    gir: Optional[int] = None
+    apa: Optional[str] = None
+    pch: Optional[str] = None
+    aidant_regulier: Optional[str] = None
+    medecin_traitant: Optional[str] = None
 
 
 # -----------------------------
@@ -68,13 +79,33 @@ def root():
 async def analyze(request: AnalyzeRequest):
 
     # 1. extraction des signaux par l'IA (Llama 3)
-    # Note: Cela peut prendre quelques secondes en local. extracted_data est le nouveau nom que l'ont donne à "mapped" car ce sont les nouvelles données extraites du travail de l'IA dans extractor.py
     try:
         extracted_data = await extractor.extract(request.text)
     except Exception as e:
         return {"error": f"Erreur lors de l'extraction IA : {str(e)}"}
 
-    # 2. Analyse de complexité (COMID). Ici on reçoit les données générées par l'IA dans le fichier extractor.py, que l'on vient de renommer "extracted_data".
+    # Application des validations / overrides humains facultatifs
+    has_overrides = False
+    if request.age is not None:
+        extracted_data["usager.identite.age_estime"] = request.age
+        has_overrides = True
+    if request.gir is not None:
+        extracted_data["usager.situation_actuelle.GIR"] = request.gir
+        has_overrides = True
+    if request.apa is not None:
+        extracted_data["usager.situation_actuelle.APA"] = request.apa.lower()
+        has_overrides = True
+    if request.pch is not None:
+        extracted_data["usager.situation_actuelle.PCH"] = request.pch.lower()
+        has_overrides = True
+    if request.aidant_regulier is not None:
+        extracted_data["usager.cadre_de_vie.aidant_regulier"] = request.aidant_regulier.lower()
+        has_overrides = True
+    if request.medecin_traitant is not None:
+        extracted_data["vulnerabilites.sante.suivi_medical.medecin_traitant"] = request.medecin_traitant.lower()
+        has_overrides = True
+
+    # 2. Analyse de complexité (COMID)
     comid_results = scoring_engine.calculate_comid_score(extracted_data)
 
     # 3. Moteur d'orientation
@@ -84,7 +115,18 @@ async def analyze(request: AnalyzeRequest):
     patient_city = extracted_data.get("usager.localisation.commune_residence")
     orientation_with_contacts = territory_manager.get_contacts_for_structures(orientation_results, patient_city)
 
-    # 5. Sauvegarde en Base de Données (Pseudonymisée)
+    # 5. Détection des informations critiques manquantes pour la relecture
+    clarification_questions = clarification_engine.get_clarification_questions(extracted_data, orientation_with_contacts, request.text)
+
+    # Définition du statut selon les données disponibles et le contrôle humain
+    if clarification_questions:
+        status = "en_attente_clarification"
+    elif has_overrides:
+        status = "analyse_affinee_par_humain"
+    else:
+        status = "analyse_terminee_en_attente_de_relecture"
+
+    # 6. Sauvegarde en Base de Données (avec les données validées/corrigées par l'humain / Pseudonymisée)
     dossier_id = None
     try:
         # On pseudonymise le texte d'entrée en clair (ex: Mme Antoinette Durand -> Mme A. D.)
@@ -105,7 +147,7 @@ async def analyze(request: AnalyzeRequest):
     except Exception as e:
         print(f"Erreur de sauvegarde en base de données : {e}")
 
-    # 6. réponse ORIA complète
+    # 7. réponse ORIA complète
     return {
         "id_dossier": dossier_id,
         "input": request.text,
@@ -117,7 +159,8 @@ async def analyze(request: AnalyzeRequest):
             "facteurs_detectes": comid_results["items_detectes"]
         },
         "orientation_suggeree": orientation_with_contacts,
-        "status": "analyse_terminee_en_attente_de_relecture"
+        "questions_clarification": clarification_questions,
+        "status": status
     }
 
 
