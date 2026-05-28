@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.responses import HTMLResponse, FileResponse, Response
+from fastapi import Request
 from pydantic import BaseModel
 from collections import Counter
 
@@ -8,9 +9,11 @@ import os
 import json
 import yaml
 from ai.extraction.extractor import SignalExtractor
+from ai.extraction.fiche_extractor import FicheDACExtractor
 from application.scoring_engine import ScoringEngine
 from application.orientation_engine import OrientationEngine
 from application.territory_manager import TerritoryManager
+from application.pdf_generator import PDFGenerator
 from infrastructure.database import DatabaseManager
 
 app = FastAPI()
@@ -33,18 +36,19 @@ with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
 
 ai_config = app_config.get('ai', {})
 
-# 2. On "branche" l'extracteur en lui donnant les paramètres du fichier YAML
+# 2. Initialisation des composants
 extractor = SignalExtractor(
     schema_path=SCHEMA_PATH, 
     comid_path=COMID_PATH,
     model=ai_config.get('model_name', 'llama3'),
     base_url=ai_config.get('base_url', 'http://localhost:11434')
 )
+fiche_extractor = FicheDACExtractor()
 scoring_engine = ScoringEngine(comid_rules_path=COMID_PATH)
 orientation_engine = OrientationEngine(rules_path=ORIENTATION_RULES_PATH)
 territory_manager = TerritoryManager(territory_rules_path=TERRITORY_PATH)
-
 db_manager = DatabaseManager(db_path=os.path.join(BASE_DIR, 'oria_database.db'))
+pdf_generator = PDFGenerator(template_path=os.path.join(STATIC_DIR, "fiche_dac_vierge.pdf"))
 
 # -----------------------------
 # INPUT MODEL
@@ -314,3 +318,15 @@ def get_sankey_data(dim1: str = "commune", dim2: str = "complexite", dim3: str =
         }
     }
 
+@app.post("/api/orientation/dac/generate_pdf")
+async def generate_dac_pdf(request: AnalyzeRequest):
+    try:
+        extracted_data = await fiche_extractor.extract_for_dac(request.text)
+        pdf_bytes = pdf_generator.generate_dac_pdf(extracted_data)
+        return Response(
+            content=pdf_bytes, 
+            media_type="application/pdf", 
+            headers={"Content-Disposition": "attachment; filename=fiche_orientation_dac.pdf"}
+        )
+    except Exception as e:
+        return {"error": f"Erreur lors de la génération du PDF : {str(e)}"}
