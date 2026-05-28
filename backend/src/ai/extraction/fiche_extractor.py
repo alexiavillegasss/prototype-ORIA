@@ -125,17 +125,7 @@ Réponds UNIQUEMENT par ce JSON complet :
 }}
 (Note: La liste cercle_de_soins doit être vide `[]` si aucun professionnel n'est mentionné.)
 """
-        result = await self.client.generate_json(prompt)
-        try:
-            parsed = json.loads(result)
-        except json.JSONDecodeError:
-            # On essaie d'extraire la partie JSON si du texte a été ajouté
-            import re
-            match = re.search(r'\{.*\}', result, re.DOTALL)
-            if match:
-                parsed = json.loads(match.group(0))
-            else:
-                parsed = {}
+        parsed = await self.client.generate_json(prompt)
                 
         # POST-PROCESSING DE SÉCURITÉ :
         # L'IA a tendance à halluciner des hospitalisations. On force à False si les mots clés sont absents.
