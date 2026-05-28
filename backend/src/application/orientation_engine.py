@@ -23,7 +23,7 @@ class OrientationEngine:
             if not rule.get("enabled", True):
                 continue
 
-            is_eligible = self._check_eligibility(rule, eval_context)
+            is_eligible, matched_conditions = self._check_eligibility(rule, eval_context)
 
             if is_eligible:
                 eligible_structures.append({
@@ -31,7 +31,8 @@ class OrientationEngine:
                     "label": rule.get("label", rule["structure_type"]),
                     "priorite": rule.get("result", {}).get("base_priority_score", 0),
                     "pertinence": rule.get("result", {}).get("base_pertinence", "moyenne"),
-                    "objectif": rule.get("result", {}).get("objectif_orientation", "N/A")
+                    "objectif": rule.get("result", {}).get("objectif_orientation", "N/A"),
+                    "pourquoi": matched_conditions
                 })
 
         # Dédoublonner et regrouper par structure_type pour éviter les doublons à l'affichage
@@ -44,7 +45,8 @@ class OrientationEngine:
                     "winning_label": struct["label"],
                     "priorite": struct["priorite"],
                     "pertinence": struct["pertinence"],
-                    "matches": [(struct["label"], struct["objectif"])]
+                    "matches": [(struct["label"], struct["objectif"])],
+                    "pourquoi": list(struct.get("pourquoi", []))
                 }
             else:
                 # On garde la priorité maximale
@@ -58,6 +60,10 @@ class OrientationEngine:
                 match_entry = (struct["label"], struct["objectif"])
                 if match_entry not in grouped_structures[stype]["matches"]:
                     grouped_structures[stype]["matches"].append(match_entry)
+                # On ajoute les conditions de pourquoi s'ils n'y sont pas déjà
+                for cond in struct.get("pourquoi", []):
+                    if cond not in grouped_structures[stype]["pourquoi"]:
+                        grouped_structures[stype]["pourquoi"].append(cond)
 
         # On reconstruit la liste finale avec les explications combinées
         final_structures = []
@@ -68,7 +74,8 @@ class OrientationEngine:
                     "label": data["winning_label"],
                     "priorite": data["priorite"],
                     "pertinence": data["pertinence"],
-                    "objectif": data["matches"][0][1]
+                    "objectif": data["matches"][0][1],
+                    "pourquoi": data["pourquoi"]
                 })
             else:
                 # On définit un label propre de niveau structure pour le regroupement
@@ -89,14 +96,15 @@ class OrientationEngine:
                     clean_label = label
                     if " - " in clean_label:
                         clean_label = clean_label.split(" - ", 1)[1].strip()
-                    combined_objectifs += f"\n  • [{clean_label}] : {obj}"
+                    combined_objectifs += f"\n  - [{clean_label}] : {obj}"
 
                 final_structures.append({
                     "structure_type": stype,
                     "label": base_label,
                     "priorite": data["priorite"],
                     "pertinence": data["pertinence"],
-                    "objectif": combined_objectifs
+                    "objectif": combined_objectifs,
+                    "pourquoi": data["pourquoi"]
                 })
 
         # On trie par score de priorité (le plus élevé en premier)
@@ -110,10 +118,20 @@ class OrientationEngine:
         return final_structures
 
     def _check_eligibility(self, rule: dict, data: dict):
+        matched_conditions = []  # Preuves des conditions qui ont matché
+
         # 1. Vérification ALL_OF (toutes les conditions doivent être vraies)
         for condition in rule.get("all_of", []):
             if not self._evaluate_condition(condition, data):
-                return False
+                return False, []
+            # On enregistre la preuve
+            field = condition.get("field")
+            matched_conditions.append({
+                "champ": field,
+                "valeur": data.get(field),
+                "operateur": condition.get("operator"),
+                "attendu": condition.get("value")
+            })
 
         # 2. Vérification ANY_OF (au moins une doit être vraie s'il y en a)
         any_of_conditions = rule.get("any_of", [])
@@ -122,16 +140,24 @@ class OrientationEngine:
             for condition in any_of_conditions:
                 if self._evaluate_condition(condition, data):
                     found_any = True
+                    # On enregistre la condition gagnante
+                    field = condition.get("field")
+                    matched_conditions.append({
+                        "champ": field,
+                        "valeur": data.get(field),
+                        "operateur": condition.get("operator"),
+                        "attendu": condition.get("value")
+                    })
                     break
             if not found_any:
-                return False
+                return False, []
 
         # 3. Vérification NONE_OF (aucune ne doit être vraie)
         for condition in rule.get("none_of", []):
             if self._evaluate_condition(condition, data):
-                return False
+                return False, []
 
-        return True
+        return True, matched_conditions
 
     def _evaluate_condition(self, condition: dict, data: dict):
         field = condition.get("field")
@@ -156,6 +182,10 @@ class OrientationEngine:
                 # On compare en string pour éviter les problèmes int/str
                 return str(actual_value) in [str(v) for v in target_value]
             return str(actual_value) in str(target_value)
+        elif operator == "not_in":
+            if isinstance(target_value, list):
+                return str(actual_value) not in [str(v) for v in target_value]
+            return str(actual_value) not in str(target_value)
         elif operator == "contains_any":
             if isinstance(target_value, list):
                 if isinstance(actual_value, list):

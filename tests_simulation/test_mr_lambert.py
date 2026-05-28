@@ -51,10 +51,8 @@ async def run_test():
         print("ORIA : 'Désolé, je n'ai pas trouvé de structure adaptée, contactez le médecin traitant.'")
     else:
         print(f"ORIA : 'D'après votre description, la situation de M. Lambert est {comid_results['label']}. Voici les priorités d'appel :'")
-        for struct in results_with_contacts:
-            print(f"\nCONTACTER : [ {struct['label']} ]")
-            print(f"POURQUOI : {struct.get('objectif', 'N/A')}")
-            print(f"CONTACT : {struct.get('telephone', 'N/A')} | {struct.get('adresse', 'N/A')}")
+    from oria_display import afficher_orientations
+    afficher_orientations(results_with_contacts)
 
     # Sauvegarde en Base de Données (anonymisée)
     try:
