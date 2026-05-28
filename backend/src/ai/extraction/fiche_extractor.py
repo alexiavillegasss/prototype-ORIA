@@ -70,8 +70,8 @@ Alertes (mettre `true` si le problème est mentionné, sinon `false`) :
 - logement_inadapte
 - incurie_insalubrite
 
-### CERCLE DE SOINS
-Extraire UNIQUEMENT les intervenants et professionnels EXPLICITEMENT mentionnés dans le récit (ex: médecin, infirmier, aide à domicile, ADMR, kiné, etc.) sous forme d'une liste `cercle_de_soins`. N'INVENTE PAS de professionnel.
+### PROFESSIONNELS ET INTERVENANTS (CERCLE DE SOINS / AIDES)
+Extraire TOUS les intervenants et professionnels EXPLICITEMENT mentionnés dans le récit (ex: médecin, infirmier, aide à domicile, ADMR, kiné, etc.) sous forme d'une liste `cercle_de_soins`. Il est TRÈS IMPORTANT d'inclure les aides à domicile. N'INVENTE PAS de professionnel.
 Chaque élément doit être un objet avec :
 - type (chaîne STRICTE parmi : "medecin_traitant", "specialiste", "infirmier", "ssiad_had", "saad" (pour aide à domicile, ADMR), "palliatifs", "pharmacien", "kine", "repas", "telealarme", "social", "autre")
 - nom (chaîne)
@@ -147,6 +147,10 @@ Réponds UNIQUEMENT par ce JSON complet :
         if prenom and prenom.lower() in nom.lower():
             nom = re.sub(r'(?i)' + re.escape(prenom), "", nom).replace(",", "").strip()
             parsed["nom_usage"] = nom
+            
+        adresse = parsed.get("adresse_complete", "")
+        if " à " in adresse:
+            parsed["adresse_complete"] = adresse.replace(" à ", ", ")
         
         # POST-PROCESSING DE SÉCURITÉ :
         # L'IA a tendance à halluciner des hospitalisations. On force à False si les mots clés sont absents.
