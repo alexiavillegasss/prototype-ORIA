@@ -131,6 +131,15 @@ def dashboard():
     with open(html_path, "r", encoding="utf-8") as f:
         return f.read()
 
+# -----------------------------
+# INTERFACE DE TEST D'ORIENTATION
+# -----------------------------
+@app.get("/orienter", response_class=HTMLResponse)
+def orienter():
+    """Sert la page HTML du moteur d'orientation interactif."""
+    html_path = os.path.join(STATIC_DIR, "orienter.html")
+    with open(html_path, "r", encoding="utf-8") as f:
+        return f.read()
 
 # -----------------------------
 # API SANKEY DATA

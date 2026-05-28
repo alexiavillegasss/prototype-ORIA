@@ -41,14 +41,14 @@ async def run_single_simulation(file_name, file_path):
         orientation = "N/A"
         
         # Attempt to parse COMID score
-        score_match = re.search(r"Score Total\s*:\s*(\d+)", stdout_content)
-        if score_match:
-            comid_score = score_match.group(1)
+        score_matches = re.findall(r"Score Total\s*:\s*(\d+)", stdout_content)
+        if score_matches:
+            comid_score = score_matches[-1]
             
         # Attempt to parse primary orientation
         # Example 1: [ CEV - Cellule écoute et Vigilance ] - Priorite : 95
         # Example 2: VOTRE PRIORITÉ ABSOLUE : [ CEV ]
-        ori_match = re.search(r"\[\s*([^\]\-\(]+?)\s*\]\s*-\s*Priorite\s*:\s*(\d+)", stdout_content)
+        ori_match = re.search(r"\[\s*([^\]]+?)\s*\]\s*-\s*Priorit[ée]\s*:\s*(\d+)", stdout_content)
         if ori_match:
             orientation = ori_match.group(1).strip()
         else:
@@ -57,7 +57,7 @@ async def run_single_simulation(file_name, file_path):
                 orientation = ori_match_2.group(1).strip()
             else:
                 # Fallback to finding first bracket structure
-                ori_match_3 = re.search(r"\[\s*([^\]]{3,40}?)\s*\]", stdout_content)
+                ori_match_3 = re.search(r"\[\s*([^\]]{3,100}?)\s*\]", stdout_content)
                 if ori_match_3:
                     orientation = ori_match_3.group(1).strip()
 
@@ -98,7 +98,7 @@ async def main():
         results.append(r)
         completed_count += 1
         name_clean = r["file_name"].replace("test_", "").replace(".py", "").replace("_", " ").title()
-        status_str = "✅ SUCCESS" if r["success"] else "❌ FAILED"
+        status_str = "SUCCESS" if r["success"] else "FAILED"
         duration_str = f"{r['duration']:.1f}s"
         
         # Display instant status updates

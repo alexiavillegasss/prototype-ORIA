@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ORIA – Outil d'orientation et d'analyse de situation pour personnes âgées">
+    <title>ORIA – Moteur d'Orientation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <!-- Header (Identique au Sankey) -->
+    <header id="dashboard-header">
+        <div class="header-content">
+            <div class="logo-group">
+                <img src="/static/logo.png" alt="Logo ORIA" class="logo-img">
+            </div>
+            <div class="header-title-center">
+                <h2 class="subtitle">Moteur d'Orientation Interactif</h2>
+            </div>
+            <div class="header-badge">
+                <span class="badge-label">Mode</span>
+                <span class="badge-value" style="font-size: 1.1rem; color: var(--accent-purple);">Test Temps Réel</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="orientation-container">
+        
+        <!-- Colonne Gauche : Saisie -->
+        <section class="input-pane">
+            <div class="section-header">
+                <h2>Description de la situation</h2>
+                <p class="section-desc">Décrivez librement la situation de la personne âgée (âge, GIR, aides actuelles, alertes de son entourage...).</p>
+            </div>
+            
+            <div class="glass-card">
+                <textarea id="situation-input" placeholder="Exemple : Mme Marie Durant a 82 ans, elle réside à Saint-Gilles. Son médecin traitant s'inquiète car elle a fait deux chutes ce mois-ci. Elle refuse l'APA mais sa fille nous signale que sa situation à domicile devient instable..."></textarea>
+                
+                <button id="btn-submit" class="btn-primary">
+                    <span class="btn-text">Lancer l'Analyse</span>
+                    <!-- Spinner de chargement masqué par défaut -->
+                    <span class="spinner" id="btn-spinner" style="display: none;"></span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Colonne Droite : Résultats d'orientation -->
+        <section class="results-pane">
+            
+            <!-- État vide (affiché au départ) -->
+            <div id="results-placeholder" class="empty-state">
+                <div class="empty-icon">🧭</div>
+                <p>En attente d'une description de cas à analyser.</p>
+                <span class="empty-hint">Saisissez un texte à gauche puis cliquez sur <strong>Lancer l'Analyse</strong>.</span>
+            </div>
+
+            <!-- Conteneur des résultats réels (masqué par défaut) -->
+            <div id="results-content" style="display: none;">
+                
+                <div class="section-header">
+                    <h2>Diagnostic & Orientations</h2>
+                    <p class="section-desc">Voici l'analyse générée automatiquement par le moteur d'orientation ORIA.</p>
+                </div>
+
+                <!-- Petites cartes KPI d'analyse de situation (style tableau de bord) -->
+                <div class="mini-kpi-grid">
+                    <div class="mini-kpi-card">
+                        <span class="kpi-label">Score COMID</span>
+                        <span class="kpi-value" id="res-score">–</span>
+                    </div>
+                    <div class="mini-kpi-card">
+                        <span class="kpi-label">Complexité</span>
+                        <span class="kpi-value" id="res-level" style="font-size: 1.1rem;">–</span>
+                    </div>
+                    <div class="mini-kpi-card">
+                        <span class="kpi-label">Commune Détectée</span>
+                        <span class="kpi-value" id="res-commune" style="font-size: 1.1rem;">–</span>
+                    </div>
+                </div>
+
+                <!-- Structures recommandées -->
+                <h3 class="subsection-title">Structures préconisées par ordre de priorité :</h3>
+                <div id="structures-list" class="structures-container">
+                    <!-- Généré dynamiquement en JS -->
+                </div>
+
+                <!-- Accordéon pour voir les signaux faibles extraits -->
+                <details class="raw-data-accordion">
+                    <summary>🔍 Voir les signaux faibles extraits par l'IA (JSON)</summary>
+                    <pre><code id="raw-json-output"></code></pre>
+                </details>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer id="dashboard-footer">
+        <p>Prototype ORIA – Module d'évaluation interactif</p>
+    </footer>
+
+    <script src="/static/orienter.js"></script>
+</body>
+</html>
