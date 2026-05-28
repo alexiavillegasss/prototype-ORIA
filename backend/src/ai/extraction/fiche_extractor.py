@@ -73,7 +73,7 @@ Alertes (mettre `true` si le problème est mentionné, sinon `false`) :
 ### PROFESSIONNELS ET INTERVENANTS (CERCLE DE SOINS / AIDES)
 Extraire TOUS les intervenants et professionnels EXPLICITEMENT mentionnés dans le récit (ex: médecin, infirmier, aide à domicile, ADMR, kiné, etc.) sous forme d'une liste `cercle_de_soins`. Il est TRÈS IMPORTANT d'inclure les aides à domicile. N'INVENTE PAS de professionnel.
 Chaque élément doit être un objet avec :
-- type (chaîne STRICTE parmi : "medecin_traitant", "specialiste", "infirmier", "ssiad_had", "saad" (pour aide à domicile, ADMR), "palliatifs", "pharmacien", "kine", "repas", "telealarme", "social", "autre")
+- type (chaîne STRICTE parmi : "medecin_traitant", "specialiste", "infirmier", "ssiad_had", "saad" (UNIQUEMENT pour aide à domicile, ménage, ADMR), "palliatifs", "pharmacien", "kine", "repas" (pour le portage de repas), "telealarme", "social", "autre")
 - nom (chaîne, sans AUCUN titre. Retire "docteur", "Dr", "le docteur")
 - tel (chaîne)
 - email (chaîne, laisse STRICTEMENT vide `""` si non précisé. N'invente JAMAIS d'exemple)
@@ -175,10 +175,17 @@ Réponds UNIQUEMENT par ce JSON complet :
                     break
         
         # POST-PROCESSING DE SÉCURITÉ :
-        # L'IA a tendance à halluciner des hospitalisations. On force à False si les mots clés sont absents.
+        # L'IA a tendance à halluciner des hospitalisations. On force à False si les mots clés sont absents ou si négation.
         if parsed.get("alertes"):
-            if not any(word in text_lower for word in ["hospit", "urgenc"]):
+            text_for_hospit = text_lower
+            if "hospit" not in text_for_hospit and "urgence" not in text_for_hospit and "clinique" not in text_for_hospit:
                 parsed["alertes"]["hospit_recente"] = False
+            elif "n'a pas été hospit" in text_for_hospit or "pas d'hospit" in text_for_hospit or "sans hospit" in text_for_hospit or "non hospit" in text_for_hospit:
+                parsed["alertes"]["hospit_recente"] = False
+            elif "jamais été hospit" in text_for_hospit:
+                parsed["alertes"]["hospit_recente"] = False
+                
+            if not parsed["alertes"].get("hospit_recente", True):
                 parsed["alertes"]["hospit_date"] = ""
                 parsed["alertes"]["hospit_motif"] = ""
                 
