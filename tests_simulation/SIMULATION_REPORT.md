@@ -1,35 +1,35 @@
 # 📋 Rapport d'Évaluation Clinique ORIA
 
-Généré automatiquement le : `2026-05-28 09:33:13`  
+Généré automatiquement le : `2026-05-28 13:28:57`  
 Nombre de cas exécutés : **21**  
 Taux de succès : **21/21**  
-Temps d'exécution total : **311.62 secondes**  
+Temps d'exécution total : **359.42 secondes**  
 
 ## 📊 Tableau récapitulatif des Orientations
 
 | Patient | Status | Score COMID | Orientation Principale | Temps d'exécution |
 | :--- | :---: | :---: | :--- | :---: |
-| **Mme Fontaine** | ✅ SUCCESS | 3 | `N/A` | 16.09s |
-| **Mme Antoinette** | ✅ SUCCESS | 3 | `"refus_de_soins", "refus_aide_domicile"` | 16.67s |
-| **Mr Vacek** | ✅ SUCCESS | 2 | `N/A` | 12.54s |
-| **Mr Dubois** | ✅ SUCCESS | 4 | `N/A` | 14.73s |
-| **Mme Mouton** | ✅ SUCCESS | 3 | `DAC - Suspicion de Diogne ou incurie` | 16.34s |
-| **Mme Huguette** | ✅ SUCCESS | 2 | `N/A` | 14.19s |
-| **Mr Lambert** | ✅ SUCCESS | 3 | `Suspicion de Diogne ou incurie` | 15.82s |
-| **Mme Petit** | ✅ SUCCESS | 2 | `N/A` | 15.46s |
-| **Mme Lefebvre** | ✅ SUCCESS | 3 | `DAC - Suspicion de Diogne ou incurie` | 13.98s |
-| **Mr Leroy** | ✅ SUCCESS | 4 | `N/A` | 18.33s |
-| **Mme Bernard** | ✅ SUCCESS | 2 | `N/A` | 14.54s |
-| **Mme Durand** | ✅ SUCCESS | 3 | `Suspicion de Diogne ou incurie` | 15.11s |
-| **Mme Rossi** | ✅ SUCCESS | 2 | `N/A` | 13.91s |
-| **Mme Martin** | ✅ SUCCESS | 3 | `N/A` | 13.28s |
-| **Mr Martin** | ✅ SUCCESS | 2 | `N/A` | 15.07s |
-| **Mme Vial** | ✅ SUCCESS | 2 | `"absent", "non_identifie_avec_certitude"` | 15.53s |
-| **Mme Michu** | ✅ SUCCESS | 3 | `"refus_de_soins", "refus_aide_domicile"` | 13.42s |
-| **Mr Petit** | ✅ SUCCESS | 3 | `N/A` | 15.38s |
-| **Clarification And Validation** | ✅ SUCCESS | N/A | `DEBUG : extracted_data` | 11.82s |
-| **Mr Chen** | ✅ SUCCESS | 1 | `N/A` | 10.91s |
-| **Mme Morel** | ✅ SUCCESS | 3 | `N/A` | 18.50s |
+| **Mme Fontaine** | ✅ SUCCESS | 3 | `CEV - Cellule coute et Vigilance (Spoliation & Autres Dangers)` | 23.72s |
+| **Mme Antoinette** | ✅ SUCCESS | 3 | `DAC - Refus de soins ou d'aide (Priorit Absolue)` | 19.08s |
+| **Mr Vacek** | ✅ SUCCESS | 2 | `CEV - Cellule coute et Vigilance (Spoliation & Autres Dangers)` | 14.29s |
+| **Mr Dubois** | ✅ SUCCESS | 4 | `CLIC - Centre Local d'Information et de Coordination (Snior)` | 16.78s |
+| **Mme Mouton** | ✅ SUCCESS | 3 | `DAC - Suspicion de Diogne ou incurie` | 18.41s |
+| **Mme Huguette** | ✅ SUCCESS | 2 | `CEV - Cellule coute et Vigilance (Spoliation & Autres Dangers)` | 16.19s |
+| **Mr Lambert** | ✅ SUCCESS | 3 | `DAC - Dispositif d'Appui  la Coordination` | 18.20s |
+| **Mme Petit** | ✅ SUCCESS | 2 | `CCAS - Secours d'Urgence (Alimentaire & Factures)` | 17.74s |
+| **Mme Lefebvre** | ✅ SUCCESS | 3 | `DAC - Suspicion de Diogne ou incurie` | 16.01s |
+| **Mr Leroy** | ✅ SUCCESS | 4 | `CLIC - Centre Local d'Information et de Coordination (Snior)` | 20.71s |
+| **Mme Bernard** | ✅ SUCCESS | 2 | `CEV - Cellule coute et Vigilance (Spoliation & Autres Dangers)` | 16.44s |
+| **Mme Durand** | ✅ SUCCESS | 3 | `DAC - Dispositif d'Appui  la Coordination` | 17.21s |
+| **Mme Rossi** | ✅ SUCCESS | 2 | `Police / Gendarmerie (Urgence Vitale & Intervention)` | 15.89s |
+| **Mme Martin** | ✅ SUCCESS | 3 | `CLIC - Centre Local d'Information et de Coordination (Snior)` | 14.43s |
+| **Mr Martin** | ✅ SUCCESS | 2 | `CLIC - Centre Local d'Information et de Coordination (Snior)` | 16.81s |
+| **Mme Vial** | ✅ SUCCESS | 2 | `CPTS - Communaut Professionnelle Territoriale de Sant` | 17.45s |
+| **Mme Michu** | ✅ SUCCESS | 3 | `DAC - Refus de soins ou d'aide (Priorit Absolue)` | 15.18s |
+| **Mr Petit** | ✅ SUCCESS | 3 | `PSCG SS APA - Ple Social de Solidarit et de Gestion (APA)` | 17.62s |
+| **Clarification And Validation** | ✅ SUCCESS | N/A | `DEBUG : extracted_data` | 13.49s |
+| **Mr Chen** | ✅ SUCCESS | 1 | `CLIC - Centre Local d'Information et de Coordination` | 12.81s |
+| **Mme Morel** | ✅ SUCCESS | 3 | `Service Social de l'Hpital (Hospitalisation en cours)` | 20.96s |
 
 ---
 
