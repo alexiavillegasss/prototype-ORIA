@@ -1,35 +1,35 @@
 # 📋 Rapport d'Évaluation Clinique ORIA
 
-Généré automatiquement le : `2026-05-28 13:28:57`  
+Généré automatiquement le : `2026-05-28 13:51:18`  
 Nombre de cas exécutés : **21**  
 Taux de succès : **21/21**  
-Temps d'exécution total : **359.42 secondes**  
+Temps d'exécution total : **355.01 secondes**  
 
 ## 📊 Tableau récapitulatif des Orientations
 
 | Patient | Status | Score COMID | Orientation Principale | Temps d'exécution |
 | :--- | :---: | :---: | :--- | :---: |
-| **Mme Fontaine** | ✅ SUCCESS | 3 | `CEV - Cellule coute et Vigilance (Spoliation & Autres Dangers)` | 23.72s |
-| **Mme Antoinette** | ✅ SUCCESS | 3 | `DAC - Refus de soins ou d'aide (Priorit Absolue)` | 19.08s |
-| **Mr Vacek** | ✅ SUCCESS | 2 | `CEV - Cellule coute et Vigilance (Spoliation & Autres Dangers)` | 14.29s |
-| **Mr Dubois** | ✅ SUCCESS | 4 | `CLIC - Centre Local d'Information et de Coordination (Snior)` | 16.78s |
-| **Mme Mouton** | ✅ SUCCESS | 3 | `DAC - Suspicion de Diogne ou incurie` | 18.41s |
-| **Mme Huguette** | ✅ SUCCESS | 2 | `CEV - Cellule coute et Vigilance (Spoliation & Autres Dangers)` | 16.19s |
-| **Mr Lambert** | ✅ SUCCESS | 3 | `DAC - Dispositif d'Appui  la Coordination` | 18.20s |
-| **Mme Petit** | ✅ SUCCESS | 2 | `CCAS - Secours d'Urgence (Alimentaire & Factures)` | 17.74s |
-| **Mme Lefebvre** | ✅ SUCCESS | 3 | `DAC - Suspicion de Diogne ou incurie` | 16.01s |
-| **Mr Leroy** | ✅ SUCCESS | 4 | `CLIC - Centre Local d'Information et de Coordination (Snior)` | 20.71s |
-| **Mme Bernard** | ✅ SUCCESS | 2 | `CEV - Cellule coute et Vigilance (Spoliation & Autres Dangers)` | 16.44s |
-| **Mme Durand** | ✅ SUCCESS | 3 | `DAC - Dispositif d'Appui  la Coordination` | 17.21s |
-| **Mme Rossi** | ✅ SUCCESS | 2 | `Police / Gendarmerie (Urgence Vitale & Intervention)` | 15.89s |
-| **Mme Martin** | ✅ SUCCESS | 3 | `CLIC - Centre Local d'Information et de Coordination (Snior)` | 14.43s |
-| **Mr Martin** | ✅ SUCCESS | 2 | `CLIC - Centre Local d'Information et de Coordination (Snior)` | 16.81s |
-| **Mme Vial** | ✅ SUCCESS | 2 | `CPTS - Communaut Professionnelle Territoriale de Sant` | 17.45s |
-| **Mme Michu** | ✅ SUCCESS | 3 | `DAC - Refus de soins ou d'aide (Priorit Absolue)` | 15.18s |
-| **Mr Petit** | ✅ SUCCESS | 3 | `PSCG SS APA - Ple Social de Solidarit et de Gestion (APA)` | 17.62s |
-| **Clarification And Validation** | ✅ SUCCESS | N/A | `DEBUG : extracted_data` | 13.49s |
-| **Mr Chen** | ✅ SUCCESS | 1 | `CLIC - Centre Local d'Information et de Coordination` | 12.81s |
-| **Mme Morel** | ✅ SUCCESS | 3 | `Service Social de l'Hpital (Hospitalisation en cours)` | 20.96s |
+| **Mme Fontaine** | ✅ SUCCESS | 3 | `CEV - Cellule coute et Vigilance (Spoliation & Autres Dangers)` | 21.19s |
+| **Mme Antoinette** | ✅ SUCCESS | 3 | `DAC - Refus de soins ou d'aide (Priorit Absolue)` | 18.91s |
+| **Mr Vacek** | ✅ SUCCESS | 2 | `CEV - Cellule coute et Vigilance (Spoliation & Autres Dangers)` | 15.06s |
+| **Mr Dubois** | ✅ SUCCESS | 4 | `CLIC - Centre Local d'Information et de Coordination (Snior)` | 16.81s |
+| **Mme Mouton** | ✅ SUCCESS | 3 | `DAC - Suspicion de Diogne ou incurie` | 18.61s |
+| **Mme Huguette** | ✅ SUCCESS | 2 | `CEV - Cellule coute et Vigilance (Spoliation & Autres Dangers)` | 15.98s |
+| **Mr Lambert** | ✅ SUCCESS | 3 | `DAC - Dispositif d'Appui  la Coordination` | 17.94s |
+| **Mme Petit** | ✅ SUCCESS | 2 | `CCAS - Secours d'Urgence (Alimentaire & Factures)` | 17.47s |
+| **Mme Lefebvre** | ✅ SUCCESS | 3 | `DAC - Suspicion de Diogne ou incurie` | 16.27s |
+| **Mr Leroy** | ✅ SUCCESS | 4 | `CLIC - Centre Local d'Information et de Coordination (Snior)` | 20.56s |
+| **Mme Bernard** | ✅ SUCCESS | 2 | `CEV - Cellule coute et Vigilance (Spoliation & Autres Dangers)` | 16.20s |
+| **Mme Durand** | ✅ SUCCESS | 3 | `DAC - Dispositif d'Appui  la Coordination` | 16.79s |
+| **Mme Rossi** | ✅ SUCCESS | 2 | `Police / Gendarmerie (Urgence Vitale & Intervention)` | 15.40s |
+| **Mme Martin** | ✅ SUCCESS | 3 | `CLIC - Centre Local d'Information et de Coordination (Snior)` | 14.24s |
+| **Mr Martin** | ✅ SUCCESS | 2 | `CLIC - Centre Local d'Information et de Coordination (Snior)` | 16.52s |
+| **Mme Vial** | ✅ SUCCESS | 2 | `CPTS - Communaut Professionnelle Territoriale de Sant` | 17.36s |
+| **Mme Michu** | ✅ SUCCESS | 3 | `DAC - Refus de soins ou d'aide (Priorit Absolue)` | 14.82s |
+| **Mr Petit** | ✅ SUCCESS | 3 | `PSCG SS APA - Ple Social de Solidarit et de Gestion (APA)` | 16.80s |
+| **Clarification And Validation** | ✅ SUCCESS | N/A | `DEBUG : extracted_data` | 13.45s |
+| **Mr Chen** | ✅ SUCCESS | 1 | `CLIC - Centre Local d'Information et de Coordination` | 12.98s |
+| **Mme Morel** | ✅ SUCCESS | 3 | `Service Social de l'Hpital (Hospitalisation en cours)` | 21.65s |
 
 ---
 
@@ -67,6 +67,20 @@ Donnes extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "oui",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "insalubre",
+  "evaluation.comid.justifications": [
+    {
+      "code": "douleurs",
+      "justification": "La patiente a perdu 5kg en un mois et oublie ses mdicaments contre la douleur, donc on ne peut plus faire les exercices."
+    },
+    {
+      "code": "precarite_financiere",
+      "justification": "Son frigo est littralement vide, il lui demande de l'argent de faon trs insistante  chaque fois que je suis l."
+    },
+    {
+      "code": "epuisement_aidant",
+      "justification": "Le fils qui vit avec elle est trs agressif et la fait craindre."
+    }
+  ],
   "evaluation.comid.multimorbidite": false,
   "evaluation.comid.douleurs": true,
   "evaluation.comid.allergies": false,
@@ -184,6 +198,20 @@ Donnes extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "oui",
   "usager.cadre_de_vie.etat_logement": "non_renseigne",
+  "evaluation.comid.justifications": [
+    {
+      "code": "epuisement_aidant",
+      "justification": "Son mari Pierre est dans une situation d'puisement total et de dtresse face  son opposition."
+    },
+    {
+      "code": "opposition_soins",
+      "justification": "Elle refuse catgoriquement l'aide des auxiliaires de vie du SAAD qui passent habituellement pour sa toilette."
+    },
+    {
+      "code": "perte_autonomie_recente",
+      "justification": "Perte d'indpendance rcente (AVQ/AIVQ) : ne peut plus se laver, chute rcente, dpendance nouvelle, toilette difficile"
+    }
+  ],
   "evaluation.comid.multimorbidite": false,
   "evaluation.comid.douleurs": false,
   "evaluation.comid.allergies": false,
@@ -300,6 +328,16 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "insalubre",
+  "evaluation.comid.justifications": [
+    {
+      "code": "logement_inadapte",
+      "justification": "Son appartement est insalubre : il n'a plus d'eau courante depuis 3 mois et le plafond de sa chambre menace de s'effondrer suite  une infiltration."
+    },
+    {
+      "code": "precarite_financiere",
+      "justification": "Il n'a plus de revenus car son dossier de retraite est bloqu."
+    }
+  ],
   "evaluation.comid.multimorbidite": false,
   "evaluation.comid.douleurs": false,
   "evaluation.comid.allergies": false,
@@ -408,6 +446,24 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "oui",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "insalubre",
+  "evaluation.comid.justifications": [
+    {
+      "code": "multimorbidite",
+      "justification": "Il souffre de diabte, d'hypertension et d'une insuffisance rnale chronique qui lui cause des douleurs permanentes dans les jambes."
+    },
+    {
+      "code": "douleurs",
+      "justification": "Il souffre de douleurs permanentes dans les jambes."
+    },
+    {
+      "code": "polymedication",
+      "justification": "Il prend 8 mdicaments par jour."
+    },
+    {
+      "code": "precarite_financiere",
+      "justification": "Il commence  avoir du mal  payer son loyer et ses factures."
+    }
+  ],
   "evaluation.comid.multimorbidite": true,
   "evaluation.comid.douleurs": true,
   "evaluation.comid.allergies": false,
@@ -515,6 +571,20 @@ Donnes extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "diogene",
+  "evaluation.comid.justifications": [
+    {
+      "code": "isolement_social",
+      "justification": "Elle est en situation de grand isolement social et n'a aucun aidant  proximit."
+    },
+    {
+      "code": "logement_inadapte",
+      "justification": "Son appartement devenu extrmement insalubre et encombr de dchets et d'objets accumuls (syndrome de Diogne)."
+    },
+    {
+      "code": "perte_autonomie_recente",
+      "justification": "De plus, elle n'a plus de mdecin traitant depuis 6 mois et ne bnficie pas de l'APA."
+    }
+  ],
   "evaluation.comid.multimorbidite": false,
   "evaluation.comid.douleurs": false,
   "evaluation.comid.allergies": false,
@@ -622,6 +692,16 @@ Donnes extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "insalubre",
+  "evaluation.comid.justifications": [
+    {
+      "code": "precarite_financiere",
+      "justification": "Une amie trs proche s'inquite : elle signale que le neveu d'Huguette, qui a procuration sur ses comptes bancaires, effectue des retraits d'argent massifs et rpts sans justification, laissant Huguette sans le moindre sou pour s'acheter de quoi manger."
+    },
+    {
+      "code": "isolement_social",
+      "justification": "Mme H., 79 ans, vit seule dans un logement insalubre et humide  La Valette du Var."
+    }
+  ],
   "evaluation.comid.multimorbidite": false,
   "evaluation.comid.douleurs": false,
   "evaluation.comid.allergies": false,
@@ -729,6 +809,20 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "diogene",
+  "evaluation.comid.justifications": [
+    {
+      "code": "isolement_social",
+      "justification": "Il vit seule, pas de visite, famille loigne, ne sort plus."
+    },
+    {
+      "code": "perte_autonomie_recente",
+      "justification": "Il est dcrit comme ne pouvant plus se laver, chute rcente, dpendance nouvelle, toilette difficile."
+    },
+    {
+      "code": "opposition_soins",
+      "justification": "Il refuse que j'entre faire ses pansements, il me crie dessus et me dit que je veux l'empoisonner avec ses mdicaments."
+    }
+  ],
   "evaluation.comid.multimorbidite": false,
   "evaluation.comid.douleurs": false,
   "evaluation.comid.allergies": false,
@@ -831,6 +925,16 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "non_renseigne",
+  "evaluation.comid.justifications": [
+    {
+      "code": "precarite_financiere",
+      "justification": "Elle n'a plus rien pour s'acheter  manger pour les 10 prochains jours et elle a reu une lettre de rappel pour sa facture d'lectricit."
+    },
+    {
+      "code": "isolement_social",
+      "justification": "Elle vit seule"
+    }
+  ],
   "evaluation.comid.multimorbidite": false,
   "evaluation.comid.douleurs": false,
   "evaluation.comid.allergies": false,
@@ -929,6 +1033,20 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "diogene",
+  "evaluation.comid.justifications": [
+    {
+      "code": "addiction",
+      "justification": "Elle consomme beaucoup d'alcool pour 'calmer ses angoisses' selon ses propres mots."
+    },
+    {
+      "code": "anxiete",
+      "justification": "Elle est suivie pour une bipolarit depuis des annes mais elle a arrt son traitement le mois dernier."
+    },
+    {
+      "code": "logement_inadapte",
+      "justification": "Elle vit dans un appartement trs encombr (Syndrome de Diogne suspect) et ses voisins se plaignent d'odeurs fortes."
+    }
+  ],
   "evaluation.comid.multimorbidite": false,
   "evaluation.comid.douleurs": false,
   "evaluation.comid.allergies": false,
@@ -1027,6 +1145,24 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "insalubre",
+  "evaluation.comid.justifications": [
+    {
+      "code": "degradation_recente",
+      "justification": "Sa sant se dgrade rapidement et il a d arrter son activit professionnelle."
+    },
+    {
+      "code": "precarite_financiere",
+      "justification": "Il vit seul, ses revenus ont chut et il a du mal  payer son loyer."
+    },
+    {
+      "code": "isolement_social",
+      "justification": "Il vit seul, ses revenus ont chut et il a du mal  payer son loyer."
+    },
+    {
+      "code": "depression",
+      "justification": "Il exprime des ides noires."
+    }
+  ],
   "evaluation.comid.multimorbidite": false,
   "evaluation.comid.douleurs": false,
   "evaluation.comid.allergies": false,
@@ -1134,6 +1270,16 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "non_renseigne",
+  "evaluation.comid.justifications": [
+    {
+      "code": "isolement_social",
+      "justification": "Une voisine signale que le petit-fils de Mme B., qui vient la voir de temps en temps, semble lui voler de l'argent. Mme B. est trs isole."
+    },
+    {
+      "code": "precarite_financiere",
+      "justification": "Elle n'a plus de quoi s'acheter  manger car son compte est vide."
+    }
+  ],
   "evaluation.comid.multimorbidite": false,
   "evaluation.comid.douleurs": false,
   "evaluation.comid.allergies": false,
@@ -1251,6 +1397,20 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "oui",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "incurie",
+  "evaluation.comid.justifications": [
+    {
+      "code": "troubles_cognitifs",
+      "justification": "Elle est trs confuse, elle dambule la nuit dans l'immeuble."
+    },
+    {
+      "code": "agressivite",
+      "justification": "Elle est agressive avec les infirmiers qui viennent pour son diabte et refuse qu'ils entrent."
+    },
+    {
+      "code": "opposition_soins",
+      "justification": "Elle refuse catgoriquement l'aide des auxiliaires de vie"
+    }
+  ],
   "evaluation.comid.multimorbidite": false,
   "evaluation.comid.douleurs": false,
   "evaluation.comid.allergies": false,
@@ -1343,6 +1503,16 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "non_renseigne",
+  "evaluation.comid.justifications": [
+    {
+      "code": "isolement_social",
+      "justification": "Elle vit seule, pas de visite, famille loigne, ne sort plus."
+    },
+    {
+      "code": "precarite_financiere",
+      "justification": "Elle n'a pas accs  ses comptes bancaires et a besoin d'tre protge et de trouver un hbergement d'urgence."
+    }
+  ],
   "evaluation.comid.multimorbidite": false,
   "evaluation.comid.douleurs": false,
   "evaluation.comid.allergies": false,
@@ -1469,6 +1639,20 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "oui",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "non_renseigne",
+  "evaluation.comid.justifications": [
+    {
+      "code": "epuisement_aidant",
+      "justification": "Je n'en peux plus, je craque."
+    },
+    {
+      "code": "isolement_social",
+      "justification": "Je travaille  temps plein et je passe toutes mes soires et mes week-ends chez elle."
+    },
+    {
+      "code": "litteratie_faible",
+      "justification": "Ne comprend pas les consignes, ne sait pas lire..."
+    }
+  ],
   "evaluation.comid.multimorbidite": false,
   "evaluation.comid.douleurs": false,
   "evaluation.comid.allergies": false,
@@ -1568,6 +1752,16 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "non_renseigne",
+  "evaluation.comid.justifications": [
+    {
+      "code": "epuisement_aidant",
+      "justification": "Il se retrouve seul et n'arrive plus  prparer ses repas ni  prendre ses mdicaments, ce qui montre que le conjoint aidant est puis."
+    },
+    {
+      "code": "precarite_financiere",
+      "justification": "Il ne peut pas payer ses factures et a une petite retraite, ce qui indique des difficults financires."
+    }
+  ],
   "evaluation.comid.multimorbidite": false,
   "evaluation.comid.douleurs": false,
   "evaluation.comid.allergies": false,
@@ -1675,6 +1869,16 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "non_renseigne",
+  "evaluation.comid.justifications": [
+    {
+      "code": "multimorbidite",
+      "justification": "Mme V. souffre de diabte de type 2 et d'hypertension."
+    },
+    {
+      "code": "anxiete",
+      "justification": "Elle est trs angoisse par cette rupture de suivi mdical."
+    }
+  ],
   "evaluation.comid.multimorbidite": true,
   "evaluation.comid.douleurs": false,
   "evaluation.comid.allergies": false,
@@ -1765,6 +1969,20 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "non_renseigne",
+  "evaluation.comid.justifications": [
+    {
+      "code": "troubles_cognitifs",
+      "justification": "Mme M. commence  oublier de manger, elle a chut la semaine dernire mais n'a pas t hospitalise."
+    },
+    {
+      "code": "isolement_social",
+      "justification": "Mme M. vit seule  Toulon dans son appartement."
+    },
+    {
+      "code": "epuisement_aidant",
+      "justification": "Sa fille est puise et trs inquite."
+    }
+  ],
   "evaluation.comid.multimorbidite": false,
   "evaluation.comid.douleurs": false,
   "evaluation.comid.allergies": false,
@@ -1872,6 +2090,20 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "insalubre",
+  "evaluation.comid.justifications": [
+    {
+      "code": "epuisement_aidant",
+      "justification": "Je m'occupe de ma femme (83 ans) qui a la maladie de Parkinson depuis 5 ans. Jusqu'ici on arrivait  grer avec les aides, mais l je suis au bout du rouleau."
+    },
+    {
+      "code": "logement_inadapte",
+      "justification": "On habite  Toulon au 3me tage sans ascenseur"
+    },
+    {
+      "code": "lourdeur_reseau",
+      "justification": "Je ne dors plus car elle crie la nuit. On a dj l'APA, mais les quelques heures de mnage ne suffisent plus du tout."
+    }
+  ],
   "evaluation.comid.multimorbidite": false,
   "evaluation.comid.douleurs": false,
   "evaluation.comid.allergies": false,
@@ -1976,6 +2208,16 @@ tat Logement : non_renseigne
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "non_renseigne",
+  "evaluation.comid.justifications": [
+    {
+      "code": "isolement_social",
+      "justification": "Son fils habite loin et ne peut pas l'aider."
+    },
+    {
+      "code": "precarite_financiere",
+      "justification": "Elle refuse pour l'instant toute aide professionnelle  domicile, ce qui suggre des difficults financires."
+    }
+  ],
   "evaluation.comid.multimorbidite": false,
   "evaluation.comid.douleurs": false,
   "evaluation.comid.allergies": false,
@@ -2069,6 +2311,12 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "inconnu",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "non_renseigne",
+  "evaluation.comid.justifications": [
+    {
+      "code": "logement_inadapte",
+      "justification": "Il est en situation de handicap moteur et bnficie de la PCH. Il cherche des informations sur les logements adapts  son fauteuil roulant dans la commune..."
+    }
+  ],
   "evaluation.comid.multimorbidite": false,
   "evaluation.comid.douleurs": false,
   "evaluation.comid.allergies": false,
@@ -2161,6 +2409,20 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "non_renseigne",
+  "evaluation.comid.justifications": [
+    {
+      "code": "isolement_social",
+      "justification": "Elle vit seule au 3me tage."
+    },
+    {
+      "code": "perte_autonomie_recente",
+      "justification": "Elle a besoin que quelqu'un l'aide  organiser sa sortie et  remplir ses dossiers administratifs car elle a perdu ses papiers lors de son admission en urgence."
+    },
+    {
+      "code": "precarite_financiere",
+      "justification": "Elle a besoin que quelqu'un l'aide  organiser sa sortie et  remplir ses dossiers administratifs car elle a perdu ses papiers lors de son admission en urgence."
+    }
+  ],
   "evaluation.comid.multimorbidite": false,
   "evaluation.comid.douleurs": false,
   "evaluation.comid.allergies": false,
