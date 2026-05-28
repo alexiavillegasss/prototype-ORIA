@@ -179,17 +179,20 @@ async def run_interactive():
                     choix = input("Votre choix (1 ou 2) : ").strip()
                     
                     if choix == '1':
-                        precisions = input("\nEntrez vos precisions : ").strip()
+                        print("\n--- Saisie des informations manquantes ---")
+                        precisions = ""
+                        for info in missing_info:
+                            rep = input(f" {info} : ").strip()
+                            if rep:
+                                precisions += f"\n- Pour {info} : {rep}"
                     elif choix != '2' and len(choix) > 2:
-                        # Si l'utilisateur a tapé directement sa phrase au lieu de taper '1'
                         precisions = choix
                     else:
                         precisions = None
                         
                     if precisions:
                         print("\nMise a jour du dossier en cours...")
-                        context_manquant = "\n".join([f"- {info}" for info in missing_info])
-                        current_text += f"\n\n[CONTEXTE] L'IA avait demandé ces informations manquantes :\n{context_manquant}\n\n[REPONSE DE L'UTILISATEUR] Precisions apportees : {precisions}"
+                        current_text += f"\n\n[PRECISIONS APPORTEES PAR L'UTILISATEUR SUITE AUX MANQUEMENTS] :{precisions}"
                         extracted_dac_data = await fiche_extractor.extract_for_dac(current_text)
                 
                 print("\nGeneration du PDF...")
