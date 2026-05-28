@@ -165,6 +165,14 @@ Réponds UNIQUEMENT par ce JSON complet :
             pro_email = pro.get("email", "")
             if "exemple" in pro_email.lower() or "example" in pro_email.lower():
                 pro["email"] = ""
+                
+        # Nettoyage des téléphones dupliqués (IA zélée qui copie le tel du pro dans le tel du patient)
+        patient_tel = parsed.get("telephone", "")
+        if patient_tel:
+            for pro in cercle:
+                if pro.get("tel") == patient_tel:
+                    parsed["telephone"] = ""
+                    break
         
         # POST-PROCESSING DE SÉCURITÉ :
         # L'IA a tendance à halluciner des hospitalisations. On force à False si les mots clés sont absents.
