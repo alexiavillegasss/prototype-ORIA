@@ -1,6 +1,7 @@
 import json
 import os
 from infrastructure.llm_client import OllamaClient
+from ai.security.anonymizer import Anonymizer
 
 class SignalExtractor:
     last_extracted_data = None
@@ -8,6 +9,7 @@ class SignalExtractor:
 
     def __init__(self, schema_path: str, comid_path: str, model="llama3", base_url="http://localhost:11434", temperature=0.1):
         self.client = OllamaClient(model=model, base_url=base_url, temperature=temperature)
+        self.anonymizer = Anonymizer()
         self.schema_path = schema_path
         self.comid_path = comid_path
         self._comid_items = self._load_comid_items()
@@ -18,12 +20,15 @@ class SignalExtractor:
             return data.get("items", [])
 
     async def extract(self, text: str):
+        # Pseudonymisation du récit patient avant traitement
+        safe_text = self.anonymizer.pseudonymize(text)
+
         # 1. PREMIER APPEL : EXTRACTION DES VARIABLES DE BASE
         prompt_base = f"""
 ### EXPERT ORIA - EXTRACTION DES VARIABLES CLÉS CLINIQUES ET ADMINISTRATIVES
 Analyse la situation clinique ci-dessous pour extraire les variables clés sous forme de JSON.
 
-SITUATION : "{text}"
+SITUATION : "{safe_text}"
 
 ### DIRECTIVES D'EXTRACTION DE RIGUEUR CLINIQUE (ZERO-HALLUCINATION) :
 1. "age" : Âge estimé ou mentionné de la personne (chiffre entier, ou null si non mentionné).
@@ -33,7 +38,7 @@ SITUATION : "{text}"
 5. "gir" : Chiffre officiel de 1 à 6 si précisé (ex: "GIR 2", "GIR 3"), ou null si non précisé.
 6. "medecin_traitant" : Choisir "identifie" si elle a un médecin, "absent" si elle n'a plus de médecin depuis des mois ou cherche un médecin, ou "incertain" si non mentionné.
 7. "malveillance" : Choisir impérativement :
-   - "spoliation_financiere" si un tiers (fils, petit-fils, proche, etc.) lui vole, extorque, prend son argent, ou s'il lui demande de l'argent de façon très insistante (ex: fils agressif qui crie et demande de l'argent de façon très insistante à sa mère alors qu'elle semble terrorisée).
+   - "spoliation_financiere" si un tiers (fils, petit-fils, proche, etc.) lui vole, extorque, prend son argent, ou s'il lui demande de l'argent de façon très intense (ex: fils agressif qui crie et demande de l'argent de façon très intense à sa mère alors qu'elle semble terrorisée).
    - "violences_physiques" si coups, ecchymoses suspectes ou sévices physiques SUBIS de la part d'un tiers.
    - "negligence" si l'entourage délaisse volontairement la personne (privation volontaire d'hygiène/repas).
    - "aucune" s'il n'y a aucune maltraitance active commise par un tiers.
@@ -86,7 +91,7 @@ Format JSON attendu :
 ### EXPERT ORIA - ÉVALUATION DES CRITÈRES COMID (ZÉRO-HALLUCINATION)
 Analyse la situation ci-dessous pour identifier uniquement les critères cliniques et médico-sociaux du référentiel COMID qui sont présents avec une certitude absolue.
 
-SITUATION : "{text}"
+SITUATION : "{safe_text}"
 
 ### LISTE DES CRITÈRES COMID DISPONIBLES :
 {comid_reference}

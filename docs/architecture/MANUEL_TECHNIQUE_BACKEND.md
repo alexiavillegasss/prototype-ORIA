@@ -320,3 +320,93 @@ Cette échelle n'est pas calculée par l'IA, elle est définie à l'avance par d
 9. **CCAS - Premier Accueil (Priorité 60)**
    - Condition : APA = NON.
    - Signaux : Demandes d'informations générales, aides facultatives communales.
+
+---
+
+## 9. CONFIGURATION DE L'ACCÉLÉRATION MATÉRIELLE (GPU vs CPU)
+
+Pour garantir une expérience fluide lors de l'évaluation clinique en temps réel, le moteur d'inférence local d'ORIA a été optimisé pour s'exécuter sur le **processeur graphique dédié (GPU)** de l'ordinateur portable plutôt que sur le **processeur central (CPU)**.
+
+### Le Problème du CPU-only (Par défaut)
+Sur les ordinateurs portables équipés de doubles puces graphiques (une puce intégrée de base pour l'autonomie et une carte dédiée haute performance), Windows et Ollama tendent à ignorer la carte dédiée.
+* **Inférence CPU** : L'exécution du modèle Llama 3.2 (3B) sur le processeur central (CPU) requiert d'intenses calculs vectoriels partagés. L'analyse d'un seul récit de patient prenait environ **1 minute et 40 secondes**.
+* **Impact** : Cela rendait l'analyse de dossiers en temps réel inconfortable et ralentissait considérablement la validation à grande échelle des 23 cas de simulation clinique.
+
+### La Solution : Accélération CUDA sur NVIDIA RTX 4070 Laptop
+L'activation complète des cœurs CUDA dédiés de la carte graphique NVIDIA GeForce RTX 4070 a permis de franchir un cap d'optimisation majeur :
+1. **Résolution du pilote hybride Windows** : Installation de la dernière mise à jour du pilote NVIDIA Studio pour enregistrer et exposer la DLL système `nvcudart_hybrid64.dll` requise par le moteur de calcul CUDA d'Ollama (`ggml-cuda.dll`).
+2. **Forçage des préférences graphiques de Windows** : Inscription de la préférence haute performance (`GpuPreference=2`) dans la base de registre Windows (`HKCU:\Software\Microsoft\DirectX\UserGpuPreferences`) pour les exécutables d'Ollama :
+   - `C:\Users\alexi\AppData\Local\Programs\Ollama\ollama.exe`
+   - `C:\Users\alexi\AppData\Local\Programs\Ollama\ollama app.exe`
+
+### Résultats de l'Optimisation
+* **
+---
+## Annexe – Anonymisation et intégration de la base de données
+
+### 1. Vue d'ensemble
+Ce texte explique comment les données du patient sont **anonymisées** avant d’être stockées dans la base SQLite `oria_database.db`.
+
+### 2. Module d’anonymisation
+- **Emplacement** : `backend/src/ai/security/anonymizer.py`
+- **Fonction principale** : `Anonymizer.pseudonymize(text)` – remplace les noms et civilités par leurs initiales (ex. « Mme Dupont » → « Mme D. »). Le texte retourné ne contient plus aucune information personnelle.
+- **Utilisation** :
+```python
+from ai.security.anonymizer import Anonymizer
+anonymizer = Anonymizer()
+texte_brut = "Mme Dupont, 70 ans, habite à Nice. Son médecin est le Dr Martin."
+texte_safe = anonymizer.pseudonymize(texte_brut)
+print(texte_safe)  # -> "Mme D., 70 ans, habite à Nice. Son médecin est le Dr M."
+```
+Tous les pipelines d’extraction appellent cette fonction avant d’enregistrer les données.
+
+### 3. Gestionnaire de base de données
+- **Fichier** : `backend/src/infrastructure/database.py`
+- **Table principale** : `dossiers_patients`
+```sql
+CREATE TABLE IF NOT EXISTS dossiers_patients (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date_creation TEXT NOT NULL,
+    texte_original TEXT NOT NULL,      -- texte déjà anonymisé
+    donnees_extraites TEXT NOT NULL,   -- JSON
+    score_comid INTEGER,
+    niveau_comid TEXT,
+    structures_orientations TEXT,      -- JSON
+    details_complet TEXT               -- JSON (Toutes les informations utiles à l'orientation : grille COMID, GIR, APA, médecin, etc.)
+);
+```
+- **Méthodes clés** :
+  - `save_dossier(texte_original, donnees_extraites, score_comid, niveau_comid, structures_orientations, details_complet)` : insère un nouveau dossier (y compris le dictionnaire complet de l'orientation) et renvoie son `id`.
+  - `get_all_dossiers()` : récupère tous les dossiers, en convertissant les champs JSON (y compris `details_complet`) en dictionnaires Python.
+
+### 4. Flux de travail simplifié
+1️⃣ Extraction du texte avec `SignalExtractor`.
+2️⃣ Anonymisation du texte brut via `Anonymizer.pseudonymize`.
+3️⃣ Calcul du score COMID, détermination de l’orientation, et agrégation de toutes les informations dans `details_complet`.
+4️⃣ Enregistrement du dossier anonymisé et des détails JSON dans la base avec `DatabaseManager.save_dossier`.
+
+Aucun renseignement personnel ne circule dans la base ; seul le texte déjà **pseudonymisé** y est stocké.
+
+### 5. Configuration rapide
+- Le chemin de la base peut être changé en passant `db_path` au constructeur : `DatabaseManager(db_path="chemin/vers/ma.db")`.
+- Les règles d’anonymisation se trouvent dans le dictionnaire `self.patterns` du fichier `anonymizer.py`. Ajouter un nouveau motif suffit à étendre la protection.
+
+### 6. Vérification et Utilisation
+- **Nouveau terminal interactif** : Le script `tester_interactivement.py` à la racine permet d'entrer librement le texte d'un dossier, de l'analyser et de l'enregistrer automatiquement en base. C'est le moyen le plus simple de tester le prototype.
+- **Vérification BDD** : Le script `scratch/check_rows.py` compte le nombre d’enregistrements. Les scripts de test dans `tests_simulation/` insèrent tous correctement la colonne `details_complet`.
+
+### 7. Extensions possibles
+- Ajouter des colonnes à la table en modifiant le `CREATE TABLE` puis en adaptant `save_dossier` / `get_all_dossiers`.
+- Ajouter d’autres expressions régulières dans `Anonymizer` pour couvrir de nouveaux types de données sensibles.
+- Remplacer SQLite par une autre base (PostgreSQL, MySQL) en ne changeant que l’implémentation de `DatabaseManager`.
+---
+_db.py`** (under `scratch/`) can be used to inspect a sample of rows and confirm that `texte_original` contains only pseudonymised placeholders.
+---
+
+## Extending the Model <a name="extending-the-model"></a>
+1. **Add new columns** – modify the `CREATE TABLE` statement, run a migration script that adds the column with a default value, and update `save_dossier`/`get_all_dossiers` accordingly.
+2. **New anonymisation patterns** – add regexes to `Anonymizer.patterns` and add unit tests that check the transformation.
+3. **Alternative storage** – the `DatabaseManager` is deliberately thin; swapping SQLite for Postgres only requires redefining the connection logic while keeping the public API unchanged.
+---
+
+*End of annex.*

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tableau de bord ORIA – Visualisation des flux d'orientation des personnes âgées">
+    <title>ORIA – Tableau de Bord</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header id="dashboard-header">
+        <div class="header-content">
+            <div class="logo-group">
+                <img src="/static/logo.png" alt="Logo ORIA" class="logo-img">
+            </div>
+            <div class="header-title-center">
+                <h2 class="subtitle">Tableau de Bord – Flux d'Orientation</h2>
+            </div>
+            <div class="header-badge" id="badge-total">
+                <span class="badge-label">Dossiers analysés</span>
+                <span class="badge-value" id="total-dossiers">–</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- KPI Cards -->
+    <section id="kpi-section">
+        <div class="kpi-card" id="kpi-score">
+            <div class="kpi-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"></path><path d="M18 20V4"></path><path d="M6 20v-4"></path></svg>
+            </div>
+            <div class="kpi-body">
+                <span class="kpi-value" id="kpi-score-value">–</span>
+                <span class="kpi-label">Score COMID moyen</span>
+            </div>
+        </div>
+        <div class="kpi-card" id="kpi-commune">
+            <div class="kpi-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            </div>
+            <div class="kpi-body">
+                <span class="kpi-value" id="kpi-commune-value">–</span>
+                <span class="kpi-label">Commune la plus fréquente</span>
+            </div>
+        </div>
+        <div class="kpi-card" id="kpi-structure">
+            <div class="kpi-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M12 6h.01"></path><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path></svg>
+            </div>
+            <div class="kpi-body">
+                <span class="kpi-value" id="kpi-structure-value">–</span>
+                <span class="kpi-label">Structure la plus sollicitée</span>
+            </div>
+        </div>
+        <div class="kpi-card" id="kpi-complexity">
+            <div class="kpi-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            </div>
+            <div class="kpi-body">
+                <span class="kpi-value" id="kpi-complexity-value">–</span>
+                <span class="kpi-label">Niveau de complexité dominant</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sankey Section -->
+    <section id="sankey-section">
+        <div class="section-header">
+            <h2>Diagramme de Sankey – Parcours d'Orientation</h2>
+            <p>Choisissez les dimensions à afficher pour explorer les tendances du parcours Personnes Âgées.</p>
+        </div>
+
+        <!-- Dimension selectors -->
+        <div id="dimension-selectors">
+            <div class="selector-group">
+                <label for="select-dim1">Niveau 1</label>
+                <select id="select-dim1">
+                    <option value="none">-- Ne rien afficher --</option>
+                    <option value="commune" selected>Commune</option>
+                    <option value="tranche_age">Tranche d'âge</option>
+                    <option value="apa">Bénéficiaire APA</option>
+                    <option value="gir">GIR</option>
+                    <option value="medecin_traitant">Médecin traitant</option>
+                    <option value="urgence">Urgence</option>
+                    <option value="complexite">Complexité COMID</option>
+                    <option value="structure">Type de structure</option>
+                </select>
+            </div>
+            <div class="selector-arrow">→</div>
+            <div class="selector-group">
+                <label for="select-dim2">Niveau 2</label>
+                <select id="select-dim2">
+                    <option value="none">-- Ne rien afficher --</option>
+                    <option value="commune">Commune</option>
+                    <option value="tranche_age">Tranche d'âge</option>
+                    <option value="apa">Bénéficiaire APA</option>
+                    <option value="gir">GIR</option>
+                    <option value="medecin_traitant">Médecin traitant</option>
+                    <option value="urgence">Urgence</option>
+                    <option value="complexite" selected>Complexité COMID</option>
+                    <option value="structure">Type de structure</option>
+                </select>
+            </div>
+            <div class="selector-arrow">→</div>
+            <div class="selector-group">
+                <label for="select-dim3">Niveau 3</label>
+                <select id="select-dim3">
+                    <option value="none">-- Ne rien afficher --</option>
+                    <option value="commune">Commune</option>
+                    <option value="tranche_age">Tranche d'âge</option>
+                    <option value="apa">Bénéficiaire APA</option>
+                    <option value="gir">GIR</option>
+                    <option value="medecin_traitant">Médecin traitant</option>
+                    <option value="urgence">Urgence</option>
+                    <option value="complexite">Complexité COMID</option>
+                    <option value="structure" selected>Type de structure</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="sankey-chart"></div>
+        <div id="sankey-empty" class="empty-state" style="display: none;">
+            <p id="sankey-empty-msg">Aucun dossier enregistré pour le moment.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="dashboard-footer">
+        <p>Prototype ORIA – Parcours Personnes Âgées – Tableau de bord interne</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <script src="/static/app.js"></script>
+</body>
+</html>

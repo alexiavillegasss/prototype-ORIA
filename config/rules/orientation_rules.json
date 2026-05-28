@@ -512,12 +512,11 @@
                     "value": ["aide_alimentaire", "secours_urgence", "factures"]
                 }
             ],
-            "any_of": [],
             "none_of": [],
             "result": {
                 "eligible": true,
                 "base_pertinence": "eleve",
-                "base_priority_score": 72,
+                "base_priority_score": 85,
                 "objectif_orientation": "Secours financier ou alimentaire d'urgence de proximité : Attribution d'aides extra-légales par la mairie."
             }
         },
