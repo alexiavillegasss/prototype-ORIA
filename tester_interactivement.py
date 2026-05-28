@@ -188,7 +188,8 @@ async def run_interactive():
                         
                     if precisions:
                         print("\nMise a jour du dossier en cours...")
-                        current_text += "\n\nPrecisions apportees : " + precisions
+                        context_manquant = "\n".join([f"- {info}" for info in missing_info])
+                        current_text += f"\n\n[CONTEXTE] L'IA avait demandé ces informations manquantes :\n{context_manquant}\n\n[REPONSE DE L'UTILISATEUR] Precisions apportees : {precisions}"
                         extracted_dac_data = await fiche_extractor.extract_for_dac(current_text)
                 
                 print("\nGeneration du PDF...")
