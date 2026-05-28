@@ -94,6 +94,8 @@ class PDFGenerator:
             "infirmier": ("Texte43", "Texte44", "Texte45"),
             "ssiad_had": ("Texte46", "Texte47", "Texte48"),
             "saad": ("Texte49", "Texte50", "Texte51"),
+            "aide_a_domicile": ("Texte49", "Texte50", "Texte51"),
+            "admr": ("Texte49", "Texte50", "Texte51"),
             "palliatifs": ("Texte52", "Texte53", "Texte54"),
             "pharmacien": ("Texte55", "Texte56", "Texte57"),
             "kine": ("Texte58", "Texte59", "Texte60"),
