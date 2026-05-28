@@ -36,8 +36,8 @@ Identité :
 - sexe (chaîne: "F", "M" ou "")
 - date_naissance (chaîne JJ/MM/AAAA)
 - commune_naissance (chaîne)
-- adresse_complete (chaîne)
-- telephone (chaîne)
+- adresse_complete (chaîne, ex: "10 rue des Lilas, Toulon")
+- telephone (chaîne, téléphone personnel du patient UNIQUEMENT. N'y mets JAMAIS le numéro d'un médecin ou professionnel)
 - vit_seul (chaîne: "Oui", "Non", "INCONNU", ou "")
 - lieu_actuel (chaîne: "domicile", "etablissement", ou autre texte)
 
