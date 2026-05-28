@@ -229,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="feedback-pane">
                 <span class="feedback-title">Cette orientation convient-elle à la situation de l'usager ?</span>
                 <div class="feedback-buttons">
-                    <button onclick="validateCurrentOrientation('${struct.label}', '${struct.structure_type}')" class="btn-success">
+                    <button id="btn-validate-yes" class="btn-success">
                         <span>✅ Oui, elle convient</span>
                     </button>
                     <button onclick="proposeNextOrientation()" class="btn-warning-action">
@@ -240,6 +240,14 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         structuresList.appendChild(card);
+
+        // Liaison programmatic event for Yes validation button (avoids quote escaping issues with labels like d'Appui)
+        const btnYes = card.querySelector('#btn-validate-yes');
+        if (btnYes) {
+            btnYes.addEventListener('click', () => {
+                handleOuiElleConvient(struct.label, struct.structure_type);
+            });
+        }
 
         // Liaison de l'animation de toggle d'explications
         const btnWhy = card.querySelector('#btn-why');
@@ -288,7 +296,10 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * Valide l'orientation en cours auprès de l'API FastApi
      */
-    window.validateCurrentOrientation = async function(label, type) {
+    /**
+     * Valide l'orientation en cours auprès de l'API FastApi
+     */
+    window.validateCurrentOrientation = async function(label, type, options = {}) {
         if (!dossierId) return;
 
         try {
@@ -311,6 +322,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Rendu de l'écran de validation finale
             structuresTitle.textContent = "Orientation validée avec succès :";
+            
+            let dacButtonHtml = '';
+            if (options && options.showDacPdf) {
+                dacButtonHtml = `
+                    <button onclick="downloadDacPdf()" class="btn-primary" style="background: var(--accent-blue); box-shadow: 0 4px 12px rgba(74, 109, 245, 0.3); margin-top: 1rem; margin-left: 0.5rem;">
+                        📄 Visualiser la fiche d'orientation
+                    </button>
+                `;
+            }
+
             structuresList.innerHTML = `
                 <div class="success-card fadeInUp">
                     <div class="success-icon">🎉</div>
@@ -318,15 +339,269 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p style="color: var(--text-secondary); max-width: 480px; font-size: 0.92rem; line-height: 1.5; margin: 0 auto;">
                         L'orientation finale vers <strong>${label}</strong> a été enregistrée avec succès. Les données de diagnostic pivot et de traçabilité COMID sont sauvegardées dans votre base locale.
                     </p>
-                    <button onclick="resetAnalysis()" class="btn-primary" style="background: #22c55e; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3); margin-top: 1rem;">
-                        Traiter un nouveau cas
-                    </button>
+                    <div style="display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap;">
+                        <button onclick="resetAnalysis()" class="btn-primary" style="background: #22c55e; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3); margin-top: 1rem;">
+                            Traiter un nouveau cas
+                        </button>
+                        ${dacButtonHtml}
+                    </div>
                 </div>
             `;
 
         } catch (error) {
             console.error(error);
             alert("Erreur lors de la sauvegarde de la validation.");
+        }
+    };
+
+    /**
+     * Intercepte la validation pour le type DAC pour poser les questions de fiche
+     */
+    window.handleOuiElleConvient = function(label, type) {
+        if (type === 'DAC') {
+            window.showDacWizard(label, type);
+        } else {
+            window.validateCurrentOrientation(label, type);
+        }
+    };
+
+    /**
+     * Gère le questionnaire pas-à-pas DAC
+     */
+    window.showDacWizard = function(label, type) {
+        let modal = document.getElementById('dac-wizard-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'dac-wizard-modal';
+            modal.className = 'modal-overlay';
+            document.body.appendChild(modal);
+        }
+        
+        // Injection dynamique des styles pour le modal si ce n'est pas déjà fait
+        if (!document.getElementById('dac-modal-styles')) {
+            const style = document.createElement('style');
+            style.id = 'dac-modal-styles';
+            style.textContent = `
+                .modal-overlay {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(15, 23, 42, 0.4);
+                    backdrop-filter: blur(8px);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 1000;
+                    animation: modalFadeIn 0.25s ease-out;
+                }
+                .modal-card {
+                    background: var(--bg-secondary, #ffffff);
+                    border: 1px solid var(--border-glass, rgba(74, 109, 245, 0.3));
+                    border-radius: var(--radius, 16px);
+                    padding: 2.25rem;
+                    max-width: 500px;
+                    width: 90%;
+                    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15), var(--shadow-glow, 0 0 24px rgba(74, 109, 245, 0.15));
+                    animation: modalScaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1.5rem;
+                }
+                @keyframes modalFadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                @keyframes modalScaleUp {
+                    from { transform: scale(0.9); opacity: 0; }
+                    to { transform: scale(1); opacity: 1; }
+                }
+                .modal-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                }
+                .modal-logo {
+                    font-size: 2rem;
+                }
+                .modal-header h3 {
+                    font-size: 1.25rem;
+                    font-weight: 700;
+                    color: var(--text-primary);
+                    margin: 0;
+                }
+                .modal-body {
+                    font-size: 0.98rem;
+                    color: var(--text-secondary);
+                    line-height: 1.6;
+                }
+                .modal-footer {
+                    display: flex;
+                    justify-content: flex-end;
+                    gap: 1rem;
+                }
+                .btn-modal-primary {
+                    background: linear-gradient(135deg, var(--accent-blue, #4a6df5) 0%, var(--accent-purple, #234cb3) 100%);
+                    color: #ffffff;
+                    border: none;
+                    border-radius: var(--radius-sm, 10px);
+                    padding: 0.75rem 1.5rem;
+                    font-family: 'Inter', sans-serif;
+                    font-weight: 600;
+                    font-size: 0.95rem;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    box-shadow: 0 4px 12px rgba(74, 109, 245, 0.2);
+                }
+                .btn-modal-primary:hover {
+                    transform: translateY(-1px);
+                    box-shadow: 0 6px 16px rgba(74, 109, 245, 0.4);
+                }
+                .btn-modal-secondary {
+                    background: rgba(15, 23, 42, 0.05);
+                    color: var(--text-secondary);
+                    border: 1px solid var(--border-glass, rgba(74, 109, 245, 0.3));
+                    border-radius: var(--radius-sm, 10px);
+                    padding: 0.75rem 1.5rem;
+                    font-family: 'Inter', sans-serif;
+                    font-weight: 600;
+                    font-size: 0.95rem;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                }
+                .btn-modal-secondary:hover {
+                    background: rgba(15, 23, 42, 0.1);
+                    color: var(--text-primary);
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        showStep1(modal, label, type);
+    };
+
+    function showStep1(modal, label, type) {
+        modal.style.display = 'flex';
+        modal.innerHTML = `
+            <div class="modal-card">
+                <div class="modal-header">
+                    <span class="modal-logo">🧭</span>
+                    <h3>Fiche d'Orientation DAC</h3>
+                </div>
+                <div class="modal-body">
+                    <p style="margin-bottom: 0.75rem; font-weight: 600; color: var(--accent-blue);">Orientation détectée : ${label}</p>
+                    <p>Voulez-vous remplir la fiche d'orientation du DAC ?</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="btn-step1-non" class="btn-modal-secondary">Non</button>
+                    <button id="btn-step1-oui" class="btn-modal-primary">Oui</button>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('btn-step1-non').onclick = () => {
+            modal.style.display = 'none';
+            // Non = normal validation as before
+            window.validateCurrentOrientation(label, type);
+        };
+
+        document.getElementById('btn-step1-oui').onclick = () => {
+            showStep2(modal, label, type);
+        };
+    }
+
+    function showStep2(modal, label, type) {
+        modal.innerHTML = `
+            <div class="modal-card">
+                <div class="modal-header">
+                    <span class="modal-logo">📋</span>
+                    <h3>Fiche d'Orientation DAC</h3>
+                </div>
+                <div class="modal-body">
+                    <p>Voulez-vous remplir les informations manquantes ?</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="btn-step2-non" class="btn-modal-secondary">Non</button>
+                    <button id="btn-step2-oui" class="btn-modal-primary">Oui</button>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('btn-step2-non').onclick = () => {
+            modal.style.display = 'none';
+            // Non = validate and show success with visualising button (semi-filled with current info)
+            window.validateCurrentOrientation(label, type, { showDacPdf: true });
+        };
+
+        document.getElementById('btn-step2-oui').onclick = () => {
+            modal.innerHTML = `
+                <div class="modal-card">
+                    <div class="modal-header">
+                        <span class="modal-logo">💡</span>
+                        <h3>Saisie à venir</h3>
+                    </div>
+                    <div class="modal-body">
+                        <p style="margin-bottom: 0.75rem;">Le module de saisie des informations manquantes sera disponible prochainement.</p>
+                        <p>La fiche d'orientation va être visualisée avec les informations déjà extraites et présentes.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="btn-step2-oui-continue" class="btn-modal-primary" style="width: 100%;">Visualiser la fiche</button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('btn-step2-oui-continue').onclick = () => {
+                modal.style.display = 'none';
+                window.validateCurrentOrientation(label, type, { showDacPdf: true });
+            };
+        };
+    }
+
+    /**
+     * Télécharge la fiche d'orientation DAC sous format PDF
+     */
+    window.downloadDacPdf = async function() {
+        const text = document.getElementById('situation-input').value.trim();
+        if (!text) return;
+
+        const btn = document.querySelector('[onclick="downloadDacPdf()"]');
+        let originalHtml = "";
+        if (btn) {
+            originalHtml = btn.innerHTML;
+            btn.innerHTML = `<span>⏳ Remplissage...</span>`;
+            btn.disabled = true;
+        }
+
+        try {
+            const response = await fetch('/api/orientation/dac/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur de téléchargement");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_dac.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error(err);
+            alert("Une erreur est survenue lors de la génération du PDF.");
+        } finally {
+            if (btn) {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
         }
     };
 

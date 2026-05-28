@@ -82,7 +82,6 @@ class OrientationEngine:
                         base_label = "CRT - Centre de Ressources Territorial (Accompagnement Renforcé)"
                     elif prefix == "CLIC":
                         base_label = "CLIC - Centre Local d'Information et de Coordination"
-                
                 # Regroupement des explications sous forme de liste à puces propre
                 combined_objectifs = "Motifs d'orientation combinés :"
                 for label, obj in data["matches"]:

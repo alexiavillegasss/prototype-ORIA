@@ -7,8 +7,8 @@ class SignalExtractor:
     last_extracted_data = None
     last_text = None
 
-    def __init__(self, schema_path: str, comid_path: str, model="llama3", base_url="http://localhost:11434", temperature=0.1):
-        self.client = OllamaClient(model=model, base_url=base_url, temperature=temperature)
+    def __init__(self, schema_path: str, comid_path: str, model="llama3", base_url="http://localhost:11434", temperature=0):
+        self.client = OllamaClient(model=model, base_url=base_url)
         self.anonymizer = Anonymizer()
         self.schema_path = schema_path
         self.comid_path = comid_path
