@@ -2,7 +2,7 @@ import json
 import datetime
 from infrastructure.llm_client import OllamaClient
 
-class FicheDACExtractor:
+class FicheExtractor:
     def __init__(self, model="llama3.2", base_url="http://localhost:11434"):
         self.client = OllamaClient(model=model, base_url=base_url)
 
@@ -193,4 +193,112 @@ Réponds UNIQUEMENT par ce JSON complet :
         if "apa" not in text_lower:
             parsed["apa"] = ""
                 
+        return parsed
+
+    async def extract_for_clic(self, raw_text: str):
+        prompt = f"""
+### EXPERT ORIA - EXTRACTION FICHE CLIC
+Analyse le récit suivant pour remplir précisément une Fiche d'Orientation CLIC.
+
+### INSTRUCTIONS DE REMPLISSAGE
+- Si une information n'est pas mentionnée dans le texte, laisse-la STRICTEMENT vide (`""`).
+- Ne déduis rien.
+- NE JAMAIS mettre le nom du patient dans la section Emetteur. L'émetteur est la personne qui FAIT la demande (ex: une assistante sociale, un médecin, un proche). Si le texte décrit juste le patient sans préciser qui écrit la demande, laisse TOUTE la section Emetteur (nom, prenom, service, email, telephone) STRICTEMENT vide `""`. L'IA ne doit JAMAIS mettre le nom de l'usager dans "emetteur_nom".
+- "usager_vit_seul": booléen (true, false, ou null)
+
+RÉCIT : "{raw_text}"
+
+### DONNÉES À EXTRAIRE :
+Emetteur :
+- emetteur_nom (chaîne, nom de famille, ou vide)
+- emetteur_prenom (chaîne)
+- emetteur_service (chaîne, profession ou service)
+- emetteur_telephone (chaîne)
+- emetteur_email (chaîne)
+
+Identité du patient :
+- usager_nom_usage (chaîne, le nom de famille de l'usager, ex: "Dupont")
+- usager_nom_naissance (chaîne)
+- usager_prenoms (chaîne, le prénom de l'usager, ex: "Michèle")
+- usager_sexe (chaîne: "femme" ou "homme" ou "")
+- usager_date_naissance (chaîne)
+- usager_adresse (chaîne)
+- usager_telephone (chaîne)
+- usager_email (chaîne)
+- usager_vit_seul (booléen: true, false, ou null)
+
+Motif de la demande :
+- motif_1 (chaîne, ce que la personne demande ou recherche, ex: "mise en place portage de repas")
+- motif_2 (chaîne, autre problème ou besoin)
+- motif_3 (chaîne)
+
+Famille / Aidant à contacter :
+- aidant_nom (chaîne)
+- aidant_lien (chaîne, ex: "fille", "fils", "épouse")
+- aidant_tel (chaîne)
+- aidant_email (chaîne)
+- aidant_adresse (chaîne)
+
+Aides relatives au maintien à domicile :
+- aide_1 (chaîne, les aides DÉJÀ EN PLACE actuellement. Si aucune, laisse STRICTEMENT vide)
+- aide_2 (chaîne)
+
+### FORMAT JSON (STRICT)
+Réponds UNIQUEMENT par ce JSON complet :
+{{
+  "emetteur_nom": "",
+  "emetteur_prenom": "",
+  "emetteur_service": "",
+  "emetteur_telephone": "",
+  "emetteur_email": "",
+  "usager_nom_usage": "",
+  "usager_nom_naissance": "",
+  "usager_prenoms": "",
+  "usager_sexe": "",
+  "usager_date_naissance": "",
+  "usager_adresse": "",
+  "usager_telephone": "",
+  "usager_email": "",
+  "usager_vit_seul": null,
+  "motif_1": "",
+  "motif_2": "",
+  "motif_3": "",
+  "aidant_nom": "",
+  "aidant_lien": "",
+  "aidant_tel": "",
+  "aidant_email": "",
+  "aidant_adresse": "",
+  "aide_1": "",
+  "aide_2": ""
+}}
+"""
+        parsed = await self.client.generate_json(prompt)
+        
+        # POST-PROCESSING
+        import re
+        
+        # Nettoyage usager_nom_usage
+        nom = parsed.get("usager_nom_usage", "")
+        prenom = parsed.get("usager_prenoms", "")
+        
+        # Enlever les titres
+        for titre in ["monsieur", "madame", "mme", "m.", "veuve", "vve"]:
+            nom = re.sub(r'(?i)\b' + titre + r'\b', "", nom)
+            
+        # Si le prénom est dans le nom, l'enlever
+        if prenom and prenom.lower() in nom.lower():
+            nom = re.sub(r'(?i)' + re.escape(prenom), "", nom)
+            
+        parsed["usager_nom_usage"] = nom.replace(",", "").strip()
+        
+        # Securité anti-hallucination pour l'émetteur : si pas de nom, on vide le reste
+        if not parsed.get("emetteur_nom"):
+            parsed["emetteur_prenom"] = ""
+            parsed["emetteur_service"] = ""
+            parsed["emetteur_telephone"] = ""
+            parsed["emetteur_email"] = ""
+            
+        # Toujours forcer la date d'émission au jour J
+        parsed["emetteur_date"] = datetime.datetime.now().strftime("%d/%m/%Y")
+            
         return parsed

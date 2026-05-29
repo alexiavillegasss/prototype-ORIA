@@ -2,11 +2,14 @@ import fitz
 import io
 
 class PDFGenerator:
-    def __init__(self, template_path: str):
-        self.template_path = template_path
+    def __init__(self, dac_template_path: str = None, clic_template_path: str = None):
+        self.dac_template_path = dac_template_path
+        self.clic_template_path = clic_template_path
 
     def generate_dac_pdf(self, extracted_data: dict) -> bytes:
-        doc = fitz.open(self.template_path)
+        if not self.dac_template_path:
+            raise ValueError("DAC template path not configured")
+        doc = fitz.open(self.dac_template_path)
 
         field_values = {}
         
@@ -139,7 +142,62 @@ class PDFGenerator:
                         widget.field_value = str(val)
                     widget.update()
         
-        # Save to bytes
         pdf_bytes = doc.write()
         doc.close()
         return pdf_bytes
+
+    def generate_clic_pdf(self, extracted_data: dict) -> bytes:
+        if not self.clic_template_path:
+            raise ValueError("CLIC template path not configured")
+        doc = fitz.open(self.clic_template_path)
+        page = doc[0]
+
+        def draw_text(text: str, x: float, y0: float):
+            if text and str(text).upper() != "INCONNU":
+                page.insert_text(fitz.Point(x, y0 + 10), str(text), fontsize=10, fontname="helv", color=(0, 0, 0))
+
+        # Emetteur
+        draw_text(extracted_data.get("emetteur_date"), 57, 99)
+        draw_text(extracted_data.get("emetteur_nom"), 57, 114)
+        draw_text(extracted_data.get("emetteur_prenom"), 376, 114)
+        draw_text(extracted_data.get("emetteur_service"), 179, 130)
+        draw_text(extracted_data.get("emetteur_telephone"), 91, 146)
+        draw_text(extracted_data.get("emetteur_email"), 67, 162)
+
+        # Usager
+        draw_text(extracted_data.get("usager_nom_usage"), 106, 226)
+        draw_text(extracted_data.get("usager_nom_naissance"), 136, 241)
+        draw_text(extracted_data.get("usager_sexe"), 60, 257)
+        draw_text(extracted_data.get("usager_date_naissance"), 137, 273)
+        draw_text(extracted_data.get("usager_adresse"), 363, 225)
+        draw_text(extracted_data.get("usager_prenoms"), 425, 241)
+        draw_text(extracted_data.get("usager_telephone"), 425, 257)
+        draw_text(extracted_data.get("usager_email"), 400, 273)
+
+        # Motifs & Aides
+        draw_text(extracted_data.get("motif_1"), 21, 514)
+        draw_text(extracted_data.get("motif_2"), 21, 533)
+        draw_text(extracted_data.get("motif_3"), 21, 552)
+
+        # Famille / Aidant
+        draw_text(extracted_data.get("aidant_nom"), 58, 389)
+        draw_text(extracted_data.get("aidant_tel"), 49, 405)
+        draw_text(extracted_data.get("aidant_email"), 66, 421)
+        draw_text(extracted_data.get("aidant_lien"), 340, 389)
+        draw_text(extracted_data.get("aidant_adresse"), 362, 405)
+
+        draw_text(extracted_data.get("aide_1"), 21, 657)
+        draw_text(extracted_data.get("aide_2"), 21, 674)
+
+        for widget in page.widgets():
+            if widget.field_name == "Case à cocher4" and extracted_data.get("usager_vit_seul") is True:
+                widget.field_value = True
+                widget.update()
+            elif widget.field_name == "Case à cocher5" and extracted_data.get("usager_vit_seul") is False:
+                widget.field_value = True
+                widget.update()
+
+        pdf_bytes = doc.write()
+        doc.close()
+        return pdf_bytes
+

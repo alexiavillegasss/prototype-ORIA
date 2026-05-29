@@ -11,7 +11,7 @@ from application.scoring_engine import ScoringEngine
 from application.orientation_engine import OrientationEngine
 from application.territory_manager import TerritoryManager
 from application.pdf_generator import PDFGenerator
-from ai.extraction.fiche_extractor import FicheDACExtractor
+from ai.extraction.fiche_extractor import FicheExtractor
 from infrastructure.database import DatabaseManager
 
 async def run_interactive():
@@ -28,8 +28,11 @@ async def run_interactive():
     orientation_engine = OrientationEngine(rules_path=ORIENTATION_RULES_PATH)
     territory_manager = TerritoryManager(territory_rules_path=TERRITORY_PATH)
     db_manager = DatabaseManager(db_path=DB_PATH)
-    pdf_generator = PDFGenerator(template_path=os.path.join(BASE_DIR, 'backend', 'src', 'static', 'fiche_dac_vierge.pdf'))
-    fiche_extractor = FicheDACExtractor()
+    pdf_generator = PDFGenerator(
+        dac_template_path=os.path.join(BASE_DIR, 'backend', 'src', 'static', 'fiche_dac_vierge.pdf'),
+        clic_template_path=os.path.join(BASE_DIR, 'backend', 'src', 'static', 'fiche_clic_LaSeyne_vierge.pdf')
+    )
+    fiche_extractor = FicheExtractor()
     print("Pret ! Moteurs charges.\n")
 
     while True:
@@ -107,104 +110,121 @@ async def run_interactive():
             print(f"\n[X] Erreur lors de la sauvegarde : {e}")
             
         # Option to generate PDF
-        gen_pdf = input("\nVoulez-vous preparer la Fiche d'Orientation DAC ? (o/n) : ")
-        if gen_pdf.strip().lower() == 'o':
-            print("Extraction specifique des donnees pour la fiche (cela peut prendre un instant)...")
-            try:
-                extracted_dac_data = await fiche_extractor.extract_for_dac(text)
-                
-                current_text = text
-                
-                # Check for missing critical info
-                missing_info = []
-                # Helper function to check if a field is truly missing (empty, but not explicitly INCONNU)
-                def is_missing(val):
-                    return not val or val.strip() == ""
+        if results_with_contacts:
+            top_structure = results_with_contacts[0].get('structure_type')
+            if top_structure == 'DAC':
+                gen_pdf = input("\nVoulez-vous preparer la Fiche d'Orientation DAC ? (o/n) : ")
+                if gen_pdf.strip().lower() == 'o':
+                    print("Extraction specifique des donnees pour la fiche (cela peut prendre un instant)...")
+                    try:
+                        extracted_dac_data = await fiche_extractor.extract_for_dac(text)
+                        
+                        current_text = text
+                        
+                        # Check for missing critical info
+                        missing_info = []
+                        # Helper function to check if a field is truly missing (empty, but not explicitly INCONNU)
+                        def is_missing(val):
+                            return not val or val.strip() == ""
 
-                def is_inconnu(val):
-                    return str(val).strip().upper() == "INCONNU"
+                        def is_inconnu(val):
+                            return str(val).strip().upper() == "INCONNU"
 
-                if is_missing(extracted_dac_data.get("nom_usage")) and is_missing(extracted_dac_data.get("nom_naissance")):
-                    if not (is_inconnu(extracted_dac_data.get("nom_usage")) or is_inconnu(extracted_dac_data.get("nom_naissance"))):
-                        missing_info.append("Nom du patient")
+                        if is_missing(extracted_dac_data.get("nom_usage")) and is_missing(extracted_dac_data.get("nom_naissance")):
+                            if not (is_inconnu(extracted_dac_data.get("nom_usage")) or is_inconnu(extracted_dac_data.get("nom_naissance"))):
+                                missing_info.append("Nom du patient")
+                                
+                        if is_missing(extracted_dac_data.get("date_naissance")) and not is_inconnu(extracted_dac_data.get("date_naissance")):
+                            missing_info.append("Date de naissance")
+                            
+                        if is_missing(extracted_dac_data.get("adresse_complete")) and not is_inconnu(extracted_dac_data.get("adresse_complete")):
+                            missing_info.append("Adresse complete")
+                            
+                        if is_missing(extracted_dac_data.get("vit_seul")) and not is_inconnu(extracted_dac_data.get("vit_seul")):
+                            missing_info.append("Vit seul (Oui/Non)")
+                            
+                        if is_missing(extracted_dac_data.get("apa")) and not is_inconnu(extracted_dac_data.get("apa")):
+                            missing_info.append("Bénéficiaire de l'APA (Oui/Non)")
+                            
+                        if extracted_dac_data.get("alertes", {}).get("hospit_recente"):
+                            date_h = extracted_dac_data.get("alertes", {}).get("hospit_date")
+                            motif_h = extracted_dac_data.get("alertes", {}).get("hospit_motif")
+                            if (is_missing(date_h) or is_missing(motif_h)) and not (is_inconnu(date_h) or is_inconnu(motif_h)):
+                                missing_info.append("Date exacte et motif de l'hospitalisation")
+                                
+                        cercle = extracted_dac_data.get("cercle_de_soins", [])
                         
-                if is_missing(extracted_dac_data.get("date_naissance")) and not is_inconnu(extracted_dac_data.get("date_naissance")):
-                    missing_info.append("Date de naissance")
-                    
-                if is_missing(extracted_dac_data.get("adresse_complete")) and not is_inconnu(extracted_dac_data.get("adresse_complete")):
-                    missing_info.append("Adresse complete")
-                    
-                if is_missing(extracted_dac_data.get("vit_seul")) and not is_inconnu(extracted_dac_data.get("vit_seul")):
-                    missing_info.append("Vit seul (Oui/Non)")
-                    
-                if is_missing(extracted_dac_data.get("apa")) and not is_inconnu(extracted_dac_data.get("apa")):
-                    missing_info.append("Bénéficiaire de l'APA (Oui/Non)")
-                    
-                if extracted_dac_data.get("alertes", {}).get("hospit_recente"):
-                    date_h = extracted_dac_data.get("alertes", {}).get("hospit_date")
-                    motif_h = extracted_dac_data.get("alertes", {}).get("hospit_motif")
-                    if (is_missing(date_h) or is_missing(motif_h)) and not (is_inconnu(date_h) or is_inconnu(motif_h)):
-                        missing_info.append("Date exacte et motif de l'hospitalisation")
+                        has_medecin = any(pro.get("type") == "medecin_traitant" for pro in cercle)
+                        if not has_medecin:
+                            missing_info.append("Médecin traitant (Nom et Téléphone)")
                         
-                cercle = extracted_dac_data.get("cercle_de_soins", [])
-                
-                has_medecin = any(pro.get("type") == "medecin_traitant" for pro in cercle)
-                if not has_medecin:
-                    missing_info.append("Médecin traitant (Nom et Téléphone)")
-                
-                for pro in cercle:
-                    nom = pro.get("nom", "")
-                    tel = pro.get("tel", "")
-                    pro_type = pro.get("type", "intervenant")
-                    
-                    # Si nom ou tel est manquant et non "INCONNU"
-                    nom_missing = is_missing(nom) and not is_inconnu(nom)
-                    tel_missing = is_missing(tel) and not is_inconnu(tel)
-                    
-                    if nom_missing or tel_missing:
-                        manque = []
-                        if nom_missing: manque.append("Nom")
-                        if tel_missing: manque.append("Téléphone")
-                        missing_info.append(f"Coordonnées pour {pro_type.upper()} ({' et '.join(manque)})")
-                    
-                if missing_info:
-                    print("\n" + "!"*50)
-                    print(" /!\\ INFORMATIONS MANQUANTES POUR UNE PRISE EN CHARGE OPTIMALE :")
-                    for info in missing_info:
-                        print(f"  - {info}")
-                    print("!"*50)
-                    print("\nQue souhaitez-vous faire ?")
-                    print("[1] Ajouter des precisions (dicter/taper les infos manquantes)")
-                    print("[2] Generer le PDF tel quel (vous le completerez a la main)")
-                    choix = input("Votre choix (1 ou 2) : ").strip()
-                    
-                    if choix == '1':
-                        print("\n--- Saisie des informations manquantes ---")
-                        precisions = ""
-                        for info in missing_info:
-                            rep = input(f" {info} : ").strip()
-                            if rep:
-                                precisions += f"\n- Pour {info} : {rep}"
-                    elif choix != '2' and len(choix) > 2:
-                        context_manquant = "\n".join([f"- {info}" for info in missing_info])
-                        precisions = f"\n[CONTEXTE DES INFORMATIONS DEMANDEES] :\n{context_manquant}\n\n[REPONSE DE L'UTILISATEUR] : {choix}"
-                    else:
-                        precisions = None
+                        for pro in cercle:
+                            nom = pro.get("nom", "")
+                            tel = pro.get("tel", "")
+                            pro_type = pro.get("type", "intervenant")
+                            
+                            # Si nom ou tel est manquant et non "INCONNU"
+                            nom_missing = is_missing(nom) and not is_inconnu(nom)
+                            tel_missing = is_missing(tel) and not is_inconnu(tel)
+                            
+                            if nom_missing or tel_missing:
+                                manque = []
+                                if nom_missing: manque.append("Nom")
+                                if tel_missing: manque.append("Téléphone")
+                                missing_info.append(f"Coordonnées pour {pro_type.upper()} ({' et '.join(manque)})")
+                            
+                        if missing_info:
+                            print("\n" + "!"*50)
+                            print(" /!\\ INFORMATIONS MANQUANTES POUR UNE PRISE EN CHARGE OPTIMALE :")
+                            for info in missing_info:
+                                print(f"  - {info}")
+                            print("!"*50)
+                            print("\nQue souhaitez-vous faire ?")
+                            print("[1] Ajouter des precisions (dicter/taper les infos manquantes)")
+                            print("[2] Generer le PDF tel quel (vous le completerez a la main)")
+                            choix = input("Votre choix (1 ou 2) : ").strip()
+                            
+                            if choix == '1':
+                                print("\n--- Saisie des informations manquantes ---")
+                                precisions = ""
+                                for info in missing_info:
+                                    rep = input(f" {info} : ").strip()
+                                    if rep:
+                                        precisions += f"\n- Pour {info} : {rep}"
+                            elif choix != '2' and len(choix) > 2:
+                                context_manquant = "\n".join([f"- {info}" for info in missing_info])
+                                precisions = f"\n[CONTEXTE DES INFORMATIONS DEMANDEES] :\n{context_manquant}\n\n[REPONSE DE L'UTILISATEUR] : {choix}"
+                            else:
+                                precisions = None
+                                
+                            if precisions:
+                                print("\nMise a jour du dossier en cours...")
+                                current_text += f"\n\n[PRECISIONS APPORTEES PAR L'UTILISATEUR SUITE AUX MANQUEMENTS] :{precisions}"
+                                extracted_dac_data = await fiche_extractor.extract_for_dac(current_text)
                         
-                    if precisions:
-                        print("\nMise a jour du dossier en cours...")
-                        current_text += f"\n\n[PRECISIONS APPORTEES PAR L'UTILISATEUR SUITE AUX MANQUEMENTS] :{precisions}"
-                        extracted_dac_data = await fiche_extractor.extract_for_dac(current_text)
-                
-                print("\nGeneration du PDF...")
-                pdf_bytes = pdf_generator.generate_dac_pdf(extracted_dac_data)
-                
-                output_pdf = os.path.join(BASE_DIR, "export_fiche_dac.pdf")
-                with open(output_pdf, "wb") as f:
-                    f.write(pdf_bytes)
-                print(f"[✓] Fiche DAC generee avec succes : {output_pdf}")
-            except Exception as e:
-                print(f"[X] Erreur lors de la generation du PDF : {e}")
+                        print("\nGeneration du PDF...")
+                        pdf_bytes = pdf_generator.generate_dac_pdf(extracted_dac_data)
+                        
+                        output_pdf = os.path.join(BASE_DIR, "export_fiche_dac.pdf")
+                        with open(output_pdf, "wb") as f:
+                            f.write(pdf_bytes)
+                        print(f"[✓] Fiche DAC generee avec succes : {output_pdf}")
+                    except Exception as e:
+                        print(f"[X] Erreur lors de la generation du PDF : {e}")
+            elif top_structure == 'CLIC' and "Seyne" in commune:
+                gen_pdf = input("\nVoulez-vous preparer la Fiche d'Orientation CLIC La Seyne ? (o/n) : ")
+                if gen_pdf.strip().lower() == 'o':
+                    print("Extraction specifique des donnees pour la fiche (cela peut prendre un instant)...")
+                    try:
+                        extracted_clic_data = await fiche_extractor.extract_for_clic(text)
+                        print("\nGeneration du PDF...")
+                        pdf_bytes = pdf_generator.generate_clic_pdf(extracted_clic_data)
+                        output_pdf = os.path.join(BASE_DIR, "export_fiche_clic_laseyne.pdf")
+                        with open(output_pdf, "wb") as f:
+                            f.write(pdf_bytes)
+                        print(f"[✓] Fiche CLIC generee avec succes : {output_pdf}")
+                    except Exception as e:
+                        print(f"[X] Erreur lors de la generation du PDF : {e}")
 
         print("\nAppuyez sur Entree pour saisir un nouveau cas...")
         input()

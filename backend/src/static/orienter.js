@@ -323,11 +323,17 @@ document.addEventListener('DOMContentLoaded', () => {
             // Rendu de l'écran de validation finale
             structuresTitle.textContent = "Orientation validée avec succès :";
             
-            let dacButtonHtml = '';
+            let pdfButtonHtml = '';
             if (options && options.showDacPdf) {
-                dacButtonHtml = `
+                pdfButtonHtml = `
                     <button onclick="downloadDacPdf()" class="btn-primary" style="background: var(--accent-blue); box-shadow: 0 4px 12px rgba(74, 109, 245, 0.3); margin-top: 1rem; margin-left: 0.5rem;">
-                        📄 Visualiser la fiche d'orientation
+                        📄 Visualiser la fiche d'orientation DAC
+                    </button>
+                `;
+            } else if (options && options.showClicPdf) {
+                pdfButtonHtml = `
+                    <button onclick="downloadClicPdf()" class="btn-primary" style="background: #0ea5e9; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3); margin-top: 1rem; margin-left: 0.5rem;">
+                        📄 Visualiser la fiche d'orientation CLIC La Seyne
                     </button>
                 `;
             }
@@ -343,7 +349,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <button onclick="resetAnalysis()" class="btn-primary" style="background: #22c55e; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3); margin-top: 1rem;">
                             Traiter un nouveau cas
                         </button>
-                        ${dacButtonHtml}
+                        ${pdfButtonHtml}
                     </div>
                 </div>
             `;
@@ -360,6 +366,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.handleOuiElleConvient = function(label, type) {
         if (type === 'DAC') {
             window.showDacWizard(label, type);
+        } else if (type === 'CLIC' && (label.toLowerCase().includes('seyne') || (schemaPivot && schemaPivot["usager.localisation.commune_residence"] && schemaPivot["usager.localisation.commune_residence"].toLowerCase().includes('seyne')))) {
+            window.showClicWizard(label, type);
         } else {
             window.validateCurrentOrientation(label, type);
         }
@@ -558,6 +566,73 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
+     * Gère le questionnaire pas-à-pas CLIC
+     */
+    window.showClicWizard = function(label, type) {
+        let modal = document.getElementById('dac-wizard-modal'); // on réutilise la modale DAC
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'dac-wizard-modal';
+            modal.className = 'modal-overlay';
+            document.body.appendChild(modal);
+        }
+        
+        // On s'assure que les styles sont injectés (identique à DAC)
+        showClicStep1(modal, label, type);
+    };
+
+    function showClicStep1(modal, label, type) {
+        modal.style.display = 'flex';
+        modal.innerHTML = `
+            <div class="modal-card">
+                <div class="modal-header">
+                    <span class="modal-logo">🧭</span>
+                    <h3>Fiche d'Orientation CLIC</h3>
+                </div>
+                <div class="modal-body">
+                    <p style="margin-bottom: 0.75rem; font-weight: 600; color: #0ea5e9;">Orientation détectée : ${label}</p>
+                    <p>Voulez-vous remplir la fiche d'orientation du CLIC de La Seyne-sur-Mer ?</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="btn-clic-step1-non" class="btn-modal-secondary">Non</button>
+                    <button id="btn-clic-step1-oui" class="btn-modal-primary" style="background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);">Oui</button>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('btn-clic-step1-non').onclick = () => {
+            modal.style.display = 'none';
+            window.validateCurrentOrientation(label, type);
+        };
+
+        document.getElementById('btn-clic-step1-oui').onclick = () => {
+            showClicStep2(modal, label, type);
+        };
+    }
+
+    function showClicStep2(modal, label, type) {
+        modal.innerHTML = `
+            <div class="modal-card">
+                <div class="modal-header">
+                    <span class="modal-logo">💡</span>
+                    <h3>Saisie à venir</h3>
+                </div>
+                <div class="modal-body">
+                    <p style="margin-bottom: 0.75rem;">Le module de saisie des informations manquantes pour le CLIC sera disponible prochainement.</p>
+                    <p>La fiche d'orientation va être générée avec les informations déjà extraites et présentes.</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="btn-clic-step2-oui-continue" class="btn-modal-primary" style="background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%); width: 100%;">Visualiser la fiche</button>
+                </div>
+            </div>
+        `;
+        document.getElementById('btn-clic-step2-oui-continue').onclick = () => {
+            modal.style.display = 'none';
+            window.validateCurrentOrientation(label, type, { showClicPdf: true });
+        };
+    }
+
+    /**
      * Télécharge la fiche d'orientation DAC sous format PDF
      */
     window.downloadDacPdf = async function() {
@@ -597,6 +672,54 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (err) {
             console.error(err);
             alert("Une erreur est survenue lors de la génération du PDF.");
+        } finally {
+            if (btn) {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
+        }
+    };
+
+    /**
+     * Télécharge la fiche d'orientation CLIC La Seyne sous format PDF
+     */
+    window.downloadClicPdf = async function() {
+        const text = document.getElementById('situation-input').value.trim();
+        if (!text) return;
+
+        const btn = document.querySelector('[onclick="downloadClicPdf()"]');
+        let originalHtml = "";
+        if (btn) {
+            originalHtml = btn.innerHTML;
+            btn.innerHTML = `<span>⏳ Remplissage...</span>`;
+            btn.disabled = true;
+        }
+
+        try {
+            const response = await fetch('/api/orientation/clic/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur de téléchargement");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_laseyne.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error(err);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC.");
         } finally {
             if (btn) {
                 btn.innerHTML = originalHtml;
