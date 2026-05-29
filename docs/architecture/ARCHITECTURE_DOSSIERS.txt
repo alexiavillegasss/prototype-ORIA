@@ -37,8 +37,10 @@ prototype-ORIA/
 │   └── app_config.yaml          # Fichier de configuration technique globale
 ├── docs/                        # Documentation vivante du projet
 │   └── architecture/
-│       ├── MANUEL_TECHNIQUE_BACKEND.md  # Détails de conception (ET/OU, Temp=0.0)
-│       └── ARCHITECTURE_DOSSIERS.txt    # Ce fichier d'explication
+│       ├── ARCHITECTURE_DOSSIERS.txt # Ce fichier d'explication
+│       ├── grille/               # [Vide] Grilles d'évaluation cliniques
+│       ├── tableau de bord/      # Manuels de la brique analytique (Sankey, KPIs, API)
+│       └── tableau principal/    # Manuels de l'orientation (Moteur, PDF, Sécurité)
 │   └── metier/
 │       └── RECAP_SIMULATIONS_CAS_PATIENTS.md # Journal de bord des 24 cas tests
 ├── tests_simulation/            # Scénarios cliniques de validation
@@ -101,5 +103,5 @@ Quand un récit patient arrive sur l'application :
 8. L'API (main.py) renvoie le résultat complet au format JSON.
 
 ===============================================================================
-Document rédigé par Antigravity le 20/05/2026.
+Document rédigé par Antigravity le 20/05/2026 (Mis à jour le 29/05/2026).
 ===============================================================================
