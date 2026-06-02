@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const resCommune = document.getElementById('res-commune');
     const structuresTitle = document.getElementById('structures-title');
     const structuresList = document.getElementById('structures-list');
-    const jsonOutput = document.getElementById('raw-json-output');
+    //const jsonOutput = document.getElementById('raw-json-output');
 
     btnSubmit.addEventListener('click', async () => {
         const text = inputArea.value.trim();
@@ -108,13 +108,13 @@ document.addEventListener('DOMContentLoaded', () => {
             schemaPivot = data.schema_pivot;
 
             // Remplissage des KPIs globaux
-            resScore.textContent = `${data.evaluation_complexe.score_total} / 20`;
+            resScore.textContent = `${data.evaluation_complexe.score_total} / ${Object.keys(COMID_LABELS).length}`;
             resLevel.textContent = data.evaluation_complexe.label;
             resCommune.textContent = schemaPivot["usager.localisation.commune_residence"] || "Non spécifiée";
             resLevel.className = 'kpi-value ' + getComplexityClass(data.evaluation_complexe.score_total);
 
             // Données JSON brutes
-            jsonOutput.textContent = JSON.stringify(schemaPivot, null, 2);
+            //jsonOutput.textContent = JSON.stringify(schemaPivot, null, 2);
 
             // Affichage de l'interface de résultat
             placeholder.style.display = 'none';
@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="struct-badge" style="background-color: ${color}20; color: ${color}; border: 1px solid ${color}40;">
                     ${struct.structure_type}
                 </span>
-                <span class="priority-badge">Indice de Priorité : <strong>${struct.priorite}</strong></span>
+                <!--<span class="priority-badge">Indice de Priorité : <strong>${struct.priorite}</strong></span>-->
             </div>
             <h4 class="struct-name" style="margin-bottom: 0.75rem;">${struct.label}</h4>
             <p class="struct-objective" style="margin-bottom: 1.25rem;"><strong>Mission de la structure :</strong> ${struct.objectif || 'Non renseigné'}</p>
