@@ -16,15 +16,26 @@ prototype-ORIA/
 │   └── src/                     # Code source de l'application
 │       ├── ai/                  # Module d'Intelligence Artificielle (Ollama/Llama3)
 │       │   ├── extraction/
-│       │   │   └── extractor.py # Prompting, extraction & formatage du pivot
+│       │   │   ├── extractor.py # Prompting, extraction & formatage du pivot
+│       │   │   └── fiche_extractor.py # Extracteur spécifique pour le remplissage des fiches PDF (DAC/CLIC)
 │       │   └── transcription/   # [Futur] Module d'intégration voix (Whisper)
 │       ├── application/         # Le Coeur Métier (Logique pure sans framework)
 │       │   ├── scoring_engine.py      # Calcul du score COMID
 │       │   ├── orientation_engine.py  # Moteur de règles & dédoublonnement
-│       │   └── territory_manager.py   # Routage territorial (contacts Var)
+│       │   ├── territory_manager.py   # Routage territorial (contacts Var)
+│       │   └── pdf_generator.py       # Générateur de documents PDF à partir de modèles
 │       ├── infrastructure/      # Connexion aux services physiques / externes
 │       │   ├── llm_client.py    # Client HTTP pour Ollama
 │       │   └── database.py      # Gestion de la base SQLite
+│       ├── static/              # Fichiers statiques et modèles (Templates)
+│       │   ├── fiche_dac_vierge.pdf       # Modèle PDF vierge pour le DAC
+│       │   ├── fiche_clic_LaSeyne_vierge.pdf # Modèle PDF vierge pour le CLIC de La Seyne
+│       │   ├── index.html       # Page d'accueil (Saisie libre & Analyse métier)
+│       │   ├── app.js           # Logique front-end de la page d'accueil
+│       │   ├── orienter.html    # Interface web d'orientation
+│       │   ├── orienter.js      # Logique de l'interface d'orientation et téléchargement PDF
+│       │   ├── style.css        # Feuille de style CSS globale
+│       │   └── logo.png         # Logo ORIA
 │       └── main.py              # Le Chef d'Orchestre (FastAPI)
 ├── config/                      # Toutes les données de configuration (Hors code)
 │   ├── rules/
@@ -49,6 +60,7 @@ prototype-ORIA/
 │   ├── test_mme_huguette.py     # Cas Spoliation financière & Urgence Sociale
 │   └── [21 autres scripts...]   # Total de 24 cas cliniques d'école
 ├── oria_database.db             # Base de données SQLite locale
+├── tester_interactivement.py    # Script pour tester l'orientation et l'export PDF en CLI
 ├── requirements.txt             # Dépendances Python du projet
 ├── .gitignore                   # Fichiers ignorés par Git (ex: venv)
 └── README.md                    # Page d'accueil & Guide de démarrage rapide
