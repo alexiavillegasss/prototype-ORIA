@@ -83,8 +83,11 @@ async def run_interactive():
         if not results_with_contacts:
             print("Aucune structure eligible detectee.")
         for struct in results_with_contacts:
-            print(f"\n[ {struct['label']} ] - Priorite : {struct.get('priorite', 'N/A')}")
+            print(f"\n[ {struct['label']} ] - Priorite : {struct.get('priorite', 'N/A')} | Confiance : {struct.get('score_confiance', 'N/A')}%")
+            print(f"Justification confiance : {struct.get('explication_confiance', 'N/A')}")
             print(f"Objectif : {struct.get('objectif', 'N/A')}")
+            if struct.get("structure_type") == "BESOIN_INFOS":
+                continue
             if struct.get("telephone") or struct.get("adresse"):
                 print(f"Contact : {struct.get('telephone', 'N/A')} | {struct.get('adresse', 'N/A')}")
             else:

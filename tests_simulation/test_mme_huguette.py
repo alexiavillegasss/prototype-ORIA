@@ -59,7 +59,8 @@ async def run_test():
     if not results_with_contacts:
         print("Aucune structure éligible détectée.")
     for struct in results_with_contacts:
-        print(f"\n[ {struct['label']} ] - Priorité : {struct.get('priorite', 'N/A')}")
+        print(f"\n[ {struct['label']} ] - Priorité : {struct.get('priorite', 'N/A')} | Confiance : {struct.get('score_confiance', 'N/A')}%")
+        print(f"Justification confiance : {struct.get('explication_confiance', 'N/A')}")
         print(f"Objectif : {struct.get('objectif', 'N/A')}")
         if struct.get("telephone") or struct.get("adresse"):
             print(f"Contact : {struct.get('telephone', 'N/A')} | {struct.get('adresse', 'N/A')}")

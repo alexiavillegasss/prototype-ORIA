@@ -47,7 +47,8 @@ SITUATION : "{safe_text}"
 8. "urgence" : Choisir "critique" en cas d'agression physique active en cours ou détresse vitale médicale immédiate. Choisir "eleve" ou "modere" si situation tendue ou menaçante sans agression physique active. Choisir "faible" sinon.
 9. "hospitalisation" : Choisir "en_cours" si actuellement hospitalisée, "recente" si sortie de l'hôpital depuis moins de 10 jours, ou "aucun" sinon.
 10. "motif" : Choisir le motif principal parmi :
-    - "refus_de_soins" uniquement en cas d'opposition active, hostile ou de refus explicite de se soigner ou de recevoir les professionnels. Oublier de prendre ses médicaments (ex: "oublis de médicaments") ou oublier un rendez-vous (ex: "avait oublié ma visite") n'est JAMAIS un refus de soins.
+    - "evaluation_globale" si le récit décrit simplement des difficultés cliniques ou de vie (ex: confusion, oublis, fatigue, perte d'autonomie, isolement) sans demande explicite d'aide, sans refus de soins, sans sortie d'hôpital et sans situation d'urgence. C'est la valeur par défaut pour les signalements descriptifs généraux.
+    - "refus_de_soins" uniquement en cas d'opposition active, hostile ou de refus explicite de se soigner ou de recevoir les professionnels. Oublier de prendre ses médicaments (ex: "oublis de médicaments") ou oublier un rendez-vous (ex: "avait oublié ma visite"), ou être confus/désorienté, n'est JAMAIS un refus de soins.
     - "refus_aide_domicile" uniquement si l'usager lui-même s'oppose activement à l'aide à domicile.
     - "sortie_hospitalisation" si retour à domicile post-hospitalisation récente.
     - "aide_alimentaire" si dénutrition sévère ou frigo vide sans ressources.
@@ -58,6 +59,13 @@ SITUATION : "{safe_text}"
 11. "professionnels_domicile" : Choisir "oui" si des professionnels (infirmiers, kinés, aides) passent régulièrement, ou "non" sinon.
 12. "aidant_regulier" : Choisir "oui" si présence régulière et stable d'un aidant familial, ou "non" sinon.
 13. "etat_logement" : Choisir "diogene" si syndrome de Diogène, "incurie" si logement très sale, "insalubre" si pas d'eau ou plafond menace de s'effondrer, "propre" si propre, ou "non_renseigne" sinon.
+
+### DIRECTIVES DE CONFIANCE (TRÈS IMPORTANT) :
+Pour chaque variable extraite ci-dessus, attribue un score de confiance (nombre entier de 0 à 100) dans l'objet "confiance_variables" :
+- 100 : Si la donnée est mentionnée explicitement et sans ambiguïté dans le texte (ex: "79 ans", "Toulon", "déjà l'APA").
+- 70 à 90 : Si la donnée est déduite logiquement avec une grande certitude à partir du contexte clinique ou sémantique.
+- 40 à 69 : S'il y a de l'ambiguïté, du doute, ou des contradictions dans le récit.
+- 0 : Si la donnée est totalement absente ou inconnue du récit (la variable correspondante est null, "inconnu" ou "non_renseigne").
 
 Format JSON attendu :
 {{
@@ -72,9 +80,24 @@ Format JSON attendu :
   "malveillance": "spoliation_financiere / violences_physiques / negligence / aucune",
   "urgence": "faible / modere / eleve / critique",
   "hospitalisation": "en_cours / recente / aucun",
-  "motif": "refus_de_soins / sortie_hospitalisation / aide_alimentaire / secours_urgence / recherche_medecin / maintien_a_domicile / information_aides / refus_aide_domicile",
+  "motif": "evaluation_globale / refus_de_soins / sortie_hospitalisation / aide_alimentaire / secours_urgence / recherche_medecin / maintien_a_domicile / information_aides / refus_aide_domicile",
   "etat_logement": "diogene / incurie / insalubre / propre / non_renseigne",
-  "raisonnement_expert": "Résumé court et raisonnement clinique"
+  "raisonnement_expert": "Résumé court et raisonnement clinique",
+  "confiance_variables": {{
+    "age": "Score entier de 0 à 100",
+    "ville": "Score entier de 0 à 100",
+    "apa": "Score entier de 0 à 100",
+    "pch": "Score entier de 0 à 100",
+    "gir": "Score entier de 0 à 100",
+    "professionnels_domicile": "Score entier de 0 à 100",
+    "aidant_regulier": "Score entier de 0 à 100",
+    "medecin_traitant": "Score entier de 0 à 100",
+    "malveillance": "Score entier de 0 à 100",
+    "urgence": "Score entier de 0 à 100",
+    "hospitalisation": "Score entier de 0 à 100",
+    "motif": "Score entier de 0 à 100",
+    "etat_logement": "Score entier de 0 à 100"
+  }}
 }}
 """
         raw_base = await self.client.generate_json(prompt_base)
@@ -100,6 +123,10 @@ Vous devez retourner uniquement les critères COMID qui sont présents de maniè
 - Les citations justificatives doivent décrire l'état de l'USAGER lui-même, et non les sentiments ou les difficultés de l'intervenant/professionnel qui signale le cas (ex: "Je suis perdue" décrit l'infirmière, pas le patient. Donc `anxiete` doit rester False pour le patient).
 - Soyez extrêmement factuel : si un critère n'est pas applicable et n'est pas mentionné, ne l'incluez pas.
 - ATTENTION AUX SYNONYMES ÉVIDENTS : Associez les expressions équivalentes (ex: "perdre la tête" ou "oublis fréquents" ➡️ `troubles_cognitifs` ; "chute" ou "ne peut plus se lever" ➡️ `perte_autonomie_recente` ; "très angoissée" ➡️ `anxiete`).
+- Pour chaque critère présent, ajoutez un score de confiance (nombre entier de 0 à 100) :
+  - 95 à 100 : Si le critère est justifié par une citation mot à mot évidente.
+  - 70 à 90 : Si le critère est basé sur un synonyme évident ou déduction forte.
+  - 40 à 69 : S'il y a un doute important sur l'implication ou la présence.
 
 ### EXCLUSIONS ET RESTRICTIONS CLINIQUES REQUISES (TRÈS IMPORTANT) :
 1. **multimorbidite** : Ne marquez ce critère à True QUE si le récit mentionne explicitement au moins 3 pathologies chroniques distinctes (ex: diabète + hypertension + insuffisance rénale). Avoir 1 ou 2 maladies (ex: diabète + hypertension, ou Parkinson seul), ou être âgé/vulnérable/agressif, n'est JAMAIS de la multimorbidité.
@@ -117,7 +144,8 @@ Format JSON attendu :
   "criteres_presents": [
     {{
       "code": "code_du_critere_present_1",
-      "justification": "Citation mot à mot ou synonyme direct prouvant la présence"
+      "justification": "Citation mot à mot ou synonyme direct prouvant la présence",
+      "confiance": 95
     }}
   ]
 }}
@@ -129,11 +157,13 @@ JSON attendu :
   "criteres_presents": [
     {{
       "code": "troubles_cognitifs",
-      "justification": "oublie de manger"
+      "justification": "oublie de manger",
+      "confiance": 95
     }},
     {{
       "code": "perte_autonomie_recente",
-      "justification": "a fait une chute hier"
+      "justification": "a fait une chute hier",
+      "confiance": 95
     }}
   ]
 }}
@@ -175,6 +205,37 @@ JSON attendu :
             "usager.cadre_de_vie.etat_logement": raw_data.get("etat_logement", "non_renseigne")
         }
 
+        # --- GESTION DE LA CONFIANCE DES VARIABLES DE BASE ---
+        confiances_vars = raw_data.get("confiance_variables", {})
+        base_vars = {
+            "age": raw_data.get("age"),
+            "ville": raw_data.get("ville"),
+            "apa": raw_data.get("apa"),
+            "pch": raw_data.get("pch"),
+            "gir": raw_data.get("gir"),
+            "professionnels_domicile": raw_data.get("professionnels_domicile"),
+            "aidant_regulier": raw_data.get("aidant_regulier"),
+            "medecin_traitant": raw_data.get("medecin_traitant"),
+            "malveillance": raw_data.get("malveillance"),
+            "urgence": raw_data.get("urgence"),
+            "hospitalisation": raw_data.get("hospitalisation"),
+            "motif": raw_data.get("motif"),
+            "etat_logement": raw_data.get("etat_logement")
+        }
+        
+        final_confiances_vars = {}
+        for var, val in base_vars.items():
+            if val is None or str(val).lower() in ["inconnu", "non_renseigne", "incertain"]:
+                final_confiances_vars[var] = 0
+            else:
+                try:
+                    score = int(confiances_vars.get(var, 100))
+                except:
+                    score = 100
+                final_confiances_vars[var] = min(max(score, 0), 100)
+                
+        mapped["evaluation.confiance.variables"] = final_confiances_vars
+
         # Mapping flexible (cherche dans "comid" ou à la racine)
         comid_data = raw_data.get("comid", raw_data)
         
@@ -196,6 +257,19 @@ JSON attendu :
                 elif isinstance(c, str):
                     positive_codes.add(c.strip().lower())
         mapped["evaluation.comid.justifications"] = criteres_list if isinstance(criteres_list, list) else []
+
+        # --- GESTION DE LA CONFIANCE DES CRITÈRES COMID ---
+        comid_confiances = {}
+        if isinstance(criteres_list, list):
+            for c in criteres_list:
+                if isinstance(c, dict) and "code" in c:
+                    code = str(c["code"]).strip().lower()
+                    try:
+                        conf = int(c.get("confiance", 100))
+                    except:
+                        conf = 100
+                    comid_confiances[code] = min(max(conf, 0), 100)
+        mapped["evaluation.confiance.comid"] = comid_confiances
 
         # 2. Remplissage des items COMID
         for item in self._comid_items:
@@ -224,41 +298,54 @@ JSON attendu :
         # A. Force APA si mentionné explicitement dans le texte original
         if "déjà l'apa" in text_lower or "a l'apa" in text_lower or "bénéficie de l'apa" in text_lower:
             mapped["usager.situation_actuelle.APA"] = "oui"
+            mapped["evaluation.confiance.variables"]["apa"] = 100
 
         # B. Force logement inadapté si l'état du logement est insalubre/diogène/incurie
         if mapped.get("usager.cadre_de_vie.etat_logement") in ["insalubre", "diogene", "incurie"]:
             mapped["evaluation.comid.logement_inadapte"] = True
+            mapped["evaluation.confiance.comid"]["logement_inadapte"] = 100
 
         # C. Force opposition aux soins si le motif principal est le refus de soins ou d'aide
         if mapped.get("demande.motif_principal") in ["refus_de_soins", "refus_aide_domicile"]:
             mapped["evaluation.comid.opposition_soins"] = True
+            # Si le critère n'a pas été détecté via citation par le LLM (confiance manquante),
+            # on lui affecte une confiance de 0% pour indiquer l'absence de preuve textuelle.
+            if "opposition_soins" not in mapped.get("evaluation.confiance.comid", {}):
+                mapped["evaluation.confiance.comid"]["opposition_soins"] = 0
 
         # D. Force transition de parcours si hospitalisation récente et motif de sortie d'hôpital
         if mapped.get("vulnerabilites.sante.hospitalisation.statut") == "recente" and mapped.get("demande.motif_principal") == "sortie_hospitalisation":
             mapped["evaluation.comid.transition_parcours"] = True
+            mapped["evaluation.confiance.comid"]["transition_parcours"] = 100
 
         # E. Force lourdeur réseau si suspicion de malveillance avérée
         if mapped.get("usager.situation_actuelle.suspicion_malveillance") != "aucune":
             mapped["evaluation.comid.lourdeur_reseau"] = True
+            mapped["evaluation.confiance.comid"]["lourdeur_reseau"] = 100
 
         # F. Force isolement social si pas d'aidant régulier et isolement relationnel critique
         if mapped.get("usager.cadre_de_vie.aidant_regulier") == "non" and mapped.get("vulnerabilites.social.isolement_relationnel") == "critique":
             mapped["evaluation.comid.isolement_social"] = True
+            mapped["evaluation.confiance.comid"]["isolement_social"] = 100
 
         # G. Force multimorbidité si "polypathologie" mentionnée ET qu'une autre pathologie est extraite
         # Pour éviter de forcer sur M. Pierre qui n'a qu'une seule maladie listée en plus du mot-clé
         if "polypathologie" in text_lower or "polypathologique" in text_lower:
             if len(positive_codes) > 1 or (len(positive_codes) == 1 and "multimorbidite" not in positive_codes):
                 mapped["evaluation.comid.multimorbidite"] = True
+                mapped["evaluation.confiance.comid"]["multimorbidite"] = 100
 
         # H. Force addiction si alcoolisme ou alcool mentionné de manière négative
         if "addiction à l'alcool" in text_lower or "alcoolisme" in text_lower:
             mapped["evaluation.comid.addiction"] = True
+            mapped["evaluation.confiance.comid"]["addiction"] = 100
 
         # I. Sécurité Épuisement de l'aidant : si suspicion de malveillance active par un proche (agression, vol),
         # l'agresseur ne doit pas être considéré comme un aidant épuisé
         if mapped.get("usager.situation_actuelle.suspicion_malveillance") in ["spoliation_financiere", "violences_physiques"]:
             mapped["evaluation.comid.epuisement_aidant"] = False
+            if "epuisement_aidant" in mapped["evaluation.confiance.comid"]:
+                mapped["evaluation.confiance.comid"]["epuisement_aidant"] = 0
 
         # Cas particulier pour l'isolement (vulnerabilites.social.isolement_relationnel)
         if mapped.get("evaluation.comid.isolement_social") or raw_data.get("seule") == "oui":
