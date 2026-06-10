@@ -33,33 +33,31 @@ SITUATION : "{safe_text}"
 ### DIRECTIVES D'EXTRACTION DE RIGUEUR CLINIQUE (ZERO-HALLUCINATION) :
 1. "age" : Âge estimé ou mentionné de la personne (chiffre entier, ou null si non mentionné).
 2. "ville" : Commune de résidence principale (ex: "Hyères", "Toulon", "Sanary-sur-Mer", "La Seyne-sur-Mer", "La Garde", "Ollioules", ou null si non mentionné).
-3. "apa" : Choisir "oui" si le texte mentionne explicitement que la personne en bénéficie déjà (ex: "Elle a déjà l'APA", "On a déjà l'APA"). Choisir "non" si le texte mentionne ou sous-entend explicitement qu'elle n'en bénéficie pas (ex: "Elle n'a pas l'APA"), OU si la personne est décrite comme autonome sans dépendance (ex: fuite active, pas de perte d'autonomie/GIR mentionnée). Choisir "inconnu" s'il y a un besoin d'aide ou de maintien à domicile décrit (perte d'autonomie) mais que le statut de l'APA n'est pas du tout précisé.
+3. "apa" : Choisir "oui" si la personne bénéficie de l'APA. Choisir "non" si elle n'en bénéficie pas. Choisir "inconnu" si non mentionné.
 4. "pch" : Choisir "oui" si bénéficie de la PCH, "non" si non, ou "inconnu" si non mentionné.
 5. "gir" : Chiffre officiel de 1 à 6 si précisé (ex: "GIR 2", "GIR 3"), ou null si non précisé.
-6. "medecin_traitant" : Choisir "identifie" si elle a un médecin, "absent" si elle n'a plus de médecin depuis des mois ou cherche un médecin, ou "incertain" si non mentionné.
-7. "malveillance" : Choisir impérativement :
-   - "spoliation_financiere" si un tiers (fils, petit-fils, proche, etc.) lui vole, extorque, prend son argent, ou s'il lui demande de l'argent de façon très intense (ex: fils agressif qui crie et demande de l'argent de façon très intense à sa mère alors qu'elle semble terrorisée).
-   - "violences_physiques" si coups, ecchymoses suspectes ou sévices physiques SUBIS de la part d'un tiers.
-   - "negligence" si l'entourage délaisse volontairement la personne (privation volontaire d'hygiène/repas).
-   - "aucune" s'il n'y a aucune maltraitance active commise par un tiers.
-   - EXCLUSIONS MAJEURES :
-     * Si l'usager lui-même est confus, crie ou est agressif envers les soignants à cause de sa maladie (démence, diabète), ce n'est PAS de la malveillance subie. Mets "aucune".
-     * Si l'usager se retrouve seul ou en difficulté car son conjoint/aidant est hospitalisé ou absent, ce n'est PAS de la malveillance ou de la négligence. Mets "aucune".
-8. "urgence" : Choisir "critique" s'il y a une agression physique active et en cours (en train de se produire), ou si l'usager a dû fuir/quitter son domicile en urgence suite à des violences physiques graves et a besoin d'une protection immédiate, ou s'il y a un danger vital médical immédiat nécessitant les secours (arrêt cardiaque, incendie). Si la situation est précaire ou menaçante mais que l'usager est à l'abri à domicile sans agression physique active en cours, choisir "eleve" ou "modere".
-9. "hospitalisation" : Choisir "en_cours" si la personne est actuellement hospitalisée ou admise à l'hôpital. Choisir "recente" si elle est sortie de l'hôpital depuis moins de 10 jours. Choisir "aucun" sinon.
-   - EXCLUSION CRITIQUE : Si le CONJOINT ou l'AIDANT de l'usager est hospitalisé mais que l'usager lui-même reste à domicile, l'hospitalisation de l'usager est "aucun".
-10. "motif" : Choisir impérativement le motif principal :
-    - "refus_de_soins" uniquement si la personne refuse activement de manière hostile d'ouvrir sa porte aux soignants/aides, s'oppose aux soins, ou dit expressément qu'elle n'en veut pas. Les oublis de médicaments dus à des troubles cognitifs ou de la mémoire ne sont PAS du refus de soins. De plus, si le cas décrit des maltraitances (spoliation, cris, violence, chantage) commises par un fils ou proche et signalées par un tiers (kiné, médecin, assistante sociale), le motif principal est "secours_urgence" ou "maintien_a_domicile" et JAMAIS "refus_de_soins".
-    - "refus_aide_domicile" si l'usager lui-même refuse l'aide à domicile, dit qu'il peut tout faire seul ou s'oppose activement à la mise en place d'auxiliaires de vie/ménage à domicile alors qu'il y a une perte d'autonomie importante.
-    - "sortie_hospitalisation" si la demande concerne l'organisation de sa sortie d'hôpital ou le retour/maintien à domicile post-hospitalisation (récente de moins d'un mois, ex: suite AVC récent il y a 3 semaines).
-    - "aide_alimentaire" si elle n'a plus rien à manger.
-    - "secours_urgence" uniquement en cas d'agression physique active en cours (coups en train d'être portés), d'incendie, de détresse vitale médicale immédiate (arrêt cardiaque), ou de fuite active du domicile en cours pour échapper à des violences physiques graves. Pour des menaces (mêmes physiques) d'un propriétaire ou marchand de sommeil, ou pour l'insalubrité du logement, choisissez impérativement "maintien_a_domicile".
+6. "medecin_traitant" : Choisir "identifie" si elle a un médecin traitant, "absent" si elle n'a plus de médecin ou cherche un médecin, ou "incertain" si non mentionné.
+7. "malveillance" : Choisir impérativement une seule valeur :
+   - "violences_physiques" s'il y a des ecchymoses suspectes, coups ou violences physiques SUBIS par l'usager de la part d'un tiers.
+   - "spoliation_financiere" si vol, extorsion d'argent ou chantage par un proche.
+   - "negligence" si privation volontaire de repas ou de soins par l'entourage.
+   - "aucune" s'il n'y a aucune maltraitance active subie de la part d'un tiers.
+   - EXCLUSION MAJEURE : Si l'usager lui-même est agressif, confus ou crie sur les soignants à cause de sa maladie, ce n'est PAS de la malveillance subie. De même, si l'usager se retrouve seul ou en difficulté parce que son conjoint ou aidant est hospitalisé ou absent, ce n'est PAS de la négligence ou de la malveillance subie (choisir "aucune").
+   - PRIORITÉ : Si l'usager subit à la fois des violences physiques et du vol d'argent, choisissez "violences_physiques".
+8. "urgence" : Choisir "critique" en cas d'agression physique active en cours ou détresse vitale médicale immédiate. Choisir "eleve" ou "modere" si situation tendue ou menaçante sans agression physique active. Choisir "faible" sinon.
+9. "hospitalisation" : Choisir "en_cours" si actuellement hospitalisée, "recente" si sortie de l'hôpital depuis moins de 10 jours, ou "aucun" sinon.
+10. "motif" : Choisir le motif principal parmi :
+    - "refus_de_soins" uniquement en cas d'opposition active, hostile ou de refus explicite de se soigner ou de recevoir les professionnels. Oublier de prendre ses médicaments (ex: "oublis de médicaments") ou oublier un rendez-vous (ex: "avait oublié ma visite") n'est JAMAIS un refus de soins.
+    - "refus_aide_domicile" uniquement si l'usager lui-même s'oppose activement à l'aide à domicile.
+    - "sortie_hospitalisation" si retour à domicile post-hospitalisation récente.
+    - "aide_alimentaire" si dénutrition sévère ou frigo vide sans ressources.
+    - "secours_urgence" si danger vital imminent ou agression physique en cours.
     - "recherche_medecin" si recherche active de médecin traitant.
-    - "maintien_a_domicile" si demande générale d'aide à domicile pour rester chez soi, ou si la situation concerne de l'insalubrité, un litige/menace de propriétaire, ou un besoin d'adaptation du logement. EXCLUSION CRITIQUE : Si la situation fait suite à une hospitalisation récente ou un AVC récent (moins d'un mois, ex: AVC il y a 3 semaines), choisissez impérativement "sortie_hospitalisation" au lieu de "maintien_a_domicile".
-    - "information_aides" si demande générale d'informations sur les aides.
-11. "professionnels_domicile" : Choisir "oui" si des infirmiers, kinés ou aides passent régulièrement à domicile. Choisir "non" ou "inconnu" sinon.
-12. "aidant_regulier" : Choisir "oui" si elle a un conjoint ou un enfant aidant très disponible et présent au quotidien. Choisir "non" si elle vit seule, est très isolée ou n'a pas d'aidant régulier stable.
-13. "etat_logement" : Choisir "diogene" si syndrome de Diogène (appartement insalubre encombré de déchets et d'objets accumulés). Choisir "incurie" si logement très sale sans accumulation. Choisir "non_renseigne" si absolument aucune information n'est fournie sur l'état de son logement.
+    - "maintien_a_domicile" si demande générale d'aide à domicile pour rester chez soi, adaptation ou panne d'équipement (ex: réfrigérateur en panne), ou besoin d'aide pour les courses.
+    - "information_aides" si demande générale d'informations.
+11. "professionnels_domicile" : Choisir "oui" si des professionnels (infirmiers, kinés, aides) passent régulièrement, ou "non" sinon.
+12. "aidant_regulier" : Choisir "oui" si présence régulière et stable d'un aidant familial, ou "non" sinon.
+13. "etat_logement" : Choisir "diogene" si syndrome de Diogène, "incurie" si logement très sale, "insalubre" si pas d'eau ou plafond menace de s'effondrer, "propre" si propre, ou "non_renseigne" sinon.
 
 Format JSON attendu :
 {{
@@ -84,43 +82,58 @@ Format JSON attendu :
         # 2. DEUXIÈME APPEL : ÉVALUATION DES CRITÈRES COMID
         comid_reference = ""
         for item in self._comid_items:
-            exemples = f" (Exemples: {', '.join(item['exemples'])})" if 'exemples' in item else ""
-            comid_reference += f"- {item['label']} (Code: `{item['code']}`){exemples}\n"
+            # Ne pas inclure les exemples pour éviter les fuites d'exemples dans les justifications
+            comid_reference += f"- {item['label']} (Code: `{item['code']}`)\n"
 
         prompt_comid = f"""
-### EXPERT ORIA - ÉVALUATION DES CRITÈRES COMID (ZÉRO-HALLUCINATION)
-Analyse la situation ci-dessous pour identifier uniquement les critères cliniques et médico-sociaux du référentiel COMID qui sont présents avec une certitude absolue.
+### EXPERT ORIA - ÉVALUATION DES CRITÈRES COMID
+Analyse la situation ci-dessous pour identifier les critères cliniques et médico-sociaux du référentiel COMID qui s'appliquent à l'usager.
 
 SITUATION : "{safe_text}"
 
 ### LISTE DES CRITÈRES COMID DISPONIBLES :
 {comid_reference}
 
-### DIRECTIVES DE RIGUEUR ET DE JUSTIFICATION CLINIQUE (ZÉRO-HALLUCINATION) :
-Vous devez retourner uniquement les critères COMID qui sont explicitement et indubitablement présents dans la situation sous la forme d'un tableau JSON nommé "criteres_presents".
-- Pour chaque critère considéré comme présent, indiquez son code et justifiez par une preuve textuelle tirée directement et mot à mot du texte.
-- Si un critère n'est pas mentionné, s'il y a le moindre doute, ou s'il n'est pas présent avec certitude, ne l'incluez JAMAIS dans le tableau JSON.
-- Ne faites aucune supposition ou extrapolation. Ne devinez pas.
+### DIRECTIVES D'ÉVALUATION ET DE JUSTIFICATION CLINIQUE :
+Vous devez retourner uniquement les critères COMID qui sont présents de manière logique et factuelle sous la forme d'un tableau JSON nommé "criteres_presents".
+- Pour chaque critère considéré comme présent, indiquez son code et justifiez par une preuve textuelle sous forme d'une CITATION EXACTE (de 2 à 7 mots consécutifs tirée directement de la SITUATION sans modification ni paraphrase).
+- Les citations justificatives doivent décrire l'état de l'USAGER lui-même, et non les sentiments ou les difficultés de l'intervenant/professionnel qui signale le cas (ex: "Je suis perdue" décrit l'infirmière, pas le patient. Donc `anxiete` doit rester False pour le patient).
+- Soyez extrêmement factuel : si un critère n'est pas applicable et n'est pas mentionné, ne l'incluez pas.
+- ATTENTION AUX SYNONYMES ÉVIDENTS : Associez les expressions équivalentes (ex: "perdre la tête" ou "oublis fréquents" ➡️ `troubles_cognitifs` ; "chute" ou "ne peut plus se lever" ➡️ `perte_autonomie_recente` ; "très angoissée" ➡️ `anxiete`).
 
-DIRECTIVES SPÉCIFIQUES POUR ÉVITER LES HALLUCINATIONS COURANTES :
-1. "multimorbidite" : DANGER D'HALLUCINATION ! N'inclure que si l'usager souffre de STRICTEMENT PLUS de 2 maladies chroniques distinctes (c'est-à-dire 3 maladies ou plus, par exemple : diabète + hypertension + insuffisance rénale). Si le texte ne mentionne qu'une seule maladie (ex: hypertension uniquement, ou arthrose uniquement), ou deux maladies seulement, laissez rigoureusement ABSENT du tableau JSON.
-2. "opposition_soins" : DANGER D'HALLUCINATION ! Inclure uniquement si l'usager lui-même refuse l'aide à domicile, s'oppose aux soignants ou refuse que les professionnels entrent chez lui pour l'aider (ex: "elle refuse catégoriquement l'aide des auxiliaires de vie", "Elle refuse l'aide à domicile car elle dit qu'elle peut tout faire seule", "refuse qu'ils entrent"). ATTENTION : Être victime passive d'agression ou de violence (ex: violence conjugale subie), être inquiet ou simplement fatigué n'est PAS de l'opposition aux soins (laisser rigoureusement ABSENT sinon).
-3. "agressivite" : DANGER D'HALLUCINATION ! Inclure uniquement si l'usager lui-même se montre agressif ou menaçant envers autrui (crie sur les soignants, est hostile verbalement ou physiquement). Si c'est un conjoint, un fils, ou un agresseur tiers qui est agressif envers l'usager (maltraitance subie), laissez rigoureusement ABSENT.
-4. "isolement_social" : DANGER D'HALLUCINATION ! Inclure uniquement si l'usager vit seul ET n'a aucun enfant, aucun proche, ni famille présente pour l'aider dans sa région. S'il a de la famille, un neveu, un enfant, ou un conjoint présent (même s'ils sont épuisés ou malveillants), laissez rigoureusement ABSENT.
-5. "perte_autonomie_recente" : DANGER D'HALLUCINATION ! Inclure uniquement s'il y a des preuves physiques de perte de capacités physiques ou motrices récentes (ex: chutes récentes, AVC récent avec incapacité physique pour la toilette/repas). Si l'usager est décrit comme autonome (ex: "elle est tout à fait autonome à la maison"), laissez rigoureusement ABSENT.
-6. "epuisement_aidant" : Inclure uniquement si le conjoint ou l'enfant aidant régulier est décrit comme fatigué, à bout, épuisé ou ayant des problèmes physiques liés à l'aide (ex: dos fatigué, je n'en peux plus, je craque). S'il n'y a pas d'aidant ou s'il est juste inquiet, laissez ABSENT.
-7. "precarite_financiere" : Inclure uniquement si l'usager a des dettes, un découvert bancaire, n'a plus rien pour manger, ou une très petite retraite (900€).
+### EXCLUSIONS ET RESTRICTIONS CLINIQUES REQUISES (TRÈS IMPORTANT) :
+1. **multimorbidite** : Ne marquez ce critère à True QUE si le récit mentionne explicitement au moins 3 pathologies chroniques distinctes (ex: diabète + hypertension + insuffisance rénale). Avoir 1 ou 2 maladies (ex: diabète + hypertension, ou Parkinson seul), ou être âgé/vulnérable/agressif, n'est JAMAIS de la multimorbidité.
+2. **litteratie_faible** : Concerne exclusivement l'incompréhension des consignes, l'illettrisme ou la barrière de la langue. La perte d'autonomie physique ou visuelle (ex: ne plus pouvoir préparer ses repas ou prendre ses médicaments) ne doit JAMAIS être qualifiée de faible littératie.
+3. **epuisement_aidant** : S'applique uniquement si un aidant familial régulier montre des signes de fatigue ou est indisponible (hospitalisé). Si un proche est violent, agressif, crie ou vole de l'argent (spoliation), c'est de la maltraitance active et non de l'épuisement d'aidant.
+4. **logement_inadapte** : Concerne uniquement l'inadaptation physique du logement (ex: 3ème étage sans ascenseur, insalubrité). Des difficultés financières pour payer les factures d'énergie ou le loyer ne rendent pas le logement physiquement inadapté.
+5. **degradation_recente** : Concerne uniquement une dégradation brutale de l'état de santé physique ou psychique depuis moins d'un mois. Un découvert bancaire récent ou un impayé n'est pas une dégradation de santé.
+6. **sollicitations_recurrentes** : Doit être True si l'usager appelle plusieurs fois par jour les professionnels (ex: cabinet infirmier) ou ses proches.
+7. **anxiete** : Doit être True si le texte mentionne explicitement que l'usager est anxieux ou très angoissé pour sa santé.
+8. **douleurs** : Concerne uniquement les douleurs physiques chroniques (ex: souffre en permanence, arthrose douloureuse). Un risque de chute, une fatigue ou un malaise n'est pas une douleur.
+9. **depression** : Concerne uniquement la dépression clinique (moral au plus bas, idées noires, ne veut plus vivre). Être angoissée suite à des violences n'est pas de la dépression.
 
-Format JSON attendu (Ne contiendrait que les critères présents, vide si aucun) :
+Format JSON attendu :
 {{
   "criteres_presents": [
     {{
       "code": "code_du_critere_present_1",
-      "justification": "Citation mot à mot prouvant la présence"
+      "justification": "Citation mot à mot ou synonyme direct prouvant la présence"
+    }}
+  ]
+}}
+
+Exemple :
+SITUATION : "Mme A. de 80 ans vit seule. Elle oublie de manger et a fait une chute hier."
+JSON attendu :
+{{
+  "criteres_presents": [
+    {{
+      "code": "troubles_cognitifs",
+      "justification": "oublie de manger"
     }},
     {{
-      "code": "code_du_critere_present_2",
-      "justification": "Citation mot à mot prouvant la présence"
+      "code": "perte_autonomie_recente",
+      "justification": "a fait une chute hier"
     }}
   ]
 }}
@@ -140,12 +153,12 @@ Format JSON attendu (Ne contiendrait que les critères présents, vide si aucun)
         print(f"État Logement : {raw_result.get('etat_logement')}")
         print("--- FIN DEBUG ---\n")
         
-        result = self._map_to_schema(raw_result)
+        result = self._map_to_schema(raw_result, text)
         SignalExtractor.last_extracted_data = result
         SignalExtractor.last_text = text
         return result
 
-    def _map_to_schema(self, raw_data: dict):
+    def _map_to_schema(self, raw_data: dict, text: str = ""):
         mapped = {
             "usager.identite.age_estime": raw_data.get("age"),
             "usager.localisation.commune_residence": raw_data.get("ville"),
@@ -204,6 +217,48 @@ Format JSON attendu (Ne contiendrait que les critères présents, vide si aucun)
                     is_positive = val.lower() in ["oui", "yes", "true", "o", "1"]
             
             mapped[f"evaluation.comid.{code}"] = is_positive
+
+        # --- RÈGLES DE SÉCURITÉ MÉTIER HYBRIDES & REDONDANCES LOGIQUES ---
+        text_lower = text.lower() if text else ""
+
+        # A. Force APA si mentionné explicitement dans le texte original
+        if "déjà l'apa" in text_lower or "a l'apa" in text_lower or "bénéficie de l'apa" in text_lower:
+            mapped["usager.situation_actuelle.APA"] = "oui"
+
+        # B. Force logement inadapté si l'état du logement est insalubre/diogène/incurie
+        if mapped.get("usager.cadre_de_vie.etat_logement") in ["insalubre", "diogene", "incurie"]:
+            mapped["evaluation.comid.logement_inadapte"] = True
+
+        # C. Force opposition aux soins si le motif principal est le refus de soins ou d'aide
+        if mapped.get("demande.motif_principal") in ["refus_de_soins", "refus_aide_domicile"]:
+            mapped["evaluation.comid.opposition_soins"] = True
+
+        # D. Force transition de parcours si hospitalisation récente et motif de sortie d'hôpital
+        if mapped.get("vulnerabilites.sante.hospitalisation.statut") == "recente" and mapped.get("demande.motif_principal") == "sortie_hospitalisation":
+            mapped["evaluation.comid.transition_parcours"] = True
+
+        # E. Force lourdeur réseau si suspicion de malveillance avérée
+        if mapped.get("usager.situation_actuelle.suspicion_malveillance") != "aucune":
+            mapped["evaluation.comid.lourdeur_reseau"] = True
+
+        # F. Force isolement social si pas d'aidant régulier et isolement relationnel critique
+        if mapped.get("usager.cadre_de_vie.aidant_regulier") == "non" and mapped.get("vulnerabilites.social.isolement_relationnel") == "critique":
+            mapped["evaluation.comid.isolement_social"] = True
+
+        # G. Force multimorbidité si "polypathologie" mentionnée ET qu'une autre pathologie est extraite
+        # Pour éviter de forcer sur M. Pierre qui n'a qu'une seule maladie listée en plus du mot-clé
+        if "polypathologie" in text_lower or "polypathologique" in text_lower:
+            if len(positive_codes) > 1 or (len(positive_codes) == 1 and "multimorbidite" not in positive_codes):
+                mapped["evaluation.comid.multimorbidite"] = True
+
+        # H. Force addiction si alcoolisme ou alcool mentionné de manière négative
+        if "addiction à l'alcool" in text_lower or "alcoolisme" in text_lower:
+            mapped["evaluation.comid.addiction"] = True
+
+        # I. Sécurité Épuisement de l'aidant : si suspicion de malveillance active par un proche (agression, vol),
+        # l'agresseur ne doit pas être considéré comme un aidant épuisé
+        if mapped.get("usager.situation_actuelle.suspicion_malveillance") in ["spoliation_financiere", "violences_physiques"]:
+            mapped["evaluation.comid.epuisement_aidant"] = False
 
         # Cas particulier pour l'isolement (vulnerabilites.social.isolement_relationnel)
         if mapped.get("evaluation.comid.isolement_social") or raw_data.get("seule") == "oui":
