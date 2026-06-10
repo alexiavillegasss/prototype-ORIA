@@ -1,0 +1,192 @@
+Patient: Mme Huguette (Détail des logs)
+  Score: 6
+  True Flags: ['precarite_financiere', 'isolement_social', 'logement_inadapte', 'anxiete', 'conflit_reseau', 'lourdeur_reseau']
+  Justifications:
+    - isolement_social: Mme H., 79 ans, vit seule dans un logement insalubre et humide à La Valette du Var.
+    - precarite_financiere: Elle n'a pas l'APA et vit sous le seuil de pauvreté avec une infime pension de retraite.
+    - logement_inadapte: Un logement insalubre et humide à La Valette du Var.
+    - conflit_reseau: Une amie très proche s'inquiète : elle signale que le neveu d'Huguette, qui a procuration sur ses comptes bancaires, effectue des retraits d'argent massifs et répétés sans justification...
+    - anxiete: Huguette est terrifiée par son neveu et n'ose rien dire par peur de représailles.
+--------------------------------------------------
+Patient: Mme Durand (Détail des logs)
+  Score: 5
+  True Flags: ['troubles_cognitifs', 'isolement_social', 'logement_inadapte', 'agressivite', 'opposition_soins']
+  Justifications:
+    - troubles_cognitifs: elle est très confuse
+    - agressivite: elle est agressive avec les infirmiers
+    - isolement_social: elle vit à Hyères, seule
+    - logement_inadapte: elle déambule la nuit dans l'immeuble
+--------------------------------------------------
+Patient: Mr Vacek (Détail des logs)
+  Score: 5
+  True Flags: ['precarite_financiere', 'isolement_social', 'logement_inadapte', 'anxiete', 'lourdeur_reseau']
+  Justifications:
+    - logement_inadapte: Son appartement est insalubre : il n'a plus d'eau courante depuis 3 mois et le plafond de sa chambre menace de s'effondrer suite à une infiltration.
+    - isolement_social: Il vit dans l'humidité totale et il commence à avoir des problèmes respiratoires sérieux.
+    - precarite_financiere: Son propriétaire est un marchand de sommeil qui le menace physiquement s'il appelle la mairie. Il n'a plus de revenus car son dossier de retraite est bloqué.
+    - anxiete: Il est terrifié
+--------------------------------------------------
+Patient: Mr Lambert (Détail des logs)
+  Score: 4
+  True Flags: ['isolement_social', 'logement_inadapte', 'opposition_soins', 'perte_autonomie_recente']
+  Justifications:
+    - isolement_social: son appartement, qui était impeccable, est devenu un dépotoir : il y a des sacs poubelles partout et ça sent très fort l'urine
+    - logement_inadapte: son appartement, qui était impeccable, est devenu un dépotoir : il y a des sacs poubelles partout et ça sent très fort l'urine
+    - perte_autonomie_recente: c'est la chute libre. Il refuse que j'entre faire ses pansements, il me crie dessus et me dit que je veux l'empoisonner avec ses médicaments
+    - isolement_social: sa famille est à Paris et ils ne décrochent plus le téléphone
+--------------------------------------------------
+Patient: Mme Petit (Détail des logs)
+  Score: 2
+  True Flags: ['precarite_financiere', 'isolement_social']
+  Justifications:
+    - precarite_financiere: son compte bancaire est à découvert
+    - isolement_social: elle vit seule
+--------------------------------------------------
+Patient: Mme Lefebvre (Détail des logs)
+  Score: 6
+  True Flags: ['isolement_social', 'logement_inadapte', 'psychiatrie', 'addiction', 'anxiete', 'opposition_soins']
+  Justifications:
+    - psychiatrie: bipolarité
+    - addiction: consomme beaucoup d'alcool pour 'calmer ses angoisses'
+    - isolement_social: n'a plus de famille et refuse toute aide du service social
+    - logement_inadapte: appartement très encombré (Syndrome de Diogène suspecté)
+    - anxiete: très angoissée
+--------------------------------------------------
+Patient: Mr Leroy (Détail des logs)
+  Score: 4
+  True Flags: ['precarite_financiere', 'isolement_social', 'depression', 'opposition_soins']
+  Justifications:
+    - precarite_financiere: ses revenus ont chuté et il a du mal à payer son loyer
+    - isolement_social: il vit seul
+    - depression: il exprime des idées noires
+--------------------------------------------------
+Patient: Mme Rossi (Détail des logs)
+  Score: 4
+  True Flags: ['isolement_social', 'logement_inadapte', 'depression', 'lourdeur_reseau']
+  Justifications:
+    - isolement_social: elle est actuellement cachée chez une amie
+    - logement_inadapte: son mari est devenu très violent physiquement et verbalement
+    - depression: elle est actuellement cachée chez une amie (angoisse)
+--------------------------------------------------
+Patient: Mme Martin (Détail des logs)
+  Score: 4
+  True Flags: ['epuisement_aidant', 'isolement_social', 'logement_inadapte', 'anxiete']
+  Justifications:
+    - epuisement_aidant: Je n'en peux plus, je craque.
+    - isolement_social: Je travaille à temps plein et je passe toutes mes soirées et mes week-ends chez elle.
+    - logement_inadapte: Ma mère laisse le gaz allumé, elle se relève la nuit...
+    - anxiete: Je pleure tout le temps au travail.
+--------------------------------------------------
+Patient: Mr Martin (Détail des logs)
+  Score: 3
+  True Flags: ['multimorbidite', 'isolement_social', 'logement_inadapte']
+  Justifications:
+    - multimorbidite: de graves problèmes de vue et sa femme, qui s'occupait de tout, vient d'être hospitalisée
+    - isolement_social: Il se retrouve seul
+    - logement_inadapte: n'arrive plus à préparer ses repas ni à prendre ses médicaments
+--------------------------------------------------
+Patient: Mme Fontaine (Détail des logs)
+  Score: 5
+  True Flags: ['douleurs', 'precarite_financiere', 'isolement_social', 'agressivite', 'lourdeur_reseau']
+  Justifications:
+    - douleurs: elle oublie ses médicaments contre la douleur
+    - precarite_financiere: son frigo est littéralement vide
+    - isolement_social: elle a l'air terrorisée
+    - agressivite: il lui crie dessus et j'ai remarqué qu'il lui demande de l'argent de façon très insistante à chaque fois que je suis là
+--------------------------------------------------
+Patient: Mme Gautier (Détail des logs)
+  Score: 11
+  True Flags: ['multimorbidite', 'douleurs', 'polymedication', 'troubles_cognitifs', 'precarite_financiere', 'isolement_social', 'logement_inadapte', 'depression', 'anxiete', 'opposition_soins', 'perte_autonomie_recente']
+  Justifications:
+    - multimorbidite: diabète de type 2, insuffisance cardiaque et arthrose déformante
+    - douleurs: souffre d'un diabète de type 2, d'une insuffisance cardiaque et d'une arthrose déformante qui lui causent des douleurs chroniques permanentes et intolérables
+    - polymedication: ordonnance est extrêmement lourde avec une polymédication de plus de 9 médicaments par jour
+    - troubles_cognitifs: présente des troubles cognitifs majeurs avec une perte de mémoire et une désorientation temporelle
+    - precarite_financiere: sa retraite de 800 € ne lui permet plus de faire face à ses factures d'électricité, créant une grande précarité financière
+    - isolement_social: elle vit seule dans un logement insalubre et inadapté
+    - logement_inadapte: son logement est situé au 3ème étage sans ascenseur
+    - depression: elle traverse une période de transition majeure suite au décès récent de son époux, ce qui a déclenché une grave dépression clinique avec des idées noires
+    - anxiete: elle est très angoissée par sa santé
+    - perte_autonomie_recente: elle présente une perte d'autonomie récente pour toutes les activités de la vie quotidienne suite à sa chute récente avec fracture du poignet
+--------------------------------------------------
+Patient: Mme Vial (Détail des logs)
+  Score: 4
+  True Flags: ['multimorbidite', 'isolement_social', 'anxiete', 'lourdeur_reseau']
+  Justifications:
+    - multimorbidite: souffre de diabète de type 2 et d'hypertension
+    - isolement_social: elle vient de s'installer à Toulon pour se rapprocher de sa fille
+    - lourdeur_reseau: sa fille travaille beaucoup et s'inquiète de ne pas trouver de solution pour sa mère
+    - anxiete: elle est très angoissée par cette rupture de suivi médical
+--------------------------------------------------
+Patient: Mme Michu (Détail des logs)
+  Score: 4
+  True Flags: ['troubles_cognitifs', 'isolement_social', 'opposition_soins', 'perte_autonomie_recente']
+  Justifications:
+    - troubles_cognitifs: elle commence à oublier de manger
+    - perte_autonomie_recente: elle a chuté la semaine dernière
+    - isolement_social: elle vit seule
+--------------------------------------------------
+Patient: Mr Petit (Détail des logs)
+  Score: 6
+  True Flags: ['multimorbidite', 'douleurs', 'epuisement_aidant', 'isolement_social', 'logement_inadapte', 'anxiete']
+  Justifications:
+    - multimorbidite: la maladie de Parkinson depuis 5 ans
+    - douleurs: des malaises
+    - epuisement_aidant: je suis au bout du rouleau
+    - logement_inadapte: on habite à Toulon au 3ème étage sans ascenseur
+    - isolement_social: je ne dors plus car elle crie la nuit
+    - anxiete: j'ai peur pour mon propre cœur, je sens que je fatigue
+--------------------------------------------------
+Patient: Mr Chen (Détail des logs)
+  Score: 2
+  True Flags: ['isolement_social', 'logement_inadapte']
+  Justifications:
+    - logement_inadapte: habite à Toulon et cherche des informations sur les logements adaptés à son fauteuil roulant dans la commune
+    - isolement_social: il est en situation de handicap moteur et bénéficie de la PCH, ce qui peut entraîner un isolement social
+--------------------------------------------------
+Patient: Mme Morel (Détail des logs)
+  Score: 3
+  True Flags: ['isolement_social', 'logement_inadapte', 'perte_autonomie_recente']
+  Justifications:
+    - isolement_social: elle vit seule au 3ème étage
+    - logement_inadapte: elle vit seule au 3ème étage
+    - perte_autonomie_recente: a fait une mauvaise chute
+--------------------------------------------------
+Patient: Mr Pierre (Détail des logs)
+  Score: 5
+  True Flags: ['multimorbidite', 'isolement_social', 'logement_inadapte', 'addiction', 'perte_autonomie_recente']
+  Justifications:
+    - addiction: addition à l'alcool
+    - isolement_social: vit seul à domicile
+    - logement_inadapte: refrigerateur ne fonctionne plus
+    - perte_autonomie_recente: difficulté à la marche
+--------------------------------------------------
+Patient: Mme Bernard (Détail des logs)
+  Score: 4
+  True Flags: ['precarite_financiere', 'isolement_social', 'agressivite', 'lourdeur_reseau']
+  Justifications:
+    - isolement_social: très isolée
+    - precarite_financiere: son compte est vide et elle n'a plus de quoi s'acheter à manger
+    - isolement_social: très isolée
+    - agressivite: le petit-fils de Mme B., qui vient la voir de temps en temps, semble lui voler de l'argent
+--------------------------------------------------
+Patient: Mr Dubois (Détail des logs)
+  Score: 6
+  True Flags: ['multimorbidite', 'douleurs', 'polymedication', 'precarite_financiere', 'logement_inadapte', 'anxiete']
+  Justifications:
+    - multimorbidite: souffre de diabète, d'hypertension et d'une insuffisance rénale chronique
+    - douleurs: souffre en permanence dans les jambes
+    - polymedication: prend 8 médicaments par jour
+    - precarite_financiere: a du mal à payer son loyer et ses factures
+    - logement_inadapte: appartement au 4ème étage sans ascenseur
+    - anxiete: est très anxieux pour sa santé
+--------------------------------------------------
+Patient: Mme Mouton (Détail des logs)
+  Score: 5
+  True Flags: ['troubles_cognitifs', 'epuisement_aidant', 'isolement_social', 'logement_inadapte', 'opposition_soins']
+  Justifications:
+    - isolement_social: Mme G. M., 83 ans, vit seule à Ollioules dans un appartement devenu extrêmement insalubre et encombré de déchets et d'objets accumulés (syndrome de Diogène).
+    - logement_inadapte: appartement devenu extrêmement insalubre et encombré de déchets et d'objets accumulés
+    - epuisement_aidant: elle n'a aucun aidant à proximité
+    - troubles_cognitifs: oublis de médicaments (mise en danger)
+--------------------------------------------------

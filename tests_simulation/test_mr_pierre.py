@@ -27,12 +27,7 @@ async def run_test():
     territory_manager = TerritoryManager(territory_rules_path=TERRITORY_PATH)
 
     text = (
-        "Mme Antoinette, 92 ans, réside à La Garde. Elle vit avec son mari M. Pierre (89 ans) qui est très fatigué. "
-        "Elle bénéficie déjà de l'APA et est évaluée en GIR 2. Cependant, la situation s'est brusquement dégradée ce mois-ci : "
-        "elle a été hospitalisée 5 jours suite à une infection urinaire et est rentrée à son domicile il y a 3 jours (sortie d'hôpital très récente). "
-        "Depuis son retour, elle refuse catégoriquement l'aide des auxiliaires de vie du SAAD qui passent habituellement pour sa toilette. "
-        "Son mari Pierre est dans une situation d'épuisement total et de détresse face à son opposition. "
-        "De plus, l'infirmière libérale à domicile signale un risque majeur de chute et un début de dénutrition sévère."
+        "M. Pierre agée de 88 ans vis seul à domicile polypathologie avais oublié ma visite prévu pourtant ce jour, à l'arrivée je constate que son refrigirateur ne fonctionne plus. pas d'enfants. monsieur dit qu'un voisin l'aide pour faire ses courses. il a un médecin traitant qui ne fait pas de visite à domicile. pas d'auxiliaire de vie, difficulté à la marche. vit à toulon dans le centre ville. addiction à l'alcool"
     )
 
     print(f"\n1. Extraction IA (Déterministe, Temp=0.0) pour : '{text[:80]}...'")
