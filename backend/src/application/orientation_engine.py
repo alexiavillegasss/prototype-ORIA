@@ -259,8 +259,18 @@ class OrientationEngine:
             elif field.startswith("complexite."):
                 if confiances_comid:
                     avg_comid = sum(confiances_comid.values()) / len(confiances_comid)
-                    conf_scores.append(avg_comid)
-                    detail_explications.append(f"score complexité COMID estimé à {int(avg_comid)}% de certitude")
+                    score_total = comid_results.get("score_total", 0)
+                    if score_total >= 10:
+                        conf_scores.append(avg_comid)
+                        detail_explications.append(f"score complexite COMID estime a {int(avg_comid)}% de certitude (Situation complexe)")
+                    elif 6 <= score_total <= 9:
+                        val_conf = max(avg_comid - 30, 0)
+                        conf_scores.append(val_conf)
+                        detail_explications.append(f"score complexite COMID estime a {int(avg_comid)}% de certitude (Penalite de pseudo-complexite de -30% appliquee)")
+                    else:
+                        val_conf = max(avg_comid - 70, 0)
+                        conf_scores.append(val_conf)
+                        detail_explications.append(f"score complexite COMID estime a {int(avg_comid)}% de certitude (Penalite de situation non complexe de -70% appliquee)")
                 else:
                     conf_scores.append(100)
 

@@ -1,39 +1,183 @@
 # 📋 Rapport d'Évaluation Clinique ORIA
 
-Généré automatiquement le : `2026-06-10 15:50:13`  
+Généré automatiquement le : `2026-06-11 14:50:24`  
 Nombre de cas exécutés : **21**  
 Taux de succès : **21/21**  
-Temps d'exécution total : **281.77 secondes**  
+Temps d'exécution total : **278.56 secondes**  
 
 ## 📊 Tableau récapitulatif des Orientations
 
 | Patient | Status | Score COMID | Orientation Principale | Temps d'exécution |
 | :--- | :---: | :---: | :--- | :---: |
-| **Mme Durand** | ✅ SUCCESS | 4 | `DAC - Dispositif d'Appui  la Coordination` | 14.32s |
-| **Mme Huguette** | ✅ SUCCESS | 5 | `CEV - Cellule coute et Vigilance (Spoliation & Autres Dangers)` | 13.91s |
-| **Mr Vacek** | ✅ SUCCESS | 5 | `CEV - Cellule coute et Vigilance (Violences Physiques & Danger Immdiat)` | 13.84s |
-| **Mr Lambert** | ✅ SUCCESS | 5 | `DAC - Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social)` | 16.01s |
-| **Mme Petit** | ✅ SUCCESS | 2 | `CLIC - Centre Local d'Information et de Coordination (Snior)` | 10.39s |
-| **Mme Lefebvre** | ✅ SUCCESS | 5 | `DAC - Dispositif d'Appui  la Coordination` | 14.00s |
-| **Mr Leroy** | ✅ SUCCESS | 5 | `DAC - Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social)` | 13.68s |
-| **Mme Rossi** | ✅ SUCCESS | 4 | `Police / Gendarmerie (Urgence Vitale & Intervention)` | 11.22s |
-| **Mme Martin** | ✅ SUCCESS | 3 | `CLIC - Centre Local d'Information et de Coordination (Snior)` | 13.28s |
-| **Mr Martin** | ✅ SUCCESS | 3 | `Informations insuffisantes pour orienter` | 10.99s |
-| **Mme Fontaine** | ✅ SUCCESS | 5 | `CEV - Cellule coute et Vigilance (Spoliation & Autres Dangers)` | 14.60s |
-| **Mme Gautier** | ✅ SUCCESS | 10 | `DAC - Dispositif d'Appui  la Coordination` | 19.77s |
-| **Mme Vial** | ✅ SUCCESS | 3 | `CPTS - Communaut Professionnelle Territoriale de Sant` | 12.33s |
-| **Mme Michu** | ✅ SUCCESS | 4 | `DAC - Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social)` | 11.46s |
-| **Mr Petit** | ✅ SUCCESS | 6 | `PSCG SS APA - Ple Social de Solidarit et de Gestion (APA)` | 14.44s |
-| **Mr Chen** | ✅ SUCCESS | 2 | `CLIC - Centre Local d'Information et de Coordination` | 12.04s |
-| **Mme Morel** | ✅ SUCCESS | 3 | `Service Social de l'Hpital (Hospitalisation en cours)` | 11.70s |
-| **Mr Pierre** | ✅ SUCCESS | 5 | `CLIC - Centre Local d'Information et de Coordination (Snior)` | 12.65s |
-| **Mme Bernard** | ✅ SUCCESS | 5 | `CEV - Cellule coute et Vigilance (Violences Physiques & Danger Immdiat)` | 12.36s |
-| **Mr Dubois** | ✅ SUCCESS | 7 | `DAC - Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social)` | 17.20s |
-| **Mme Mouton** | ✅ SUCCESS | 4 | `DAC - Dispositif d'Appui  la Coordination` | 11.59s |
+| **Mme Huguette** | ✅ SUCCESS | 6 | `DAC - Dispositif d'Appui  la Coordination` | 16.07s |
+| **Mme Durand** | ✅ SUCCESS | 4 | `DAC - Dispositif d'Appui  la Coordination` | 12.02s |
+| **Mr Vacek** | ✅ SUCCESS | 5 | `CEV - Cellule coute et Vigilance (Violences Physiques & Danger Immdiat)` | 13.97s |
+| **Mr Lambert** | ✅ SUCCESS | 5 | `DAC - Dispositif d'Appui  la Coordination` | 15.90s |
+| **Mme Petit** | ✅ SUCCESS | 2 | `CCAS - Secours d'Urgence (Alimentaire & Factures)` | 10.44s |
+| **Mme Lefebvre** | ✅ SUCCESS | 6 | `DAC - Dispositif d'Appui  la Coordination` | 13.31s |
+| **Mr Leroy** | ✅ SUCCESS | 5 | `DAC - Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social)` | 14.39s |
+| **Mme Rossi** | ✅ SUCCESS | 4 | `Police / Gendarmerie (Urgence Vitale & Intervention)` | 11.34s |
+| **Mme Martin** | ✅ SUCCESS | 3 | `CLIC - Centre Local d'Information et de Coordination (Snior)` | 11.55s |
+| **Mr Martin** | ✅ SUCCESS | 3 | `Informations insuffisantes pour orienter` | 12.14s |
+| **Mme Fontaine** | ✅ SUCCESS | 6 | `DAC - Dispositif d'Appui  la Coordination` | 13.84s |
+| **Mme Gautier** | ✅ SUCCESS | 10 | `DAC - Dispositif d'Appui  la Coordination` | 19.26s |
+| **Mme Vial** | ✅ SUCCESS | 3 | `CPTS - Communaut Professionnelle Territoriale de Sant` | 12.05s |
+| **Mme Michu** | ✅ SUCCESS | 4 | `DAC - Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social)` | 11.50s |
+| **Mr Petit** | ✅ SUCCESS | 6 | `PSCG SS APA - Ple Social de Solidarit et de Gestion (APA)` | 13.60s |
+| **Mr Chen** | ✅ SUCCESS | 2 | `CLIC - Centre Local d'Information et de Coordination` | 12.26s |
+| **Mme Morel** | ✅ SUCCESS | 3 | `Service Social de l'Hpital (Hospitalisation en cours)` | 11.76s |
+| **Mr Pierre** | ✅ SUCCESS | 5 | `DAC - Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social)` | 12.46s |
+| **Mme Bernard** | ✅ SUCCESS | 5 | `CEV - Cellule coute et Vigilance (Violences Physiques & Danger Immdiat)` | 11.78s |
+| **Mr Dubois** | ✅ SUCCESS | 7 | `DAC - Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social)` | 15.90s |
+| **Mme Mouton** | ✅ SUCCESS | 4 | `DAC - Dispositif d'Appui  la Coordination` | 13.02s |
 
 ---
 
 ## 📝 Détail des extractions et raisonnements
+
+<details>
+<summary>🔍 Cas Mme Huguette (Détail des logs)</summary>
+
+```text
+--- Lancement du test ORIA : Cas Mme Huguette (Urgence Sociale / Protection) ---
+
+1. Extraction IA (Temp=0.0) pour : 'Mme Huguette, 79 ans, vit seule dans un logement insalubre et humide  La Valett...'
+
+--- DEBUG : ANALYSE EXPERTE ---
+La situation est critique car Mme H. vit seule dans un logement insalubre et humide, sans l'APA et vivant sous le seuil de pauvret. Son neveu procdure des retraits d'argent massifs et rpts sans justification, laissant Mme H. sans ressources pour s'acheter  manger.
+Ville extraite : La Valette du Var
+Mdecin : incertain
+Malveillance : spoliation_financiere
+Hospitalisation : aucun
+tat Logement : insalubre
+--- FIN DEBUG ---
+
+Donnes extraites (JSON) :
+{
+  "usager.identite.age_estime": 79,
+  "usager.localisation.commune_residence": "La Valette du Var",
+  "usager.situation_actuelle.APA": "non",
+  "usager.situation_actuelle.PCH": "inconnu",
+  "usager.situation_actuelle.GIR": null,
+  "vulnerabilites.sante.suivi_medical.medecin_traitant": "incertain",
+  "usager.situation_actuelle.suspicion_malveillance": "spoliation_financiere",
+  "adresseur.degre_urgence_percu": "faible",
+  "vulnerabilites.sante.hospitalisation.statut": "aucun",
+  "demande.motif_principal": "refus_de_soins",
+  "vulnerabilites.sante.professionnels_domicile": "oui",
+  "usager.cadre_de_vie.aidant_regulier": "non",
+  "usager.cadre_de_vie.etat_logement": "insalubre",
+  "evaluation.confiance.variables": {
+    "age": 100,
+    "ville": 100,
+    "apa": 70,
+    "pch": 0,
+    "gir": 0,
+    "professionnels_domicile": 90,
+    "aidant_regulier": 30,
+    "medecin_traitant": 0,
+    "malveillance": 100,
+    "urgence": 80,
+    "hospitalisation": 50,
+    "motif": 90,
+    "etat_logement": 70
+  },
+  "evaluation.comid.justifications": [
+    {
+      "code": "isolement_social",
+      "justification": "Mme H. vit seule dans un logement insalubre et humide  La Valette du Var.",
+      "confiance": 95
+    },
+    {
+      "code": "precarite_financiere",
+      "justification": "Elle n'a pas l'APA et vit sous le seuil de pauvret avec une infime pension de retraite.",
+      "confiance": 95
+    },
+    {
+      "code": "logement_inadapte",
+      "justification": "Le logement est insalubre et humide.",
+      "confiance": 95
+    },
+    {
+      "code": "conflit_reseau",
+      "justification": "Un neveu d'Huguette, qui a procuration sur ses comptes bancaires, effectue des retraits d'argent massifs et rpts sans justification.",
+      "confiance": 95
+    },
+    {
+      "code": "lourdeur_reseau",
+      "justification": "Huguette est terrifie par son neveu et n'ose rien dire par peur de reprsailles.",
+      "confiance": 95
+    }
+  ],
+  "evaluation.confiance.comid": {
+    "isolement_social": 95,
+    "precarite_financiere": 95,
+    "logement_inadapte": 100,
+    "conflit_reseau": 95,
+    "lourdeur_reseau": 100,
+    "opposition_soins": 0
+  },
+  "evaluation.comid.multimorbidite": false,
+  "evaluation.comid.douleurs": false,
+  "evaluation.comid.allergies": false,
+  "evaluation.comid.polymedication": false,
+  "evaluation.comid.troubles_cognitifs": false,
+  "evaluation.comid.precarite_financiere": true,
+  "evaluation.comid.epuisement_aidant": false,
+  "evaluation.comid.litteratie_faible": false,
+  "evaluation.comid.isolement_social": true,
+  "evaluation.comid.logement_inadapte": true,
+  "evaluation.comid.depression": false,
+  "evaluation.comid.psychiatrie": false,
+  "evaluation.comid.addiction": false,
+  "evaluation.comid.anxiete": false,
+  "evaluation.comid.fluctuation_mentale": false,
+  "evaluation.comid.sollicitations_recurrentes": false,
+  "evaluation.comid.conflit_reseau": true,
+  "evaluation.comid.inquietude_sante": false,
+  "evaluation.comid.agressivite": false,
+  "evaluation.comid.opposition_soins": true,
+  "evaluation.comid.degradation_recente": false,
+  "evaluation.comid.perte_autonomie_recente": false,
+  "evaluation.comid.transition_parcours": false,
+  "evaluation.comid.trouble_cognitif_aigu": false,
+  "evaluation.comid.imprevisibilite": false,
+  "evaluation.comid.multitude_intervenants": false,
+  "evaluation.comid.manque_partenariat": false,
+  "evaluation.comid.incoherence_soins": false,
+  "evaluation.comid.probleme_assurance": false,
+  "evaluation.comid.lourdeur_reseau": true,
+  "vulnerabilites.social.isolement_relationnel": "critique"
+}
+
+2. Calcul du score de complexit COMID...
+Score Total : 6 (Situation  risque de complexit)
+
+3. valuation de l'orientation...
+
+4. Recherche des contacts territoriaux (La Valette)...
+
+--- RSULTATS DE L'ORIENTATION POUR MME HUGUETTE ---
+
+[ DAC - Dispositif d'Appui  la Coordination ] - Priorit : 105 | Confiance : 50%
+Justification confiance : score complexite COMID estime a 80% de certitude (Penalite de pseudo-complexite de -30% appliquee), score complexite COMID estime a 80% de certitude (Penalite de pseudo-complexite de -30% appliquee)
+Objectif : Motifs d'orientation combins :
+  - [Refus de soins ou d'aide (Priorit Absolue)] (Confiance : 45%) : Refus de soins ou opposition critique aux aides  domicile : Rupture critique de parcours ncessitant l'intervention immdiate du DAC pour dbloquer la situation.
+    -> Justification confiance : variable 'motif' extraite avec certitude de 90%, critre COMID 'opposition_soins' dtect avec certitude de 0%
+  - [Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social)] (Confiance : 50%) : Situation de forte complexit multidimensionnelle (sanitaire, social et mdico-social) : valuation globale et coordination intensive par le DAC pour dbloquer le parcours de vie  domicile.
+    -> Justification confiance : score complexite COMID estime a 80% de certitude (Penalite de pseudo-complexite de -30% appliquee), score complexite COMID estime a 80% de certitude (Penalite de pseudo-complexite de -30% appliquee)
+Contact : 04 94 35 32 01 | None
+
+[ UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion) ] - Priorit : 70 | Confiance : 41%
+Justification confiance : variable 'motif' extraite avec certitude de 90%, critre COMID 'precarite_financiere' dtect avec certitude de 95%, donne 'vulnerabilites.social.precarite' manquante (Pnalit de compltude applique de -20% pour 1 variable(s) manquante(s))
+Objectif : PAS (Premier Accueil Social) : valuation, ouverture de droits, aides financires ponctuelles. Accompagnement social (RSA, budget, logement, violences conjugales).
+Contact : 04 83 95 56 90 | 427 Avenue Duchatel 83130 La Valette du Var
+
+BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
+
+```
+
+</details>
 
 <details>
 <summary>🔍 Cas Mme Durand (Détail des logs)</summary>
@@ -44,43 +188,43 @@ Temps d'exécution total : **281.77 secondes**
 1. Extraction IA pour : 'Mme Durand, 88 ans, vit  Hyres. Elle est trs co...'
 
 --- DEBUG : ANALYSE EXPERTE ---
-La situation clinique concerne une personne ge de 88 ans, vivant  Hyres, qui est confuse et dambule la nuit. Elle refuse les soins mdicaux et prsente un risque pour elle-mme et ses voisins.
+La situation clinique est critique car Mme D. est trs confuse et agressive avec les infirmiers qui viennent pour son diabte, ce qui rend difficile la prise en charge de sa sant.
 Ville extraite : Hyres
 Mdecin : incertain
 Malveillance : aucune
 Hospitalisation : aucun
-tat Logement : propre
+tat Logement : non_renseigne
 --- FIN DEBUG ---
 
 Donnees extraites (JSON) :
 {
-  "usager.identite.age_estime": 88,
+  "usager.identite.age_estime": null,
   "usager.localisation.commune_residence": "Hyres",
   "usager.situation_actuelle.APA": "oui",
-  "usager.situation_actuelle.PCH": "none",
+  "usager.situation_actuelle.PCH": "inconnu",
   "usager.situation_actuelle.GIR": null,
   "vulnerabilites.sante.suivi_medical.medecin_traitant": "incertain",
   "usager.situation_actuelle.suspicion_malveillance": "aucune",
-  "adresseur.degre_urgence_percu": "faible",
+  "adresseur.degre_urgence_percu": "eleve",
   "vulnerabilites.sante.hospitalisation.statut": "aucun",
-  "demande.motif_principal": "evaluation_globale",
+  "demande.motif_principal": "refus_de_soins",
   "vulnerabilites.sante.professionnels_domicile": "non",
-  "usager.cadre_de_vie.aidant_regulier": "none",
-  "usager.cadre_de_vie.etat_logement": "propre",
+  "usager.cadre_de_vie.aidant_regulier": "inconnu",
+  "usager.cadre_de_vie.etat_logement": "non_renseigne",
   "evaluation.confiance.variables": {
-    "age": 100,
+    "age": 0,
     "ville": 100,
     "apa": 100,
     "pch": 0,
     "gir": 0,
-    "professionnels_domicile": 40,
+    "professionnels_domicile": 30,
     "aidant_regulier": 0,
     "medecin_traitant": 0,
     "malveillance": 90,
     "urgence": 80,
-    "hospitalisation": 60,
-    "motif": 100,
-    "etat_logement": 90
+    "hospitalisation": 70,
+    "motif": 90,
+    "etat_logement": 0
   },
   "evaluation.comid.justifications": [
     {
@@ -154,159 +298,15 @@ Score Total : 4 (Situation non complexe)
 
 [ DAC - Dispositif d'Appui  la Coordination ] - Priorite : 105
 Objectif : Motifs d'orientation combins :
-  - [Refus de soins ou d'aide (Priorit Absolue)] (Confiance : 97%) : Refus de soins ou opposition critique aux aides  domicile : Rupture critique de parcours ncessitant l'intervention immdiate du DAC pour dbloquer la situation.
-    -> Justification confiance : variable 'motif' extraite avec certitude de 100%, critre COMID 'opposition_soins' dtect avec certitude de 95%
-  - [Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social)] (Confiance : 88%) : Situation de forte complexit multidimensionnelle (sanitaire, social et mdico-social) : valuation globale et coordination intensive par le DAC pour dbloquer le parcours de vie  domicile.
-    -> Justification confiance : score complexit COMID estim  88% de certitude, score complexit COMID estim  88% de certitude
+  - [Refus de soins ou d'aide (Priorit Absolue)] (Confiance : 92%) : Refus de soins ou opposition critique aux aides  domicile : Rupture critique de parcours ncessitant l'intervention immdiate du DAC pour dbloquer la situation.
+    -> Justification confiance : critre COMID 'opposition_soins' dtect avec certitude de 95%, variable 'motif' extraite avec certitude de 90%
+  - [Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social)] (Confiance : 18%) : Situation de forte complexit multidimensionnelle (sanitaire, social et mdico-social) : valuation globale et coordination intensive par le DAC pour dbloquer le parcours de vie  domicile.
+    -> Justification confiance : score complexite COMID estime a 88% de certitude (Penalite de situation non complexe de -70% appliquee), score complexite COMID estime a 88% de certitude (Penalite de situation non complexe de -70% appliquee)
 Contact : Non trouve dans le referentiel territorial
 
 [ PSCG SS APA - Ple Social de Solidarit et de Gestion (APA) ] - Priorite : 100
-Objectif : Contacter votre rfrent APA au Conseil Dpartemental (PSCG SS APA) pour toute modification de plan d'aide ou besoin d'accompagnement social supplmentaire.
+Objectif : [/!\ INFORMATIONS INSUFFISANTES : Il est vivement conseille de recueillir plus de precisions sur la situation du patient pour fiabiliser cette orientation] Contacter votre rfrent APA au Conseil Dpartemental (PSCG SS APA) pour toute modification de plan d'aide ou besoin d'accompagnement social supplmentaire.
 Contact : Non trouve dans le referentiel territorial
-
-BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
-
-```
-
-</details>
-
-<details>
-<summary>🔍 Cas Mme Huguette (Détail des logs)</summary>
-
-```text
---- Lancement du test ORIA : Cas Mme Huguette (Urgence Sociale / Protection) ---
-
-1. Extraction IA (Temp=0.0) pour : 'Mme Huguette, 79 ans, vit seule dans un logement insalubre et humide  La Valett...'
-
---- DEBUG : ANALYSE EXPERTE ---
-Analyse manquante
-Ville extraite : La Valette du Var
-Mdecin : incertain
-Malveillance : spoliation_financiere
-Hospitalisation : aucun
-tat Logement : insalubre
---- FIN DEBUG ---
-
-Donnes extraites (JSON) :
-{
-  "usager.identite.age_estime": 79,
-  "usager.localisation.commune_residence": "La Valette du Var",
-  "usager.situation_actuelle.APA": "non",
-  "usager.situation_actuelle.PCH": "inconnu",
-  "usager.situation_actuelle.GIR": null,
-  "vulnerabilites.sante.suivi_medical.medecin_traitant": "incertain",
-  "usager.situation_actuelle.suspicion_malveillance": "spoliation_financiere",
-  "adresseur.degre_urgence_percu": "faible",
-  "vulnerabilites.sante.hospitalisation.statut": "aucun",
-  "demande.motif_principal": "evaluation_globale",
-  "vulnerabilites.sante.professionnels_domicile": "non",
-  "usager.cadre_de_vie.aidant_regulier": "non",
-  "usager.cadre_de_vie.etat_logement": "insalubre",
-  "evaluation.confiance.variables": {
-    "age": 100,
-    "ville": 100,
-    "apa": 0,
-    "pch": 0,
-    "gir": 0,
-    "professionnels_domicile": 0,
-    "aidant_regulier": 0,
-    "medecin_traitant": 0,
-    "malveillance": 100,
-    "urgence": 70,
-    "hospitalisation": 0,
-    "motif": 100,
-    "etat_logement": 90
-  },
-  "evaluation.comid.justifications": [
-    {
-      "code": "isolement_social",
-      "justification": "Mme H. vit seule dans un logement insalubre et humide  La Valette du Var.",
-      "confiance": 95
-    },
-    {
-      "code": "precarite_financiere",
-      "justification": "Elle n'a pas l'APA et vit sous le seuil de pauvret avec une infime pension de retraite.",
-      "confiance": 95
-    },
-    {
-      "code": "logement_inadapte",
-      "justification": "Le logement est insalubre et humide.",
-      "confiance": 95
-    },
-    {
-      "code": "conflit_reseau",
-      "justification": "Un neveu d'Huguette, qui a procuration sur ses comptes bancaires, effectue des retraits d'argent massifs et rpts sans justification.",
-      "confiance": 95
-    },
-    {
-      "code": "lourdeur_reseau",
-      "justification": "Huguette est terrifie par son neveu et n'ose rien dire par peur de reprsailles.",
-      "confiance": 95
-    }
-  ],
-  "evaluation.confiance.comid": {
-    "isolement_social": 95,
-    "precarite_financiere": 95,
-    "logement_inadapte": 100,
-    "conflit_reseau": 95,
-    "lourdeur_reseau": 100
-  },
-  "evaluation.comid.multimorbidite": false,
-  "evaluation.comid.douleurs": false,
-  "evaluation.comid.allergies": false,
-  "evaluation.comid.polymedication": false,
-  "evaluation.comid.troubles_cognitifs": false,
-  "evaluation.comid.precarite_financiere": true,
-  "evaluation.comid.epuisement_aidant": false,
-  "evaluation.comid.litteratie_faible": false,
-  "evaluation.comid.isolement_social": true,
-  "evaluation.comid.logement_inadapte": true,
-  "evaluation.comid.depression": false,
-  "evaluation.comid.psychiatrie": false,
-  "evaluation.comid.addiction": false,
-  "evaluation.comid.anxiete": false,
-  "evaluation.comid.fluctuation_mentale": false,
-  "evaluation.comid.sollicitations_recurrentes": false,
-  "evaluation.comid.conflit_reseau": true,
-  "evaluation.comid.inquietude_sante": false,
-  "evaluation.comid.agressivite": false,
-  "evaluation.comid.opposition_soins": false,
-  "evaluation.comid.degradation_recente": false,
-  "evaluation.comid.perte_autonomie_recente": false,
-  "evaluation.comid.transition_parcours": false,
-  "evaluation.comid.trouble_cognitif_aigu": false,
-  "evaluation.comid.imprevisibilite": false,
-  "evaluation.comid.multitude_intervenants": false,
-  "evaluation.comid.manque_partenariat": false,
-  "evaluation.comid.incoherence_soins": false,
-  "evaluation.comid.probleme_assurance": false,
-  "evaluation.comid.lourdeur_reseau": true,
-  "vulnerabilites.social.isolement_relationnel": "critique"
-}
-
-2. Calcul du score de complexit COMID...
-Score Total : 5 (Situation non complexe)
-
-3. valuation de l'orientation...
-
-4. Recherche des contacts territoriaux (La Valette)...
-
---- RSULTATS DE L'ORIENTATION POUR MME HUGUETTE ---
-
-[ CEV - Cellule coute et Vigilance (Spoliation & Autres Dangers) ] - Priorit : 107 | Confiance : 45%
-Justification confiance : variable 'ville' extraite avec certitude de 100%, variable 'etat_logement' extraite avec certitude de 90%, variable 'motif' extraite avec certitude de 100%, donne 'vulnerabilites.habitat.securite_du_domicile' manquante, variable 'hospitalisation' extraite avec certitude de 0%, variable 'malveillance' extraite avec certitude de 100% (Pnalit de compltude applique de -20% pour 1 variable(s) manquante(s))
-Objectif : Mise en scurit immdiate, protection juridique et physique des majeurs vulnrables en situation de danger social ou maltraitance financire.
-Contact : 04 83 95 16 01 | None
-
-[ DAC - Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social) ] - Priorit : 72 | Confiance : 97%
-Justification confiance : score complexit COMID estim  97% de certitude, score complexit COMID estim  97% de certitude
-Objectif : Situation de forte complexit multidimensionnelle (sanitaire, social et mdico-social) : valuation globale et coordination intensive par le DAC pour dbloquer le parcours de vie  domicile.
-Contact : 04 94 35 32 01 | None
-
-[ UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion) ] - Priorit : 70 | Confiance : 45%
-Justification confiance : donne 'vulnerabilites.social.precarite' manquante, critre COMID 'precarite_financiere' dtect avec certitude de 95%, variable 'motif' extraite avec certitude de 100% (Pnalit de compltude applique de -20% pour 1 variable(s) manquante(s))
-Objectif : PAS (Premier Accueil Social) : valuation, ouverture de droits, aides financires ponctuelles. Accompagnement social (RSA, budget, logement, violences conjugales).
-Contact : 04 83 95 56 90 | 427 Avenue Duchatel 83130 La Valette du Var
 
 BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 
@@ -323,7 +323,7 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA pour la situation de pril...
 
 --- DEBUG : ANALYSE EXPERTE ---
-M. V., 65 ans, vit dans un appartement insalubre  Toulon, sans eau courante ni plafond stable.
+M. V., 65 ans, vit dans un appartement insalubre  Toulon, sans eau courante depuis 3 mois et avec des problmes respiratoires srieux.
 Ville extraite : Toulon
 Mdecin : incertain
 Malveillance : violences_physiques
@@ -340,11 +340,11 @@ Donnees extraites (JSON) :
   "usager.situation_actuelle.GIR": null,
   "vulnerabilites.sante.suivi_medical.medecin_traitant": "incertain",
   "usager.situation_actuelle.suspicion_malveillance": "violences_physiques",
-  "adresseur.degre_urgence_percu": "modere",
+  "adresseur.degre_urgence_percu": "faible",
   "vulnerabilites.sante.hospitalisation.statut": "aucun",
   "demande.motif_principal": "evaluation_globale",
-  "vulnerabilites.sante.professionnels_domicile": "non",
-  "usager.cadre_de_vie.aidant_regulier": "inconnu",
+  "vulnerabilites.sante.professionnels_domicile": "oui",
+  "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "insalubre",
   "evaluation.confiance.variables": {
     "age": 100,
@@ -352,14 +352,14 @@ Donnees extraites (JSON) :
     "apa": 0,
     "pch": 0,
     "gir": 0,
-    "professionnels_domicile": 0,
+    "professionnels_domicile": 70,
     "aidant_regulier": 0,
     "medecin_traitant": 0,
     "malveillance": 90,
-    "urgence": 80,
+    "urgence": 50,
     "hospitalisation": 0,
-    "motif": 100,
-    "etat_logement": 90
+    "motif": 80,
+    "etat_logement": 100
   },
   "evaluation.comid.justifications": [
     {
@@ -438,7 +438,7 @@ MISSION : Mise en scurit immdiate et protection d'urgence des majeurs vulnrables
 CONTACT : 04 83 95 16 01
 
 ENSUITE (VOLET SOCIAL) : [ DAC - Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social) ]
-MISSION : Situation de forte complexit multidimensionnelle (sanitaire, social et mdico-social) : valuation globale et coordination intensive par le DAC pour dbloquer le parcours de vie  domicile.
+MISSION : [/!\ INFORMATIONS INSUFFISANTES : Il est vivement conseille de recueillir plus de precisions sur la situation du patient pour fiabiliser cette orientation] Situation de forte complexit multidimensionnelle (sanitaire, social et mdico-social) : valuation globale et coordination intensive par le DAC pour dbloquer le parcours de vie  domicile.
 
 BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 
@@ -455,12 +455,12 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA pour le rcit de l'infirmire...
 
 --- DEBUG : ANALYSE EXPERTE ---
-Le patient est un homme de 78 ans qui vit  La Seyne. Il a des difficults pour se prendre en charge et son logement est dans un tat insalubre. Il refuse les soins mdicaux et il y a une urgence faible.
+Le patient est un homme de 78 ans qui vit  La Seyne. Il a des difficults pour se prendre en charge et son logement est dans un tat dplorable. Il refuse les soins mdicaux et il y a urgence pour intervenir.
 Ville extraite : La Seyne
 Mdecin : incertain
 Malveillance : aucune
 Hospitalisation : aucun
-tat Logement : insalubre
+tat Logement : diogene
 --- FIN DEBUG ---
 
 Donnees extraites (JSON) :
@@ -477,7 +477,7 @@ Donnees extraites (JSON) :
   "demande.motif_principal": "evaluation_globale",
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
-  "usager.cadre_de_vie.etat_logement": "insalubre",
+  "usager.cadre_de_vie.etat_logement": "diogene",
   "evaluation.confiance.variables": {
     "age": 100,
     "ville": 100,
@@ -485,13 +485,13 @@ Donnees extraites (JSON) :
     "pch": 0,
     "gir": 0,
     "professionnels_domicile": 70,
-    "aidant_regulier": 70,
+    "aidant_regulier": 30,
     "medecin_traitant": 0,
     "malveillance": 90,
     "urgence": 80,
-    "hospitalisation": 100,
+    "hospitalisation": 50,
     "motif": 100,
-    "etat_logement": 90
+    "etat_logement": 100
   },
   "evaluation.comid.justifications": [
     {
@@ -570,8 +570,12 @@ Score Total : 5 (Situation non complexe)
 --- REPONSE D'ORIA POUR L'INFIRMIERE ---
 ORIA : 'D'aprs votre description, la situation de M. Lambert est Situation non complexe. Voici les priorits d'appel :'
 
-CONTACTER : [ DAC - Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social) ]
-POURQUOI : Situation de forte complexit multidimensionnelle (sanitaire, social et mdico-social) : valuation globale et coordination intensive par le DAC pour dbloquer le parcours de vie  domicile.
+CONTACTER : [ DAC - Dispositif d'Appui  la Coordination ]
+POURQUOI : Motifs d'orientation combins :
+  - [Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social)] (Confiance : 21%) : Situation de forte complexit multidimensionnelle (sanitaire, social et mdico-social) : valuation globale et coordination intensive par le DAC pour dbloquer le parcours de vie  domicile.
+    -> Justification confiance : score complexite COMID estime a 91% de certitude (Penalite de situation non complexe de -70% appliquee), score complexite COMID estime a 91% de certitude (Penalite de situation non complexe de -70% appliquee)
+  - [Suspicion de Diogne ou incurie] (Confiance : 100%) : Insalubrit ou ngligence critique  domicile : Suspicion ou syndrome de Diogne/incurie avr ncessitant une coordination multidimensionnelle renforce par le DAC.
+    -> Justification confiance : variable 'etat_logement' extraite avec certitude de 100%
 CONTACT : 04 94 35 32 01 | None
 
 BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
@@ -589,7 +593,7 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA pour : 'Mme Petit, 78 ans, habite  La Garde. Elle vit seu...'
 
 --- DEBUG : ANALYSE EXPERTE ---
-La patiente est une personne ge vivant seule et ayant des difficults financires. Elle demande de l'aide pour ses courses et ne pas avoir d'impay.
+La personne ge de 78 ans, vivant seule  La Garde, est en situation financire prcaire et demande de l'aide pour s'acheter  manger.
 Ville extraite : La Garde
 Mdecin : identifie
 Malveillance : aucune
@@ -608,8 +612,8 @@ Donnees extraites (JSON) :
   "usager.situation_actuelle.suspicion_malveillance": "aucune",
   "adresseur.degre_urgence_percu": "faible",
   "vulnerabilites.sante.hospitalisation.statut": "aucun",
-  "demande.motif_principal": "maintien_a_domicile",
-  "vulnerabilites.sante.professionnels_domicile": "non",
+  "demande.motif_principal": "aide_alimentaire",
+  "vulnerabilites.sante.professionnels_domicile": "oui",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "propre",
   "evaluation.confiance.variables": {
@@ -618,12 +622,12 @@ Donnees extraites (JSON) :
     "apa": 0,
     "pch": 0,
     "gir": 0,
-    "professionnels_domicile": 40,
-    "aidant_regulier": 40,
+    "professionnels_domicile": 70,
+    "aidant_regulier": 0,
     "medecin_traitant": 100,
     "malveillance": 100,
-    "urgence": 70,
-    "hospitalisation": 100,
+    "urgence": 40,
+    "hospitalisation": 0,
     "motif": 90,
     "etat_logement": 80
   },
@@ -685,9 +689,9 @@ Score Total : 2 (Situation non complexe)
 
 --- RESULTATS DE L'ORIENTATION (Territoire: La Garde) ---
 
-[ CLIC - Centre Local d'Information et de Coordination (Snior) ] - Priorite : 80
-Objectif : Maintien  domicile : Information, valuation, ouverture des droits (APA, CARSAT) et aide administrative (impts, retraite). UNIQUEMENT si l'APA n'est pas dj en place.
-Contact : 04 22 44 84 73 | None
+[ CCAS - Secours d'Urgence (Alimentaire & Factures) ] - Priorite : 85
+Objectif : Secours financier ou alimentaire d'urgence de proximit : Attribution d'aides extra-lgales par la mairie.
+Contact : 04 94 08 98 34 | 81 Rue Marius Tardivier 83130 La garde
 
 [ UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion) ] - Priorite : 70
 Objectif : PAS (Premier Accueil Social) : valuation, ouverture de droits, aides financires ponctuelles. Accompagnement social (RSA, budget, logement, violences conjugales).
@@ -708,9 +712,9 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA pour : 'Mme Lefebvre, 65 ans, vit  La Garde. Elle est sui...'
 
 --- DEBUG : ANALYSE EXPERTE ---
-La patiente est suivie pour une bipolarit et a arrt son traitement le mois dernier. Elle consomme beaucoup d'alcool pour 'calmer ses angoisses' selon ses propres mots. Elle vit dans un appartement trs encombr (Syndrome de Diogne suspect) et ses voisins se plaignent d'odeurs fortes.
+La personne est suivie pour une bipolarit mais a arrt son traitement le mois dernier. Elle consomme beaucoup d'alcool et vit dans un appartement encombr avec des odeurs fortes.
 Ville extraite : La Garde
-Mdecin : identifie
+Mdecin : absent
 Malveillance : aucune
 Hospitalisation : aucun
 tat Logement : diogene
@@ -723,12 +727,12 @@ Donnees extraites (JSON) :
   "usager.situation_actuelle.APA": "non",
   "usager.situation_actuelle.PCH": "inconnu",
   "usager.situation_actuelle.GIR": null,
-  "vulnerabilites.sante.suivi_medical.medecin_traitant": "identifie",
+  "vulnerabilites.sante.suivi_medical.medecin_traitant": "absent",
   "usager.situation_actuelle.suspicion_malveillance": "aucune",
   "adresseur.degre_urgence_percu": "faible",
   "vulnerabilites.sante.hospitalisation.statut": "aucun",
-  "demande.motif_principal": "evaluation_globale",
-  "vulnerabilites.sante.professionnels_domicile": "non",
+  "demande.motif_principal": "refus_de_soins",
+  "vulnerabilites.sante.professionnels_domicile": "oui",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "diogene",
   "evaluation.confiance.variables": {
@@ -737,14 +741,14 @@ Donnees extraites (JSON) :
     "apa": 0,
     "pch": 0,
     "gir": 0,
-    "professionnels_domicile": 0,
+    "professionnels_domicile": 70,
     "aidant_regulier": 0,
-    "medecin_traitant": 100,
-    "malveillance": 100,
-    "urgence": 40,
-    "hospitalisation": 0,
-    "motif": 70,
-    "etat_logement": 90
+    "medecin_traitant": 90,
+    "malveillance": 80,
+    "urgence": 60,
+    "hospitalisation": 50,
+    "motif": 90,
+    "etat_logement": 100
   },
   "evaluation.comid.justifications": [
     {
@@ -778,7 +782,8 @@ Donnees extraites (JSON) :
     "addiction": 95,
     "isolement_social": 95,
     "logement_inadapte": 100,
-    "anxiete": 95
+    "anxiete": 95,
+    "opposition_soins": 0
   },
   "evaluation.comid.multimorbidite": false,
   "evaluation.comid.douleurs": false,
@@ -799,7 +804,7 @@ Donnees extraites (JSON) :
   "evaluation.comid.conflit_reseau": false,
   "evaluation.comid.inquietude_sante": false,
   "evaluation.comid.agressivite": false,
-  "evaluation.comid.opposition_soins": false,
+  "evaluation.comid.opposition_soins": true,
   "evaluation.comid.degradation_recente": false,
   "evaluation.comid.perte_autonomie_recente": false,
   "evaluation.comid.transition_parcours": false,
@@ -814,7 +819,7 @@ Donnees extraites (JSON) :
 }
 
 2. Calcul du score de complexit COMID...
-Score Total : 5 (Situation non complexe)
+Score Total : 6 (Situation  risque de complexit)
 
 3. Evaluation de l'orientation...
 
@@ -822,13 +827,19 @@ Score Total : 5 (Situation non complexe)
 
 --- RESULTATS DE L'ORIENTATION ---
 
-[ DAC - Dispositif d'Appui  la Coordination ] - Priorite : 96
+[ DAC - Dispositif d'Appui  la Coordination ] - Priorite : 105
 Objectif : Motifs d'orientation combins :
-  - [Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social)] (Confiance : 96%) : Situation de forte complexit multidimensionnelle (sanitaire, social et mdico-social) : valuation globale et coordination intensive par le DAC pour dbloquer le parcours de vie  domicile.
-    -> Justification confiance : score complexit COMID estim  96% de certitude, score complexit COMID estim  96% de certitude
-  - [Suspicion de Diogne ou incurie] (Confiance : 90%) : Insalubrit ou ngligence critique  domicile : Suspicion ou syndrome de Diogne/incurie avr ncessitant une coordination multidimensionnelle renforce par le DAC.
-    -> Justification confiance : variable 'etat_logement' extraite avec certitude de 90%
+  - [Refus de soins ou d'aide (Priorit Absolue)] (Confiance : 45%) : Refus de soins ou opposition critique aux aides  domicile : Rupture critique de parcours ncessitant l'intervention immdiate du DAC pour dbloquer la situation.
+    -> Justification confiance : variable 'motif' extraite avec certitude de 90%, critre COMID 'opposition_soins' dtect avec certitude de 0%
+  - [Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social)] (Confiance : 50%) : Situation de forte complexit multidimensionnelle (sanitaire, social et mdico-social) : valuation globale et coordination intensive par le DAC pour dbloquer le parcours de vie  domicile.
+    -> Justification confiance : score complexite COMID estime a 80% de certitude (Penalite de pseudo-complexite de -30% appliquee), score complexite COMID estime a 80% de certitude (Penalite de pseudo-complexite de -30% appliquee)
+  - [Suspicion de Diogne ou incurie] (Confiance : 100%) : Insalubrit ou ngligence critique  domicile : Suspicion ou syndrome de Diogne/incurie avr ncessitant une coordination multidimensionnelle renforce par le DAC.
+    -> Justification confiance : variable 'etat_logement' extraite avec certitude de 100%
 Contact : 04 94 35 32 01 | None
+
+[ CPTS - Communaut Professionnelle Territoriale de Sant ] - Priorite : 50
+Objectif : Accs aux soins : Recherche de mdecin traitant (justifie par retraite/dmnagement) et dispositif MISAS pour viter le renoncement aux soins.
+Contact : 06 63 63 63 91 | 3 Rue Aspirant Franois Philippe 83260 La Crau
 
 BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 
@@ -845,9 +856,9 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA pour : 'M. Leroy, 45 ans, habite  Toulon. Il est atteint ...'
 
 --- DEBUG : ANALYSE EXPERTE ---
-Le patient est atteint d'une sclrose en plaques diagnostique il y a 2 ans. Il vit seul et ses revenus ont chut, ce qui rend difficile le paiement de son loyer.
+L'usager est un homme de 45 ans, atteint d'une Sclrose en Plaques (SEP) diagnostique il y a 2 ans. Il vit seul et ses revenus ont chut, ce qui rend difficile le paiement de son loyer. Il se sent perdu dans son parcours de soins entre les diffrents spcialistes et son moral est au plus bas.
 Ville extraite : Toulon
-Mdecin : incertain
+Mdecin : identifie
 Malveillance : aucune
 Hospitalisation : aucun
 tat Logement : propre
@@ -860,7 +871,7 @@ Donnees extraites (JSON) :
   "usager.situation_actuelle.APA": "non",
   "usager.situation_actuelle.PCH": "inconnu",
   "usager.situation_actuelle.GIR": null,
-  "vulnerabilites.sante.suivi_medical.medecin_traitant": "incertain",
+  "vulnerabilites.sante.suivi_medical.medecin_traitant": "identifie",
   "usager.situation_actuelle.suspicion_malveillance": "aucune",
   "adresseur.degre_urgence_percu": "faible",
   "vulnerabilites.sante.hospitalisation.statut": "aucun",
@@ -876,9 +887,9 @@ Donnees extraites (JSON) :
     "gir": 0,
     "professionnels_domicile": 70,
     "aidant_regulier": 0,
-    "medecin_traitant": 0,
+    "medecin_traitant": 100,
     "malveillance": 100,
-    "urgence": 30,
+    "urgence": 40,
     "hospitalisation": 0,
     "motif": 90,
     "etat_logement": 80
@@ -960,7 +971,7 @@ Score Total : 5 (Situation non complexe)
 --- RESULTATS DE L'ORIENTATION (Age: 45 ans) ---
 
 [ DAC - Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social) ] - Priorite : 72
-Objectif : Situation de forte complexit multidimensionnelle (sanitaire, social et mdico-social) : valuation globale et coordination intensive par le DAC pour dbloquer le parcours de vie  domicile.
+Objectif : [/!\ INFORMATIONS INSUFFISANTES : Il est vivement conseille de recueillir plus de precisions sur la situation du patient pour fiabiliser cette orientation] Situation de forte complexit multidimensionnelle (sanitaire, social et mdico-social) : valuation globale et coordination intensive par le DAC pour dbloquer le parcours de vie  domicile.
 Contact : 04 94 35 32 01 | None
 
 [ UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion) ] - Priorite : 70
@@ -982,9 +993,9 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA pour : 'Mme Rossi, 70 ans, habite  Toulon. Elle vient d'a...'
 
 --- DEBUG : ANALYSE EXPERTE ---
-La situation est critique car la patiente a d quitter son domicile en urgence en raison de violences physiques subies par son mari.
+La situation est critique car la patiente a d quitter son domicile en urgence en raison de violences physiques et verbales exerces par son mari.
 Ville extraite : Toulon
-Mdecin : identifie
+Mdecin : incertain
 Malveillance : violences_physiques
 Hospitalisation : aucun
 tat Logement : propre
@@ -997,7 +1008,7 @@ Donnees extraites (JSON) :
   "usager.situation_actuelle.APA": "non",
   "usager.situation_actuelle.PCH": "inconnu",
   "usager.situation_actuelle.GIR": null,
-  "vulnerabilites.sante.suivi_medical.medecin_traitant": "identifie",
+  "vulnerabilites.sante.suivi_medical.medecin_traitant": "incertain",
   "usager.situation_actuelle.suspicion_malveillance": "violences_physiques",
   "adresseur.degre_urgence_percu": "critique",
   "vulnerabilites.sante.hospitalisation.statut": "aucun",
@@ -1013,12 +1024,12 @@ Donnees extraites (JSON) :
     "gir": 0,
     "professionnels_domicile": 70,
     "aidant_regulier": 0,
-    "medecin_traitant": 100,
-    "malveillance": 100,
+    "medecin_traitant": 0,
+    "malveillance": 90,
     "urgence": 100,
     "hospitalisation": 0,
-    "motif": 100,
-    "etat_logement": 90
+    "motif": 80,
+    "etat_logement": 60
   },
   "evaluation.comid.justifications": [
     {
@@ -1098,7 +1109,7 @@ Objectif : Maintien  domicile : Information, valuation, ouverture des droits (AP
 Contact : 04 94 24 65 25 | None
 
 [ DAC - Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social) ] - Priorite : 72
-Objectif : Situation de forte complexit multidimensionnelle (sanitaire, social et mdico-social) : valuation globale et coordination intensive par le DAC pour dbloquer le parcours de vie  domicile.
+Objectif : [/!\ INFORMATIONS INSUFFISANTES : Il est vivement conseille de recueillir plus de precisions sur la situation du patient pour fiabiliser cette orientation] Situation de forte complexit multidimensionnelle (sanitaire, social et mdico-social) : valuation globale et coordination intensive par le DAC pour dbloquer le parcours de vie  domicile.
 Contact : 04 94 35 32 01 | None
 
 BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
@@ -1118,7 +1129,7 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 --- DEBUG : ANALYSE EXPERTE ---
 La fille de Mme M. (82 ans) est  bout, travaillant  temps plein et passant toutes ses soires et week-ends chez sa mre. Cette dernire perd la tte, laisse le gaz allum, se relve la nuit et a dj tombe deux fois. La fille craque et a peur de devenir mchante avec sa mre.
 Ville extraite : Toulon
-Mdecin : identifie
+Mdecin : incertain
 Malveillance : aucune
 Hospitalisation : aucun
 tat Logement : propre
@@ -1131,7 +1142,7 @@ Donnees extraites (JSON) :
   "usager.situation_actuelle.APA": "non",
   "usager.situation_actuelle.PCH": "inconnu",
   "usager.situation_actuelle.GIR": null,
-  "vulnerabilites.sante.suivi_medical.medecin_traitant": "identifie",
+  "vulnerabilites.sante.suivi_medical.medecin_traitant": "incertain",
   "usager.situation_actuelle.suspicion_malveillance": "aucune",
   "adresseur.degre_urgence_percu": "faible",
   "vulnerabilites.sante.hospitalisation.statut": "aucun",
@@ -1145,14 +1156,14 @@ Donnees extraites (JSON) :
     "apa": 0,
     "pch": 0,
     "gir": 0,
-    "professionnels_domicile": 70,
+    "professionnels_domicile": 90,
     "aidant_regulier": 40,
-    "medecin_traitant": 90,
-    "malveillance": 100,
-    "urgence": 60,
-    "hospitalisation": 80,
-    "motif": 90,
-    "etat_logement": 70
+    "medecin_traitant": 0,
+    "malveillance": 80,
+    "urgence": 50,
+    "hospitalisation": 30,
+    "motif": 70,
+    "etat_logement": 90
   },
   "evaluation.comid.justifications": [
     {
@@ -1167,7 +1178,7 @@ Donnees extraites (JSON) :
     },
     {
       "code": "lourdeur_reseau",
-      "justification": "Je pleure tout le temps au travail.",
+      "justification": "Je ne dors plus, je pleure tout le temps au travail.",
       "confiance": 95
     }
   ],
@@ -1240,7 +1251,7 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA pour : 'M. Martin, 75 ans, habite  La Seyne-sur-Mer. Il a...'
 
 --- DEBUG : ANALYSE EXPERTE ---
-Analyse manquante
+Le patient est un homme de 75 ans qui vit  La Seyne-sur-Mer et a des problmes de vue. Il se retrouve seul aprs l'hospitalisation de sa femme, ce qui le rend incapable de prparer ses repas ni de prendre ses mdicaments.
 Ville extraite : La Seyne-sur-Mer
 Mdecin : incertain
 Malveillance : aucune
@@ -1260,7 +1271,7 @@ Donnees extraites (JSON) :
   "adresseur.degre_urgence_percu": "faible",
   "vulnerabilites.sante.hospitalisation.statut": "aucun",
   "demande.motif_principal": "evaluation_globale",
-  "vulnerabilites.sante.professionnels_domicile": "non",
+  "vulnerabilites.sante.professionnels_domicile": "oui",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "propre",
   "evaluation.confiance.variables": {
@@ -1269,14 +1280,14 @@ Donnees extraites (JSON) :
     "apa": 0,
     "pch": 0,
     "gir": 0,
-    "professionnels_domicile": 0,
+    "professionnels_domicile": 70,
     "aidant_regulier": 0,
     "medecin_traitant": 0,
-    "malveillance": 100,
-    "urgence": 70,
+    "malveillance": 90,
+    "urgence": 20,
     "hospitalisation": 100,
-    "motif": 90,
-    "etat_logement": 80
+    "motif": 80,
+    "etat_logement": 60
   },
   "evaluation.comid.justifications": [
     {
@@ -1361,7 +1372,7 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA pour l'alerte du kin...
 
 --- DEBUG : ANALYSE EXPERTE ---
-La patiente est ge de 85 ans et rside  Sanary. Elle bnficie d'une rducation de la hanche mais sa situation drape car elle a perdu 5 kg en un mois, son frigo est vide et elle oublie ses mdicaments. Son fils vit avec elle et il est trs agressif, ce qui la rend terrorise.
+La situation clinique est proccupante car la patiente perd du poids, oublie ses mdicaments et est victime de malveillance financire. Il est important d'intervenir pour protger la patiente.
 Ville extraite : Sanary
 Mdecin : identifie
 Malveillance : spoliation_financiere
@@ -1371,7 +1382,7 @@ tat Logement : propre
 
 Donnees extraites (JSON) :
 {
-  "usager.identite.age_estime": 85,
+  "usager.identite.age_estime": null,
   "usager.localisation.commune_residence": "Sanary",
   "usager.situation_actuelle.APA": "non",
   "usager.situation_actuelle.PCH": "inconnu",
@@ -1380,23 +1391,23 @@ Donnees extraites (JSON) :
   "usager.situation_actuelle.suspicion_malveillance": "spoliation_financiere",
   "adresseur.degre_urgence_percu": "modere",
   "vulnerabilites.sante.hospitalisation.statut": "aucun",
-  "demande.motif_principal": "aide_alimentaire",
+  "demande.motif_principal": "refus_de_soins",
   "vulnerabilites.sante.professionnels_domicile": "oui",
-  "usager.cadre_de_vie.aidant_regulier": "non",
+  "usager.cadre_de_vie.aidant_regulier": "oui",
   "usager.cadre_de_vie.etat_logement": "propre",
   "evaluation.confiance.variables": {
-    "age": 100,
+    "age": 0,
     "ville": 100,
     "apa": 0,
     "pch": 0,
     "gir": 0,
     "professionnels_domicile": 90,
-    "aidant_regulier": 40,
+    "aidant_regulier": 80,
     "medecin_traitant": 100,
-    "malveillance": 80,
-    "urgence": 60,
-    "hospitalisation": 30,
-    "motif": 70,
+    "malveillance": 100,
+    "urgence": 70,
+    "hospitalisation": 60,
+    "motif": 90,
     "etat_logement": 50
   },
   "evaluation.comid.justifications": [
@@ -1426,6 +1437,7 @@ Donnees extraites (JSON) :
     "douleurs": 95,
     "isolement_social": 95,
     "agressivite": 95,
+    "opposition_soins": 0,
     "lourdeur_reseau": 100
   },
   "evaluation.comid.multimorbidite": false,
@@ -1447,7 +1459,7 @@ Donnees extraites (JSON) :
   "evaluation.comid.conflit_reseau": false,
   "evaluation.comid.inquietude_sante": false,
   "evaluation.comid.agressivite": true,
-  "evaluation.comid.opposition_soins": false,
+  "evaluation.comid.opposition_soins": true,
   "evaluation.comid.degradation_recente": false,
   "evaluation.comid.perte_autonomie_recente": false,
   "evaluation.comid.transition_parcours": false,
@@ -1462,29 +1474,25 @@ Donnees extraites (JSON) :
 }
 
 2. Calcul du score de complexit COMID...
-Score Total : 5 (Situation non complexe)
+Score Total : 6 (Situation  risque de complexit)
 
 3. Evaluation de l'orientation...
 
 4. Recherche des contacts territoriaux (Sanary-sur-Mer)...
 
 --- REPONSE D'ORIA POUR LE KINE ---
-ORIA : 'Situation identifie comme Situation non complexe. Voici les actions prioritaires :'
+ORIA : 'Situation identifie comme Situation  risque de complexit. Voici les actions prioritaires :'
 
-ACTION : [ CEV - Cellule coute et Vigilance (Spoliation & Autres Dangers) ]
-MOTIF : [/!\ INFORMATIONS INSUFFISANTES : Il est vivement conseille de recueillir plus de precisions sur la situation du patient pour fiabiliser cette orientation] Mise en scurit immdiate, protection juridique et physique des majeurs vulnrables en situation de danger social ou maltraitance financire.
-CONTACT : 04 83 95 16 01
-
-ACTION : [ CCAS - Secours d'Urgence (Alimentaire & Factures) ]
-MOTIF : Secours financier ou alimentaire d'urgence de proximit : Attribution d'aides extra-lgales par la mairie.
-CONTACT : 04 94 88 50 70
-
-ACTION : [ DAC - Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social) ]
-MOTIF : Situation de forte complexit multidimensionnelle (sanitaire, social et mdico-social) : valuation globale et coordination intensive par le DAC pour dbloquer le parcours de vie  domicile.
+ACTION : [ DAC - Dispositif d'Appui  la Coordination ]
+MOTIF : Motifs d'orientation combins :
+  - [Refus de soins ou d'aide (Priorit Absolue)] (Confiance : 45%) : Refus de soins ou opposition critique aux aides  domicile : Rupture critique de parcours ncessitant l'intervention immdiate du DAC pour dbloquer la situation.
+    -> Justification confiance : variable 'motif' extraite avec certitude de 90%, critre COMID 'opposition_soins' dtect avec certitude de 0%
+  - [Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social)] (Confiance : 50%) : Situation de forte complexit multidimensionnelle (sanitaire, social et mdico-social) : valuation globale et coordination intensive par le DAC pour dbloquer le parcours de vie  domicile.
+    -> Justification confiance : score complexite COMID estime a 80% de certitude (Penalite de pseudo-complexite de -30% appliquee), score complexite COMID estime a 80% de certitude (Penalite de pseudo-complexite de -30% appliquee)
 CONTACT : 04 94 35 32 01
 
 ACTION : [ UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion) ]
-MOTIF : [/!\ INFORMATIONS INSUFFISANTES : Il est vivement conseille de recueillir plus de precisions sur la situation du patient pour fiabiliser cette orientation] PAS (Premier Accueil Social) : valuation, ouverture de droits, aides financires ponctuelles. Accompagnement social (RSA, budget, logement, violences conjugales).
+MOTIF : PAS (Premier Accueil Social) : valuation, ouverture de droits, aides financires ponctuelles. Accompagnement social (RSA, budget, logement, violences conjugales).
 CONTACT : 04 83 95 83 10
 
 BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
@@ -1502,7 +1510,7 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA pour le cas trs complexe...
 
 --- DEBUG : ANALYSE EXPERTE ---
-La situation clinique est caractrise par une grave dpression clinique avec des ides noires, un diabte de type 2, une insuffisance cardiaque et une arthrose dformante. L'usager souffre galement d'une polymdication importante et prsente des troubles cognitifs majeurs.
+La situation clinique est caractrise par une grave dpression clinique avec des ides noires, un tat de sant instable et prcaire. La personne souffre de plusieurs pathologies chroniques et ncessite une aide rgulire.
 Ville extraite : Toulon
 Mdecin : identifie
 Malveillance : aucune
@@ -1523,7 +1531,7 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.hospitalisation.statut": "aucun",
   "demande.motif_principal": "refus_de_soins",
   "vulnerabilites.sante.professionnels_domicile": "non",
-  "usager.cadre_de_vie.aidant_regulier": "non",
+  "usager.cadre_de_vie.aidant_regulier": "oui",
   "usager.cadre_de_vie.etat_logement": "insalubre",
   "evaluation.confiance.variables": {
     "age": 100,
@@ -1532,13 +1540,13 @@ Donnees extraites (JSON) :
     "pch": 0,
     "gir": 0,
     "professionnels_domicile": 40,
-    "aidant_regulier": 40,
+    "aidant_regulier": 90,
     "medecin_traitant": 100,
-    "malveillance": 100,
-    "urgence": 70,
-    "hospitalisation": 90,
-    "motif": 80,
-    "etat_logement": 60
+    "malveillance": 70,
+    "urgence": 60,
+    "hospitalisation": 80,
+    "motif": 90,
+    "etat_logement": 80
   },
   "evaluation.comid.justifications": [
     {
@@ -1643,14 +1651,14 @@ Score Total : 10 (Situation complexe)
 
 [ DAC - Dispositif d'Appui  la Coordination ] - Priorite : 105
 Objectif : Motifs d'orientation combins :
-  - [Refus de soins ou d'aide (Priorit Absolue)] (Confiance : 40%) : Refus de soins ou opposition critique aux aides  domicile : Rupture critique de parcours ncessitant l'intervention immdiate du DAC pour dbloquer la situation.
-    -> Justification confiance : variable 'motif' extraite avec certitude de 80%, critre COMID 'opposition_soins' dtect avec certitude de 0%
+  - [Refus de soins ou d'aide (Priorit Absolue)] (Confiance : 45%) : Refus de soins ou opposition critique aux aides  domicile : Rupture critique de parcours ncessitant l'intervention immdiate du DAC pour dbloquer la situation.
+    -> Justification confiance : variable 'motif' extraite avec certitude de 90%, critre COMID 'opposition_soins' dtect avec certitude de 0%
   - [Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social)] (Confiance : 86%) : Situation de forte complexit multidimensionnelle (sanitaire, social et mdico-social) : valuation globale et coordination intensive par le DAC pour dbloquer le parcours de vie  domicile.
-    -> Justification confiance : score complexit COMID estim  86% de certitude, score complexit COMID estim  86% de certitude
+    -> Justification confiance : score complexite COMID estime a 86% de certitude (Situation complexe), score complexite COMID estime a 86% de certitude (Situation complexe)
 Contact : 04 94 35 32 01 | None
 
 [ UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion) ] - Priorite : 70
-Objectif : [/!\ INFORMATIONS INSUFFISANTES : Il est vivement conseille de recueillir plus de precisions sur la situation du patient pour fiabiliser cette orientation] PAS (Premier Accueil Social) : valuation, ouverture de droits, aides financires ponctuelles. Accompagnement social (RSA, budget, logement, violences conjugales).
+Objectif : PAS (Premier Accueil Social) : valuation, ouverture de droits, aides financires ponctuelles. Accompagnement social (RSA, budget, logement, violences conjugales).
 Contact : 04 83 95 24 42 | 100, traverse des minimes 83000 Toulon
 
 BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
@@ -1668,7 +1676,7 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA pour : 'Mme Vial, 82 ans, vient de s'installer  Toulon po...'
 
 --- DEBUG : ANALYSE EXPERTE ---
-La patiente, ge de 82 ans, souffre de diabte et d'hypertension. Elle a dmnag et n'a plus de mdecin traitant. Elle est angoisse par cette rupture de suivi mdical.
+La personne, ge de 82 ans, souffre de diabte et d'hypertension. Elle a dmnag et n'a plus de mdecin traitant. Elle cherche un nouveau mdecin.
 Ville extraite : Toulon
 Mdecin : absent
 Malveillance : aucune
@@ -1689,7 +1697,7 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.hospitalisation.statut": "aucun",
   "demande.motif_principal": "recherche_medecin",
   "vulnerabilites.sante.professionnels_domicile": "non",
-  "usager.cadre_de_vie.aidant_regulier": "non",
+  "usager.cadre_de_vie.aidant_regulier": "oui",
   "usager.cadre_de_vie.etat_logement": "propre",
   "evaluation.confiance.variables": {
     "age": 100,
@@ -1697,14 +1705,14 @@ Donnees extraites (JSON) :
     "apa": 0,
     "pch": 0,
     "gir": 0,
-    "professionnels_domicile": 40,
-    "aidant_regulier": 40,
-    "medecin_traitant": 90,
+    "professionnels_domicile": 70,
+    "aidant_regulier": 90,
+    "medecin_traitant": 80,
     "malveillance": 100,
     "urgence": 60,
-    "hospitalisation": 80,
-    "motif": 100,
-    "etat_logement": 90
+    "hospitalisation": 50,
+    "motif": 90,
+    "etat_logement": 80
   },
   "evaluation.comid.justifications": [
     {
@@ -1810,8 +1818,8 @@ Donnees extraites (JSON) :
   "adresseur.degre_urgence_percu": "faible",
   "vulnerabilites.sante.hospitalisation.statut": "aucun",
   "demande.motif_principal": "evaluation_globale",
-  "vulnerabilites.sante.professionnels_domicile": "none",
-  "usager.cadre_de_vie.aidant_regulier": "none",
+  "vulnerabilites.sante.professionnels_domicile": "non",
+  "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": null,
   "evaluation.confiance.variables": {
     "age": 100,
@@ -1819,13 +1827,13 @@ Donnees extraites (JSON) :
     "apa": 70,
     "pch": 0,
     "gir": 0,
-    "professionnels_domicile": 0,
-    "aidant_regulier": 0,
+    "professionnels_domicile": 40,
+    "aidant_regulier": 40,
     "medecin_traitant": 0,
-    "malveillance": 100,
-    "urgence": 90,
+    "malveillance": 90,
+    "urgence": 60,
     "hospitalisation": 80,
-    "motif": 70,
+    "motif": 100,
     "etat_logement": 0
   },
   "evaluation.comid.justifications": [
@@ -1899,7 +1907,7 @@ Score Total : 4 (Situation non complexe)
 --- RESULTATS DE L'ORIENTATION ---
 
 [ DAC - Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social) ] - Priorite : 72
-Objectif : Situation de forte complexit multidimensionnelle (sanitaire, social et mdico-social) : valuation globale et coordination intensive par le DAC pour dbloquer le parcours de vie  domicile.
+Objectif : [/!\ INFORMATIONS INSUFFISANTES : Il est vivement conseille de recueillir plus de precisions sur la situation du patient pour fiabiliser cette orientation] Situation de forte complexit multidimensionnelle (sanitaire, social et mdico-social) : valuation globale et coordination intensive par le DAC pour dbloquer le parcours de vie  domicile.
 Contact : 04 94 35 32 01 | None
 
 BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
@@ -1917,7 +1925,7 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA pour le rcit du conjoint aidant...
 
 --- DEBUG : ANALYSE EXPERTE ---
-La situation clinique dcrite montre une personne ge de 83 ans, atteinte de la maladie de Parkinson depuis 5 ans. Elle ncessite un hbergement temporaire pour que son conjoint puisse se faire oprer du dos. La situation est critique car le conjoint est au bout du rouleau et craint pour sa propre sant.
+La situation est critique pour la personne et son conjoint, qui ncessite un hbergement temporaire pour permettre l'opration du dos.
 Ville extraite : Toulon
 Mdecin : identifie
 Malveillance : aucune
@@ -1927,7 +1935,7 @@ tat Logement : propre
 
 Donnees extraites (JSON) :
 {
-  "usager.identite.age_estime": null,
+  "usager.identite.age_estime": 83,
   "usager.localisation.commune_residence": "Toulon",
   "usager.situation_actuelle.APA": "oui",
   "usager.situation_actuelle.PCH": "inconnu",
@@ -1941,18 +1949,18 @@ Donnees extraites (JSON) :
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "propre",
   "evaluation.confiance.variables": {
-    "age": 0,
+    "age": 100,
     "ville": 100,
     "apa": 100,
     "pch": 0,
     "gir": 0,
-    "professionnels_domicile": 40,
-    "aidant_regulier": 40,
-    "medecin_traitant": 90,
-    "malveillance": 80,
-    "urgence": 60,
-    "hospitalisation": 50,
-    "motif": 70,
+    "professionnels_domicile": 70,
+    "aidant_regulier": 70,
+    "medecin_traitant": 100,
+    "malveillance": 100,
+    "urgence": 90,
+    "hospitalisation": 80,
+    "motif": 90,
     "etat_logement": 80
   },
   "evaluation.comid.justifications": [
@@ -2039,7 +2047,7 @@ Score Total : 6 (Situation  risque de complexit)
 voici votre priorit :'
 
 VOTRE PRIORIT ABSOLUE : [ PSCG SS APA - Ple Social de Solidarit et de Gestion (APA) ]
-MISSION : [/!\ INFORMATIONS INSUFFISANTES : Il est vivement conseille de recueillir plus de precisions sur la situation du patient pour fiabiliser cette orientation] Contacter votre rfrent APA au Conseil Dpartemental (PSCG SS APA) pour toute modification de plan d'aide ou besoin d'accompagnement social supplmentaire.
+MISSION : Contacter votre rfrent APA au Conseil Dpartemental (PSCG SS APA) pour toute modification de plan d'aide ou besoin d'accompagnement social supplmentaire.
 CONTACT : 04 83 95 79 51
 
 CONSEIL POUR VOUS : 'Prenez soin de vous galement. En plus de votre rfrent APA, sachez que les plateformes de rpit peuvent vous soutenir pendant votre hospitalisation.'
@@ -2059,7 +2067,7 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA pour : 'M. Chen, 52 ans, habite  Toulon. Il est en situat...'
 
 --- DEBUG : ANALYSE EXPERTE ---
-L'usager est un homme de 52 ans rsidant  Toulon, bnficiaire de la PCH et en situation de handicap moteur. Il cherche des informations sur les logements adapts  son fauteuil roulant dans la commune et souhaiterait savoir s'il existe des prestataires spcialiss pour l'aide humaine le week-end.
+L'usager, g de 52 ans, habite  Toulon et bnficie de la PCH. Il cherche des informations sur les logements adapts  son fauteuil roulant dans la commune et souhaiterait savoir s'il existe des prestataires spcialiss pour l'aide humaine le week-end.
 Ville extraite : Toulon
 Mdecin : incertain
 Malveillance : aucune
@@ -2091,11 +2099,11 @@ Donnees extraites (JSON) :
     "professionnels_domicile": 40,
     "aidant_regulier": 40,
     "medecin_traitant": 0,
-    "malveillance": 100,
-    "urgence": 90,
+    "malveillance": 90,
+    "urgence": 60,
     "hospitalisation": 80,
-    "motif": 90,
-    "etat_logement": 80
+    "motif": 100,
+    "etat_logement": 90
   },
   "evaluation.comid.justifications": [
     {
@@ -2157,10 +2165,10 @@ Score Total : 2 (Situation non complexe)
 
 [ CLIC - Centre Local d'Information et de Coordination ] - Priorite : 102
 Objectif : Motifs d'orientation combins :
-  - [Centre Local d'Information et de Coordination (Snior)] (Confiance : 72%) : Maintien  domicile : Information, valuation, ouverture des droits (APA, CARSAT) et aide administrative (impts, retraite). UNIQUEMENT si l'APA n'est pas dj en place.
-    -> Justification confiance : variable 'apa' extraite avec certitude de 0%, variable 'age' extraite avec certitude de 100%, variable 'motif' extraite avec certitude de 90%
-  - [Centre Local d'Information et de Coordination (Exception PCH)] (Confiance : 95%) : Maintien  domicile : Accompagnement spcialis PCH (Prestation de Compensation du Handicap) pour les moins de 60 ans.
-    -> Justification confiance : variable 'pch' extraite avec certitude de 100%, variable 'motif' extraite avec certitude de 90%
+  - [Centre Local d'Information et de Coordination (Snior)] (Confiance : 75%) : Maintien  domicile : Information, valuation, ouverture des droits (APA, CARSAT) et aide administrative (impts, retraite). UNIQUEMENT si l'APA n'est pas dj en place.
+    -> Justification confiance : variable 'motif' extraite avec certitude de 100%, variable 'age' extraite avec certitude de 100%, variable 'apa' extraite avec certitude de 0%
+  - [Centre Local d'Information et de Coordination (Exception PCH)] (Confiance : 100%) : Maintien  domicile : Accompagnement spcialis PCH (Prestation de Compensation du Handicap) pour les moins de 60 ans.
+    -> Justification confiance : variable 'motif' extraite avec certitude de 100%, variable 'pch' extraite avec certitude de 100%
 Contact : 04 94 24 65 25 | None
 
 BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
@@ -2180,7 +2188,7 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 --- DEBUG : ANALYSE EXPERTE ---
 La patiente, ge de 80 ans, est hospitalise suite  une mauvaise chute et s'inquite pour son retour  domicile car elle vit seule au 3me tage. Elle a besoin d'aide pour organiser sa sortie et remplir ses dossiers administratifs.
 Ville extraite : None
-Mdecin : identifie
+Mdecin : incertain
 Malveillance : aucune
 Hospitalisation : en_cours
 tat Logement : propre
@@ -2193,12 +2201,12 @@ Donnees extraites (JSON) :
   "usager.situation_actuelle.APA": "inconnu",
   "usager.situation_actuelle.PCH": "inconnu",
   "usager.situation_actuelle.GIR": null,
-  "vulnerabilites.sante.suivi_medical.medecin_traitant": "identifie",
+  "vulnerabilites.sante.suivi_medical.medecin_traitant": "incertain",
   "usager.situation_actuelle.suspicion_malveillance": "aucune",
   "adresseur.degre_urgence_percu": "faible",
   "vulnerabilites.sante.hospitalisation.statut": "en_cours",
   "demande.motif_principal": "sortie_hospitalisation",
-  "vulnerabilites.sante.professionnels_domicile": "oui",
+  "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "propre",
   "evaluation.confiance.variables": {
@@ -2208,10 +2216,10 @@ Donnees extraites (JSON) :
     "pch": 0,
     "gir": 0,
     "professionnels_domicile": 90,
-    "aidant_regulier": 30,
-    "medecin_traitant": 80,
+    "aidant_regulier": 80,
+    "medecin_traitant": 0,
     "malveillance": 100,
-    "urgence": 60,
+    "urgence": 50,
     "hospitalisation": 100,
     "motif": 90,
     "etat_logement": 70
@@ -2299,9 +2307,9 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA (Dterministe, Temp=0.0) pour : 'M. Pierre age de 88 ans vis seul  domicile polypathologie avais oubli ma visi...'
 
 --- DEBUG : ANALYSE EXPERTE ---
-Monsieur P. est un homme de 88 ans qui vit seul  domicile et a une polypathologie. Il a oubli sa visite et son rfrigrateur ne fonctionne plus. Il bnficie d'un mdecin traitant mais pas de visite  domicile. Il a besoin d'aide pour faire ses courses.
+Monsieur P., un homme de 88 ans, vit seul  domicile et a une polypathologie. Il a oubli sa visite prvue et son rfrigrateur ne fonctionne plus. Il bnficie d'un mdecin traitant qui ne fait pas de visites  domicile.
 Ville extraite : Toulon
-Mdecin : identifie
+Mdecin : incertain
 Malveillance : aucune
 Hospitalisation : aucun
 tat Logement : propre
@@ -2314,11 +2322,11 @@ Donnes extraites (JSON) :
   "usager.situation_actuelle.APA": "non",
   "usager.situation_actuelle.PCH": "inconnu",
   "usager.situation_actuelle.GIR": null,
-  "vulnerabilites.sante.suivi_medical.medecin_traitant": "identifie",
+  "vulnerabilites.sante.suivi_medical.medecin_traitant": "incertain",
   "usager.situation_actuelle.suspicion_malveillance": "aucune",
   "adresseur.degre_urgence_percu": "faible",
   "vulnerabilites.sante.hospitalisation.statut": "aucun",
-  "demande.motif_principal": "maintien_a_domicile",
+  "demande.motif_principal": "evaluation_globale",
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "propre",
@@ -2330,12 +2338,12 @@ Donnes extraites (JSON) :
     "gir": 0,
     "professionnels_domicile": 40,
     "aidant_regulier": 40,
-    "medecin_traitant": 100,
-    "malveillance": 100,
-    "urgence": 90,
-    "hospitalisation": 80,
-    "motif": 90,
-    "etat_logement": 70
+    "medecin_traitant": 0,
+    "malveillance": 90,
+    "urgence": 80,
+    "hospitalisation": 100,
+    "motif": 70,
+    "etat_logement": 90
   },
   "evaluation.comid.justifications": [
     {
@@ -2408,12 +2416,8 @@ Score Total : 5 (Situation non complexe)
 
 --- RSULTATS DE L'ORIENTATION POUR MME ANTOINETTE ---
 
-[ CLIC - Centre Local d'Information et de Coordination (Snior) ] - Priorit : 80
-Objectif : Maintien  domicile : Information, valuation, ouverture des droits (APA, CARSAT) et aide administrative (impts, retraite). UNIQUEMENT si l'APA n'est pas dj en place.
-Contact : 04 22 44 84 73 | None
-
 [ DAC - Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social) ] - Priorit : 72
-Objectif : Situation de forte complexit multidimensionnelle (sanitaire, social et mdico-social) : valuation globale et coordination intensive par le DAC pour dbloquer le parcours de vie  domicile.
+Objectif : [/!\ INFORMATIONS INSUFFISANTES : Il est vivement conseille de recueillir plus de precisions sur la situation du patient pour fiabiliser cette orientation] Situation de forte complexit multidimensionnelle (sanitaire, social et mdico-social) : valuation globale et coordination intensive par le DAC pour dbloquer le parcours de vie  domicile.
 Contact : 04 94 35 32 01 | None
 
 BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
@@ -2431,7 +2435,7 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA pour : 'Mme Bernard, 88 ans, habite  La Seyne-sur-Mer. El...'
 
 --- DEBUG : ANALYSE EXPERTE ---
-La situation clinique concerne une personne ge de 88 ans, isole et victime de violences physiques.
+
 Ville extraite : La Seyne-sur-Mer
 Mdecin : incertain
 Malveillance : violences_physiques
@@ -2451,7 +2455,7 @@ Donnees extraites (JSON) :
   "adresseur.degre_urgence_percu": "faible",
   "vulnerabilites.sante.hospitalisation.statut": "aucun",
   "demande.motif_principal": "evaluation_globale",
-  "vulnerabilites.sante.professionnels_domicile": "non",
+  "vulnerabilites.sante.professionnels_domicile": "oui",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "propre",
   "evaluation.confiance.variables": {
@@ -2460,14 +2464,14 @@ Donnees extraites (JSON) :
     "apa": 0,
     "pch": 0,
     "gir": 0,
-    "professionnels_domicile": 0,
+    "professionnels_domicile": 70,
     "aidant_regulier": 0,
     "medecin_traitant": 0,
-    "malveillance": 100,
+    "malveillance": 90,
     "urgence": 50,
     "hospitalisation": 0,
-    "motif": 90,
-    "etat_logement": 80
+    "motif": 80,
+    "etat_logement": 60
   },
   "evaluation.comid.justifications": [
     {
@@ -2546,11 +2550,11 @@ Objectif : Mise en scurit immdiate et protection d'urgence des majeurs vulnrable
 Contact : 04 83 95 16 01 | None
 
 [ DAC - Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social) ] - Priorite : 72
-Objectif : Situation de forte complexit multidimensionnelle (sanitaire, social et mdico-social) : valuation globale et coordination intensive par le DAC pour dbloquer le parcours de vie  domicile.
+Objectif : [/!\ INFORMATIONS INSUFFISANTES : Il est vivement conseille de recueillir plus de precisions sur la situation du patient pour fiabiliser cette orientation] Situation de forte complexit multidimensionnelle (sanitaire, social et mdico-social) : valuation globale et coordination intensive par le DAC pour dbloquer le parcours de vie  domicile.
 Contact : 04 94 35 32 01 | None
 
 [ UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion) ] - Priorite : 70
-Objectif : PAS (Premier Accueil Social) : valuation, ouverture de droits, aides financires ponctuelles. Accompagnement social (RSA, budget, logement, violences conjugales).
+Objectif : [/!\ INFORMATIONS INSUFFISANTES : Il est vivement conseille de recueillir plus de precisions sur la situation du patient pour fiabiliser cette orientation] PAS (Premier Accueil Social) : valuation, ouverture de droits, aides financires ponctuelles. Accompagnement social (RSA, budget, logement, violences conjugales).
 Contact : 04 83 95 48 30 ou 04 83 95 37 99 | rue Charles Gide 83500 La Seyne sur mer
 
 BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
@@ -2568,7 +2572,7 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA pour : 'M. Dubois, 74 ans, vit  Toulon. Il souffre de dia...'
 
 --- DEBUG : ANALYSE EXPERTE ---
-M. D., 74 ans, souffre de diabte, d'hypertension et d'une insuffisance rnale chronique qui lui cause des douleurs permanentes dans les jambes. Il prend 8 mdicaments par jour. Il commence  avoir du mal  payer son loyer et ses factures. Son appartement est au 4me tage sans ascenseur, ce qui est devenu un calvaire depuis son opration du genou. Il est trs anxieux pour sa sant et appelle le cabinet infirmier plusieurs fois par jour pour demander s'il a bien pris ses cachets.
+L'usager souffre de diabte, d'hypertension et d'une insuffisance rnale chronique qui lui cause des douleurs permanentes dans les jambes. Il prend 8 mdicaments par jour. Il est trs anxieux pour sa sant et appelle le cabinet infirmier plusieurs fois par jour pour demander s'il a bien pris ses cachets.
 Ville extraite : Toulon
 Mdecin : identifie
 Malveillance : aucune
@@ -2598,13 +2602,13 @@ Donnees extraites (JSON) :
     "pch": 0,
     "gir": 0,
     "professionnels_domicile": 70,
-    "aidant_regulier": 0,
-    "medecin_traitant": 100,
-    "malveillance": 90,
+    "aidant_regulier": 40,
+    "medecin_traitant": 90,
+    "malveillance": 80,
     "urgence": 60,
-    "hospitalisation": 40,
+    "hospitalisation": 50,
     "motif": 80,
-    "etat_logement": 70
+    "etat_logement": 90
   },
   "evaluation.comid.justifications": [
     {
@@ -2717,7 +2721,7 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA pour : 'Mme Georgette Mouton, 83 ans, vit seule  Ollioules dans un appartement devenu e...'
 
 --- DEBUG : ANALYSE EXPERTE ---
-Analyse manquante
+La situation clinique est marque par un grand isolement social, une rsidence insalubre et encombre, ainsi qu'un risque majeur de chute et d'oubli de mdicaments.
 Ville extraite : Ollioules
 Mdecin : absent
 Malveillance : aucune
@@ -2746,13 +2750,13 @@ Donnes extraites (JSON) :
     "apa": 0,
     "pch": 0,
     "gir": 0,
-    "professionnels_domicile": 100,
-    "aidant_regulier": 100,
+    "professionnels_domicile": 0,
+    "aidant_regulier": 0,
     "medecin_traitant": 70,
-    "malveillance": 100,
-    "urgence": 40,
+    "malveillance": 90,
+    "urgence": 50,
     "hospitalisation": 0,
-    "motif": 90,
+    "motif": 80,
     "etat_logement": 100
   },
   "evaluation.comid.justifications": [
@@ -2827,8 +2831,8 @@ Score Total : 4 (Situation non complexe)
 
 [ DAC - Dispositif d'Appui  la Coordination ] - Priorit : 96
 Objectif : Motifs d'orientation combins :
-  - [Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social)] (Confiance : 96%) : Situation de forte complexit multidimensionnelle (sanitaire, social et mdico-social) : valuation globale et coordination intensive par le DAC pour dbloquer le parcours de vie  domicile.
-    -> Justification confiance : score complexit COMID estim  96% de certitude, score complexit COMID estim  96% de certitude
+  - [Situation de complexit multidimensionnelle (Sanitaire, Social, Mdico-social)] (Confiance : 26%) : Situation de forte complexit multidimensionnelle (sanitaire, social et mdico-social) : valuation globale et coordination intensive par le DAC pour dbloquer le parcours de vie  domicile.
+    -> Justification confiance : score complexite COMID estime a 96% de certitude (Penalite de situation non complexe de -70% appliquee), score complexite COMID estime a 96% de certitude (Penalite de situation non complexe de -70% appliquee)
   - [Suspicion de Diogne ou incurie] (Confiance : 100%) : Insalubrit ou ngligence critique  domicile : Suspicion ou syndrome de Diogne/incurie avr ncessitant une coordination multidimensionnelle renforce par le DAC.
     -> Justification confiance : variable 'etat_logement' extraite avec certitude de 100%
 Contact : 04 94 35 32 01 | None

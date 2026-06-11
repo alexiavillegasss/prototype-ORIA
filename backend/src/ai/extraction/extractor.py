@@ -51,10 +51,10 @@ SITUATION : "{safe_text}"
     - "refus_de_soins" uniquement en cas d'opposition active, hostile ou de refus explicite de se soigner ou de recevoir les professionnels. Oublier de prendre ses médicaments (ex: "oublis de médicaments") ou oublier un rendez-vous (ex: "avait oublié ma visite"), ou être confus/désorienté, n'est JAMAIS un refus de soins.
     - "refus_aide_domicile" uniquement si l'usager lui-même s'oppose activement à l'aide à domicile.
     - "sortie_hospitalisation" si retour à domicile post-hospitalisation récente.
-    - "aide_alimentaire" si dénutrition sévère ou frigo vide sans ressources.
+    - "aide_alimentaire" si dénutrition sévère, frigo vide sans ressources, ou si la personne demande de l'aide pour s'acheter à manger ou faire ses courses par manque d'argent (découvert bancaire, budget insuffisant).
     - "secours_urgence" si danger vital imminent ou agression physique en cours.
     - "recherche_medecin" si recherche active de médecin traitant.
-    - "maintien_a_domicile" si demande générale d'aide à domicile pour rester chez soi, adaptation ou panne d'équipement (ex: réfrigérateur en panne), ou besoin d'aide pour les courses.
+    - "maintien_a_domicile" si demande générale d'aide à domicile pour rester chez soi (ex: aides professionnelles, auxiliaire), adaptation ou panne d'équipement (ex: réfrigérateur en panne), ou besoin d'aide physique pour les courses. EXCLUSION STRICTE : Si la demande d'aide pour manger ou faire les courses est liée à un manque d'argent (découvert, pauvreté), choisissez "aide_alimentaire".
     - "information_aides" si demande générale d'informations.
 11. "professionnels_domicile" : Choisir "oui" si des professionnels (infirmiers, kinés, aides) passent régulièrement, ou "non" sinon.
 12. "aidant_regulier" : Choisir "oui" si présence régulière et stable d'un aidant familial, ou "non" sinon.
