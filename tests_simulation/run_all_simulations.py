@@ -98,7 +98,7 @@ async def main():
         results.append(r)
         completed_count += 1
         name_clean = r["file_name"].replace("test_", "").replace(".py", "").replace("_", " ").title()
-        status_str = "✅ SUCCESS" if r["success"] else "❌ FAILED"
+        status_str = "[OK] SUCCESS" if r["success"] else "[ERR] FAILED"
         duration_str = f"{r['duration']:.1f}s"
         
         # Display instant status updates

@@ -26,12 +26,15 @@ class OrientationEngine:
             is_eligible = self._check_eligibility(rule, eval_context)
 
             if is_eligible:
+                score_confiance, explication_confiance = self._calculate_rule_confidence(rule, extracted_data, comid_results)
                 eligible_structures.append({
                     "structure_type": rule["structure_type"],
                     "label": rule.get("label", rule["structure_type"]),
                     "priorite": rule.get("result", {}).get("base_priority_score", 0),
                     "pertinence": rule.get("result", {}).get("base_pertinence", "moyenne"),
-                    "objectif": rule.get("result", {}).get("objectif_orientation", "N/A")
+                    "objectif": rule.get("result", {}).get("objectif_orientation", "N/A"),
+                    "score_confiance": score_confiance,
+                    "explication_confiance": explication_confiance
                 })
 
         # Dédoublonner et regrouper par structure_type pour éviter les doublons à l'affichage
@@ -44,7 +47,9 @@ class OrientationEngine:
                     "winning_label": struct["label"],
                     "priorite": struct["priorite"],
                     "pertinence": struct["pertinence"],
-                    "matches": [(struct["label"], struct["objectif"])]
+                    "score_confiance": struct["score_confiance"],
+                    "explication_confiance": struct["explication_confiance"],
+                    "matches": [(struct["label"], struct["objectif"], struct["score_confiance"], struct["explication_confiance"])]
                 }
             else:
                 # On garde la priorité maximale
@@ -54,8 +59,12 @@ class OrientationEngine:
                 # On combine les pertinences
                 if struct["pertinence"] == "eleve":
                     grouped_structures[stype]["pertinence"] = "eleve"
+                # On garde la confiance maximale
+                if struct["score_confiance"] > grouped_structures[stype]["score_confiance"]:
+                    grouped_structures[stype]["score_confiance"] = struct["score_confiance"]
+                    grouped_structures[stype]["explication_confiance"] = struct["explication_confiance"]
                 # On évite d'ajouter des doublons exacts d'explications
-                match_entry = (struct["label"], struct["objectif"])
+                match_entry = (struct["label"], struct["objectif"], struct["score_confiance"], struct["explication_confiance"])
                 if match_entry not in grouped_structures[stype]["matches"]:
                     grouped_structures[stype]["matches"].append(match_entry)
 
@@ -68,7 +77,9 @@ class OrientationEngine:
                     "label": data["winning_label"],
                     "priorite": data["priorite"],
                     "pertinence": data["pertinence"],
-                    "objectif": data["matches"][0][1]
+                    "objectif": data["matches"][0][1],
+                    "score_confiance": data["score_confiance"],
+                    "explication_confiance": data["explication_confiance"]
                 })
             else:
                 # On définit un label propre de niveau structure pour le regroupement
@@ -84,18 +95,21 @@ class OrientationEngine:
                         base_label = "CLIC - Centre Local d'Information et de Coordination"
                 # Regroupement des explications sous forme de liste à puces propre
                 combined_objectifs = "Motifs d'orientation combinés :"
-                for label, obj in data["matches"]:
+                for label, obj, conf, expl in data["matches"]:
                     clean_label = label
                     if " - " in clean_label:
                         clean_label = clean_label.split(" - ", 1)[1].strip()
-                    combined_objectifs += f"\n  • [{clean_label}] : {obj}"
+                    combined_objectifs += f"\n  - [{clean_label}] (Confiance : {conf}%) : {obj}"
+                    combined_objectifs += f"\n    -> Justification confiance : {expl}"
 
                 final_structures.append({
                     "structure_type": stype,
                     "label": base_label,
                     "priorite": data["priorite"],
                     "pertinence": data["pertinence"],
-                    "objectif": combined_objectifs
+                    "objectif": combined_objectifs,
+                    "score_confiance": data["score_confiance"],
+                    "explication_confiance": data["explication_confiance"]
                 })
 
         # On trie par score de priorité (le plus élevé en premier)
@@ -104,7 +118,25 @@ class OrientationEngine:
         # Si les règles globales imposent une seule structure ou si on veut la meilleure
         allow_multiple = self.rules.get("global_rules", {}).get("allow_multiple_eligible_structures", True)
         if not allow_multiple and final_structures:
-            return [final_structures[0]]
+            final_structures = [final_structures[0]]
+
+        # Ajout du message d'alerte explicite si la confiance est < 40%
+        for struct in final_structures:
+            if struct.get("score_confiance", 100) < 40:
+                warning_prefix = "[/!\\ INFORMATIONS INSUFFISANTES : Il est vivement conseille de recueillir plus de precisions sur la situation du patient pour fiabiliser cette orientation] "
+                struct["objectif"] = warning_prefix + struct.get("objectif", "")
+
+        # Si aucune structure n'est éligible à cause d'un manque d'informations
+        if not final_structures:
+            final_structures.append({
+                "structure_type": "BESOIN_INFOS",
+                "label": "Informations insuffisantes pour orienter",
+                "priorite": 0,
+                "pertinence": "faible",
+                "objectif": "Les informations fournies ne permettent pas de determiner une orientation. Il est necessaire de recueillir plus de precisions (ex: age de la personne, commune de residence, presence d'aides comme l'APA/professionnels, description precise des difficultes ou de la demande).",
+                "score_confiance": 0,
+                "explication_confiance": "Aucune structure n'est eligible car les informations sont trop incompletes ou absentes dans le recit."
+            })
 
         return final_structures
 
@@ -163,3 +195,104 @@ class OrientationEngine:
             return str(target_value) in str(actual_value)
         
         return False
+
+    def _calculate_rule_confidence(self, rule: dict, extracted_data: dict, comid_results: dict) -> tuple[int, str]:
+        """
+        Calcule de manière hybride la confiance d'une règle d'orientation et produit une explication détaillée.
+        """
+        fields = []
+        for cond in rule.get("all_of", []) + rule.get("any_of", []) + rule.get("none_of", []):
+            if "field" in cond:
+                fields.append(cond["field"])
+        fields = list(set(fields))
+
+        if not fields:
+            return 100, "Aucun critère à évaluer."
+
+        FIELD_TO_VAR_MAP = {
+            "adresseur.degre_urgence_percu": "urgence",
+            "demande.motif_principal": "motif",
+            "usager.situation_actuelle.APA": "apa",
+            "usager.situation_actuelle.PCH": "pch",
+            "usager.situation_actuelle.GIR": "gir",
+            "vulnerabilites.sante.suivi_medical.medecin_traitant": "medecin_traitant",
+            "usager.situation_actuelle.suspicion_malveillance": "malveillance",
+            "vulnerabilites.sante.hospitalisation.statut": "hospitalisation",
+            "vulnerabilites.sante.professionnels_domicile": "professionnels_domicile",
+            "usager.cadre_de_vie.aidant_regulier": "aidant_regulier",
+            "usager.cadre_de_vie.etat_logement": "etat_logement",
+            "usager.identite.age_estime": "age",
+            "usager.localisation.commune_residence": "ville"
+        }
+
+        confiances_variables = extracted_data.get("evaluation.confiance.variables", {})
+        confiances_comid = extracted_data.get("evaluation.confiance.comid", {})
+
+        conf_scores = []
+        missing_count = 0
+        detail_explications = []
+
+        for field in fields:
+            if field in FIELD_TO_VAR_MAP:
+                var_name = FIELD_TO_VAR_MAP[field]
+                actual_val = extracted_data.get(field)
+                
+                if actual_val is None or str(actual_val).lower() in ["inconnu", "non_renseigne", "incertain"]:
+                    conf_scores.append(0)
+                    missing_count += 1
+                    detail_explications.append(f"variable clé '{var_name}' manquante")
+                else:
+                    conf = confiances_variables.get(var_name, 100)
+                    conf_scores.append(conf)
+                    detail_explications.append(f"variable '{var_name}' extraite avec certitude de {conf}%")
+
+            elif field.startswith("evaluation.comid."):
+                code = field.replace("evaluation.comid.", "")
+                is_present = extracted_data.get(field, False)
+                if is_present:
+                    conf = confiances_comid.get(code, 100)
+                    conf_scores.append(conf)
+                    detail_explications.append(f"critère COMID '{code}' détecté avec certitude de {conf}%")
+                else:
+                    conf_scores.append(100)
+
+            elif field.startswith("complexite."):
+                if confiances_comid:
+                    avg_comid = sum(confiances_comid.values()) / len(confiances_comid)
+                    score_total = comid_results.get("score_total", 0)
+                    if score_total >= 10:
+                        conf_scores.append(avg_comid)
+                        detail_explications.append(f"score complexite COMID estime a {int(avg_comid)}% de certitude (Situation complexe)")
+                    elif 6 <= score_total <= 9:
+                        val_conf = max(avg_comid - 30, 0)
+                        conf_scores.append(val_conf)
+                        detail_explications.append(f"score complexite COMID estime a {int(avg_comid)}% de certitude (Penalite de pseudo-complexite de -30% appliquee)")
+                    else:
+                        val_conf = max(avg_comid - 70, 0)
+                        conf_scores.append(val_conf)
+                        detail_explications.append(f"score complexite COMID estime a {int(avg_comid)}% de certitude (Penalite de situation non complexe de -70% appliquee)")
+                else:
+                    conf_scores.append(100)
+
+            else:
+                actual_val = extracted_data.get(field)
+                if actual_val is None or str(actual_val).lower() in ["inconnu", "non_renseigne", "incertain"]:
+                    conf_scores.append(0)
+                    missing_count += 1
+                    detail_explications.append(f"donnée '{field}' manquante")
+                else:
+                    conf_scores.append(100)
+                    detail_explications.append(f"donnée '{field}' présente (100% certitude)")
+
+        if not conf_scores:
+            return 100, "Aucun critère pertinent à évaluer."
+
+        base_confidence = sum(conf_scores) / len(conf_scores)
+        penalty = missing_count * 20
+        final_confidence = int(min(max(base_confidence - penalty, 0), 100))
+
+        explication = ", ".join(detail_explications)
+        if penalty > 0:
+            explication += f" (Pénalité de complétude appliquée de -{penalty}% pour {missing_count} variable(s) manquante(s))"
+
+        return final_confidence, explication
