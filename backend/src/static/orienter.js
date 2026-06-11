@@ -381,19 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    /**
-     * Gère le questionnaire pas-à-pas DAC
-     */
-    window.showDacWizard = function(label, type) {
-        let modal = document.getElementById('dac-wizard-modal');
-        if (!modal) {
-            modal = document.createElement('div');
-            modal.id = 'dac-wizard-modal';
-            modal.className = 'modal-overlay';
-            document.body.appendChild(modal);
-        }
-        
-        // Injection dynamique des styles pour le modal si ce n'est pas déjà fait
+    function ensureWizardStyles() {
         if (!document.getElementById('dac-modal-styles')) {
             const style = document.createElement('style');
             style.id = 'dac-modal-styles';
@@ -493,6 +481,21 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             document.head.appendChild(style);
         }
+    }
+
+    /**
+     * Gère le questionnaire pas-à-pas DAC
+     */
+    window.showDacWizard = function(label, type) {
+        let modal = document.getElementById('dac-wizard-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'dac-wizard-modal';
+            modal.className = 'modal-overlay';
+            document.body.appendChild(modal);
+        }
+        
+        ensureWizardStyles();
 
         showStep1(modal, label, type);
     };
@@ -585,7 +588,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.appendChild(modal);
         }
         
-        // On s'assure que les styles sont injectés (identique à DAC)
+        ensureWizardStyles();
         showClicStep1(modal, label, type);
     };
 
@@ -651,6 +654,7 @@ document.addEventListener('DOMContentLoaded', () => {
             modal.className = 'modal-overlay';
             document.body.appendChild(modal);
         }
+        ensureWizardStyles();
         showClicToulonStep1(modal, label, type);
     };
 
@@ -687,6 +691,33 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.innerHTML = `
             <div class="modal-card">
                 <div class="modal-header">
+                    <span class="modal-logo">📋</span>
+                    <h3>Fiche d'Orientation CLIC Toulon</h3>
+                </div>
+                <div class="modal-body">
+                    <p>Voulez-vous remplir les informations manquantes ?</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="btn-clic-toulon-step2-non" class="btn-modal-secondary">Non</button>
+                    <button id="btn-clic-toulon-step2-oui" class="btn-modal-primary" style="background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);">Oui</button>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('btn-clic-toulon-step2-non').onclick = () => {
+            modal.style.display = 'none';
+            window.validateCurrentOrientation(label, type, { showClicToulonPdf: true });
+        };
+
+        document.getElementById('btn-clic-toulon-step2-oui').onclick = () => {
+            showClicToulonStep3(modal, label, type);
+        };
+    }
+
+    function showClicToulonStep3(modal, label, type) {
+        modal.innerHTML = `
+            <div class="modal-card">
+                <div class="modal-header">
                     <span class="modal-logo">💡</span>
                     <h3>Saisie à venir</h3>
                 </div>
@@ -695,11 +726,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p>La fiche d'orientation va être générée avec les informations déjà extraites et présentes.</p>
                 </div>
                 <div class="modal-footer">
-                    <button id="btn-clic-toulon-step2-oui-continue" class="btn-modal-primary" style="background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%); width: 100%;">Visualiser la fiche</button>
+                    <button id="btn-clic-toulon-step3-continue" class="btn-modal-primary" style="background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%); width: 100%;">Visualiser la fiche</button>
                 </div>
             </div>
         `;
-        document.getElementById('btn-clic-toulon-step2-oui-continue').onclick = () => {
+        document.getElementById('btn-clic-toulon-step3-continue').onclick = () => {
             modal.style.display = 'none';
             window.validateCurrentOrientation(label, type, { showClicToulonPdf: true });
         };
