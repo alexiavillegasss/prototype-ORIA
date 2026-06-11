@@ -336,6 +336,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         📄 Visualiser la fiche d'orientation CLIC La Seyne
                     </button>
                 `;
+            } else if (options && options.showClicToulonPdf) {
+                pdfButtonHtml = `
+                    <button onclick="downloadClicToulonPdf()" class="btn-primary" style="background: #38bdf8; box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3); margin-top: 1rem; margin-left: 0.5rem;">
+                        📄 Visualiser la fiche d'orientation CLIC Toulon
+                    </button>
+                `;
             }
 
             structuresList.innerHTML = `
@@ -368,6 +374,8 @@ document.addEventListener('DOMContentLoaded', () => {
             window.showDacWizard(label, type);
         } else if (type === 'CLIC' && (label.toLowerCase().includes('seyne') || (schemaPivot && schemaPivot["usager.localisation.commune_residence"] && schemaPivot["usager.localisation.commune_residence"].toLowerCase().includes('seyne')))) {
             window.showClicWizard(label, type);
+        } else if (type === 'CLIC' && (label.toLowerCase().includes('toulon') || (schemaPivot && schemaPivot["usager.localisation.commune_residence"] && schemaPivot["usager.localisation.commune_residence"].toLowerCase().includes('toulon')))) {
+            window.showClicToulonWizard(label, type);
         } else {
             window.validateCurrentOrientation(label, type);
         }
@@ -633,6 +641,71 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
+     * Gère le questionnaire pas-à-pas CLIC Toulon
+     */
+    window.showClicToulonWizard = function(label, type) {
+        let modal = document.getElementById('dac-wizard-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'dac-wizard-modal';
+            modal.className = 'modal-overlay';
+            document.body.appendChild(modal);
+        }
+        showClicToulonStep1(modal, label, type);
+    };
+
+    function showClicToulonStep1(modal, label, type) {
+        modal.style.display = 'flex';
+        modal.innerHTML = `
+            <div class="modal-card">
+                <div class="modal-header">
+                    <span class="modal-logo">🧭</span>
+                    <h3>Fiche d'Orientation CLIC Toulon</h3>
+                </div>
+                <div class="modal-body">
+                    <p style="margin-bottom: 0.75rem; font-weight: 600; color: #0ea5e9;">Orientation détectée : ${label}</p>
+                    <p>Voulez-vous remplir la fiche d'orientation du CLIC de Toulon ?</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="btn-clic-toulon-step1-non" class="btn-modal-secondary">Non</button>
+                    <button id="btn-clic-toulon-step1-oui" class="btn-modal-primary" style="background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);">Oui</button>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('btn-clic-toulon-step1-non').onclick = () => {
+            modal.style.display = 'none';
+            window.validateCurrentOrientation(label, type);
+        };
+
+        document.getElementById('btn-clic-toulon-step1-oui').onclick = () => {
+            showClicToulonStep2(modal, label, type);
+        };
+    }
+
+    function showClicToulonStep2(modal, label, type) {
+        modal.innerHTML = `
+            <div class="modal-card">
+                <div class="modal-header">
+                    <span class="modal-logo">💡</span>
+                    <h3>Saisie à venir</h3>
+                </div>
+                <div class="modal-body">
+                    <p style="margin-bottom: 0.75rem;">Le module de saisie des informations manquantes pour le CLIC de Toulon sera disponible prochainement.</p>
+                    <p>La fiche d'orientation va être générée avec les informations déjà extraites et présentes.</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="btn-clic-toulon-step2-oui-continue" class="btn-modal-primary" style="background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%); width: 100%;">Visualiser la fiche</button>
+                </div>
+            </div>
+        `;
+        document.getElementById('btn-clic-toulon-step2-oui-continue').onclick = () => {
+            modal.style.display = 'none';
+            window.validateCurrentOrientation(label, type, { showClicToulonPdf: true });
+        };
+    }
+
+    /**
      * Télécharge la fiche d'orientation DAC sous format PDF
      */
     window.downloadDacPdf = async function() {
@@ -720,6 +793,54 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (err) {
             console.error(err);
             alert("Une erreur est survenue lors de la génération du PDF CLIC.");
+        } finally {
+            if (btn) {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
+        }
+    };
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Toulon sous format PDF
+     */
+    window.downloadClicToulonPdf = async function() {
+        const text = document.getElementById('situation-input').value.trim();
+        if (!text) return;
+
+        const btn = document.querySelector('[onclick="downloadClicToulonPdf()"]');
+        let originalHtml = "";
+        if (btn) {
+            originalHtml = btn.innerHTML;
+            btn.innerHTML = `<span>⏳ Remplissage...</span>`;
+            btn.disabled = true;
+        }
+
+        try {
+            const response = await fetch('/api/orientation/clic_toulon/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur de téléchargement");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_toulon.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error(err);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Toulon.");
         } finally {
             if (btn) {
                 btn.innerHTML = originalHtml;

@@ -2,9 +2,10 @@ import fitz
 import io
 
 class PDFGenerator:
-    def __init__(self, dac_template_path: str = None, clic_template_path: str = None):
+    def __init__(self, dac_template_path: str = None, clic_template_path: str = None, clic_toulon_template_path: str = None):
         self.dac_template_path = dac_template_path
         self.clic_template_path = clic_template_path
+        self.clic_toulon_template_path = clic_toulon_template_path
 
     def generate_dac_pdf(self, extracted_data: dict) -> bytes:
         if not self.dac_template_path:
@@ -197,6 +198,66 @@ class PDFGenerator:
                 widget.field_value = True
                 widget.update()
 
+        pdf_bytes = doc.write()
+        doc.close()
+        return pdf_bytes
+
+    def generate_clic_toulon_pdf(self, extracted_data: dict) -> bytes:
+        if not self.clic_toulon_template_path:
+            raise ValueError("CLIC Toulon template path not configured")
+        doc = fitz.open(self.clic_toulon_template_path)
+
+        field_values = {}
+        
+        # Emetteur
+        field_values["Vos coordonnées nom prénom"] = f"{extracted_data.get('emetteur_nom', '')} {extracted_data.get('emetteur_prenom', '')}".strip()
+        field_values["Mail"] = extracted_data.get("emetteur_email", "")
+        field_values["Texte2"] = extracted_data.get("emetteur_telephone", "")
+
+        # Usager
+        sexe = str(extracted_data.get("usager_sexe", "")).lower()
+        if "f" in sexe:
+            field_values["Mme"] = True
+        else:
+            field_values["Monsieur nom prénom"] = True
+
+        field_values["nom et prenom"] = f"{extracted_data.get('usager_nom_usage', '')} {extracted_data.get('usager_prenoms', '')}".strip()
+        field_values["Adresse complète 1"] = extracted_data.get("usager_adresse", "")
+        field_values["Texte6"] = extracted_data.get("usager_telephone", "")
+        field_values["Texte10"] = extracted_data.get("usager_date_naissance", "")
+
+        # Aidant
+        field_values["Texte13"] = f"{extracted_data.get('aidant_nom', '')} - Tel: {extracted_data.get('aidant_tel', '')}".strip(" -")
+
+        # Motifs
+        field_values["Compléments dinformation 1"] = extracted_data.get("motif_1", "")
+        field_values["Compléments dinformation 2"] = extracted_data.get("motif_2", "")
+        field_values["Compléments dinformation 3"] = extracted_data.get("motif_3", "")
+
+        # Clean INCONNU everywhere
+        for k, v in field_values.items():
+            if isinstance(v, str) and v.upper() == "INCONNU":
+                field_values[k] = ""
+
+        # Map to widgets
+        for page in doc:
+            for widget in page.widgets():
+                fname = widget.field_name
+                # Map checkboxes manually
+                if fname == "Vit seule" and extracted_data.get("usager_vit_seul") is True:
+                    widget.field_value = True
+                    widget.update()
+                
+                # Normal mapping
+                if fname in field_values:
+                    val = field_values[fname]
+                    if widget.field_type == fitz.PDF_WIDGET_TYPE_CHECKBOX:
+                        if val is True:
+                            widget.field_value = True
+                    else:
+                        widget.field_value = str(val)
+                    widget.update()
+        
         pdf_bytes = doc.write()
         doc.close()
         return pdf_bytes
