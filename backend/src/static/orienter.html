@@ -146,7 +146,7 @@
         }
 
         .signal-item {
-            background: #ffffff;
+            background: rgba(30, 41, 59, 0.5); /* Sombre pour dark mode */
             border: 1px solid var(--border-glass);
             border-radius: var(--radius-sm);
             padding: 0.6rem 0.8rem;
@@ -189,11 +189,11 @@
         .comid-proof-quote {
             font-style: italic;
             color: var(--text-muted);
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(15, 23, 42, 0.5); /* Sombre pour dark mode */
             padding: 4px 8px;
             border-radius: 4px;
             margin-top: 2px;
-            border: 1px solid rgba(15, 23, 42, 0.04);
+            border: 1px solid var(--border-glass);
         }
 
         /* Carte de validation succès */
@@ -281,10 +281,7 @@
 
                 <!-- Petites cartes KPI d'analyse de situation (style tableau de bord) -->
                 <div class="mini-kpi-grid">
-                    <div class="mini-kpi-card">
-                        <span class="kpi-label">Score COMID</span>
-                        <span class="kpi-value" id="res-score">–</span>
-                    </div>
+
                     <div class="mini-kpi-card">
                         <span class="kpi-label">Complexité</span>
                         <span class="kpi-value" id="res-level" style="font-size: 1.1rem;">–</span>
