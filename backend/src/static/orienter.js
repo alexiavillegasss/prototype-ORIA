@@ -345,7 +345,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             structuresList.innerHTML = `
                 <div class="success-card fadeInUp">
-                    <div class="success-icon">🎉</div>
                     <h4 style="font-size: 1.2rem; font-weight: 700; color: #22c55e;">Dossier Validé & Enregistré</h4>
                     <p style="color: var(--text-secondary); max-width: 480px; font-size: 0.92rem; line-height: 1.5; margin: 0 auto;">
                         L'orientation finale vers <strong>${label}</strong> a été enregistrée avec succès. Les données de diagnostic pivot et de traçabilité COMID sont sauvegardées dans votre base locale.
@@ -403,6 +402,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     z-index: 1000;
                     animation: modalFadeIn 0.25s ease-out;
                 }
+                .mini-kpi-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    gap: 4px;
+}
                 .modal-card {
                     background: var(--bg-secondary, #ffffff);
                     border: 1px solid var(--border-glass, rgba(74, 109, 245, 0.3));
