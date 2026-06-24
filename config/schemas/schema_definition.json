@@ -569,6 +569,12 @@
     "source": "genere",
     "description": "Résumé structuré de la situation à partir du récit vocal."
   },
+  "demande.proposition_mail": {
+    "type": "string",
+    "required": true,
+    "source": "genere",
+    "description": "Proposition de mail type rédigé de manière professionnelle pour adresser cette demande d'orientation à une structure. NE PAS INCLURE de formules de politesse ('Bonjour', 'Cordialement'), générer uniquement le corps de texte synthétique du mail."
+  },
   "demande.motif_principal": {
     "type": "string",
     "required": true,

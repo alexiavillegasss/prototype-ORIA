@@ -59,6 +59,7 @@ SITUATION : "{safe_text}"
 11. "professionnels_domicile" : Choisir "oui" si des professionnels (infirmiers, kinés, aides) passent régulièrement, ou "non" sinon.
 12. "aidant_regulier" : Choisir "oui" si présence régulière et stable d'un aidant familial, ou "non" sinon.
 13. "etat_logement" : Choisir "diogene" si syndrome de Diogène, "incurie" si logement très sale, "insalubre" si pas d'eau ou plafond menace de s'effondrer, "propre" si propre, ou "non_renseigne" sinon.
+14. "proposition_mail" : Rédiger un court brouillon d'e-mail professionnel (3-4 phrases maximum), écrit à la 3ème personne, prêt à être envoyé par le professionnel à la structure d'orientation pour résumer la situation et la demande. NE PAS INCLURE de formules de politesse ("Bonjour", "Cordialement"), générer uniquement le corps du texte.
 
 ### DIRECTIVES DE CONFIANCE (TRÈS IMPORTANT) :
 Pour chaque variable extraite ci-dessus, attribue un score de confiance (nombre entier de 0 à 100) dans l'objet "confiance_variables" :
@@ -83,6 +84,7 @@ Format JSON attendu :
   "motif": "evaluation_globale / refus_de_soins / sortie_hospitalisation / aide_alimentaire / secours_urgence / recherche_medecin / maintien_a_domicile / information_aides / refus_aide_domicile",
   "etat_logement": "diogene / incurie / insalubre / propre / non_renseigne",
   "raisonnement_expert": "Résumé court et raisonnement clinique",
+  "proposition_mail": "Brouillon du mail de demande d'orientation",
   "confiance_variables": {{
     "age": "Score entier de 0 à 100",
     "ville": "Score entier de 0 à 100",
@@ -202,7 +204,9 @@ JSON attendu :
             "demande.motif_principal": raw_data.get("motif", "maintien_a_domicile"),
             "vulnerabilites.sante.professionnels_domicile": str(raw_data.get("professionnels_domicile", "inconnu")).lower(),
             "usager.cadre_de_vie.aidant_regulier": str(raw_data.get("aidant_regulier", "inconnu")).lower(),
-            "usager.cadre_de_vie.etat_logement": raw_data.get("etat_logement", "non_renseigne")
+            "usager.cadre_de_vie.etat_logement": raw_data.get("etat_logement", "non_renseigne"),
+            "demande.proposition_mail": raw_data.get("proposition_mail", ""),
+            "demande.resume_structuré": raw_data.get("raisonnement_expert", "")
         }
 
         # --- GESTION DE LA CONFIANCE DES VARIABLES DE BASE ---
