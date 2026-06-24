@@ -471,7 +471,7 @@ body {
 /* Sous-KPI de diagnostic */
 .mini-kpi-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
     margin-bottom: 2rem;
 }
@@ -483,6 +483,8 @@ body {
     padding: 1rem;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    text-align: center;
     gap: 4px;
 }
 
