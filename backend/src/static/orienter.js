@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const btnYes = card.querySelector('#btn-validate-yes');
         if (btnYes) {
             btnYes.addEventListener('click', () => {
-                handleOuiElleConvient(struct.label, struct.structure_type);
+                handleOuiElleConvient(struct.label, struct.structure_type, struct);
             });
         }
 
@@ -369,13 +369,17 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * Intercepte la validation pour le type DAC pour poser les questions de fiche
      */
-    window.handleOuiElleConvient = function(label, type) {
+    window.handleOuiElleConvient = function(label, type, structData = null) {
+        const commune = (schemaPivot && schemaPivot["usager.localisation.commune_residence"]) ? schemaPivot["usager.localisation.commune_residence"].toLowerCase() : "";
+
         if (type === 'DAC') {
             window.showDacWizard(label, type);
-        } else if (type === 'CLIC' && (label.toLowerCase().includes('seyne') || (schemaPivot && schemaPivot["usager.localisation.commune_residence"] && schemaPivot["usager.localisation.commune_residence"].toLowerCase().includes('seyne')))) {
+        } else if (type === 'CLIC' && (label.toLowerCase().includes('seyne') || commune.includes('seyne'))) {
             window.showClicWizard(label, type);
-        } else if (type === 'CLIC' && (label.toLowerCase().includes('toulon') || (schemaPivot && schemaPivot["usager.localisation.commune_residence"] && schemaPivot["usager.localisation.commune_residence"].toLowerCase().includes('toulon')))) {
+        } else if (type === 'CLIC' && (label.toLowerCase().includes('toulon') || commune.includes('toulon'))) {
             window.showClicToulonWizard(label, type);
+        } else if (structData && structData.email) {
+            window.showGenericMailWizard(structData);
         } else {
             window.validateCurrentOrientation(label, type);
         }
@@ -735,6 +739,123 @@ document.addEventListener('DOMContentLoaded', () => {
             window.validateCurrentOrientation(label, type, { showClicToulonPdf: true });
         };
     }
+
+    /**
+     * Gère la génération de mail pour toutes les structures ayant un email (CCAS, CPTS, CLIC sans PDF...)
+     */
+    window.showGenericMailWizard = function(structData) {
+        let modal = document.getElementById('dac-wizard-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'dac-wizard-modal';
+            modal.className = 'modal-overlay';
+            document.body.appendChild(modal);
+        }
+        ensureWizardStyles();
+        
+        const destinationEmail = structData.email || "";
+        const nomStructure = structData.nom_local || structData.label;
+
+        const nom = (schemaPivot && schemaPivot["usager.identite.nom_naissance"]) || "[Nom de l'usager]";
+        const prenom = (schemaPivot && schemaPivot["usager.identite.prenoms"]) || "";
+        const nomComplet = `${prenom} ${nom}`.trim();
+        const situationText = document.getElementById('situation-input').value.trim() || "[Résumé de la situation]";
+
+        const mailSubject = `Demande d'orientation - ${nomComplet}`;
+        const resumeText = (schemaPivot && schemaPivot["demande.resume_structuré"]) ? schemaPivot["demande.resume_structuré"] : situationText;
+
+        const introGreeting = `Bonjour,
+
+Je vous contacte concernant la situation de ${nomComplet}.
+`;
+
+        let mailBody = "";
+        if (schemaPivot && schemaPivot["demande.proposition_mail"]) {
+            let aiText = schemaPivot["demande.proposition_mail"].trim();
+            // Remove any leading greeting (Bonjour, Bonsoir, Bonjour ORIA, etc.)
+            aiText = aiText.replace(/^(?:bonjour|bonsoir)[^.,\n]*[.,\n]?\s*/i, '');
+            if (aiText.length > 0) {
+                aiText = aiText.charAt(0).toUpperCase() + aiText.slice(1);
+            }
+
+            mailBody = `${introGreeting}
+${aiText}
+
+Je reste à votre disposition pour tout complément d'information.
+
+Cordialement,`;
+        } else {
+            mailBody = `${introGreeting}
+Adresse : ${(schemaPivot && schemaPivot["usager.localisation.adresse_complete"]) || "[Adresse]"}
+Téléphone : ${(schemaPivot && schemaPivot["usager.contact.numero_telephone_1"]) || "[Téléphone]"}
+
+Voici un résumé de la situation :
+${resumeText}
+
+Je reste à votre disposition pour tout complément d'information.
+
+Cordialement,`;
+        }
+
+        modal.style.display = 'flex';
+        modal.innerHTML = `
+            <div class="modal-card" style="max-width: 600px;">
+                <div class="modal-header">
+                    <span class="modal-logo">📧</span>
+                    <h3>Générer un mail d'orientation</h3>
+                </div>
+                <div class="modal-body">
+                    <p style="margin-bottom: 0.75rem; font-weight: 600; color: #f59e0b;">Orientation détectée : ${nomStructure}</p>
+                    <p>Il n'y a pas de fiche d'orientation PDF pour cette structure. Voici un mail pré-rempli avec les informations extraites :</p>
+                    
+                    <div style="margin-top: 1rem; text-align: left;">
+                        <label style="font-weight: 600; font-size: 0.85rem;">À :</label>
+                        <input type="text" id="mail-to" value="${destinationEmail}" style="width: 100%; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 4px; margin-bottom: 0.5rem;" />
+                        
+                        <label style="font-weight: 600; font-size: 0.85rem;">Objet :</label>
+                        <input type="text" id="mail-subject" value="${mailSubject}" style="width: 100%; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 4px; margin-bottom: 0.5rem;" />
+                        
+                        <label style="font-weight: 600; font-size: 0.85rem;">Message :</label>
+                        <textarea id="mail-body" rows="8" style="width: 100%; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 4px; font-family: inherit; resize: vertical;">${mailBody}</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer" style="justify-content: space-between;">
+                    <button id="btn-mail-ignorer" class="btn-modal-secondary">Ignorer et valider</button>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button id="btn-mail-copier" class="btn-modal-secondary" style="background: #f1f5f9; color: #0f172a;">Copier le texte</button>
+                        <button id="btn-mail-ouvrir" class="btn-modal-primary" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">Ouvrir dans la messagerie</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('btn-mail-ignorer').onclick = () => {
+            modal.style.display = 'none';
+            window.validateCurrentOrientation(structData.label, structData.structure_type);
+        };
+
+        document.getElementById('btn-mail-copier').onclick = () => {
+            const bodyText = document.getElementById('mail-body').value;
+            navigator.clipboard.writeText(bodyText).then(() => {
+                const btn = document.getElementById('btn-mail-copier');
+                const originalText = btn.innerText;
+                btn.innerText = "✓ Copié !";
+                setTimeout(() => btn.innerText = originalText, 2000);
+            });
+        };
+
+        document.getElementById('btn-mail-ouvrir').onclick = () => {
+            const to = document.getElementById('mail-to').value;
+            const subject = encodeURIComponent(document.getElementById('mail-subject').value);
+            const body = encodeURIComponent(document.getElementById('mail-body').value);
+            window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+            
+            setTimeout(() => {
+                modal.style.display = 'none';
+                window.validateCurrentOrientation(structData.label, structData.structure_type);
+            }, 1000);
+        };
+    };
 
     /**
      * Télécharge la fiche d'orientation DAC sous format PDF
