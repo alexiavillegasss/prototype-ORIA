@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
             schemaPivot = data.schema_pivot;
 
             // Remplissage des KPIs globaux
-            resScore.textContent = `${data.evaluation_complexe.score_total} / ${Object.keys(COMID_LABELS).length}`;
+            // resScore supprimé de l'interface
             resLevel.textContent = data.evaluation_complexe.label;
             resCommune.textContent = schemaPivot["usager.localisation.commune_residence"] || "Non spécifiée";
             resLevel.className = 'kpi-value ' + getComplexityClass(data.evaluation_complexe.score_total);
@@ -144,7 +144,6 @@ document.addEventListener('DOMContentLoaded', () => {
             structuresTitle.textContent = "Recherche d'informations supplémentaires :";
             structuresList.innerHTML = `
                 <div class="empty-state card fadeInUp" style="padding: 2.5rem; text-align: center; border: 1px dashed var(--accent-purple); border-radius: var(--radius);">
-                    <div class="empty-icon" style="font-size: 3rem; margin-bottom: 1rem;">🧭</div>
                     <h4 style="font-size: 1.15rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.75rem;">Plus d'informations cliniques requises</h4>
                     <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5; font-size: 0.92rem;">
                         Aucune autre structure d'orientation n'est disponible pour ce cas. Afin d'affiner le diagnostic et de débloquer de nouvelles éligibilités, veuillez enrichir votre description de situation clinique à gauche (précisez si chute récente, dénutrition, épuisement de l'aidant régulier, hospitalisation, ou opposition aux aides).
@@ -801,7 +800,6 @@ Cordialement,`;
         modal.innerHTML = `
             <div class="modal-card" style="max-width: 600px;">
                 <div class="modal-header">
-                    <span class="modal-logo">📧</span>
                     <h3>Générer un mail d'orientation</h3>
                 </div>
                 <div class="modal-body">
