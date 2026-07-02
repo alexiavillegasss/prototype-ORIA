@@ -31,11 +31,11 @@ Analyse la situation clinique ci-dessous pour extraire les variables clés sous 
 SITUATION : "{safe_text}"
 
 ### DIRECTIVES D'EXTRACTION DE RIGUEUR CLINIQUE (ZERO-HALLUCINATION) :
-1. "age" : Âge estimé ou mentionné de la personne (chiffre entier, ou null si non mentionné).
+1. "age" : Âge mentionné de la personne (chiffre entier, ou null si non mentionné). Être extrêmement attentif aux mentions d'âge formulées en clair (ex: "Monsieur de 55 ans", "patiente de 80 ans", "âgé de 77 ans"). Ne jamais extraire null si l'âge est présent dans le texte.
 2. "ville" : Commune de résidence principale (ex: "Hyères", "Toulon", "La Valette", "La Valette-du-Var", "Sanary-sur-Mer", "La Seyne-sur-Mer", "La Garde", "Ollioules", ou null si non mentionné).
 3. "apa" : Choisir "oui" si la personne bénéficie de l'APA. Choisir "non" si elle n'en bénéficie pas. Choisir "inconnu" si non mentionné.
 4. "pch" : Choisir "oui" si bénéficie de la PCH, "non" si non, ou "inconnu" si non mentionné.
-5. "gir" : Chiffre officiel de 1 à 6 si précisé (ex: "GIR 2", "GIR 3"), ou null si non précisé.
+5. "gir" : Chiffre officiel de 1 à 6 si précisé (ex: "GIR 4", "GIR 2", "GIR 3"), ou null si non précisé. Rechercher attentivement les termes "GIR X" et ne pas renvoyer null si présents.
 6. "medecin_traitant" : Choisir "identifie" si elle a un médecin traitant, "absent" si elle n'a plus de médecin ou cherche un médecin, ou "incertain" si non mentionné.
 7. "malveillance" : Choisir impérativement une seule valeur :
    - "violences_physiques" s'il y a des ecchymoses suspectes, coups ou violences physiques SUBIS par l'usager de la part d'un tiers.
@@ -48,25 +48,94 @@ SITUATION : "{safe_text}"
 9. "hospitalisation" : Choisir "en_cours" si actuellement hospitalisée, "recente" si sortie de l'hôpital depuis moins de 10 jours, ou "aucun" sinon.
 10. "motif" : Choisir le motif principal parmi :
     - "evaluation_globale" si le récit décrit simplement des difficultés cliniques ou de vie (ex: confusion, oublis, fatigue, perte d'autonomie, isolement) sans demande explicite d'aide, sans refus de soins, sans sortie d'hôpital et sans situation d'urgence. C'est la valeur par défaut pour les signalements descriptifs généraux.
-    - "refus_de_soins" uniquement en cas d'opposition active, hostile ou de refus explicite de se soigner ou de recevoir les professionnels. Oublier de prendre ses médicaments (ex: "oublis de médicaments") ou oublier un rendez-vous (ex: "avait oublié ma visite"), ou être confus/désorienté, n'est JAMAIS un refus de soins.
+    - "refus_de_soins" uniquement en cas d'opposition active, hostile ou de refus explicite et généralisé de se soigner ou de recevoir les professionnels. Si un patient refuse uniquement l'accueil de jour mais accepte d'autres aides à domicile, ce n'est PAS un refus de soins.
     - "refus_aide_domicile" uniquement si l'usager lui-même s'oppose activement à l'aide à domicile.
     - "sortie_hospitalisation" si retour à domicile post-hospitalisation récente.
-    - "aide_alimentaire" si dénutrition sévère, frigo vide sans ressources, ou si la personne demande de l'aide pour s'acheter à manger ou faire ses courses par manque d'argent (découvert bancaire, budget insuffisant).
+    - "aide_alimentaire" si dénutrition sévère, frigo vide sans ressources, ou si la personne demande de l'aide pour s'acheter à manger ou faire ses courses par manque d'argent.
     - "secours_urgence" si danger vital imminent ou agression physique en cours.
-    - "recherche_medecin" si recherche active de médecin traitant.
-    - "maintien_a_domicile" si demande générale d'aide à domicile pour rester chez soi (ex: aides professionnelles, auxiliaire), adaptation ou panne d'équipement (ex: réfrigérateur en panne), ou besoin d'aide physique pour les courses. EXCLUSION STRICTE : Si la demande d'aide pour manger ou faire les courses est liée à un manque d'argent (découvert, pauvreté), choisissez "aide_alimentaire".
+    - "recherche_medecin" si recherche active de médecin traitant (ex: médecin à la retraite).
+    - "maintien_a_domicile" si demande générale d'aide à domicile pour rester chez soi (ex: aides professionnelles, auxiliaire, portage de repas), ou adaptation d'équipement.
+    - "logement" si la demande concerne principalement une recherche de logement social, d'hébergement d'urgence, d'entrée en EHPAD, de résidence autonomie ou de relogement.
+    - "aide_administrative" si la demande concerne principalement l'aide pour des dossiers administratifs, de droits sociaux, d'aide sociale à l'hébergement (ASH), de renouvellement MDPH ou de mesures de protection.
     - "information_aides" si demande générale d'informations.
 11. "professionnels_domicile" : Choisir "oui" si des professionnels (infirmiers, kinés, aides) passent régulièrement, ou "non" sinon.
 12. "aidant_regulier" : Choisir "oui" si présence régulière et stable d'un aidant familial, ou "non" sinon.
-13. "etat_logement" : Choisir "diogene" si syndrome de Diogène, "incurie" si logement très sale, "insalubre" si pas d'eau ou plafond menace de s'effondrer, "propre" si propre, ou "non_renseigne" sinon.
+13. "etat_logement" : Choisir "diogene" uniquement en cas de syndrome de Diogène avéré ou mentionné explicitement. Choisir "incurie" si le logement est décrit comme très sale, insalubre ou mal entretenu. Choisir "propre" si propre, ou "non_renseigne" sinon.
 14. "proposition_mail" : Rédiger un court brouillon d'e-mail professionnel (3-4 phrases maximum), écrit à la 3ème personne, prêt à être envoyé par le professionnel à la structure d'orientation pour résumer la situation et la demande. NE PAS INCLURE de formules de politesse ("Bonjour", "Cordialement"), générer uniquement le corps du texte.
 
-### DIRECTIVES DE CONFIANCE (TRÈS IMPORTANT) :
-Pour chaque variable extraite ci-dessus, attribue un score de confiance (nombre entier de 0 à 100) dans l'objet "confiance_variables" :
-- 100 : Si la donnée est mentionnée explicitement et sans ambiguïté dans le texte (ex: "79 ans", "Toulon", "déjà l'APA").
-- 70 à 90 : Si la donnée est déduite logiquement avec une grande certitude à partir du contexte clinique ou sémantique.
-- 40 à 69 : S'il y a de l'ambiguïté, du doute, ou des contradictions dans le récit.
-- 0 : Si la donnée est totalement absente ou inconnue du récit (la variable correspondante est null, "inconnu" ou "non_renseigne").
+### EXEMPLES D'EXTRACTION CLINIQUE :
+
+Exemple 1 :
+SITUATION : "Bonjour, je suis infirmière libérale à Toulon. Je prends en charge un patient de 80 ans qui vit avec son épouse. Monsieur est en refus de soins, chutes à répétition, son épouse est épuisée. Pas d'APA."
+JSON attendu :
+{{
+  "age": 80,
+  "ville": "Toulon",
+  "apa": "non",
+  "pch": "inconnu",
+  "gir": null,
+  "professionnels_domicile": "oui",
+  "aidant_regulier": "oui",
+  "medecin_traitant": "identifie",
+  "malveillance": "aucune",
+  "urgence": "faible",
+  "hospitalisation": "aucun",
+  "motif": "refus_de_soins",
+  "etat_logement": "propre",
+  "raisonnement_expert": "Patient de 80 ans à Toulon, en refus de soins et sujet à des chutes répétées, avec épuisement de l'aidant (épouse).",
+  "proposition_mail": "Monsieur, âgé de 80 ans et vivant à Toulon, présente une dégradation physique marquée par des chutes à répétition et refuse les soins prescrits. Son épouse, qui l'accompagne au quotidien, est épuisée. Nous sollicitons votre intervention pour une évaluation globale et un soutien à domicile.",
+  "confiance_variables": {{
+    "age": 100,
+    "ville": 100,
+    "apa": 100,
+    "pch": 0,
+    "gir": 0,
+    "professionnels_domicile": 100,
+    "aidant_regulier": 100,
+    "medecin_traitant": 80,
+    "malveillance": 90,
+    "urgence": 90,
+    "hospitalisation": 90,
+    "motif": 100,
+    "etat_logement": 80
+  }}
+}}
+
+Exemple 2 :
+SITUATION : "Je suis la sœur d’un homme de 44 ans, vivant à six fours, il a besoin d’un accompagnement pour des démarches administratives et une demande de logement social suite à la perte d’autonomie en lien avec un accident."
+JSON attendu :
+{{
+  "age": 44,
+  "ville": "Six-Fours",
+  "apa": "inconnu",
+  "pch": "inconnu",
+  "gir": null,
+  "professionnels_domicile": "non",
+  "aidant_regulier": "non",
+  "medecin_traitant": "incertain",
+  "malveillance": "aucune",
+  "urgence": "faible",
+  "hospitalisation": "aucun",
+  "motif": "logement",
+  "etat_logement": "non_renseigne",
+  "raisonnement_expert": "Patient de 44 ans à Six-Fours demandant un accompagnement social pour un logement social et des démarches administratives.",
+  "proposition_mail": "Monsieur, âgé de 44 ans et habitant à Six-Fours, a perdu son autonomie suite à un accident. Sa sœur sollicite notre accompagnement pour l'aider dans ses démarches administratives et formuler une demande de logement social adapté.",
+  "confiance_variables": {{
+    "age": 100,
+    "ville": 100,
+    "apa": 0,
+    "pch": 0,
+    "gir": 0,
+    "professionnels_domicile": 80,
+    "aidant_regulier": 80,
+    "medecin_traitant": 0,
+    "malveillance": 90,
+    "urgence": 95,
+    "hospitalisation": 95,
+    "motif": 100,
+    "etat_logement": 0
+  }}
+}}
 
 Format JSON attendu :
 {{
@@ -81,7 +150,7 @@ Format JSON attendu :
   "malveillance": "spoliation_financiere / violences_physiques / negligence / aucune",
   "urgence": "faible / modere / eleve / critique",
   "hospitalisation": "en_cours / recente / aucun",
-  "motif": "evaluation_globale / refus_de_soins / sortie_hospitalisation / aide_alimentaire / secours_urgence / recherche_medecin / maintien_a_domicile / information_aides / refus_aide_domicile",
+  "motif": "evaluation_globale / refus_de_soins / sortie_hospitalisation / aide_alimentaire / secours_urgence / recherche_medecin / maintien_a_domicile / logement / aide_administrative / information_aides / refus_aide_domicile",
   "etat_logement": "diogene / incurie / insalubre / propre / non_renseigne",
   "raisonnement_expert": "Résumé court et raisonnement clinique",
   "proposition_mail": "Brouillon du mail de demande d'orientation",
@@ -137,9 +206,11 @@ Vous devez retourner uniquement les critères COMID qui sont présents de maniè
 4. **logement_inadapte** : Concerne uniquement l'inadaptation physique du logement (ex: 3ème étage sans ascenseur, insalubrité). Des difficultés financières pour payer les factures d'énergie ou le loyer ne rendent pas le logement physiquement inadapté.
 5. **degradation_recente** : Concerne uniquement une dégradation brutale de l'état de santé physique ou psychique depuis moins d'un mois. Un découvert bancaire récent ou un impayé n'est pas une dégradation de santé.
 6. **sollicitations_recurrentes** : Doit être True si l'usager appelle plusieurs fois par jour les professionnels (ex: cabinet infirmier) ou ses proches.
-7. **anxiete** : Doit être True si le texte mentionne explicitement que l'usager est anxieux ou très angoissé pour sa santé.
-8. **douleurs** : Concerne uniquement les douleurs physiques chroniques (ex: souffre en permanence, arthrose douloureuse). Un risque de chute, une fatigue ou un malaise n'est pas une douleur.
-9. **depression** : Concerne uniquement la dépression clinique (moral au plus bas, idées noires, ne veut plus vivre). Être angoissée suite à des violences n'est pas de la dépression.
+10. **psychiatrie** : Doit être True si l'usager présente des pathologies, diagnostics ou des troubles psychiatriques mentionnés dans le texte (ex: schizophrénie, bipolarité, psychose, paranoïa, comportement paranoïaque, délires, hallucinations, suivi psychiatrique).
+11. **addiction** : Doit être True si l'usager a une dépendance ou une consommation excessive d'alcool, de drogues ou de médicaments (ex: consomme beaucoup d'alcool, état d'ébriété, éthylisme, ancien toxicomane, alcoolisme).
+12. **anxiete** : Doit être True si le texte mentionne explicitement que l'usager est anxieux ou très angoissé pour sa santé.
+13. **douleurs** : Concerne uniquement les douleurs physiques chroniques (ex: souffre en permanence, arthrose douloureuse). Un risque de chute, une fatigue ou un malaise n'est pas une douleur.
+14. **depression** : Concerne uniquement la dépression clinique (moral au plus bas, idées noires, ne veut plus vivre). Être angoissée suite à des violences n'est pas de la dépression.
 
 Format JSON attendu :
 {{
@@ -152,7 +223,8 @@ Format JSON attendu :
   ]
 }}
 
-Exemple :
+Exemples :
+Exemple 1 :
 SITUATION : "Mme A. de 80 ans vit seule. Elle oublie de manger et a fait une chute hier."
 JSON attendu :
 {{
@@ -165,6 +237,24 @@ JSON attendu :
     {{
       "code": "perte_autonomie_recente",
       "justification": "a fait une chute hier",
+      "confiance": 95
+    }}
+  ]
+}}
+
+Exemple 2 :
+SITUATION : "Mme X., 65 ans, vit seule dans un logement social. Elle consomme beaucoup d'alcool et se retrouve nue dehors. Son appartement est insalubre."
+JSON attendu :
+{{
+  "criteres_presents": [
+    {{
+      "code": "addiction",
+      "justification": "consomme beaucoup d'alcool",
+      "confiance": 100
+    }},
+    {{
+      "code": "psychiatrie",
+      "justification": "nue dehors",
       "confiance": 95
     }}
   ]

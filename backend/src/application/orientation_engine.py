@@ -7,133 +7,139 @@ class OrientationEngine:
 
     def evaluate_orientation(self, extracted_data: dict, comid_results: dict):
         """
-        Évalue l'éligibilité du patient pour chaque structure définie dans les règles.
+        Évalue les garde-fous stricts et accumule les scores cliniques pondérés pour orienter.
         """
         if comid_results is None:
             comid_results = {}
 
-        # On prépare un dictionnaire de données complet pour l'évaluation
+        # Préparation du contexte d'évaluation
         eval_context = {**extracted_data}
         eval_context["complexite.niveau"] = comid_results.get("niveau")
         eval_context["complexite.score_total"] = comid_results.get("score_total")
 
+        # Initialisation de toutes les structures
+        all_structures = {
+            "POLICE": {"label": "Police / Gendarmerie (Urgence Vitale & Intervention)", "points": 0},
+            "CEV": {"label": "CEV - Cellule Écoute et Vigilance (Violences & Spoliation)", "points": 0},
+            "SERVICE_SOCIAL_HOPITAL": {"label": "Service Social de l'Hôpital", "points": 0},
+            "CLIC": {"label": "CLIC - Centre Local d'Information et de Coordination", "points": 0},
+            "CRT": {"label": "CRT - Centre de Ressources Territorial (Accompagnement Renforcé)", "points": 0},
+            "DAC": {"label": "DAC - Dispositif d'Appui à la Coordination", "points": 0},
+            "UTS": {"label": "UTS / ASPI - Unité Territoriale Sociale (Action Sociale Prévention Insertion)", "points": 0},
+            "CCAS": {"label": "CCAS - Centre Communal d'Action Sociale", "points": 0},
+            "CPTS": {"label": "CPTS - Communauté Professionnelle Territoriale de Santé", "points": 0},
+            "COMPAGNONS_BATISSEURS": {"label": "Les Compagnons Bâtisseurs (Diogène ou Incurie unique/principale)", "points": 0},
+            "PSCG_SS_APA": {"label": "PSCG SS APA - Pôle Social de Solidarité et de Gestion (APA)", "points": 0}
+        }
+
+        forced_structures = {}  # structure_type -> (priority, objective, guardrail_id)
+        excluded_structures = set()
+
+        # 1. ÉVALUATION DES GARDE-FOUS (GUARDRAILS)
+        for guardrail in self.rules.get("guardrails", []):
+            conditions = guardrail.get("conditions", [])
+            match = True
+            for cond in conditions:
+                if not self._evaluate_condition(cond, eval_context):
+                    match = False
+                    break
+            
+            if match:
+                stype = guardrail["structure_type"]
+                action = guardrail["action"]
+                if action == "exclude":
+                    excluded_structures.add(stype)
+                elif action == "force":
+                    forced_structures[stype] = (
+                        guardrail.get("priority", 100),
+                        guardrail.get("objective", "N/A"),
+                        guardrail["id"]
+                    )
+
+        # 2. PONDÉRATION DES SCORES CLINIQUES (SCORING RULES)
+        matched_rules_per_structure = {}  # stype -> list of (rule_id, points, variables_involved)
+        for rule in self.rules.get("scoring_rules", []):
+            conditions = rule.get("conditions", [])
+            match = True
+            for cond in conditions:
+                if not self._evaluate_condition(cond, eval_context):
+                    match = False
+                    break
+            
+            if match:
+                rule_id = rule["id"]
+                points_map = rule.get("points", {})
+                
+                # Récupérer les variables impliquées dans les conditions (pour le score de confiance)
+                vars_involved = [cond.get("field") for cond in conditions if cond.get("field")]
+                
+                for stype, pts in points_map.items():
+                    if stype not in excluded_structures:
+                        all_structures[stype]["points"] += pts
+                        if stype not in matched_rules_per_structure:
+                            matched_rules_per_structure[stype] = []
+                        matched_rules_per_structure[stype].append((rule_id, pts, vars_involved))
+
+        # 3. LOGIQUE SPÉCIFIQUE : COMPLEXITÉ ÉLEVÉE (COMID >= 10) -> BONUS DAC
+        if comid_results.get("niveau") == "complexe" or comid_results.get("score_total", 0) >= 10:
+            if "DAC" not in excluded_structures:
+                all_structures["DAC"]["points"] += 70
+                if "DAC" not in matched_rules_per_structure:
+                    matched_rules_per_structure["DAC"] = []
+                matched_rules_per_structure["DAC"].append(("complexite_comid_bonus", 70, ["complexite.score_total"]))
+
+        # 4. SÉLECTION ET NORMALISATION DES ORIENTATIONS ÉLIGIBLES
         eligible_structures = []
 
-        for rule in self.rules.get("eligibility_rules", []):
-            if not rule.get("enabled", True):
+        for stype, data in all_structures.items():
+            if stype in excluded_structures:
                 continue
 
-            is_eligible = self._check_eligibility(rule, eval_context)
+            is_forced = stype in forced_structures
+            score = data["points"]
 
-            if is_eligible:
-                score_confiance, explication_confiance = self._calculate_rule_confidence(rule, extracted_data, comid_results)
+            if is_forced or score > 0:
+                if is_forced:
+                    priority = forced_structures[stype][0]
+                    objective = forced_structures[stype][1]
+                    pertinence = "eleve"
+                else:
+                    priority = score
+                    if score >= 50:
+                        pertinence = "eleve"
+                    elif score >= 25:
+                        pertinence = "moyenne"
+                    else:
+                        pertinence = "faible"
+                    
+                    objective = f"Orientation clinique recommandée par l'évaluation clinique multicritère (Score : {score} pts)."
+
+                # Calcul dynamique de la confiance
+                score_confiance, explication_confiance = self._calculate_hybrid_confidence(
+                    stype, is_forced, matched_rules_per_structure.get(stype, []), extracted_data, comid_results
+                )
+
                 eligible_structures.append({
-                    "structure_type": rule["structure_type"],
-                    "label": rule.get("label", rule["structure_type"]),
-                    "priorite": rule.get("result", {}).get("base_priority_score", 0),
-                    "pertinence": rule.get("result", {}).get("base_pertinence", "moyenne"),
-                    "objectif": rule.get("result", {}).get("objectif_orientation", "N/A"),
+                    "structure_type": stype,
+                    "label": data["label"],
+                    "priorite": priority,
+                    "pertinence": pertinence,
+                    "objectif": objective,
                     "score_confiance": score_confiance,
                     "explication_confiance": explication_confiance
                 })
 
-        # Dédoublonner et regrouper par structure_type pour éviter les doublons à l'affichage
-        grouped_structures = {}
-        for struct in eligible_structures:
-            stype = struct["structure_type"]
-            if stype not in grouped_structures:
-                grouped_structures[stype] = {
-                    "structure_type": stype,
-                    "winning_label": struct["label"],
-                    "priorite": struct["priorite"],
-                    "pertinence": struct["pertinence"],
-                    "score_confiance": struct["score_confiance"],
-                    "explication_confiance": struct["explication_confiance"],
-                    "matches": [(struct["label"], struct["objectif"], struct["score_confiance"], struct["explication_confiance"])]
-                }
-            else:
-                # On garde la priorité maximale
-                if struct["priorite"] > grouped_structures[stype]["priorite"]:
-                    grouped_structures[stype]["priorite"] = struct["priorite"]
-                    grouped_structures[stype]["winning_label"] = struct["label"]
-                # On combine les pertinences
-                if struct["pertinence"] == "eleve":
-                    grouped_structures[stype]["pertinence"] = "eleve"
-                # On garde la confiance maximale
-                if struct["score_confiance"] > grouped_structures[stype]["score_confiance"]:
-                    grouped_structures[stype]["score_confiance"] = struct["score_confiance"]
-                    grouped_structures[stype]["explication_confiance"] = struct["explication_confiance"]
-                # On évite d'ajouter des doublons exacts d'explications
-                match_entry = (struct["label"], struct["objectif"], struct["score_confiance"], struct["explication_confiance"])
-                if match_entry not in grouped_structures[stype]["matches"]:
-                    grouped_structures[stype]["matches"].append(match_entry)
+        # Tri des orientations par priorité décroissante
+        eligible_structures.sort(key=lambda x: x["priorite"], reverse=True)
 
-        # On reconstruit la liste finale avec les explications combinées
-        final_structures = []
-        for stype, data in grouped_structures.items():
-            if len(data["matches"]) == 1:
-                final_structures.append({
-                    "structure_type": stype,
-                    "label": data["winning_label"],
-                    "priorite": data["priorite"],
-                    "pertinence": data["pertinence"],
-                    "objectif": data["matches"][0][1],
-                    "score_confiance": data["score_confiance"],
-                    "explication_confiance": data["explication_confiance"]
-                })
-            else:
-                # On définit un label propre de niveau structure pour le regroupement
-                base_label = data["winning_label"]
-                if " - " in base_label:
-                    parts = base_label.split(" - ")
-                    prefix = parts[0].strip()
-                    if prefix == "DAC":
-                        base_label = "DAC - Dispositif d'Appui à la Coordination"
-                    elif prefix == "CRT":
-                        base_label = "CRT - Centre de Ressources Territorial (Accompagnement Renforcé)"
-                    elif prefix == "CLIC":
-                        base_label = "CLIC - Centre Local d'Information et de Coordination"
-                # Regroupement des explications sous forme de liste à puces propre
-                combined_objectifs = "Motifs d'orientation combinés :"
-                for label, obj, conf, expl in data["matches"]:
-                    clean_label = label
-                    if " - " in clean_label:
-                        clean_label = clean_label.split(" - ", 1)[1].strip()
-                    combined_objectifs += f"\n  - [{clean_label}] (Confiance : {conf}%) : {obj}"
-                    combined_objectifs += f"\n    -> Justification confiance : {expl}"
-
-                final_structures.append({
-                    "structure_type": stype,
-                    "label": base_label,
-                    "priorite": data["priorite"],
-                    "pertinence": data["pertinence"],
-                    "objectif": combined_objectifs,
-                    "score_confiance": data["score_confiance"],
-                    "explication_confiance": data["explication_confiance"]
-                })
-
-        # On trie par score de priorité (le plus élevé en premier)
-        final_structures.sort(key=lambda x: x["priorite"], reverse=True)
-
-        # Si les règles globales imposent une seule structure ou si on veut la meilleure
-        allow_multiple = self.rules.get("global_rules", {}).get("allow_multiple_eligible_structures", True)
-        if not allow_multiple and final_structures:
-            final_structures = [final_structures[0]]
-
-        # Ajout du message d'alerte explicite si la confiance est < 40%
-        for struct in final_structures:
-            if struct.get("score_confiance", 100) < 40:
-                warning_prefix = "[/!\\ INFORMATIONS INSUFFISANTES : Il est vivement conseille de recueillir plus de precisions sur la situation du patient pour fiabiliser cette orientation] "
-                struct["objectif"] = warning_prefix + struct.get("objectif", "")
-
-        # Si aucune structure n'est éligible
-        if not final_structures:
+        # 5. FALLBACK : SI AUCUNE STRUCTURE N'EST ÉLIGIBLE MAIS QUE LE CAS EST IDENTIFIABLE -> DAC
+        if not eligible_structures:
             age = extracted_data.get("usager.identite.age_estime")
             ville = extracted_data.get("usager.localisation.commune_residence")
             if age is not None or (ville is not None and ville != "inconnu" and ville != "non_renseigne"):
-                final_structures.append({
+                eligible_structures.append({
                     "structure_type": "DAC",
-                    "label": "DAC - Dispositif d'Appui à la Coordination (Orientation indéterminée)",
+                    "label": all_structures["DAC"]["label"],
                     "priorite": 10,
                     "pertinence": "moyenne",
                     "objectif": "Aucun profil type n'a été identifié pour les autres structures. Orientation vers le DAC pour évaluation globale et coordination.",
@@ -141,7 +147,7 @@ class OrientationEngine:
                     "explication_confiance": "Orientation par défaut car la situation ne correspond à aucun parcours standard."
                 })
             else:
-                final_structures.append({
+                eligible_structures.append({
                     "structure_type": "BESOIN_INFOS",
                     "label": "Informations insuffisantes pour orienter",
                     "priorite": 0,
@@ -151,56 +157,64 @@ class OrientationEngine:
                     "explication_confiance": "Aucune structure n'est eligible car les informations sont trop incompletes ou absentes dans le recit."
                 })
 
-        return final_structures
+        # Alerte si la confiance globale est trop basse (< 40%)
+        for struct in eligible_structures:
+            if struct.get("score_confiance", 100) < 40:
+                warning_prefix = "[/!\\ INFORMATIONS INSUFFISANTES : Il est vivement conseille de recueillir plus de precisions sur la situation du patient pour fiabiliser cette orientation] "
+                struct["objectif"] = warning_prefix + struct.get("objectif", "")
 
-    def _check_eligibility(self, rule: dict, data: dict):
-        # 1. Vérification ALL_OF (toutes les conditions doivent être vraies)
-        for condition in rule.get("all_of", []):
-            if not self._evaluate_condition(condition, data):
-                return False
-
-        # 2. Vérification ANY_OF (au moins une doit être vraie s'il y en a)
-        any_of_conditions = rule.get("any_of", [])
-        if any_of_conditions:
-            found_any = False
-            for condition in any_of_conditions:
-                if self._evaluate_condition(condition, data):
-                    found_any = True
-                    break
-            if not found_any:
-                return False
-
-        # 3. Vérification NONE_OF (aucune ne doit être vraie)
-        for condition in rule.get("none_of", []):
-            if self._evaluate_condition(condition, data):
-                return False
-
-        return True
+        return eligible_structures
 
     def _evaluate_condition(self, condition: dict, data: dict):
         field = condition.get("field")
         operator = condition.get("operator")
         target_value = condition.get("value")
         
-        # On récupère la valeur actuelle dans les données
         actual_value = data.get(field)
 
-        if actual_value is None or target_value is None:
-            return False
-
         if operator == "==":
+            if actual_value is None or target_value is None:
+                return str(actual_value) == str(target_value)
             return str(actual_value) == str(target_value)
+        elif operator == "!=":
+            return str(actual_value) != str(target_value)
         elif operator == ">=":
+            if actual_value is None or target_value is None:
+                return False
             try:
                 return float(actual_value) >= float(target_value)
             except:
                 return False
+        elif operator == "<=":
+            if actual_value is None or target_value is None:
+                return False
+            try:
+                return float(actual_value) <= float(target_value)
+            except:
+                return False
+        elif operator == ">":
+            if actual_value is None or target_value is None:
+                return False
+            try:
+                return float(actual_value) > float(target_value)
+            except:
+                return False
+        elif operator == "<":
+            if actual_value is None or target_value is None:
+                return False
+            try:
+                return float(actual_value) < float(target_value)
+            except:
+                return False
         elif operator == "in":
+            if actual_value is None or target_value is None:
+                return False
             if isinstance(target_value, list):
-                # On compare en string pour éviter les problèmes int/str
                 return str(actual_value) in [str(v) for v in target_value]
             return str(actual_value) in str(target_value)
         elif operator == "contains_any":
+            if actual_value is None or target_value is None:
+                return False
             if isinstance(target_value, list):
                 if isinstance(actual_value, list):
                     return any(str(item) in [str(v) for v in actual_value] for item in target_value)
@@ -209,18 +223,24 @@ class OrientationEngine:
         
         return False
 
-    def _calculate_rule_confidence(self, rule: dict, extracted_data: dict, comid_results: dict) -> tuple[int, str]:
+    def _calculate_hybrid_confidence(self, stype, is_forced, matched_rules, extracted_data, comid_results):
         """
-        Calcule de manière hybride la confiance d'une règle d'orientation et produit une explication détaillée.
+        Calcule de manière hybride la certitude des informations supportant l'orientation.
         """
-        fields = []
-        for cond in rule.get("all_of", []) + rule.get("any_of", []) + rule.get("none_of", []):
-            if "field" in cond:
-                fields.append(cond["field"])
-        fields = list(set(fields))
+        if is_forced:
+            return 100, "Orientation d'urgence absolue ou réglementaire forcée."
 
-        if not fields:
-            return 100, "Aucun critère à évaluer."
+        if not matched_rules:
+            return 50, "Basé sur des critères généraux par défaut."
+
+        # Récupérer l'ensemble des variables contributrices
+        vars_involved = []
+        for rule_id, pts, fields in matched_rules:
+            vars_involved.extend(fields)
+        
+        vars_involved = list(set(vars_involved))
+        if not vars_involved:
+            return 100, "Critères stables d'orientation."
 
         FIELD_TO_VAR_MAP = {
             "adresseur.degre_urgence_percu": "urgence",
@@ -245,19 +265,19 @@ class OrientationEngine:
         missing_count = 0
         detail_explications = []
 
-        for field in fields:
+        for field in vars_involved:
             if field in FIELD_TO_VAR_MAP:
                 var_name = FIELD_TO_VAR_MAP[field]
                 actual_val = extracted_data.get(field)
                 
-                if actual_val is None or str(actual_val).lower() in ["inconnu", "non_renseigne", "incertain"]:
+                if actual_val is None or str(actual_val).lower() in ["inconnu", "non_renseigne", "incertain", "none", "null"]:
                     conf_scores.append(0)
                     missing_count += 1
                     detail_explications.append(f"variable clé '{var_name}' manquante")
                 else:
                     conf = confiances_variables.get(var_name, 100)
                     conf_scores.append(conf)
-                    detail_explications.append(f"variable '{var_name}' extraite avec certitude de {conf}%")
+                    detail_explications.append(f"variable '{var_name}' extraite à {conf}%")
 
             elif field.startswith("evaluation.comid."):
                 code = field.replace("evaluation.comid.", "")
@@ -265,47 +285,29 @@ class OrientationEngine:
                 if is_present:
                     conf = confiances_comid.get(code, 100)
                     conf_scores.append(conf)
-                    detail_explications.append(f"critère COMID '{code}' détecté avec certitude de {conf}%")
+                    detail_explications.append(f"critère COMID '{code}' détecté à {conf}%")
                 else:
                     conf_scores.append(100)
 
             elif field.startswith("complexite."):
                 if confiances_comid:
                     avg_comid = sum(confiances_comid.values()) / len(confiances_comid)
-                    score_total = comid_results.get("score_total", 0)
-                    if score_total >= 10:
-                        conf_scores.append(avg_comid)
-                        detail_explications.append(f"score complexite COMID estime a {int(avg_comid)}% de certitude (Situation complexe)")
-                    elif 6 <= score_total <= 9:
-                        val_conf = max(avg_comid - 30, 0)
-                        conf_scores.append(val_conf)
-                        detail_explications.append(f"score complexite COMID estime a {int(avg_comid)}% de certitude (Penalite de pseudo-complexite de -30% appliquee)")
-                    else:
-                        val_conf = max(avg_comid - 70, 0)
-                        conf_scores.append(val_conf)
-                        detail_explications.append(f"score complexite COMID estime a {int(avg_comid)}% de certitude (Penalite de situation non complexe de -70% appliquee)")
+                    conf_scores.append(avg_comid)
+                    detail_explications.append(f"complexité COMID ({int(avg_comid)}% certitude)")
                 else:
                     conf_scores.append(100)
-
             else:
-                actual_val = extracted_data.get(field)
-                if actual_val is None or str(actual_val).lower() in ["inconnu", "non_renseigne", "incertain"]:
-                    conf_scores.append(0)
-                    missing_count += 1
-                    detail_explications.append(f"donnée '{field}' manquante")
-                else:
-                    conf_scores.append(100)
-                    detail_explications.append(f"donnée '{field}' présente (100% certitude)")
+                conf_scores.append(100)
 
         if not conf_scores:
-            return 100, "Aucun critère pertinent à évaluer."
+            return 100, "Orientation stable."
 
         base_confidence = sum(conf_scores) / len(conf_scores)
-        penalty = missing_count * 20
+        penalty = missing_count * 15
         final_confidence = int(min(max(base_confidence - penalty, 0), 100))
 
         explication = ", ".join(detail_explications)
         if penalty > 0:
-            explication += f" (Pénalité de complétude appliquée de -{penalty}% pour {missing_count} variable(s) manquante(s))"
+            explication += f" (Pénalité de complétude de -{penalty}% appliquée)"
 
         return final_confidence, explication

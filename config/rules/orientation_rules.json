@@ -1,701 +1,331 @@
 {
-    "meta": {
-        "id": "orientation_rules_v1",
-        "version": "1.4.0",
-        "description": "Règles d'orientation ORIA territoriales de production validées"
+  "meta": {
+    "id": "orientation_rules_hybrid_v1",
+    "version": "2.0.0",
+    "description": "Règles d'orientation ORIA Hybrides : Garde-fous et Pondération clinique"
+  },
+  "guardrails": [
+    {
+      "id": "guardrail_police",
+      "structure_type": "POLICE",
+      "action": "force",
+      "priority": 110,
+      "objective": "Intervention immédiate des forces de l'ordre en cas d'agression physique active et en cours ou danger vital imminent.",
+      "conditions": [
+        {"field": "adresseur.degre_urgence_percu", "operator": "==", "value": "critique"},
+        {"field": "demande.motif_principal", "operator": "==", "value": "secours_urgence"}
+      ]
     },
-    "global_rules": {
-        "urgency_first": true,
-        "allow_multiple_eligible_structures": true,
-        "apply_priority_scoring": true
+    {
+      "id": "guardrail_cev_physique",
+      "structure_type": "CEV",
+      "action": "force",
+      "priority": 107,
+      "objective": "Mise en sécurité immédiate et protection d'urgence des majeurs vulnérables en situation de violence physique active ou menacée.",
+      "conditions": [
+        {"field": "usager.situation_actuelle.suspicion_malveillance", "operator": "==", "value": "violences_physiques"}
+      ]
     },
-    "eligibility_rules": [
-        {
-            "id": "eligibility_police_01",
-            "structure_type": "POLICE",
-            "label": "Police / Gendarmerie (Urgence Vitale & Intervention)",
-            "enabled": true,
-            "all_of": [
-                {
-                    "field": "adresseur.degre_urgence_percu",
-                    "operator": "==",
-                    "value": "critique"
-                },
-                {
-                    "field": "demande.motif_principal",
-                    "operator": "==",
-                    "value": "secours_urgence"
-                }
-            ],
-            "any_of": [],
-            "none_of": [
-                {
-                    "field": "usager.situation_actuelle.APA",
-                    "operator": "in",
-                    "value": ["oui", "inconnu"]
-                },
-                {
-                    "field": "usager.situation_actuelle.suspicion_malveillance",
-                    "operator": "in",
-                    "value": ["spoliation_financiere"]
-                }
-            ],
-            "result": {
-                "eligible": true,
-                "base_pertinence": "eleve",
-                "base_priority_score": 110,
-                "objectif_orientation": "Intervention immédiate des forces de l'ordre en cas d'agression physique active et en cours ou danger vital imminent."
-            }
-        },
-        {
-            "id": "eligibility_cev_01",
-            "structure_type": "CEV",
-            "label": "CEV - Cellule Écoute et Vigilance (Violences Physiques & Danger Immédiat)",
-            "enabled": true,
-            "all_of": [
-                {
-                    "field": "usager.situation_actuelle.suspicion_malveillance",
-                    "operator": "==",
-                    "value": "violences_physiques"
-                }
-            ],
-            "any_of": [],
-            "none_of": [],
-            "result": {
-                "eligible": true,
-                "base_pertinence": "eleve",
-                "base_priority_score": 107,
-                "objectif_orientation": "Mise en sécurité immédiate et protection d'urgence des majeurs vulnérables en situation de violence physique active ou menacée."
-            }
-        },
-        {
-            "id": "eligibility_cev_02",
-            "structure_type": "CEV",
-            "label": "CEV - Cellule Écoute et Vigilance (Spoliation & Autres Dangers)",
-            "enabled": true,
-            "all_of": [],
-            "any_of": [
-                {
-                    "field": "usager.situation_actuelle.suspicion_malveillance",
-                    "operator": "in",
-                    "value": [
-                        "violences_psychologiques",
-                        "violences_sexuelles",
-                        "negligence",
-                        "spoliation_financiere",
-                        "abus_de_confiance_ou_faiblesse",
-                        "privation_de_droits",
-                        "maltraitance_institutionnelle"
-                    ]
-                },
-                {
-                    "field": "vulnerabilites.habitat.securite_du_domicile",
-                    "operator": "in",
-                    "value": ["problematique", "critique", "danger_imminent"]
-                }
-            ],
-            "none_of": [
-                {
-                    "field": "demande.motif_principal",
-                    "operator": "in",
-                    "value": ["recherche_medecin", "acces_aux_soins", "information_aides", "refus_de_soins"]
-                },
-                {
-                    "field": "vulnerabilites.sante.hospitalisation.statut",
-                    "operator": "in",
-                    "value": ["recente", "en_cours"]
-                },
-                {
-                    "comment": "Exclusion spécifique anti-hallucination pour Mme Petit",
-                    "field": "usager.localisation.commune_residence",
-                    "operator": "==",
-                    "value": "La Garde"
-                },
-                {
-                    "comment": "Exclusion des cas de syndrome de Diogène ou incurie pour éviter de fausser l'orientation vers le DAC",
-                    "field": "usager.cadre_de_vie.etat_logement",
-                    "operator": "in",
-                    "value": ["diogene", "incurie"]
-                }
-            ],
-            "result": {
-                "eligible": true,
-                "base_pertinence": "eleve",
-                "base_priority_score": 107,
-                "objectif_orientation": "Mise en sécurité immédiate, protection juridique et physique des majeurs vulnérables en situation de danger social ou maltraitance financière."
-            }
-        },
-        {
-            "id": "eligibility_dac_01",
-            "structure_type": "DAC",
-            "label": "DAC - Refus de soins ou d'aide (Priorité Absolue)",
-            "enabled": false,
-            "all_of": [],
-            "any_of": [
-                {
-                    "field": "demande.motif_principal",
-                    "operator": "in",
-                    "value": ["refus_de_soins", "refus_aide_domicile"]
-                },
-                {
-                    "field": "evaluation.comid.opposition_soins",
-                    "operator": "==",
-                    "value": true
-                }
-            ],
-            "none_of": [],
-            "result": {
-                "eligible": true,
-                "base_pertinence": "eleve",
-                "base_priority_score": 105,
-                "objectif_orientation": "Refus de soins ou opposition critique aux aides à domicile : Rupture critique de parcours nécessitant l'intervention immédiate du DAC pour débloquer la situation."
-            }
-        },
-        {
-            "id": "eligibility_apa_service_01",
-            "structure_type": "PSCG_SS_APA",
-            "label": "PSCG SS APA - Pôle Social de Solidarité et de Gestion (APA)",
-            "enabled": true,
-            "all_of": [
-                {
-                    "field": "usager.situation_actuelle.APA",
-                    "operator": "==",
-                    "value": "oui"
-                }
-            ],
-            "any_of": [],
-            "none_of": [
-                {
-                    "field": "usager.identite.age_estime",
-                    "operator": "<=",
-                    "value": 60
-                },
-                {
-                    "field": "evaluation.comid.degradation_recente",
-                    "operator": "==",
-                    "value": true
-                },
-                {
-                    "field": "evaluation.comid.perte_autonomie_recente",
-                    "operator": "==",
-                    "value": true
-                },
-                {
-                    "field": "evaluation.comid.troubles_cognitifs",
-                    "operator": "==",
-                    "value": true
-                },
-                {
-                    "field": "evaluation.comid.trouble_cognitif_aigu",
-                    "operator": "==",
-                    "value": true
-                },
-                {
-                    "field": "evaluation.comid.multimorbidite",
-                    "operator": "==",
-                    "value": true
-                },
-                {
-                    "field": "evaluation.comid.douleurs",
-                    "operator": "==",
-                    "value": true
-                },
-                {
-                    "field": "evaluation.comid.imprevisibilite",
-                    "operator": "==",
-                    "value": true
-                },
-                {
-                    "field": "evaluation.comid.polymedication",
-                    "operator": "==",
-                    "value": true
-                }
-            ],
-            "result": {
-                "eligible": true,
-                "base_pertinence": "eleve",
-                "base_priority_score": 100,
-                "objectif_orientation": "Contacter votre référent APA au Conseil Départemental (PSCG SS APA) pour toute modification de plan d'aide ou besoin d'accompagnement social supplémentaire."
-            }
-        },
-        {
-            "id": "eligibility_dac_apa_health_01",
-            "structure_type": "DAC",
-            "label": "DAC - Orientation complexe (APA + Problématique de Santé)",
-            "enabled": true,
-            "all_of": [
-                {
-                    "field": "usager.situation_actuelle.APA",
-                    "operator": "==",
-                    "value": "oui"
-                }
-            ],
-            "any_of": [
-                {
-                    "field": "evaluation.comid.degradation_recente",
-                    "operator": "==",
-                    "value": true
-                },
-                {
-                    "field": "evaluation.comid.perte_autonomie_recente",
-                    "operator": "==",
-                    "value": true
-                },
-                {
-                    "field": "evaluation.comid.troubles_cognitifs",
-                    "operator": "==",
-                    "value": true
-                },
-                {
-                    "field": "evaluation.comid.trouble_cognitif_aigu",
-                    "operator": "==",
-                    "value": true
-                },
-                {
-                    "field": "evaluation.comid.multimorbidite",
-                    "operator": "==",
-                    "value": true
-                },
-                {
-                    "field": "evaluation.comid.douleurs",
-                    "operator": "==",
-                    "value": true
-                },
-                {
-                    "field": "evaluation.comid.imprevisibilite",
-                    "operator": "==",
-                    "value": true
-                },
-                {
-                    "field": "evaluation.comid.polymedication",
-                    "operator": "==",
-                    "value": true
-                }
-            ],
-            "none_of": [],
-            "result": {
-                "eligible": true,
-                "base_pertinence": "eleve",
-                "base_priority_score": 105,
-                "objectif_orientation": "Patient bénéficiant déjà de l'APA mais présentant une problématique de santé/dégradation clinique : Nécessite une coordination intensive par le DAC pour réévaluer et sécuriser le maintien à domicile."
-            }
-        },
-        {
-            "id": "eligibility_hopital_01",
-            "structure_type": "SERVICE_SOCIAL_HOPITAL",
-            "label": "Service Social de l'Hôpital (Hospitalisation en cours)",
-            "enabled": true,
-            "all_of": [
-                {
-                    "field": "vulnerabilites.sante.hospitalisation.statut",
-                    "operator": "==",
-                    "value": "en_cours"
-                }
-            ],
-            "any_of": [],
-            "none_of": [
-                {
-                    "field": "demande.motif_principal",
-                    "operator": "in",
-                    "value": ["recherche_medecin", "acces_aux_soins"]
-                }
-            ],
-            "result": {
-                "eligible": true,
-                "base_pertinence": "eleve",
-                "base_priority_score": 95,
-                "objectif_orientation": "Accompagnement social en milieu hospitalier : Organisation de la sortie et lien direct avec le service social de l'établissement."
-            }
-        },
-        {
-            "id": "eligibility_hopital_02",
-            "structure_type": "SERVICE_SOCIAL_HOPITAL",
-            "label": "Service Social de l'Hôpital (Hospitalisation récente)",
-            "enabled": true,
-            "all_of": [
-                {
-                    "field": "vulnerabilites.sante.hospitalisation.statut",
-                    "operator": "==",
-                    "value": "recente"
-                }
-            ],
-            "any_of": [],
-            "none_of": [
-                {
-                    "field": "demande.motif_principal",
-                    "operator": "in",
-                    "value": ["recherche_medecin", "acces_aux_soins"]
-                }
-            ],
-            "result": {
-                "eligible": true,
-                "base_pertinence": "eleve",
-                "base_priority_score": 75,
-                "objectif_orientation": "Transition hospitalière sociale : Organisation de la sortie récente et suivi de l'accompagnement social post-hospitalisation."
-            }
-        },
-        {
-            "id": "eligibility_crt_01",
-            "structure_type": "CRT",
-            "label": "CRT - Centre de Ressources Territorial (Accompagnement Renforcé)",
-            "enabled": true,
-            "all_of": [
-                {
-                    "field": "usager.situation_actuelle.GIR",
-                    "operator": "in",
-                    "value": [1, 2, 3, 4]
-                }
-            ],
-            "any_of": [
-                {
-                    "field": "demande.motif_principal",
-                    "operator": "contains_any",
-                    "value": ["renforcement_domicile", "alternative_ehpad", "maintien_intensif", "maintien_renforce", "refus_de_soins", "refus_aide_domicile"]
-                },
-                {
-                    "field": "evaluation.comid.epuisement_aidant",
-                    "operator": "==",
-                    "value": true
-                }
-            ],
-            "none_of": [
-                {
-                    "field": "usager.identite.age_estime",
-                    "operator": "<=",
-                    "value": 60
-                }
-            ],
-            "result": {
-                "eligible": true,
-                "base_pertinence": "eleve",
-                "base_priority_score": 88,
-                "objectif_orientation": "Maintien à domicile renforcé et intensif : Alternative à l'EHPAD pour les situations en perte d'autonomie importante ou complexité technique."
-            }
-        },
-        {
-            "id": "eligibility_clic_01",
-            "structure_type": "CLIC",
-            "label": "CLIC - Centre Local d'Information et de Coordination (Sénior)",
-            "enabled": true,
-            "all_of": [],
-            "any_of": [
-                {
-                    "field": "evaluation.comid.epuisement_aidant",
-                    "operator": "==",
-                    "value": true
-                },
-                {
-                    "field": "demande.motif_principal",
-                    "operator": "contains_any",
-                    "value": ["maintien_a_domicile", "renforcement_domicile", "aide_a_domicile", "information_aides", "choix_prestataire", "portage_repas", "secours_urgence", "evaluation_globale", "refus_de_soins", "refus_aide_domicile"]
-                }
-            ],
-            "none_of": [
-                {
-                    "field": "usager.identite.age_estime",
-                    "operator": "<=",
-                    "value": 60
-                },
-                {
-                    "field": "usager.situation_actuelle.APA",
-                    "operator": "==",
-                    "value": "oui"
-                },
-                {
-                    "field": "demande.motif_principal",
-                    "operator": "in",
-                    "value": ["recherche_medecin", "acces_aux_soins"]
-                }
-            ],
-            "result": {
-                "eligible": true,
-                "base_pertinence": "eleve",
-                "base_priority_score": 80,
-                "objectif_orientation": "Maintien à domicile : Information, évaluation, ouverture des droits (APA, CARSAT) et aide administrative (impôts, retraite). UNIQUEMENT si l'APA n'est pas déjà en place."
-            }
-        },
-        {
-            "id": "eligibility_clic_02",
-            "structure_type": "CLIC",
-            "label": "CLIC - Centre Local d'Information et de Coordination (Exception PCH)",
-            "enabled": true,
-            "all_of": [
-                {
-                    "field": "usager.situation_actuelle.PCH",
-                    "operator": "==",
-                    "value": "oui"
-                }
-            ],
-            "any_of": [
-                {
-                    "field": "demande.motif_principal",
-                    "operator": "contains_any",
-                    "value": ["maintien_a_domicile", "renforcement_domicile", "aide_a_domicile", "information_aides", "choix_prestataire", "portage_repas", "secours_urgence"]
-                }
-            ],
-            "none_of": [
-                {
-                    "field": "demande.motif_principal",
-                    "operator": "in",
-                    "value": ["recherche_medecin", "acces_aux_soins"]
-                }
-            ],
-            "result": {
-                "eligible": true,
-                "base_pertinence": "eleve",
-                "base_priority_score": 102,
-                "objectif_orientation": "Maintien à domicile : Accompagnement spécialisé PCH (Prestation de Compensation du Handicap) pour les moins de 60 ans."
-            }
-        },
-        {
-            "id": "eligibility_dac_02",
-            "structure_type": "DAC",
-            "label": "DAC - Situation de complexité multidimensionnelle (Sanitaire, Social, Médico-social)",
-            "enabled": true,
-            "all_of": [],
-            "any_of": [
-                {
-                    "field": "complexite.niveau",
-                    "operator": "==",
-                    "value": "complexe"
-                }
-            ],
-            "none_of": [],
-            "result": {
-                "eligible": true,
-                "base_pertinence": "eleve",
-                "base_priority_score": 72,
-                "objectif_orientation": "Situation de forte complexité multidimensionnelle (sanitaire, social et médico-social) : Évaluation globale et coordination intensive par le DAC pour débloquer le parcours de vie à domicile."
-            }
-        },
-        {
-            "id": "eligibility_dac_03",
-            "structure_type": "DAC",
-            "label": "DAC - Suspicion de Diogène ou incurie",
-            "enabled": false,
-            "all_of": [],
-            "any_of": [
-                {
-                    "field": "usager.cadre_de_vie.etat_logement",
-                    "operator": "in",
-                    "value": ["diogene", "incurie"]
-                }
-            ],
-            "none_of": [],
-            "result": {
-                "eligible": true,
-                "base_pertinence": "eleve",
-                "base_priority_score": 96,
-                "objectif_orientation": "Insalubrité ou négligence critique à domicile : Suspicion ou syndrome de Diogène/incurie avéré nécessitant une coordination multidimensionnelle renforcée par le DAC."
-            }
-        },
-        {
-            "id": "eligibility_dac_04",
-            "structure_type": "DAC",
-            "label": "DAC - Risque majeur de rupture post-hospitalisation",
-            "enabled": true,
-            "all_of": [
-                {
-                    "field": "evaluation.comid.epuisement_aidant",
-                    "operator": "==",
-                    "value": true
-                },
-                {
-                    "field": "vulnerabilites.sante.hospitalisation.statut",
-                    "operator": "==",
-                    "value": "recente"
-                },
-                {
-                    "field": "demande.motif_principal",
-                    "operator": "==",
-                    "value": "sortie_hospitalisation"
-                }
-            ],
-            "any_of": [],
-            "none_of": [],
-            "result": {
-                "eligible": true,
-                "base_pertinence": "eleve",
-                "base_priority_score": 88,
-                "objectif_orientation": "Situation de sortie récente d'hospitalisation avec un aidant épuisé : Risque critique de rupture de parcours justifiant le recours direct au DAC."
-            }
-        },
-        {
-            "id": "eligibility_dac_05",
-            "structure_type": "DAC",
-            "label": "DAC - Épuisement de l'aidant sans ressource (Urgence Alimentaire)",
-            "enabled": true,
-            "all_of": [
-                {
-                    "field": "evaluation.comid.epuisement_aidant",
-                    "operator": "==",
-                    "value": true
-                },
-                {
-                    "field": "demande.motif_principal",
-                    "operator": "==",
-                    "value": "aide_alimentaire"
-                }
-            ],
-            "any_of": [],
-            "none_of": [],
-            "result": {
-                "eligible": true,
-                "base_pertinence": "eleve",
-                "base_priority_score": 92,
-                "objectif_orientation": "Épuisement critique de l'aidant doublé d'une situation d'insécurité alimentaire d'urgence : Nécessite une coordination DAC globale immédiate."
-            }
-        },
-        {
-            "id": "eligibility_uts_01",
-            "structure_type": "UTS",
-            "label": "UTS / ASPI - Unité Territoriale Sociale (Action Sociale Prévention Insertion)",
-            "enabled": true,
-            "all_of": [],
-            "any_of": [
-                {
-                    "field": "evaluation.comid.precarite_financiere",
-                    "operator": "==",
-                    "value": true
-                },
-                {
-                    "field": "vulnerabilites.social.precarite",
-                    "operator": "in",
-                    "value": ["possible", "probable", "averee"]
-                },
-                {
-                    "field": "demande.motif_principal",
-                    "operator": "contains_any",
-                    "value": ["rsa", "violence_conjugale", "gestion_budget", "parentalite", "logement"]
-                }
-            ],
-            "none_of": [],
-            "result": {
-                "eligible": true,
-                "base_pertinence": "eleve",
-                "base_priority_score": 70,
-                "objectif_orientation": "PAS (Premier Accueil Social) : Évaluation, ouverture de droits, aides financières ponctuelles. Accompagnement social (RSA, budget, logement, violences conjugales)."
-            }
-        },
-        {
-            "id": "eligibility_ccas_01",
-            "structure_type": "CCAS",
-            "label": "CCAS - Centre Communal d'Action Sociale (Standard)",
-            "enabled": true,
-            "all_of": [],
-            "any_of": [
-                {
-                    "field": "demande.motif_principal",
-                    "operator": "contains_any",
-                    "value": ["information", "information_locale", "aide_financiere", "rsa", "aide_administrative", "foyer_logement", "residence_autonomie"]
-                }
-            ],
-            "none_of": [],
-            "result": {
-                "eligible": true,
-                "base_pertinence": "moyenne",
-                "base_priority_score": 60,
-                "objectif_orientation": "Information et premier accueil social : Se renseigner sur les aides légales (RSA), les aides administratives et les logements seniors de la commune."
-            }
-        },
-        {
-            "id": "eligibility_ccas_02",
-            "structure_type": "CCAS",
-            "label": "CCAS - Secours d'Urgence (Alimentaire & Factures)",
-            "enabled": true,
-            "all_of": [
-                {
-                    "field": "demande.motif_principal",
-                    "operator": "in",
-                    "value": ["aide_alimentaire", "secours_urgence", "factures"]
-                }
-            ],
-            "none_of": [],
-            "result": {
-                "eligible": true,
-                "base_pertinence": "eleve",
-                "base_priority_score": 85,
-                "objectif_orientation": "Secours financier ou alimentaire d'urgence de proximité : Attribution d'aides extra-légales par la mairie."
-            }
-        },
-        {
-            "id": "eligibility_cpts_01",
-            "structure_type": "CPTS",
-            "label": "CPTS - Communauté Professionnelle Territoriale de Santé",
-            "enabled": true,
-            "all_of": [],
-            "any_of": [
-                {
-                    "field": "vulnerabilites.sante.suivi_medical.medecin_traitant",
-                    "operator": "in",
-                    "value": ["absent", "non_identifie_avec_certitude"]
-                },
-                {
-                    "field": "demande.motif_principal",
-                    "operator": "contains_any",
-                    "value": ["recherche_medecin", "acces_aux_soins", "misas", "renoncement_aux_soins", "demenagement", "retraite_medecin"]
-                }
-            ],
-            "none_of": [
-                {
-                    "field": "usager.identite.age_estime",
-                    "operator": "<=",
-                    "value": 60
-                }
-            ],
-            "result": {
-                "eligible": true,
-                "base_pertinence": "moyenne",
-                "base_priority_score": 50,
-                "objectif_orientation": "Accès aux soins : Recherche de médecin traitant (justifiée par retraite/déménagement) et dispositif MISAS pour éviter le renoncement aux soins."
-            }
-        },
-        {
-            "id": "eligibility_compagnons_01",
-            "structure_type": "COMPAGNONS_BATISSEURS",
-            "label": "Les Compagnons Bâtisseurs (Diogène ou Incurie unique/principale)",
-            "enabled": true,
-            "all_of": [
-                {
-                    "field": "usager.cadre_de_vie.etat_logement",
-                    "operator": "in",
-                    "value": ["diogene", "incurie"]
-                }
-            ],
-            "any_of": [],
-            "none_of": [
-                {
-                    "field": "complexite.niveau",
-                    "operator": "==",
-                    "value": "complexe"
-                },
-                {
-                    "field": "vulnerabilites.social.precarite",
-                    "operator": "in",
-                    "value": ["possible", "probable", "averee"]
-                },
-                {
-                    "field": "evaluation.comid.precarite_financiere",
-                    "operator": "==",
-                    "value": true
-                },
-                {
-                    "field": "usager.situation_actuelle.APA",
-                    "operator": "==",
-                    "value": "oui"
-                },
-                {
-                    "field": "evaluation.comid.perte_autonomie_recente",
-                    "operator": "==",
-                    "value": true
-                }
-            ],
-            "result": {
-                "eligible": true,
-                "base_pertinence": "eleve",
-                "base_priority_score": 90,
-                "objectif_orientation": "Accompagnement auto-réhabilitation et nettoyage/aménagement du logement pour syndrome de Diogène ou incurie sans complexité sanitaire ou sociale majeure."
-            }
-        }
-    ]
+    {
+      "id": "guardrail_hospit_en_cours",
+      "structure_type": "SERVICE_SOCIAL_HOPITAL",
+      "action": "force",
+      "priority": 95,
+      "objective": "Accompagnement social en milieu hospitalier : Organisation de la sortie et lien direct avec le service social de l'établissement.",
+      "conditions": [
+        {"field": "vulnerabilites.sante.hospitalisation.statut", "operator": "==", "value": "en_cours"}
+      ]
+    },
+    {
+      "id": "exclude_clic_under_60",
+      "structure_type": "CLIC",
+      "action": "exclude",
+      "conditions": [
+        {"field": "usager.identite.age_estime", "operator": "<=", "value": 60},
+        {"field": "usager.situation_actuelle.PCH", "operator": "!=", "value": "oui"}
+      ]
+    },
+    {
+      "id": "exclude_crt_under_60",
+      "structure_type": "CRT",
+      "action": "exclude",
+      "conditions": [
+        {"field": "usager.identite.age_estime", "operator": "<=", "value": 60}
+      ]
+    },
+    {
+      "id": "exclude_apa_under_60",
+      "structure_type": "PSCG_SS_APA",
+      "action": "exclude",
+      "conditions": [
+        {"field": "usager.identite.age_estime", "operator": "<=", "value": 60}
+      ]
+    },
+    {
+      "id": "exclude_compagnons_complex",
+      "structure_type": "COMPAGNONS_BATISSEURS",
+      "action": "exclude",
+      "conditions": [
+        {"field": "complexite.niveau", "operator": "==", "value": "complexe"}
+      ]
+    },
+    {
+      "id": "exclude_compagnons_precarity_financial",
+      "structure_type": "COMPAGNONS_BATISSEURS",
+      "action": "exclude",
+      "conditions": [
+        {"field": "evaluation.comid.precarite_financiere", "operator": "==", "value": true}
+      ]
+    },
+    {
+      "id": "exclude_compagnons_precarity_social",
+      "structure_type": "COMPAGNONS_BATISSEURS",
+      "action": "exclude",
+      "conditions": [
+        {"field": "vulnerabilites.social.precarite", "operator": "in", "value": ["possible", "probable", "averee"]}
+      ]
+    },
+    {
+      "id": "exclude_compagnons_apa",
+      "structure_type": "COMPAGNONS_BATISSEURS",
+      "action": "exclude",
+      "conditions": [
+        {"field": "usager.situation_actuelle.APA", "operator": "==", "value": "oui"}
+      ]
+    },
+    {
+      "id": "exclude_compagnons_autonomy",
+      "structure_type": "COMPAGNONS_BATISSEURS",
+      "action": "exclude",
+      "conditions": [
+        {"field": "evaluation.comid.perte_autonomie_recente", "operator": "==", "value": true}
+      ]
+    },
+    {
+      "id": "exclude_compagnons_addiction",
+      "structure_type": "COMPAGNONS_BATISSEURS",
+      "action": "exclude",
+      "conditions": [
+        {"field": "evaluation.comid.addiction", "operator": "==", "value": true}
+      ]
+    },
+    {
+      "id": "exclude_compagnons_psychiatrie",
+      "structure_type": "COMPAGNONS_BATISSEURS",
+      "action": "exclude",
+      "conditions": [
+        {"field": "evaluation.comid.psychiatrie", "operator": "==", "value": true}
+      ]
+    }
+  ],
+  "scoring_rules": [
+    {
+      "id": "score_malveillance_social",
+      "conditions": [
+        {"field": "usager.situation_actuelle.suspicion_malveillance", "operator": "in", "value": ["violences_psychologiques", "spoliation_financiere", "negligence", "abus_de_confiance_ou_faiblesse", "privation_de_droits", "maltraitance_institutionnelle"]}
+      ],
+      "points": {
+        "CEV": 85
+      }
+    },
+    {
+      "id": "score_recherche_medecin",
+      "conditions": [
+        {"field": "demande.motif_principal", "operator": "==", "value": "recherche_medecin"}
+      ],
+      "points": {
+        "CPTS": 80
+      }
+    },
+    {
+      "id": "score_medecin_absent",
+      "conditions": [
+        {"field": "vulnerabilites.sante.suivi_medical.medecin_traitant", "operator": "==", "value": "absent"}
+      ],
+      "points": {
+        "CPTS": 50
+      }
+    },
+    {
+      "id": "score_maintien_a_domicile",
+      "conditions": [
+        {"field": "demande.motif_principal", "operator": "in", "value": ["maintien_a_domicile", "aide_a_domicile", "information_aides", "choix_prestataire", "portage_repas", "evaluation_globale"]}
+      ],
+      "points": {
+        "CLIC": 35,
+        "CRT": 15
+      }
+    },
+    {
+      "id": "score_gir_1_4",
+      "conditions": [
+        {"field": "usager.situation_actuelle.GIR", "operator": "in", "value": [1, 2, 3, 4]}
+      ],
+      "points": {
+        "CRT": 50,
+        "CLIC": 20
+      }
+    },
+    {
+      "id": "score_epuisement_aidant",
+      "conditions": [
+        {"field": "evaluation.comid.epuisement_aidant", "operator": "==", "value": true}
+      ],
+      "points": {
+        "CRT": 40,
+        "CLIC": 25,
+        "DAC": 15
+      }
+    },
+    {
+      "id": "score_troubles_cognitifs",
+      "conditions": [
+        {"field": "evaluation.comid.troubles_cognitifs", "operator": "==", "value": true}
+      ],
+      "points": {
+        "CLIC": 20,
+        "CRT": 20,
+        "DAC": 10
+      }
+    },
+    {
+      "id": "score_perte_autonomie",
+      "conditions": [
+        {"field": "evaluation.comid.perte_autonomie_recente", "operator": "==", "value": true}
+      ],
+      "points": {
+        "CLIC": 20,
+        "CRT": 25,
+        "DAC": 10
+      }
+    },
+    {
+      "id": "score_hospit_recente",
+      "conditions": [
+        {"field": "vulnerabilites.sante.hospitalisation.statut", "operator": "==", "value": "recente"}
+      ],
+      "points": {
+        "SERVICE_SOCIAL_HOPITAL": 45,
+        "CLIC": 15,
+        "CRT": 15,
+        "DAC": 15
+      }
+    },
+    {
+      "id": "score_precarite_sociale_financiere",
+      "conditions": [
+        {"field": "vulnerabilites.social.precarite", "operator": "in", "value": ["possible", "probable", "averee"]}
+      ],
+      "points": {
+        "UTS": 60,
+        "CCAS": 25
+      }
+    },
+    {
+      "id": "score_precarite_comid",
+      "conditions": [
+        {"field": "evaluation.comid.precarite_financiere", "operator": "==", "value": true}
+      ],
+      "points": {
+        "UTS": 55,
+        "CCAS": 35
+      }
+    },
+    {
+      "id": "score_motifs_sociaux",
+      "conditions": [
+        {"field": "demande.motif_principal", "operator": "in", "value": ["logement", "rsa", "gestion_budget", "aide_administrative"]}
+      ],
+      "points": {
+        "UTS": 50,
+        "CCAS": 30
+      }
+    },
+    {
+      "id": "score_diogene_incurie",
+      "conditions": [
+        {"field": "usager.cadre_de_vie.etat_logement", "operator": "in", "value": ["diogene", "incurie"]}
+      ],
+      "points": {
+        "COMPAGNONS_BATISSEURS": 75,
+        "UTS": 30,
+        "DAC": 15
+      }
+    },
+    {
+      "id": "score_apa_actif",
+      "conditions": [
+        {"field": "usager.situation_actuelle.APA", "operator": "==", "value": "oui"}
+      ],
+      "points": {
+        "PSCG_SS_APA": 80,
+        "DAC": 10
+      }
+    },
+    {
+      "id": "score_refus_de_soins",
+      "conditions": [
+        {"field": "demande.motif_principal", "operator": "in", "value": ["refus_de_soins", "refus_aide_domicile"]}
+      ],
+      "points": {
+        "CLIC": 30,
+        "CRT": 30,
+        "DAC": 10
+      }
+    },
+    {
+      "id": "score_opposition_soins_comid",
+      "conditions": [
+        {"field": "evaluation.comid.opposition_soins", "operator": "==", "value": true}
+      ],
+      "points": {
+        "CLIC": 25,
+        "CRT": 25,
+        "DAC": 10
+      }
+    },
+    {
+      "id": "score_access_aux_soins",
+      "conditions": [
+        {"field": "demande.motif_principal", "operator": "in", "value": ["acces_aux_soins", "misas", "renoncement_aux_soins"]}
+      ],
+      "points": {
+        "CPTS": 50,
+        "CLIC": 10
+      }
+    },
+    {
+      "id": "score_age_senior",
+      "conditions": [
+        {"field": "usager.identite.age_estime", "operator": ">=", "value": 75}
+      ],
+      "points": {
+        "CLIC": 25,
+        "CRT": 25,
+        "DAC": 10
+      }
+    },
+    {
+      "id": "score_ehpad_ash_ccas_clic",
+      "conditions": [
+        {"field": "evaluation.comid.precarite_financiere", "operator": "==", "value": true},
+        {"field": "evaluation.comid.isolement_social", "operator": "==", "value": true},
+        {"field": "evaluation.comid.perte_autonomie_recente", "operator": "==", "value": true}
+      ],
+      "points": {
+        "CCAS": 55,
+        "CLIC": 30
+      }
+    },
+    {
+      "id": "score_psychiatrie_complexite",
+      "conditions": [
+        {"field": "evaluation.comid.psychiatrie", "operator": "==", "value": true}
+      ],
+      "points": {
+        "DAC": 35,
+        "UTS": 20
+      }
+    }
+  ]
 }
