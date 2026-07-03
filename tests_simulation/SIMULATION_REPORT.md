@@ -1,175 +1,39 @@
 # 📋 Rapport d'Évaluation Clinique ORIA
 
-Généré automatiquement le : `2026-07-03 09:32:01`  
+Généré automatiquement le : `2026-07-03 12:41:41`  
 Nombre de cas exécutés : **21**  
 Taux de succès : **21/21**  
-Temps d'exécution total : **339.79 secondes**  
+Temps d'exécution total : **345.70 secondes**  
 
 ## 📊 Tableau récapitulatif des Orientations
 
 | Patient | Status | Score COMID | Orientation Principale | Temps d'exécution |
 | :--- | :---: | :---: | :--- | :---: |
-| **Mme Durand** | ✅ SUCCESS | 4 | `CRT - Centre de Ressources Territorial (Accompagnement Renforc)` | 23.12s |
-| **Mme Huguette** | ✅ SUCCESS | 5 | `UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion)` | 19.46s |
-| **Mr Vacek** | ✅ SUCCESS | 5 | `CEV - Cellule coute et Vigilance (Violences & Spoliation)` | 15.19s |
-| **Mr Lambert** | ✅ SUCCESS | 5 | `CRT - Centre de Ressources Territorial (Accompagnement Renforc)` | 14.13s |
-| **Mme Petit** | ✅ SUCCESS | 2 | `UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion)` | 11.64s |
-| **Mme Lefebvre** | ✅ SUCCESS | 5 | `DAC - Dispositif d'Appui  la Coordination` | 17.64s |
-| **Mr Leroy** | ✅ SUCCESS | 5 | `UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion)` | 19.19s |
-| **Mme Rossi** | ✅ SUCCESS | 4 | `UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion)` | 13.83s |
-| **Mme Martin** | ✅ SUCCESS | 4 | `CLIC - Centre Local d'Information et de Coordination` | 15.12s |
-| **Mr Martin** | ✅ SUCCESS | 4 | `CLIC - Centre Local d'Information et de Coordination` | 14.49s |
-| **Mme Fontaine** | ✅ SUCCESS | 6 | `CEV - Cellule coute et Vigilance (Violences & Spoliation)` | 12.94s |
-| **Mme Gautier** | ✅ SUCCESS | 11 | `CLIC - Centre Local d'Information et de Coordination` | 27.02s |
-| **Mme Vial** | ✅ SUCCESS | 2 | `CPTS - Communaut Professionnelle Territoriale de Sant` | 15.11s |
-| **Mme Michu** | ✅ SUCCESS | 3 | `CRT - Centre de Ressources Territorial (Accompagnement Renforc)` | 14.41s |
-| **Mr Petit** | ✅ SUCCESS | 4 | `CLIC - Centre Local d'Information et de Coordination` | 13.98s |
-| **Mr Chen** | ✅ SUCCESS | 2 | `UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion)` | 13.21s |
-| **Mme Morel** | ✅ SUCCESS | 2 | `Service Social de l'Hpital` | 15.80s |
-| **Mr Pierre** | ✅ SUCCESS | 5 | `CLIC - Centre Local d'Information et de Coordination` | 13.43s |
-| **Mme Bernard** | ✅ SUCCESS | 5 | `CLIC - Centre Local d'Information et de Coordination` | 14.42s |
-| **Mr Dubois** | ✅ SUCCESS | 8 | `CLIC - Centre Local d'Information et de Coordination` | 16.65s |
-| **Mme Mouton** | ✅ SUCCESS | 4 | `UTS Littoral Sud Sainte Baume - OLLIOULES (Relais CLIC)` | 19.02s |
+| **Mme Huguette** | ✅ SUCCESS | 5 | `UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion)` | 25.90s |
+| **Mme Durand** | ✅ SUCCESS | 4 | `CRT - Centre de Ressources Territorial (Accompagnement Renforc)` | 14.60s |
+| **Mr Vacek** | ✅ SUCCESS | 5 | `CEV - Cellule coute et Vigilance (Violences & Spoliation)` | 12.69s |
+| **Mr Lambert** | ✅ SUCCESS | 5 | `CRT - Centre de Ressources Territorial (Accompagnement Renforc)` | 13.48s |
+| **Mme Petit** | ✅ SUCCESS | 2 | `UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion)` | 11.07s |
+| **Mme Lefebvre** | ✅ SUCCESS | 5 | `DAC - Dispositif d'Appui  la Coordination` | 17.11s |
+| **Mr Leroy** | ✅ SUCCESS | 5 | `UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion)` | 20.32s |
+| **Mme Rossi** | ✅ SUCCESS | 4 | `UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion)` | 15.76s |
+| **Mme Martin** | ✅ SUCCESS | 4 | `CLIC - Centre Local d'Information et de Coordination` | 17.45s |
+| **Mr Martin** | ✅ SUCCESS | 4 | `CLIC - Centre Local d'Information et de Coordination` | 14.07s |
+| **Mme Fontaine** | ✅ SUCCESS | 6 | `CEV - Cellule coute et Vigilance (Violences & Spoliation)` | 12.49s |
+| **Mme Gautier** | ✅ SUCCESS | 11 | `CLIC - Centre Local d'Information et de Coordination` | 32.01s |
+| **Mme Vial** | ✅ SUCCESS | 2 | `CPTS - Communaut Professionnelle Territoriale de Sant` | 17.81s |
+| **Mme Michu** | ✅ SUCCESS | 3 | `CRT - Centre de Ressources Territorial (Accompagnement Renforc)` | 13.75s |
+| **Mr Petit** | ✅ SUCCESS | 4 | `CLIC - Centre Local d'Information et de Coordination` | 13.14s |
+| **Mr Chen** | ✅ SUCCESS | 2 | `UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion)` | 14.63s |
+| **Mme Morel** | ✅ SUCCESS | 2 | `Service Social de l'Hpital` | 15.22s |
+| **Mr Pierre** | ✅ SUCCESS | 5 | `CLIC - Centre Local d'Information et de Coordination` | 11.83s |
+| **Mme Bernard** | ✅ SUCCESS | 5 | `CLIC - Centre Local d'Information et de Coordination` | 15.35s |
+| **Mr Dubois** | ✅ SUCCESS | 8 | `CLIC - Centre Local d'Information et de Coordination` | 15.88s |
+| **Mme Mouton** | ✅ SUCCESS | 4 | `UTS Littoral Sud Sainte Baume - OLLIOULES (Relais CLIC)` | 21.13s |
 
 ---
 
 ## 📝 Détail des extractions et raisonnements
-
-<details>
-<summary>🔍 Cas Mme Durand (Détail des logs)</summary>
-
-```text
---- Lancement du test ORIA : Cas Mme Durand ---
-
-1. Extraction IA pour : 'Mme Durand, 88 ans, vit  Hyres. Elle est trs co...'
-
---- DEBUG : ANALYSE EXPERTE ---
-Mme D., 88 ans, vit  Hyres. Elle est trs confuse, elle dambule la nuit dans l'immeuble. Elle est agressive avec les infirmiers qui viennent pour son diabte et refuse qu'ils entrent. Ses voisins s'en plaignent et la situation devient dangereuse.
-Ville extraite : Hyres
-Mdecin : identifie
-Malveillance : aucune
-Hospitalisation : aucun
-tat Logement : non_renseigne
---- FIN DEBUG ---
-
-Donnees extraites (JSON) :
-{
-  "usager.identite.age_estime": 88,
-  "usager.localisation.commune_residence": "Hyres",
-  "usager.situation_actuelle.APA": "oui",
-  "usager.situation_actuelle.PCH": "inconnu",
-  "usager.situation_actuelle.GIR": null,
-  "vulnerabilites.sante.suivi_medical.medecin_traitant": "identifie",
-  "usager.situation_actuelle.suspicion_malveillance": "aucune",
-  "adresseur.degre_urgence_percu": "faible",
-  "vulnerabilites.sante.hospitalisation.statut": "aucun",
-  "demande.motif_principal": "refus_de_soins",
-  "vulnerabilites.sante.professionnels_domicile": "inconnu",
-  "usager.cadre_de_vie.aidant_regulier": "inconnu",
-  "usager.cadre_de_vie.etat_logement": "non_renseigne",
-  "demande.proposition_mail": "Mme D., 88 ans, vit  Hyres. Elle est trs confuse et dambule la nuit dans l'immeuble. Elle est agressive avec les infirmiers qui viennent pour son diabte et refuse qu'ils entrent. Ses voisins s'en plaignent et la situation devient dangereuse.",
-  "demande.resume_structur": "Mme D., 88 ans, vit  Hyres. Elle est trs confuse, elle dambule la nuit dans l'immeuble. Elle est agressive avec les infirmiers qui viennent pour son diabte et refuse qu'ils entrent. Ses voisins s'en plaignent et la situation devient dangereuse.",
-  "evaluation.confiance.variables": {
-    "age": 100,
-    "ville": 100,
-    "apa": 100,
-    "pch": 0,
-    "gir": 0,
-    "professionnels_domicile": 0,
-    "aidant_regulier": 0,
-    "medecin_traitant": 80,
-    "malveillance": 90,
-    "urgence": 95,
-    "hospitalisation": 95,
-    "motif": 100,
-    "etat_logement": 0
-  },
-  "evaluation.comid.justifications": [
-    {
-      "code": "troubles_cognitifs",
-      "justification": "elle est trs confuse",
-      "confiance": 95
-    },
-    {
-      "code": "perte_autonomie_recente",
-      "justification": "elle dambule la nuit dans l'immeuble",
-      "confiance": 95
-    },
-    {
-      "code": "agressivite",
-      "justification": "elle est agressive avec les infirmiers",
-      "confiance": 100
-    }
-  ],
-  "evaluation.confiance.comid": {
-    "troubles_cognitifs": 95,
-    "perte_autonomie_recente": 95,
-    "agressivite": 100,
-    "opposition_soins": 0
-  },
-  "evaluation.comid.multimorbidite": false,
-  "evaluation.comid.douleurs": false,
-  "evaluation.comid.allergies": false,
-  "evaluation.comid.polymedication": false,
-  "evaluation.comid.troubles_cognitifs": true,
-  "evaluation.comid.precarite_financiere": false,
-  "evaluation.comid.epuisement_aidant": false,
-  "evaluation.comid.litteratie_faible": false,
-  "evaluation.comid.isolement_social": false,
-  "evaluation.comid.logement_inadapte": false,
-  "evaluation.comid.depression": false,
-  "evaluation.comid.psychiatrie": false,
-  "evaluation.comid.addiction": false,
-  "evaluation.comid.anxiete": false,
-  "evaluation.comid.fluctuation_mentale": false,
-  "evaluation.comid.sollicitations_recurrentes": false,
-  "evaluation.comid.conflit_reseau": false,
-  "evaluation.comid.inquietude_sante": false,
-  "evaluation.comid.agressivite": true,
-  "evaluation.comid.opposition_soins": true,
-  "evaluation.comid.degradation_recente": false,
-  "evaluation.comid.perte_autonomie_recente": true,
-  "evaluation.comid.transition_parcours": false,
-  "evaluation.comid.trouble_cognitif_aigu": false,
-  "evaluation.comid.imprevisibilite": false,
-  "evaluation.comid.multitude_intervenants": false,
-  "evaluation.comid.manque_partenariat": false,
-  "evaluation.comid.incoherence_soins": false,
-  "evaluation.comid.probleme_assurance": false,
-  "evaluation.comid.lourdeur_reseau": false,
-  "vulnerabilites.social.isolement_relationnel": null
-}
-
-2. Calcul du score de complexit COMID...
-Score Total : 4 (Situation non complexe)
-
-3. Evaluation de l'orientation...
-
-4. Recherche des contacts territoriaux (Hyres)...
-
---- RESULTATS DE L'ORIENTATION ---
-
-[ CRT - Centre de Ressources Territorial (Accompagnement Renforc) ] - Priorite : 125
-Objectif : Orientation clinique recommande par l'valuation clinique multicritre (Score : 125 pts).
-Contact : Non trouve dans le referentiel territorial
-
-[ CLIC - Centre Local d'Information et de Coordination ] - Priorite : 120
-Objectif : Orientation clinique recommande par l'valuation clinique multicritre (Score : 120 pts).
-Contact : Non trouve dans le referentiel territorial
-
-[ PSCG SS APA - Ple Social de Solidarit et de Gestion (APA) ] - Priorite : 80
-Objectif : Orientation clinique recommande par l'valuation clinique multicritre (Score : 80 pts).
-Contact : Non trouve dans le referentiel territorial
-
-[ DAC - Dispositif d'Appui  la Coordination ] - Priorite : 60
-Objectif : Orientation clinique recommande par l'valuation clinique multicritre (Score : 60 pts).
-Contact : Non trouve dans le referentiel territorial
-
-BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
-
-```
-
-</details>
 
 <details>
 <summary>🔍 Cas Mme Huguette (Détail des logs)</summary>
@@ -180,7 +44,7 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA (Temp=0.0) pour : 'Mme Huguette, 79 ans, vit seule dans un logement insalubre et humide  La Valett...'
 
 --- DEBUG : ANALYSE EXPERTE ---
-Mme H., 79 ans, vit seule dans un logement insalubre et humide  La Valette du Var. Elle n'a pas l'APA et vit sous le seuil de pauvret avec une infime pension de retraite. Une amie trs proche s'inquite : elle signale que le neveu d'Huguette, qui a procuration sur ses comptes bancaires, effectue des retraits d'argent massifs et rpts sans justification, laissant Huguette sans le moindre sou pour s'acheter de quoi manger. Huguette est terrifie par son neveu et n'ose rien dire par peur de reprsailles.
+Mme H., 79 ans, vit seule dans un logement insalubre et humide  La Valette du Var. Elle n'a pas l'APA et vit sous le seuil de pauvret avec une infime pension de retraite. Un neveu d'Huguette effectue des retraits d'argent massifs et rpts sans justification, laissant Huguette sans le moindre sou pour s'acheter de quoi manger.
 Ville extraite : La Valette du Var
 Mdecin : incertain
 Malveillance : spoliation_financiere
@@ -203,8 +67,8 @@ Donnes extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "inconnu",
   "usager.cadre_de_vie.aidant_regulier": "inconnu",
   "usager.cadre_de_vie.etat_logement": "insalubre",
-  "demande.proposition_mail": "Mme H., 79 ans, vit seule dans un logement insalubre et humide  La Valette du Var. Elle n'a pas l'APA et vit sous le seuil de pauvret avec une infime pension de retraite. Son neveu procdure sur ses comptes bancaires effectue des retraits d'argent massifs et rpts sans justification, laissant Huguette sans le moindre sou pour s'acheter de quoi manger.",
-  "demande.resume_structur": "Mme H., 79 ans, vit seule dans un logement insalubre et humide  La Valette du Var. Elle n'a pas l'APA et vit sous le seuil de pauvret avec une infime pension de retraite. Une amie trs proche s'inquite : elle signale que le neveu d'Huguette, qui a procuration sur ses comptes bancaires, effectue des retraits d'argent massifs et rpts sans justification, laissant Huguette sans le moindre sou pour s'acheter de quoi manger. Huguette est terrifie par son neveu et n'ose rien dire par peur de reprsailles.",
+  "demande.proposition_mail": "Mme H., ge de 79 ans et vivant  La Valette du Var, est victime de spoliation financire par son neveu. Elle n'a pas d'APA et vit sous le seuil de pauvret avec une infime pension de retraite.",
+  "demande.resume_structur": "Mme H., 79 ans, vit seule dans un logement insalubre et humide  La Valette du Var. Elle n'a pas l'APA et vit sous le seuil de pauvret avec une infime pension de retraite. Un neveu d'Huguette effectue des retraits d'argent massifs et rpts sans justification, laissant Huguette sans le moindre sou pour s'acheter de quoi manger.",
   "evaluation.confiance.variables": {
     "age": 100,
     "ville": 100,
@@ -320,6 +184,142 @@ Contact : Non trouv dans le rfrentiel territorial
 Justification confiance : variable 'age' extraite  100%
 Objectif : Orientation clinique recommande par l'valuation clinique multicritre (Score : 10 pts).
 Contact : 04 94 35 32 01 | None
+
+BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
+
+```
+
+</details>
+
+<details>
+<summary>🔍 Cas Mme Durand (Détail des logs)</summary>
+
+```text
+--- Lancement du test ORIA : Cas Mme Durand ---
+
+1. Extraction IA pour : 'Mme Durand, 88 ans, vit  Hyres. Elle est trs co...'
+
+--- DEBUG : ANALYSE EXPERTE ---
+Mme D., 88 ans, vit  Hyres. Elle est trs confuse, elle dambule la nuit dans l'immeuble. Elle est agressive avec les infirmiers qui viennent pour son diabte et refuse qu'ils entrent. Ses voisins s'en plaignent et la situation devient dangereuse.
+Ville extraite : Hyres
+Mdecin : identifie
+Malveillance : aucune
+Hospitalisation : aucun
+tat Logement : non_renseigne
+--- FIN DEBUG ---
+
+Donnees extraites (JSON) :
+{
+  "usager.identite.age_estime": 88,
+  "usager.localisation.commune_residence": "Hyres",
+  "usager.situation_actuelle.APA": "oui",
+  "usager.situation_actuelle.PCH": "inconnu",
+  "usager.situation_actuelle.GIR": null,
+  "vulnerabilites.sante.suivi_medical.medecin_traitant": "identifie",
+  "usager.situation_actuelle.suspicion_malveillance": "aucune",
+  "adresseur.degre_urgence_percu": "faible",
+  "vulnerabilites.sante.hospitalisation.statut": "aucun",
+  "demande.motif_principal": "refus_de_soins",
+  "vulnerabilites.sante.professionnels_domicile": "inconnu",
+  "usager.cadre_de_vie.aidant_regulier": "inconnu",
+  "usager.cadre_de_vie.etat_logement": "non_renseigne",
+  "demande.proposition_mail": "Mme D., ge de 88 ans et habitant  Hyres, prsente une dgradation cognitive marque par des comportements agressifs et confus. Elle refuse les soins prescrits et la situation est devenue dangereuse pour elle-mme et ses proches.",
+  "demande.resume_structur": "Mme D., 88 ans, vit  Hyres. Elle est trs confuse, elle dambule la nuit dans l'immeuble. Elle est agressive avec les infirmiers qui viennent pour son diabte et refuse qu'ils entrent. Ses voisins s'en plaignent et la situation devient dangereuse.",
+  "evaluation.confiance.variables": {
+    "age": 100,
+    "ville": 100,
+    "apa": 100,
+    "pch": 0,
+    "gir": 0,
+    "professionnels_domicile": 0,
+    "aidant_regulier": 0,
+    "medecin_traitant": 80,
+    "malveillance": 95,
+    "urgence": 95,
+    "hospitalisation": 95,
+    "motif": 100,
+    "etat_logement": 0
+  },
+  "evaluation.comid.justifications": [
+    {
+      "code": "troubles_cognitifs",
+      "justification": "elle est trs confuse",
+      "confiance": 95
+    },
+    {
+      "code": "perte_autonomie_recente",
+      "justification": "elle dambule la nuit dans l'immeuble",
+      "confiance": 95
+    },
+    {
+      "code": "agressivite",
+      "justification": "elle est agressive avec les infirmiers",
+      "confiance": 100
+    }
+  ],
+  "evaluation.confiance.comid": {
+    "troubles_cognitifs": 95,
+    "perte_autonomie_recente": 95,
+    "agressivite": 100,
+    "opposition_soins": 0
+  },
+  "evaluation.comid.multimorbidite": false,
+  "evaluation.comid.douleurs": false,
+  "evaluation.comid.allergies": false,
+  "evaluation.comid.polymedication": false,
+  "evaluation.comid.troubles_cognitifs": true,
+  "evaluation.comid.precarite_financiere": false,
+  "evaluation.comid.epuisement_aidant": false,
+  "evaluation.comid.litteratie_faible": false,
+  "evaluation.comid.isolement_social": false,
+  "evaluation.comid.logement_inadapte": false,
+  "evaluation.comid.depression": false,
+  "evaluation.comid.psychiatrie": false,
+  "evaluation.comid.addiction": false,
+  "evaluation.comid.anxiete": false,
+  "evaluation.comid.fluctuation_mentale": false,
+  "evaluation.comid.sollicitations_recurrentes": false,
+  "evaluation.comid.conflit_reseau": false,
+  "evaluation.comid.inquietude_sante": false,
+  "evaluation.comid.agressivite": true,
+  "evaluation.comid.opposition_soins": true,
+  "evaluation.comid.degradation_recente": false,
+  "evaluation.comid.perte_autonomie_recente": true,
+  "evaluation.comid.transition_parcours": false,
+  "evaluation.comid.trouble_cognitif_aigu": false,
+  "evaluation.comid.imprevisibilite": false,
+  "evaluation.comid.multitude_intervenants": false,
+  "evaluation.comid.manque_partenariat": false,
+  "evaluation.comid.incoherence_soins": false,
+  "evaluation.comid.probleme_assurance": false,
+  "evaluation.comid.lourdeur_reseau": false,
+  "vulnerabilites.social.isolement_relationnel": null
+}
+
+2. Calcul du score de complexit COMID...
+Score Total : 4 (Situation non complexe)
+
+3. Evaluation de l'orientation...
+
+4. Recherche des contacts territoriaux (Hyres)...
+
+--- RESULTATS DE L'ORIENTATION ---
+
+[ CRT - Centre de Ressources Territorial (Accompagnement Renforc) ] - Priorite : 125
+Objectif : Orientation clinique recommande par l'valuation clinique multicritre (Score : 125 pts).
+Contact : Non trouve dans le referentiel territorial
+
+[ CLIC - Centre Local d'Information et de Coordination ] - Priorite : 120
+Objectif : Orientation clinique recommande par l'valuation clinique multicritre (Score : 120 pts).
+Contact : Non trouve dans le referentiel territorial
+
+[ PSCG SS APA - Ple Social de Solidarit et de Gestion (APA) ] - Priorite : 80
+Objectif : Orientation clinique recommande par l'valuation clinique multicritre (Score : 80 pts).
+Contact : Non trouve dans le referentiel territorial
+
+[ DAC - Dispositif d'Appui  la Coordination ] - Priorite : 60
+Objectif : Orientation clinique recommande par l'valuation clinique multicritre (Score : 60 pts).
+Contact : Non trouve dans le referentiel territorial
 
 BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 
