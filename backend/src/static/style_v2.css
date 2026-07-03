@@ -43,6 +43,9 @@
     --accent-teal: #2dd4bf;
     --accent-amber: #fbbf24;
     --accent-rose: #fb7185;
+    
+    --bg-input: rgba(255, 255, 255, 0.5);
+    --bg-input-focus: rgba(255, 255, 255, 0.8);
     --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.04);
     --shadow-glow: 0 0 24px rgba(74, 109, 245, 0.15);
 }
@@ -428,7 +431,7 @@ body {
 #situation-input {
     width: 100%;
     height: 350px;
-    background: rgba(15, 23, 42, 0.5); /* Sombre transparent */
+    background: var(--bg-input); /* S'adapte au theme */
     border: 1px solid var(--border-glass);
     border-radius: var(--radius-sm);
     padding: 1.2rem;
@@ -443,7 +446,7 @@ body {
 #situation-input:focus {
     border-color: var(--accent-blue);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-    background: rgba(15, 23, 42, 0.8);
+    background: var(--bg-input-focus);
 }
 
 /* Bouton principal premium */
