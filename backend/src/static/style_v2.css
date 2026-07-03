@@ -382,17 +382,17 @@ body {
 /* --- Styles de l'interface d'orientation --- */
 
 .orientation-container {
-    max-width: 800px;
+    max-width: 1400px;
     margin: 2rem auto;
-    padding: 0 1.5rem;
-    display: flex;
-    flex-direction: column;
+    padding: 0 2.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1.2fr; /* Deux colonnes sur grand écran */
     gap: 2rem;
-    align-items: stretch;
+    align-items: start;
 }
 
 .section-header {
-    text-align: center;
+    text-align: left;
 }
 
 .glass-card {
@@ -612,6 +612,9 @@ body {
 
 /* Responsive */
 @media (max-width: 900px) {
+    .orientation-container {
+        grid-template-columns: 1fr;
+    }
     .struct-contact {
         grid-template-columns: 1fr;
     }

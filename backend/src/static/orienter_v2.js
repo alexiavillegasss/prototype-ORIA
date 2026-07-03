@@ -108,10 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
             schemaPivot = data.schema_pivot;
 
             // Remplissage des KPIs globaux
-            // resScore supprimé de l'interface
-            resLevel.textContent = data.evaluation_complexe.label;
-            resCommune.textContent = schemaPivot["usager.localisation.commune_residence"] || "Non spécifiée";
-            resLevel.className = 'kpi-value ' + getComplexityClass(data.evaluation_complexe.score_total);
+            // resScore, resLevel et resCommune supprimés de l'interface
 
             // Données JSON brutes
             //jsonOutput.textContent = JSON.stringify(schemaPivot, null, 2);
