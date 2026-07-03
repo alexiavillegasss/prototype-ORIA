@@ -57,23 +57,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeToggle = document.getElementById('theme-toggle');
     const currentTheme = localStorage.getItem('theme') || 'dark';
     
+    const iconMoon = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`;
+    const iconSun = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`;
+    
     if (currentTheme === 'light') {
         document.documentElement.setAttribute('data-theme', 'light');
-        themeToggle.textContent = '🌙';
+        themeToggle.innerHTML = iconMoon; // Affiche la lune pour passer en mode sombre
     } else {
         document.documentElement.removeAttribute('data-theme');
-        themeToggle.textContent = '☀️';
+        themeToggle.innerHTML = iconSun; // Affiche le soleil pour passer en mode clair
     }
 
     themeToggle.addEventListener('click', () => {
         if (document.documentElement.hasAttribute('data-theme')) {
             document.documentElement.removeAttribute('data-theme');
             localStorage.setItem('theme', 'dark');
-            themeToggle.textContent = '☀️';
+            themeToggle.innerHTML = iconSun;
         } else {
             document.documentElement.setAttribute('data-theme', 'light');
             localStorage.setItem('theme', 'light');
-            themeToggle.textContent = '🌙';
+            themeToggle.innerHTML = iconMoon;
         }
     });
 
