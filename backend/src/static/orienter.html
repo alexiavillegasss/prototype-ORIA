@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style_v2.css?v=10">
+    <link rel="stylesheet" href="/static/style_v2.css?v=11">
     
     <style>
         /* Styles Premium additionnels pour le diagnostic interactif */
@@ -233,9 +233,12 @@
             <div class="header-title-center">
                 <h2 class="subtitle">Moteur d'Orientation Interactif</h2>
             </div>
-            <div class="header-badge">
-                <span class="badge-label">Mode</span>
-                <span class="badge-value" style="font-size: 1.1rem; color: var(--accent-purple);">Test Temps Réel</span>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <button id="theme-toggle" class="btn-primary" style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-glass); padding: 0.4rem 0.8rem; box-shadow: none;">☀️</button>
+                <div class="header-badge">
+                    <span class="badge-label">Mode</span>
+                    <span class="badge-value" style="font-size: 1.1rem; color: var(--accent-purple);">Test Temps Réel</span>
+                </div>
             </div>
         </div>
     </header>
@@ -303,6 +306,6 @@
         <p>Prototype ORIA – Module d'évaluation interactif</p>
     </footer>
 
-    <script src="/static/orienter_v2.js?v=10"></script>
+    <script src="/static/orienter_v2.js?v=11"></script>
 </body>
 </html>

@@ -53,6 +53,30 @@ let dossierId = null;
 let schemaPivot = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Gestion du thème clair/sombre
+    const themeToggle = document.getElementById('theme-toggle');
+    const currentTheme = localStorage.getItem('theme') || 'dark';
+    
+    if (currentTheme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        themeToggle.textContent = '🌙';
+    } else {
+        document.documentElement.removeAttribute('data-theme');
+        themeToggle.textContent = '☀️';
+    }
+
+    themeToggle.addEventListener('click', () => {
+        if (document.documentElement.hasAttribute('data-theme')) {
+            document.documentElement.removeAttribute('data-theme');
+            localStorage.setItem('theme', 'dark');
+            themeToggle.textContent = '☀️';
+        } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+            localStorage.setItem('theme', 'light');
+            themeToggle.textContent = '🌙';
+        }
+    });
+
     const btnSubmit = document.getElementById('btn-submit');
     const inputArea = document.getElementById('situation-input');
     const spinner = document.getElementById('btn-spinner');
