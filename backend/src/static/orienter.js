@@ -48,6 +48,7 @@ const COMID_LABELS = {
 
 // Variables d'état globales de la session de diagnostic
 let orientations = [];
+let scoreBreakdown = [];
 let currentIndex = 0;
 let dossierId = null;
 let schemaPivot = null;
@@ -103,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 3. Initialisation de l'état local
             orientations = data.orientation_suggeree || [];
+            scoreBreakdown = data.score_breakdown || [];
             currentIndex = 0;
             dossierId = data.id_dossier;
             schemaPivot = data.schema_pivot;
@@ -211,6 +213,22 @@ document.addEventListener('DOMContentLoaded', () => {
                         <!-- Rempli dynamiquement -->
                     </div>
                 </div>
+
+                <!-- Section Score Breakdown Clinique -->
+                <div class="explain-section" style="border-top: 1px solid var(--border-glass); padding-top: 1rem;">
+                    <span class="explain-subtitle">🔍 Détail des points par phrase/critère relevé</span>
+                    <div class="score-breakdown-list" id="score-breakdown-list" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <!-- Rempli dynamiquement -->
+                    </div>
+                </div>
+
+                <!-- Section Tableau des Scores Finaux de Toutes les Structures -->
+                <div class="explain-section" style="border-top: 1px solid var(--border-glass); padding-top: 1rem;">
+                    <span class="explain-subtitle">📊 Scores totaux de toutes les structures</span>
+                    <div id="structures-score-comparison" style="display: flex; flex-direction: column; gap: 0.6rem;">
+                        <!-- Rempli dynamiquement -->
+                    </div>
+                </div>
             </div>
             
             <!-- Bloc des coordonnées territoriales -->
@@ -255,6 +273,8 @@ document.addEventListener('DOMContentLoaded', () => {
         btnWhy.addEventListener('click', () => {
             if (explainPane.style.display === 'none') {
                 renderComidJustifications(card.querySelector('#comid-proof-list'));
+                renderScoreBreakdown(card.querySelector('#score-breakdown-list'));
+                renderScoreComparison(card.querySelector('#structures-score-comparison'));
                 explainPane.style.display = 'flex';
                 btnWhy.innerHTML = '<span class="icon">✕</span> Masquer les détails';
             } else {
@@ -290,6 +310,83 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="comid-proof-quote">« ${j.justification} »</span>
             `;
             container.appendChild(card);
+        });
+    }
+
+    /**
+     * Renseigne le détail du calcul des scores cliniques par phrase
+     */
+    function renderScoreBreakdown(container) {
+        container.innerHTML = '';
+        if (scoreBreakdown.length === 0) {
+            container.innerHTML = `
+                <div style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">
+                    Aucune règle de score clinique n'a été appliquée pour ce cas.
+                </div>
+            `;
+            return;
+        }
+
+        scoreBreakdown.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'score-breakdown-card';
+            
+            let pointsHtml = '';
+            for (const [stype, pts] of Object.entries(item.points)) {
+                const color = STRUCTURE_COLORS[stype] || '#64748b';
+                pointsHtml += `
+                    <span class="score-badge" style="background-color: ${color}15; color: ${color}; border: 1px solid ${color}35;">
+                        ${stype} : +${pts} pts
+                    </span>
+                `;
+            }
+
+            card.innerHTML = `
+                <div class="score-breakdown-header">
+                    <span style="font-weight: 700; color: var(--text-primary); font-size: 0.88rem;">📌 ${item.description}</span>
+                </div>
+                <div class="score-breakdown-quote">« ${item.justification} »</div>
+                <div class="score-breakdown-points">${pointsHtml}</div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    /**
+     * Affiche le tableau comparatif des scores totaux de toutes les structures
+     */
+    function renderScoreComparison(container) {
+        container.innerHTML = '';
+        
+        let maxScore = 0;
+        orientations.forEach(o => {
+            if (o.priorite > maxScore) {
+                maxScore = o.priorite;
+            }
+        });
+
+        orientations.forEach(struct => {
+            const row = document.createElement('div');
+            row.className = 'score-row-bar-container';
+            const color = STRUCTURE_COLORS[struct.structure_type] || '#64748b';
+            
+            const maxRange = Math.max(maxScore, 100);
+            const percentage = Math.min(Math.max((struct.priorite / maxRange) * 100, 0), 100);
+            
+            const isWinner = struct.priorite === maxScore && maxScore > 0;
+            const winnerBadge = isWinner ? '<span class="winner-badge">Recommandé (Top 1)</span>' : '';
+
+            row.innerHTML = `
+                <div class="score-row-label">
+                    <span style="font-weight: 600; color: var(--text-primary);">${struct.structure_type}</span>
+                    ${winnerBadge}
+                </div>
+                <div class="score-row-progress-wrapper">
+                    <div class="score-row-progress-bar" style="width: ${percentage}%; background-color: ${color};"></div>
+                </div>
+                <div class="score-row-value">${struct.priorite} pts</div>
+            `;
+            container.appendChild(row);
         });
     }
 

@@ -1,5 +1,10 @@
 import json
 
+class OrientationResultList(list):
+    def __init__(self, items=None, score_breakdown=None):
+        super().__init__(items or [])
+        self.score_breakdown = score_breakdown or []
+
 class OrientationEngine:
     def __init__(self, rules_path: str):
         with open(rules_path, 'r', encoding='utf-8') as f:
@@ -58,6 +63,8 @@ class OrientationEngine:
 
         # 2. PONDÉRATION DES SCORES CLINIQUES (SCORING RULES)
         matched_rules_per_structure = {}  # stype -> list of (rule_id, points, variables_involved)
+        score_breakdown = []
+
         for rule in self.rules.get("scoring_rules", []):
             conditions = rule.get("conditions", [])
             match = True
@@ -73,12 +80,53 @@ class OrientationEngine:
                 # Récupérer les variables impliquées dans les conditions (pour le score de confiance)
                 vars_involved = [cond.get("field") for cond in conditions if cond.get("field")]
                 
+                # --- TRAÇABILITÉ DES PHRASES / JUSTIFICATIONS ---
+                justification = None
+                comid_code = None
+                for cond in conditions:
+                    f = cond.get("field", "")
+                    if f.startswith("evaluation.comid."):
+                        comid_code = f.replace("evaluation.comid.", "")
+                        break
+                
+                if comid_code:
+                    justifications_list = extracted_data.get("evaluation.comid.justifications", [])
+                    if isinstance(justifications_list, list):
+                        for j in justifications_list:
+                            if isinstance(j, dict) and j.get("code") == comid_code:
+                                justification = j.get("justification")
+                                break
+                    if not justification:
+                        justification = f"Critère COMID '{comid_code}' détecté"
+                else:
+                    # Non-COMID
+                    cond_vals = []
+                    for cond in conditions:
+                        f = cond.get("field")
+                        if f:
+                            val = eval_context.get(f)
+                            cond_vals.append(f"{f.split('.')[-1]} = {val}")
+                    justification = ", ".join(cond_vals)
+
+                rule_desc = rule.get("id", "").replace("score_", "").replace("_", " ").capitalize()
+                
+                # On applique les points uniquement aux structures non exclues
+                clean_points = {}
                 for stype, pts in points_map.items():
                     if stype not in excluded_structures:
                         all_structures[stype]["points"] += pts
+                        clean_points[stype] = pts
                         if stype not in matched_rules_per_structure:
                             matched_rules_per_structure[stype] = []
                         matched_rules_per_structure[stype].append((rule_id, pts, vars_involved))
+                
+                if clean_points:
+                    score_breakdown.append({
+                        "rule_id": rule_id,
+                        "description": rule_desc,
+                        "justification": justification,
+                        "points": clean_points
+                    })
 
         # 3. LOGIQUE SPÉCIFIQUE : COMPLEXITÉ ÉLEVÉE (COMID >= 10) -> BONUS DAC
         if comid_results.get("niveau") == "complexe" or comid_results.get("score_total", 0) >= 10:
@@ -87,6 +135,13 @@ class OrientationEngine:
                 if "DAC" not in matched_rules_per_structure:
                     matched_rules_per_structure["DAC"] = []
                 matched_rules_per_structure["DAC"].append(("complexite_comid_bonus", 70, ["complexite.score_total"]))
+                
+                score_breakdown.append({
+                    "rule_id": "complexite_comid_bonus",
+                    "description": "Complexité COMID >= 10 (Bonus DAC)",
+                    "justification": f"Score COMID total = {comid_results.get('score_total')}/30",
+                    "points": {"DAC": 70}
+                })
 
         # 4. SÉLECTION ET NORMALISATION DES ORIENTATIONS ÉLIGIBLES
         eligible_structures = []
@@ -163,7 +218,7 @@ class OrientationEngine:
                 warning_prefix = "[/!\\ INFORMATIONS INSUFFISANTES : Il est vivement conseille de recueillir plus de precisions sur la situation du patient pour fiabiliser cette orientation] "
                 struct["objectif"] = warning_prefix + struct.get("objectif", "")
 
-        return eligible_structures
+        return OrientationResultList(eligible_structures, score_breakdown=score_breakdown)
 
     def _evaluate_condition(self, condition: dict, data: dict):
         field = condition.get("field")

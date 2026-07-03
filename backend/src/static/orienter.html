@@ -196,6 +196,105 @@
             border: 1px solid rgba(15, 23, 42, 0.04);
         }
 
+        .score-breakdown-card {
+            background: #ffffff;
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.02);
+        }
+
+        .score-breakdown-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .score-breakdown-quote {
+            font-style: italic;
+            color: var(--accent-blue);
+            background: rgba(74, 109, 245, 0.04);
+            padding: 4px 8px;
+            border-radius: 4px;
+            border-left: 3px solid var(--accent-blue);
+            margin: 4px 0;
+        }
+
+        .score-breakdown-points {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 2px;
+        }
+
+        .score-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .score-row-bar-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+        }
+
+        .score-row-label {
+            width: 130px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .score-row-progress-wrapper {
+            flex-grow: 1;
+            background: rgba(15, 23, 42, 0.05);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .score-row-progress-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.4s ease-out;
+        }
+
+        .score-row-value {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            width: 50px;
+            text-align: right;
+        }
+
+        .winner-badge {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 1px 4px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-left: 0.5rem;
+        }
+
         /* Carte de validation succès */
         .success-card {
             background: rgba(34, 197, 94, 0.06);

@@ -1,37 +1,35 @@
 # 📋 Rapport d'Évaluation Clinique ORIA
 
-Généré automatiquement le : `2026-07-02 16:11:12`  
+Généré automatiquement le : `2026-07-03 09:32:01`  
 Nombre de cas exécutés : **21**  
 Taux de succès : **21/21**  
-Temps d'exécution total : **2671.99 secondes**  
+Temps d'exécution total : **339.79 secondes**  
 
 ## 📊 Tableau récapitulatif des Orientations
 
 | Patient | Status | Score COMID | Orientation Principale | Temps d'exécution |
 | :--- | :---: | :---: | :--- | :---: |
-| **Mme Durand** | ✅ SUCCESS | 4 | `CRT - Centre de Ressources Territorial (Accompagnement Renforc)` | 109.35s |
-| **Mme Huguette** | ✅ SUCCESS | 5 | `{
-      "code": "precarite_financiere",
-      "justification": "viv[...` | 142.89s |
-| **Mr Vacek** | ✅ SUCCESS | 5 | `CEV - Cellule coute et Vigilance (Violences & Spoliation)` | 136.21s |
-| **Mr Lambert** | ✅ SUCCESS | 4 | `CLIC - Centre Local d'Information et de Coordination` | 115.57s |
-| **Mme Petit** | ✅ SUCCESS | 2 | `UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion)` | 105.20s |
-| **Mme Lefebvre** | ✅ SUCCESS | 5 | `DAC - Dispositif d'Appui  la Coordination` | 128.45s |
-| **Mr Leroy** | ✅ SUCCESS | 5 | `UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion)` | 116.86s |
-| **Mme Rossi** | ✅ SUCCESS | 4 | `UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion)` | 114.99s |
-| **Mme Martin** | ✅ SUCCESS | 5 | `CLIC - Centre Local d'Information et de Coordination` | 127.12s |
-| **Mr Martin** | ✅ SUCCESS | 3 | `CLIC - Centre Local d'Information et de Coordination` | 109.30s |
-| **Mme Fontaine** | ✅ SUCCESS | 6 | `CEV - Cellule coute et Vigilance (Violences & Spoliation)` | 119.42s |
-| **Mme Gautier** | ✅ SUCCESS | 12 | `CLIC - Centre Local d'Information et de Coordination` | 194.81s |
-| **Mme Vial** | ✅ SUCCESS | 3 | `CPTS - Communaut Professionnelle Territoriale de Sant` | 141.67s |
-| **Mme Michu** | ✅ SUCCESS | 3 | `CRT - Centre de Ressources Territorial (Accompagnement Renforc)` | 115.18s |
-| **Mr Petit** | ✅ SUCCESS | 4 | `CLIC - Centre Local d'Information et de Coordination` | 127.09s |
-| **Mr Chen** | ✅ SUCCESS | 2 | `UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion)` | 117.16s |
-| **Mme Morel** | ✅ SUCCESS | 2 | `Service Social de l'Hpital` | 126.56s |
-| **Mr Pierre** | ✅ SUCCESS | 5 | `CLIC - Centre Local d'Information et de Coordination` | 110.80s |
-| **Mme Bernard** | ✅ SUCCESS | 5 | `CLIC - Centre Local d'Information et de Coordination` | 131.79s |
-| **Mr Dubois** | ✅ SUCCESS | 8 | `CLIC - Centre Local d'Information et de Coordination` | 132.82s |
-| **Mme Mouton** | ✅ SUCCESS | 4 | `UTS Littoral Sud Sainte Baume - OLLIOULES (Relais CLIC)` | 148.77s |
+| **Mme Durand** | ✅ SUCCESS | 4 | `CRT - Centre de Ressources Territorial (Accompagnement Renforc)` | 23.12s |
+| **Mme Huguette** | ✅ SUCCESS | 5 | `UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion)` | 19.46s |
+| **Mr Vacek** | ✅ SUCCESS | 5 | `CEV - Cellule coute et Vigilance (Violences & Spoliation)` | 15.19s |
+| **Mr Lambert** | ✅ SUCCESS | 5 | `CRT - Centre de Ressources Territorial (Accompagnement Renforc)` | 14.13s |
+| **Mme Petit** | ✅ SUCCESS | 2 | `UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion)` | 11.64s |
+| **Mme Lefebvre** | ✅ SUCCESS | 5 | `DAC - Dispositif d'Appui  la Coordination` | 17.64s |
+| **Mr Leroy** | ✅ SUCCESS | 5 | `UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion)` | 19.19s |
+| **Mme Rossi** | ✅ SUCCESS | 4 | `UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion)` | 13.83s |
+| **Mme Martin** | ✅ SUCCESS | 4 | `CLIC - Centre Local d'Information et de Coordination` | 15.12s |
+| **Mr Martin** | ✅ SUCCESS | 4 | `CLIC - Centre Local d'Information et de Coordination` | 14.49s |
+| **Mme Fontaine** | ✅ SUCCESS | 6 | `CEV - Cellule coute et Vigilance (Violences & Spoliation)` | 12.94s |
+| **Mme Gautier** | ✅ SUCCESS | 11 | `CLIC - Centre Local d'Information et de Coordination` | 27.02s |
+| **Mme Vial** | ✅ SUCCESS | 2 | `CPTS - Communaut Professionnelle Territoriale de Sant` | 15.11s |
+| **Mme Michu** | ✅ SUCCESS | 3 | `CRT - Centre de Ressources Territorial (Accompagnement Renforc)` | 14.41s |
+| **Mr Petit** | ✅ SUCCESS | 4 | `CLIC - Centre Local d'Information et de Coordination` | 13.98s |
+| **Mr Chen** | ✅ SUCCESS | 2 | `UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion)` | 13.21s |
+| **Mme Morel** | ✅ SUCCESS | 2 | `Service Social de l'Hpital` | 15.80s |
+| **Mr Pierre** | ✅ SUCCESS | 5 | `CLIC - Centre Local d'Information et de Coordination` | 13.43s |
+| **Mme Bernard** | ✅ SUCCESS | 5 | `CLIC - Centre Local d'Information et de Coordination` | 14.42s |
+| **Mr Dubois** | ✅ SUCCESS | 8 | `CLIC - Centre Local d'Information et de Coordination` | 16.65s |
+| **Mme Mouton** | ✅ SUCCESS | 4 | `UTS Littoral Sud Sainte Baume - OLLIOULES (Relais CLIC)` | 19.02s |
 
 ---
 
@@ -69,7 +67,7 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "inconnu",
   "usager.cadre_de_vie.aidant_regulier": "inconnu",
   "usager.cadre_de_vie.etat_logement": "non_renseigne",
-  "demande.proposition_mail": "Mme D., ge de 88 ans et habitant  Hyres, prsente une dgradation cognitive marque par des comportements agressifs et confus. Elle refuse les soins prescrits et la situation est devenue dangereuse pour elle-mme et ses proches.",
+  "demande.proposition_mail": "Mme D., 88 ans, vit  Hyres. Elle est trs confuse et dambule la nuit dans l'immeuble. Elle est agressive avec les infirmiers qui viennent pour son diabte et refuse qu'ils entrent. Ses voisins s'en plaignent et la situation devient dangereuse.",
   "demande.resume_structur": "Mme D., 88 ans, vit  Hyres. Elle est trs confuse, elle dambule la nuit dans l'immeuble. Elle est agressive avec les infirmiers qui viennent pour son diabte et refuse qu'ils entrent. Ses voisins s'en plaignent et la situation devient dangereuse.",
   "evaluation.confiance.variables": {
     "age": 100,
@@ -79,10 +77,10 @@ Donnees extraites (JSON) :
     "gir": 0,
     "professionnels_domicile": 0,
     "aidant_regulier": 0,
-    "medecin_traitant": 100,
-    "malveillance": 100,
-    "urgence": 100,
-    "hospitalisation": 100,
+    "medecin_traitant": 80,
+    "malveillance": 90,
+    "urgence": 95,
+    "hospitalisation": 95,
     "motif": 100,
     "etat_logement": 0
   },
@@ -205,7 +203,7 @@ Donnes extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "inconnu",
   "usager.cadre_de_vie.aidant_regulier": "inconnu",
   "usager.cadre_de_vie.etat_logement": "insalubre",
-  "demande.proposition_mail": "Mme H., 79 ans, vit seule dans un logement insalubre et humide  La Valette du Var. Elle n'a pas l'APA et vit sous le seuil de pauvret avec une infime pension de retraite. Son neveu procdure des retraits d'argent massifs sans justification, laissant Mme H. sans ressources.",
+  "demande.proposition_mail": "Mme H., 79 ans, vit seule dans un logement insalubre et humide  La Valette du Var. Elle n'a pas l'APA et vit sous le seuil de pauvret avec une infime pension de retraite. Son neveu procdure sur ses comptes bancaires effectue des retraits d'argent massifs et rpts sans justification, laissant Huguette sans le moindre sou pour s'acheter de quoi manger.",
   "demande.resume_structur": "Mme H., 79 ans, vit seule dans un logement insalubre et humide  La Valette du Var. Elle n'a pas l'APA et vit sous le seuil de pauvret avec une infime pension de retraite. Une amie trs proche s'inquite : elle signale que le neveu d'Huguette, qui a procuration sur ses comptes bancaires, effectue des retraits d'argent massifs et rpts sans justification, laissant Huguette sans le moindre sou pour s'acheter de quoi manger. Huguette est terrifie par son neveu et n'ose rien dire par peur de reprsailles.",
   "evaluation.confiance.variables": {
     "age": 100,
@@ -225,30 +223,30 @@ Donnes extraites (JSON) :
   "evaluation.comid.justifications": [
     {
       "code": "precarite_financiere",
-      "justification": "viv[...] sous le seuil de pauvret avec une infime pension de retraite",
-      "confiance": 95
-    },
-    {
-      "code": "isolement_social",
-      "justification": "vit seule dans un logement insalubre et humide  La Valette du Var",
+      "justification": "elle n'a pas l'APA et vit sous le seuil de pauvret avec une infime pension de retraite",
       "confiance": 95
     },
     {
       "code": "logement_inadapte",
-      "justification": "logement insalubre et humide",
+      "justification": "le logement est insalubre et humide",
+      "confiance": 95
+    },
+    {
+      "code": "isolement_social",
+      "justification": "elle vit seule",
       "confiance": 95
     },
     {
       "code": "anxiete",
-      "justification": "est terrifie par son neveu",
-      "confiance": 70
+      "justification": "elle est terrifie par son neveu et n'ose rien dire par peur de reprsailles",
+      "confiance": 95
     }
   ],
   "evaluation.confiance.comid": {
     "precarite_financiere": 95,
-    "isolement_social": 95,
     "logement_inadapte": 100,
-    "anxiete": 70,
+    "isolement_social": 95,
+    "anxiete": 95,
     "lourdeur_reseau": 100
   },
   "evaluation.comid.multimorbidite": false,
@@ -338,7 +336,7 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA pour la situation de pril...
 
 --- DEBUG : ANALYSE EXPERTE ---
-M. V., 65 ans, habite  Toulon. Son appartement est insalubre : il n'a plus d'eau courante depuis 3 mois et le plafond de sa chambre menace de s'effondrer suite  une infiltration. Il vit dans l'humidit totale et il commence  avoir des problmes respiratoires srieux. Son propritaire est un marchand de sommeil qui le menace physiquement s'il appelle la mairie. M. V. est terrifi, il n'a plus de revenus car son dossier de retraite est bloqu. Il dort dans sa cuisine avec un petit rchaud  gaz, ce qui est extrmement dangereux.
+Patient de 65 ans  Toulon, vivant dans un appartement insalubre sans eau courante et menac par une infiltration. Il est terrifi et a des problmes respiratoires srieux.
 Ville extraite : Toulon
 Mdecin : incertain
 Malveillance : violences_physiques
@@ -350,7 +348,7 @@ Donnees extraites (JSON) :
 {
   "usager.identite.age_estime": 65,
   "usager.localisation.commune_residence": "Toulon",
-  "usager.situation_actuelle.APA": "inconnu",
+  "usager.situation_actuelle.APA": "non",
   "usager.situation_actuelle.PCH": "inconnu",
   "usager.situation_actuelle.GIR": null,
   "vulnerabilites.sante.suivi_medical.medecin_traitant": "incertain",
@@ -361,22 +359,22 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "inconnu",
   "usager.cadre_de_vie.aidant_regulier": "inconnu",
   "usager.cadre_de_vie.etat_logement": "insalubre",
-  "demande.proposition_mail": "Monsieur, g de 65 ans et habitant  Toulon, vit dans des conditions insalubres depuis 3 mois. Son propritaire menace physiquement son bien-tre. Nous sollicitons votre intervention pour une valuation globale et un soutien  domicile.",
-  "demande.resume_structur": "M. V., 65 ans, habite  Toulon. Son appartement est insalubre : il n'a plus d'eau courante depuis 3 mois et le plafond de sa chambre menace de s'effondrer suite  une infiltration. Il vit dans l'humidit totale et il commence  avoir des problmes respiratoires srieux. Son propritaire est un marchand de sommeil qui le menace physiquement s'il appelle la mairie. M. V. est terrifi, il n'a plus de revenus car son dossier de retraite est bloqu. Il dort dans sa cuisine avec un petit rchaud  gaz, ce qui est extrmement dangereux.",
+  "demande.proposition_mail": "Monsieur, g de 65 ans et habitant  Toulon, vit dans un appartement insalubre sans eau courante et menac par une infiltration. Il est terrifi et a des problmes respiratoires srieux. Nous sollicitons votre intervention pour une valuation globale et un soutien  domicile.",
+  "demande.resume_structur": "Patient de 65 ans  Toulon, vivant dans un appartement insalubre sans eau courante et menac par une infiltration. Il est terrifi et a des problmes respiratoires srieux.",
   "evaluation.confiance.variables": {
     "age": 100,
     "ville": 100,
-    "apa": 0,
+    "apa": 100,
     "pch": 0,
     "gir": 0,
     "professionnels_domicile": 0,
     "aidant_regulier": 0,
     "medecin_traitant": 0,
-    "malveillance": 90,
-    "urgence": 95,
-    "hospitalisation": 95,
+    "malveillance": 100,
+    "urgence": 100,
+    "hospitalisation": 100,
     "motif": 100,
-    "etat_logement": 0
+    "etat_logement": 100
   },
   "evaluation.comid.justifications": [
     {
@@ -524,22 +522,28 @@ Donnees extraites (JSON) :
       "confiance": 95
     },
     {
-      "code": "troubles_cognitifs",
+      "code": "perte_autonomie_recente",
       "justification": "il refuse que j'entre faire ses pansements, il me crie dessus et me dit que je veux l'empoisonner avec ses mdicaments",
       "confiance": 95
+    },
+    {
+      "code": "anxiete",
+      "justification": "je suis perdue avec un de mes patients",
+      "confiance": 70
     }
   ],
   "evaluation.confiance.comid": {
     "isolement_social": 95,
     "logement_inadapte": 100,
-    "troubles_cognitifs": 95,
+    "perte_autonomie_recente": 95,
+    "anxiete": 70,
     "opposition_soins": 0
   },
   "evaluation.comid.multimorbidite": false,
   "evaluation.comid.douleurs": false,
   "evaluation.comid.allergies": false,
   "evaluation.comid.polymedication": false,
-  "evaluation.comid.troubles_cognitifs": true,
+  "evaluation.comid.troubles_cognitifs": false,
   "evaluation.comid.precarite_financiere": false,
   "evaluation.comid.epuisement_aidant": false,
   "evaluation.comid.litteratie_faible": false,
@@ -548,7 +552,7 @@ Donnees extraites (JSON) :
   "evaluation.comid.depression": false,
   "evaluation.comid.psychiatrie": false,
   "evaluation.comid.addiction": false,
-  "evaluation.comid.anxiete": false,
+  "evaluation.comid.anxiete": true,
   "evaluation.comid.fluctuation_mentale": false,
   "evaluation.comid.sollicitations_recurrentes": false,
   "evaluation.comid.conflit_reseau": false,
@@ -556,7 +560,7 @@ Donnees extraites (JSON) :
   "evaluation.comid.agressivite": false,
   "evaluation.comid.opposition_soins": true,
   "evaluation.comid.degradation_recente": false,
-  "evaluation.comid.perte_autonomie_recente": false,
+  "evaluation.comid.perte_autonomie_recente": true,
   "evaluation.comid.transition_parcours": false,
   "evaluation.comid.trouble_cognitif_aigu": false,
   "evaluation.comid.imprevisibilite": false,
@@ -569,7 +573,7 @@ Donnees extraites (JSON) :
 }
 
 2. Calcul du score de complexit COMID...
-Score Total : 4 (Situation non complexe)
+Score Total : 5 (Situation non complexe)
 
 3. Evaluation de l'orientation...
 
@@ -578,17 +582,13 @@ Score Total : 4 (Situation non complexe)
 --- REPONSE D'ORIA POUR L'INFIRMIERE ---
 ORIA : 'D'aprs votre description, la situation de M. Lambert est Situation non complexe. Voici les priorits d'appel :'
 
+CONTACTER : [ CRT - Centre de Ressources Territorial (Accompagnement Renforc) ]
+POURQUOI : Orientation clinique recommande par l'valuation clinique multicritre (Score : 105 pts).
+CONTACT : 06 84 99 32 49 | 104, chemin de Mar Vivo aux deux Chnes 83500 LA SEYNE SUR MER
+
 CONTACTER : [ CLIC - Centre Local d'Information et de Coordination ]
 POURQUOI : Orientation clinique recommande par l'valuation clinique multicritre (Score : 100 pts).
 CONTACT : 04 94 06 97 04 | None
-
-CONTACTER : [ CRT - Centre de Ressources Territorial (Accompagnement Renforc) ]
-POURQUOI : Orientation clinique recommande par l'valuation clinique multicritre (Score : 100 pts).
-CONTACT : 06 84 99 32 49 | 104, chemin de Mar Vivo aux deux Chnes 83500 LA SEYNE SUR MER
-
-CONTACTER : [ Les Compagnons Btisseurs (Diogne ou Incurie unique/principale) ]
-POURQUOI : Orientation clinique recommande par l'valuation clinique multicritre (Score : 75 pts).
-CONTACT : N/A | N/A
 
 CONTACTER : [ DAC - Dispositif d'Appui  la Coordination ]
 POURQUOI : Orientation clinique recommande par l'valuation clinique multicritre (Score : 55 pts).
@@ -636,7 +636,7 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "propre",
-  "demande.proposition_mail": "Madame, ge de 78 ans et habitant  La Garde, a une petite retraite et est  dcouvert. Elle demande votre aide pour s'acheter  manger et faire ses courses.",
+  "demande.proposition_mail": "Madame P., ge de 78 ans et rsidente  La Garde, a une petite retraite et est en difficult pour s'acheter  manger. Elle sollicite notre aide pour obtenir des courses et viter les impays.",
   "demande.resume_structur": "Mme P., 78 ans, habitante  La Garde, demande de l'aide pour s'acheter  manger et faire ses courses en raison d'une petite retraite.",
   "evaluation.confiance.variables": {
     "age": 100,
@@ -746,7 +746,7 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA pour : 'Mme Lefebvre, 65 ans, vit  La Garde. Elle est sui...'
 
 --- DEBUG : ANALYSE EXPERTE ---
-Patient de 65 ans  La Garde, en refus de soins et vivant dans un appartement trs encombr (Syndrome de Diogne suspect), avec consommation excessive d'alcool pour 'calmer ses angoisses'.
+Mme L., 65 ans, vit  La Garde. Elle est suivie pour une bipolarit depuis des annes mais elle a arrt son traitement le mois dernier. Elle consomme beaucoup d'alcool pour 'calmer ses angoisses' selon ses propres mots. Elle vit dans un appartement trs encombr (Syndrome de Diogne suspect) et ses voisins se plaignent d'odeurs fortes. Elle n'a plus de famille et refuse toute aide du service social, se montrant parfois trs agressive verbalement quand on frappe  sa porte.
 Ville extraite : La Garde
 Mdecin : identifie
 Malveillance : aucune
@@ -769,8 +769,8 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "inconnu",
   "usager.cadre_de_vie.aidant_regulier": "inconnu",
   "usager.cadre_de_vie.etat_logement": "diogene",
-  "demande.proposition_mail": "Mme L., ge de 65 ans et habitant  La Garde, refuse tout soutien social et vit dans un appartement trs encombr. Elle consomme rgulirement de l'alcool pour se sentir mieux.",
-  "demande.resume_structur": "Patient de 65 ans  La Garde, en refus de soins et vivant dans un appartement trs encombr (Syndrome de Diogne suspect), avec consommation excessive d'alcool pour 'calmer ses angoisses'.",
+  "demande.proposition_mail": "Mme L., ge de 65 ans et habitant  La Garde, a arrt son traitement pour une bipolarit. Elle consomme beaucoup d'alcool pour calmer ses angoisses et refuse toute aide du service social. Son logement est trs encombr et les odeurs fortes sont signales par les voisins.",
+  "demande.resume_structur": "Mme L., 65 ans, vit  La Garde. Elle est suivie pour une bipolarit depuis des annes mais elle a arrt son traitement le mois dernier. Elle consomme beaucoup d'alcool pour 'calmer ses angoisses' selon ses propres mots. Elle vit dans un appartement trs encombr (Syndrome de Diogne suspect) et ses voisins se plaignent d'odeurs fortes. Elle n'a plus de famille et refuse toute aide du service social, se montrant parfois trs agressive verbalement quand on frappe  sa porte.",
   "evaluation.confiance.variables": {
     "age": 100,
     "ville": 100,
@@ -888,7 +888,7 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA pour : 'M. Leroy, 45 ans, habite  Toulon. Il est atteint ...'
 
 --- DEBUG : ANALYSE EXPERTE ---
-Patient de 45 ans  Toulon, atteint d'une Sclrose en Plaques (SEP) diagnostique il y a 2 ans, vit seul et se sent perdu dans son parcours de soins entre les diffrents spcialistes. Il exprime des ides noires.
+Patient de 45 ans  Toulon, atteint d'une Sclrose en Plaques (SEP) diagnostique il y a 2 ans. Sa sant se dgrade rapidement et il a d arrter son activit professionnelle. Il vit seul, ses revenus ont chut et il a du mal  payer son loyer. Il se sent perdu dans son parcours de soins entre les diffrents spcialistes et son moral est au plus bas, il exprime des ides noires.
 Ville extraite : Toulon
 Mdecin : identifie
 Malveillance : aucune
@@ -907,26 +907,26 @@ Donnees extraites (JSON) :
   "usager.situation_actuelle.suspicion_malveillance": "aucune",
   "adresseur.degre_urgence_percu": "faible",
   "vulnerabilites.sante.hospitalisation.statut": "aucun",
-  "demande.motif_principal": "refus_de_soins",
+  "demande.motif_principal": "evaluation_globale",
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "incurie",
-  "demande.proposition_mail": "Monsieur, g de 45 ans et habitant  Toulon, est atteint d'une Sclrose en Plaques (SEP) diagnostique il y a 2 ans. Il vit seul et se sent perdu dans son parcours de soins entre les diffrents spcialistes. Il exprime des ides noires.",
-  "demande.resume_structur": "Patient de 45 ans  Toulon, atteint d'une Sclrose en Plaques (SEP) diagnostique il y a 2 ans, vit seul et se sent perdu dans son parcours de soins entre les diffrents spcialistes. Il exprime des ides noires.",
+  "demande.proposition_mail": "Monsieur, g de 45 ans et habitant  Toulon, atteint d'une Sclrose en Plaques (SEP) diagnostique il y a 2 ans. Sa sant se dgrade rapidement et il a d arrter son activit professionnelle. Il vit seul, ses revenus ont chut et il a du mal  payer son loyer. Il se sent perdu dans son parcours de soins entre les diffrents spcialistes et son moral est au plus bas, il exprime des ides noires.",
+  "demande.resume_structur": "Patient de 45 ans  Toulon, atteint d'une Sclrose en Plaques (SEP) diagnostique il y a 2 ans. Sa sant se dgrade rapidement et il a d arrter son activit professionnelle. Il vit seul, ses revenus ont chut et il a du mal  payer son loyer. Il se sent perdu dans son parcours de soins entre les diffrents spcialistes et son moral est au plus bas, il exprime des ides noires.",
   "evaluation.confiance.variables": {
     "age": 100,
     "ville": 100,
-    "apa": 100,
+    "apa": 0,
     "pch": 0,
     "gir": 0,
     "professionnels_domicile": 100,
     "aidant_regulier": 100,
-    "medecin_traitant": 100,
-    "malveillance": 100,
-    "urgence": 100,
-    "hospitalisation": 100,
+    "medecin_traitant": 80,
+    "malveillance": 90,
+    "urgence": 95,
+    "hospitalisation": 95,
     "motif": 100,
-    "etat_logement": 100
+    "etat_logement": 0
   },
   "evaluation.comid.justifications": [
     {
@@ -940,6 +940,11 @@ Donnees extraites (JSON) :
       "confiance": 95
     },
     {
+      "code": "troubles_cognitifs",
+      "justification": "il se sent perdu dans son parcours de soins",
+      "confiance": 70
+    },
+    {
       "code": "depression",
       "justification": "il exprime des ides noires",
       "confiance": 95
@@ -948,15 +953,15 @@ Donnees extraites (JSON) :
   "evaluation.confiance.comid": {
     "precarite_financiere": 95,
     "isolement_social": 95,
+    "troubles_cognitifs": 70,
     "depression": 95,
-    "logement_inadapte": 100,
-    "opposition_soins": 0
+    "logement_inadapte": 100
   },
   "evaluation.comid.multimorbidite": false,
   "evaluation.comid.douleurs": false,
   "evaluation.comid.allergies": false,
   "evaluation.comid.polymedication": false,
-  "evaluation.comid.troubles_cognitifs": false,
+  "evaluation.comid.troubles_cognitifs": true,
   "evaluation.comid.precarite_financiere": true,
   "evaluation.comid.epuisement_aidant": false,
   "evaluation.comid.litteratie_faible": false,
@@ -971,7 +976,7 @@ Donnees extraites (JSON) :
   "evaluation.comid.conflit_reseau": false,
   "evaluation.comid.inquietude_sante": false,
   "evaluation.comid.agressivite": false,
-  "evaluation.comid.opposition_soins": true,
+  "evaluation.comid.opposition_soins": false,
   "evaluation.comid.degradation_recente": false,
   "evaluation.comid.perte_autonomie_recente": false,
   "evaluation.comid.transition_parcours": false,
@@ -998,13 +1003,13 @@ Score Total : 5 (Situation non complexe)
 Objectif : Orientation clinique recommande par l'valuation clinique multicritre (Score : 85 pts).
 Contact : 04 83 95 24 42 | 100, traverse des minimes 83000 Toulon
 
-[ DAC - Dispositif d'Appui  la Coordination ] - Priorite : 35
-Objectif : Orientation clinique recommande par l'valuation clinique multicritre (Score : 35 pts).
-Contact : 04 94 35 32 01 | None
-
 [ CCAS - Centre Communal d'Action Sociale ] - Priorite : 35
 Objectif : Orientation clinique recommande par l'valuation clinique multicritre (Score : 35 pts).
 Contact : 04 94 24 65 00 | 100 rue des remparts - CS 20813 83051 Toulon Cedex
+
+[ DAC - Dispositif d'Appui  la Coordination ] - Priorite : 25
+Objectif : [/!\ INFORMATIONS INSUFFISANTES : Il est vivement conseille de recueillir plus de precisions sur la situation du patient pour fiabiliser cette orientation] Orientation clinique recommande par l'valuation clinique multicritre (Score : 25 pts).
+Contact : 04 94 35 32 01 | None
 
 BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 
@@ -1157,7 +1162,7 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA pour le rcit de l'aidante...
 
 --- DEBUG : ANALYSE EXPERTE ---
-Fille de Mme M. (82 ans)  Toulon, en difficult pour prendre soin de sa mre qui perd la tte et laisse le gaz allum, se relve la nuit et est tombe deux fois.
+Fille de 82 ans  Toulon, en situation de carence et de stress li  la prise en charge de sa mre ge, qui ncessite une aide pour tre en scurit et permettre  la fille de se ressourcer.
 Ville extraite : Toulon
 Mdecin : incertain
 Malveillance : aucune
@@ -1180,8 +1185,8 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "oui",
   "usager.cadre_de_vie.etat_logement": "propre",
-  "demande.proposition_mail": "Bonjour, nous sommes inquiets pour la scurit de votre mre, ge de 82 ans et vivant  Toulon. Elle laisse le gaz allum, se relve la nuit et est tombe deux fois. Nous sollicitons votre intervention pour une valuation globale et un soutien  domicile.",
-  "demande.resume_structur": "Fille de Mme M. (82 ans)  Toulon, en difficult pour prendre soin de sa mre qui perd la tte et laisse le gaz allum, se relve la nuit et est tombe deux fois.",
+  "demande.proposition_mail": "Bonjour, nous sommes proccups par la situation de votre fille, ge de 82 ans et vivant  Toulon. Elle est puise aprs avoir pris soin de sa mre ge et craque sous le poids des responsabilits. Nous sollicitons votre intervention pour aider cette famille en difficult.",
+  "demande.resume_structur": "Fille de 82 ans  Toulon, en situation de carence et de stress li  la prise en charge de sa mre ge, qui ncessite une aide pour tre en scurit et permettre  la fille de se ressourcer.",
   "evaluation.confiance.variables": {
     "age": 100,
     "ville": 100,
@@ -1204,32 +1209,26 @@ Donnees extraites (JSON) :
       "confiance": 95
     },
     {
-      "code": "isolement_social",
-      "justification": "Je travaille  temps plein et je passe toutes mes soires et mes week-ends chez elle.",
-      "confiance": 95
-    },
-    {
       "code": "perte_autonomie_recente",
-      "justification": "Ma mre commence  perdre la tte, elle laisse le gaz allum, elle se relve la nuit et elle est tombe deux fois.",
+      "justification": "elle laisse le gaz allum, elle se relve la nuit et elle est tombe deux fois.",
       "confiance": 100
     },
     {
       "code": "troubles_cognitifs",
-      "justification": "Ma mre commence  perdre la tte",
+      "justification": "elle laisse le gaz allum, elle se relve la nuit et elle est tombe deux fois.",
       "confiance": 95
     },
     {
-      "code": "anxiete",
-      "justification": "Je pleure tout le temps au travail.",
-      "confiance": 95
+      "code": "isolement_social",
+      "justification": "Je travaille  temps plein et je passe toutes mes soires et mes week-ends chez elle.",
+      "confiance": 70
     }
   ],
   "evaluation.confiance.comid": {
     "epuisement_aidant": 95,
-    "isolement_social": 95,
     "perte_autonomie_recente": 100,
     "troubles_cognitifs": 95,
-    "anxiete": 95
+    "isolement_social": 70
   },
   "evaluation.comid.multimorbidite": false,
   "evaluation.comid.douleurs": false,
@@ -1244,7 +1243,7 @@ Donnees extraites (JSON) :
   "evaluation.comid.depression": false,
   "evaluation.comid.psychiatrie": false,
   "evaluation.comid.addiction": false,
-  "evaluation.comid.anxiete": true,
+  "evaluation.comid.anxiete": false,
   "evaluation.comid.fluctuation_mentale": false,
   "evaluation.comid.sollicitations_recurrentes": false,
   "evaluation.comid.conflit_reseau": false,
@@ -1265,7 +1264,7 @@ Donnees extraites (JSON) :
 }
 
 2. Calcul du score de complexit COMID...
-Score Total : 5 (Situation non complexe)
+Score Total : 4 (Situation non complexe)
 
 3. Evaluation de l'orientation...
 
@@ -1295,7 +1294,7 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA pour : 'M. Martin, 75 ans, habite  La Seyne-sur-Mer. Il a...'
 
 --- DEBUG : ANALYSE EXPERTE ---
-Patient de 75 ans  La Seyne-sur-Mer, isol et en difficult aprs l'hospitalisation de son pouse, demande un accompagnement pour rester chez soi.
+M. M., 75 ans, habite  La Seyne-sur-Mer. Il a de graves problmes de vue et sa femme, qui s'occupait de tout, vient d'tre hospitalise. Il se retrouve seul et n'arrive plus  prparer ses repas ni  prendre ses mdicaments.
 Ville extraite : La Seyne-sur-Mer
 Mdecin : incertain
 Malveillance : aucune
@@ -1314,20 +1313,20 @@ Donnees extraites (JSON) :
   "usager.situation_actuelle.suspicion_malveillance": "aucune",
   "adresseur.degre_urgence_percu": "faible",
   "vulnerabilites.sante.hospitalisation.statut": "aucun",
-  "demande.motif_principal": "maintien_a_domicile",
-  "vulnerabilites.sante.professionnels_domicile": "inconnu",
-  "usager.cadre_de_vie.aidant_regulier": "inconnu",
+  "demande.motif_principal": "evaluation_globale",
+  "vulnerabilites.sante.professionnels_domicile": "non",
+  "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "non_renseigne",
-  "demande.proposition_mail": "Monsieur, g de 75 ans et habitant  La Seyne-sur-Mer, est isol et en difficult aprs l'hospitalisation de son pouse. Il sollicite notre accompagnement pour le soutien  domicile.",
-  "demande.resume_structur": "Patient de 75 ans  La Seyne-sur-Mer, isol et en difficult aprs l'hospitalisation de son pouse, demande un accompagnement pour rester chez soi.",
+  "demande.proposition_mail": "Monsieur M., g de 75 ans et habitant  La Seyne-sur-Mer, est isol depuis l'hospitalisation de sa femme. Il a des problmes de vue et ne peut plus prparer ses repas ni prendre ses mdicaments.",
+  "demande.resume_structur": "M. M., 75 ans, habite  La Seyne-sur-Mer. Il a de graves problmes de vue et sa femme, qui s'occupait de tout, vient d'tre hospitalise. Il se retrouve seul et n'arrive plus  prparer ses repas ni  prendre ses mdicaments.",
   "evaluation.confiance.variables": {
     "age": 100,
     "ville": 100,
     "apa": 0,
     "pch": 0,
     "gir": 0,
-    "professionnels_domicile": 0,
-    "aidant_regulier": 0,
+    "professionnels_domicile": 100,
+    "aidant_regulier": 100,
     "medecin_traitant": 0,
     "malveillance": 100,
     "urgence": 100,
@@ -1342,23 +1341,29 @@ Donnees extraites (JSON) :
       "confiance": 70
     },
     {
+      "code": "douleurs",
+      "justification": "de graves problmes de vue",
+      "confiance": 95
+    },
+    {
       "code": "isolement_social",
-      "justification": "Il se retrouve seul",
+      "justification": "il se retrouve seul",
       "confiance": 95
     },
     {
       "code": "logement_inadapte",
-      "justification": "Il ne peut plus prparer ses repas ni prendre ses mdicaments.",
-      "confiance": 95
+      "justification": "il n'arrive plus  prparer ses repas ni  prendre ses mdicaments",
+      "confiance": 70
     }
   ],
   "evaluation.confiance.comid": {
     "multimorbidite": 70,
+    "douleurs": 95,
     "isolement_social": 95,
-    "logement_inadapte": 95
+    "logement_inadapte": 70
   },
   "evaluation.comid.multimorbidite": true,
-  "evaluation.comid.douleurs": false,
+  "evaluation.comid.douleurs": true,
   "evaluation.comid.allergies": false,
   "evaluation.comid.polymedication": false,
   "evaluation.comid.troubles_cognitifs": false,
@@ -1391,7 +1396,7 @@ Donnees extraites (JSON) :
 }
 
 2. Calcul du score de complexit COMID...
-Score Total : 3 (Situation non complexe)
+Score Total : 4 (Situation non complexe)
 
 3. Evaluation de l'orientation...
 
@@ -1474,25 +1479,25 @@ Donnees extraites (JSON) :
     },
     {
       "code": "troubles_cognitifs",
-      "justification": "oublie ses mdicaments contre la douleur",
+      "justification": "oublie ses mdicaments",
       "confiance": 95
     },
     {
       "code": "isolement_social",
-      "justification": "son fils qui vit avec elle : il est trs agressif, il lui crie dessus et j'ai remarqu qu'il lui demande de l'argent de faon trs insistante  chaque fois que je suis l.",
-      "confiance": 95
+      "justification": "elle a l'air terrorise",
+      "confiance": 70
     },
     {
-      "code": "anxiete",
-      "justification": "elle a l'air terrorise",
+      "code": "agressivite",
+      "justification": "son fils qui vit avec elle : il est trs agressif",
       "confiance": 95
     }
   ],
   "evaluation.confiance.comid": {
     "precarite_financiere": 95,
     "troubles_cognitifs": 95,
-    "isolement_social": 95,
-    "anxiete": 95,
+    "isolement_social": 70,
+    "agressivite": 95,
     "logement_inadapte": 100,
     "lourdeur_reseau": 100
   },
@@ -1509,12 +1514,12 @@ Donnees extraites (JSON) :
   "evaluation.comid.depression": false,
   "evaluation.comid.psychiatrie": false,
   "evaluation.comid.addiction": false,
-  "evaluation.comid.anxiete": true,
+  "evaluation.comid.anxiete": false,
   "evaluation.comid.fluctuation_mentale": false,
   "evaluation.comid.sollicitations_recurrentes": false,
   "evaluation.comid.conflit_reseau": false,
   "evaluation.comid.inquietude_sante": false,
-  "evaluation.comid.agressivite": false,
+  "evaluation.comid.agressivite": true,
   "evaluation.comid.opposition_soins": false,
   "evaluation.comid.degradation_recente": false,
   "evaluation.comid.perte_autonomie_recente": false,
@@ -1578,12 +1583,12 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA pour le cas trs complexe...
 
 --- DEBUG : ANALYSE EXPERTE ---
-Mme G., 90 ans, vit  Toulon et traverse une priode de transition majeure suite au dcs rcent de son poux. Elle souffre d'une grave dpression clinique avec des ides noires.
+Analyse manquante
 Ville extraite : Toulon
 Mdecin : identifie
 Malveillance : aucune
 Hospitalisation : aucun
-tat Logement : non_renseigne
+tat Logement : incurie
 --- FIN DEBUG ---
 
 Donnees extraites (JSON) :
@@ -1598,25 +1603,25 @@ Donnees extraites (JSON) :
   "adresseur.degre_urgence_percu": "faible",
   "vulnerabilites.sante.hospitalisation.statut": "aucun",
   "demande.motif_principal": "refus_de_soins",
-  "vulnerabilites.sante.professionnels_domicile": "inconnu",
-  "usager.cadre_de_vie.aidant_regulier": "inconnu",
-  "usager.cadre_de_vie.etat_logement": "non_renseigne",
-  "demande.proposition_mail": "Mme G., ge de 90 ans et vivant  Toulon, prsente une dpression clinique grave avec des ides noires suite au dcs rcent de son poux. Elle refuse les soins prescrits et vit seule dans un logement insalubre.",
-  "demande.resume_structur": "Mme G., 90 ans, vit  Toulon et traverse une priode de transition majeure suite au dcs rcent de son poux. Elle souffre d'une grave dpression clinique avec des ides noires.",
+  "vulnerabilites.sante.professionnels_domicile": "non",
+  "usager.cadre_de_vie.aidant_regulier": "non",
+  "usager.cadre_de_vie.etat_logement": "incurie",
+  "demande.proposition_mail": "Mme G., ge de 90 ans et habitant  Toulon, traverse une priode de transition majeure suite au dcs rcent de son poux. Elle prsente une grave dpression clinique avec des ides noires, un diabte de type 2, une insuffisance cardiaque et une arthrose dformante qui lui causent des douleurs chroniques permanentes et intolrables. Son ordonnance est extrmement lourde avec une polymdication de plus de 9 mdicaments par jour. Elle vit seule dans un logement insalubre et inadapt, situ au 3me tage sans ascenseur. Sa retraite de 800  ne lui permet plus de faire face  ses factures d'lectricit, crant une grande prcarit financire. Sa fille unique est en situation d'puisement total de l'aidant rgulier et ne peut plus l'assister. De plus, Mme G. est trs angoisse par sa sant, mais elle s'oppose de manire hostile aux soins et refuse d'ouvrir aux infirmiers  domicile. Depuis sa chute rcente avec fracture du poignet, elle prsente une perte d'autonomie rcente pour toutes les activits de la vie quotidienne. Son tat de sant est instable et caractris par une forte imprvisibilit.",
+  "demande.resume_structur": "",
   "evaluation.confiance.variables": {
     "age": 100,
     "ville": 100,
-    "apa": 0,
+    "apa": 100,
     "pch": 0,
     "gir": 0,
-    "professionnels_domicile": 0,
-    "aidant_regulier": 0,
-    "medecin_traitant": 80,
-    "malveillance": 90,
-    "urgence": 95,
-    "hospitalisation": 95,
+    "professionnels_domicile": 100,
+    "aidant_regulier": 100,
+    "medecin_traitant": 100,
+    "malveillance": 100,
+    "urgence": 100,
+    "hospitalisation": 100,
     "motif": 100,
-    "etat_logement": 0
+    "etat_logement": 100
   },
   "evaluation.comid.justifications": [
     {
@@ -1626,18 +1631,18 @@ Donnees extraites (JSON) :
     },
     {
       "code": "douleurs",
-      "justification": "souffre d'une arthrose dformante qui lui causent des douleurs chroniques permanentes et intolrables",
-      "confiance": 100
+      "justification": "souffre d'une arthrose dformante qui lui cause des douleurs chroniques permanentes",
+      "confiance": 95
     },
     {
       "code": "polymedication",
-      "justification": "ordonnance est extrmement lourde avec une polymdication de plus de 9 mdicaments par jour",
+      "justification": "ordonnance extrmement lourde avec une polymdication de plus de 9 mdicaments par jour",
       "confiance": 95
     },
     {
       "code": "troubles_cognitifs",
       "justification": "prsente des troubles cognitifs majeurs avec une perte de mmoire et une dsorientation temporelle",
-      "confiance": 100
+      "confiance": 95
     },
     {
       "code": "precarite_financiere",
@@ -1651,42 +1656,36 @@ Donnees extraites (JSON) :
     },
     {
       "code": "isolement_social",
-      "justification": "elle vit seule dans un logement insalubre et inadapt, situ au 3me tage sans ascenseur",
+      "justification": "vit seule dans un logement insalubre et inadapt, situ au 3me tage sans ascenseur",
       "confiance": 95
     },
     {
       "code": "logement_inadapte",
-      "justification": "son logement est insalubre et inadapt, situ au 3me tage sans ascenseur",
-      "confiance": 100
+      "justification": "logement insalubre et inadapt, situ au 3me tage sans ascenseur",
+      "confiance": 95
     },
     {
       "code": "depression",
-      "justification": "elle traverse une priode de transition majeure suite au dcs rcent de son poux, ce qui a dclench une grave dpression clinique avec des ides noires",
-      "confiance": 100
+      "justification": "prsente une grave dpression clinique avec des ides noires",
+      "confiance": 95
     },
     {
       "code": "perte_autonomie_recente",
-      "justification": "elle prsente une perte d'autonomie rcente pour toutes les activits de la vie quotidienne suite  sa chute rcente avec fracture du poignet",
-      "confiance": 100
-    },
-    {
-      "code": "imprevisibilite",
-      "justification": "son tat de sant est instable et caractris par une forte imprvisibilit",
+      "justification": "prsente une perte d'autonomie rcente pour toutes les activits de la vie quotidienne",
       "confiance": 95
     }
   ],
   "evaluation.confiance.comid": {
     "multimorbidite": 95,
-    "douleurs": 100,
+    "douleurs": 95,
     "polymedication": 95,
-    "troubles_cognitifs": 100,
+    "troubles_cognitifs": 95,
     "precarite_financiere": 95,
     "epuisement_aidant": 95,
     "isolement_social": 95,
     "logement_inadapte": 100,
-    "depression": 100,
-    "perte_autonomie_recente": 100,
-    "imprevisibilite": 95,
+    "depression": 95,
+    "perte_autonomie_recente": 95,
     "opposition_soins": 0
   },
   "evaluation.comid.multimorbidite": true,
@@ -1713,7 +1712,7 @@ Donnees extraites (JSON) :
   "evaluation.comid.perte_autonomie_recente": true,
   "evaluation.comid.transition_parcours": false,
   "evaluation.comid.trouble_cognitif_aigu": false,
-  "evaluation.comid.imprevisibilite": true,
+  "evaluation.comid.imprevisibilite": false,
   "evaluation.comid.multitude_intervenants": false,
   "evaluation.comid.manque_partenariat": false,
   "evaluation.comid.incoherence_soins": false,
@@ -1723,7 +1722,7 @@ Donnees extraites (JSON) :
 }
 
 2. Calcul du score de complexit COMID...
-Score Total : 12 (Situation complexe)
+Score Total : 11 (Situation complexe)
 
 3. Evaluation de l'orientation...
 
@@ -1739,16 +1738,16 @@ Contact : 04 94 24 65 25 | None
 Objectif : Orientation clinique recommande par l'valuation clinique multicritre (Score : 165 pts).
 Contact : 06 84 99 32 49 | 104, chemin de Mar Vivo aux deux Chnes 83500 LA SEYNE SUR MER
 
-[ DAC - Dispositif d'Appui  la Coordination ] - Priorite : 135
-Objectif : Orientation clinique recommande par l'valuation clinique multicritre (Score : 135 pts).
+[ DAC - Dispositif d'Appui  la Coordination ] - Priorite : 150
+Objectif : Orientation clinique recommande par l'valuation clinique multicritre (Score : 150 pts).
 Contact : 04 94 35 32 01 | None
 
 [ CCAS - Centre Communal d'Action Sociale ] - Priorite : 90
 Objectif : Orientation clinique recommande par l'valuation clinique multicritre (Score : 90 pts).
 Contact : 04 94 24 65 00 | 100 rue des remparts - CS 20813 83051 Toulon Cedex
 
-[ UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion) ] - Priorite : 55
-Objectif : Orientation clinique recommande par l'valuation clinique multicritre (Score : 55 pts).
+[ UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion) ] - Priorite : 85
+Objectif : Orientation clinique recommande par l'valuation clinique multicritre (Score : 85 pts).
 Contact : 04 83 95 24 42 | 100, traverse des minimes 83000 Toulon
 
 BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
@@ -1771,7 +1770,7 @@ Ville extraite : Toulon
 Mdecin : absent
 Malveillance : aucune
 Hospitalisation : aucun
-tat Logement : non_renseigne
+tat Logement : propre
 --- FIN DEBUG ---
 
 Donnees extraites (JSON) :
@@ -1788,8 +1787,8 @@ Donnees extraites (JSON) :
   "demande.motif_principal": "recherche_medecin",
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
-  "usager.cadre_de_vie.etat_logement": "non_renseigne",
-  "demande.proposition_mail": "Mme V., 82 ans, installe  Toulon, souffre de diabte de type 2 et d'hypertension. Elle n'a plus de mdecin traitant et manque de mdicaments. Sa fille sollicite notre aide pour trouver un nouveau mdecin traitant.",
+  "usager.cadre_de_vie.etat_logement": "propre",
+  "demande.proposition_mail": "Mme V., 82 ans, vient de dmnager  Toulon pour se rapprocher de sa fille. Elle souffre de diabte de type 2 et d'hypertension et n'a plus de mdecin traitant. Elle a appel plusieurs mdecins dans son nouveau quartier mais aucun ne prend de nouveaux patients. Elle manque de mdicaments et est trs angoisse par cette rupture de suivi mdical.",
   "demande.resume_structur": "Mme V., 82 ans, vient de s'installer  Toulon pour se rapprocher de sa fille. Elle souffre de diabte de type 2 et d'hypertension. Elle n'a plus de mdecin traitant car elle a dmnag et son ancien cabinet est trop loin. Elle a appel plusieurs mdecins dans son nouveau quartier mais aucun ne prend de nouveaux patients. Elle commence  manquer de mdicaments et elle est trs angoisse par cette rupture de suivi mdical. Sa fille travaille beaucoup et s'inquite de ne pas trouver de solution pour sa mre.",
   "evaluation.confiance.variables": {
     "age": 100,
@@ -1799,12 +1798,12 @@ Donnees extraites (JSON) :
     "gir": 0,
     "professionnels_domicile": 100,
     "aidant_regulier": 100,
-    "medecin_traitant": 80,
-    "malveillance": 90,
-    "urgence": 95,
-    "hospitalisation": 95,
+    "medecin_traitant": 100,
+    "malveillance": 100,
+    "urgence": 100,
+    "hospitalisation": 100,
     "motif": 100,
-    "etat_logement": 0
+    "etat_logement": 100
   },
   "evaluation.comid.justifications": [
     {
@@ -1813,23 +1812,17 @@ Donnees extraites (JSON) :
       "confiance": 100
     },
     {
-      "code": "douleurs",
-      "justification": "souffre de diabte de type 2 et d'hypertension",
-      "confiance": 95
-    },
-    {
       "code": "anxiete",
-      "justification": "trs angoisse par cette rupture de suivi mdical",
-      "confiance": 100
+      "justification": "trs angoisse",
+      "confiance": 95
     }
   ],
   "evaluation.confiance.comid": {
     "multimorbidite": 100,
-    "douleurs": 95,
-    "anxiete": 100
+    "anxiete": 95
   },
   "evaluation.comid.multimorbidite": true,
-  "evaluation.comid.douleurs": true,
+  "evaluation.comid.douleurs": false,
   "evaluation.comid.allergies": false,
   "evaluation.comid.polymedication": false,
   "evaluation.comid.troubles_cognitifs": false,
@@ -1862,7 +1855,7 @@ Donnees extraites (JSON) :
 }
 
 2. Calcul du score de complexit COMID...
-Score Total : 3 (Situation non complexe)
+Score Total : 2 (Situation non complexe)
 
 3. Evaluation de l'orientation...
 
@@ -1925,22 +1918,22 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "propre",
-  "demande.proposition_mail": "Mme M., ge de 82 ans et vivant  Toulon, refuse l'aide  domicile et prsente des difficults pour se nourrir. Sa fille est puise et inquite.",
+  "demande.proposition_mail": "Mme M., ge de 82 ans et vivant  Toulon, refuse les soins prescrits et demande une aide  domicile. Sa fille est puise et inquite.",
   "demande.resume_structur": "Mme M., 82 ans, vit seule  Toulon dans son appartement. Elle commence  oublier de manger, elle a chut la semaine dernire mais n'a pas t hospitalise. Elle refuse l'aide  domicile car elle dit qu'elle peut tout faire seule, mais sa fille est puise et trs inquite.",
   "evaluation.confiance.variables": {
     "age": 100,
     "ville": 100,
-    "apa": 100,
+    "apa": 0,
     "pch": 0,
     "gir": 0,
     "professionnels_domicile": 100,
     "aidant_regulier": 100,
     "medecin_traitant": 0,
-    "malveillance": 100,
-    "urgence": 100,
-    "hospitalisation": 100,
+    "malveillance": 90,
+    "urgence": 95,
+    "hospitalisation": 95,
     "motif": 100,
-    "etat_logement": 100
+    "etat_logement": 80
   },
   "evaluation.comid.justifications": [
     {
@@ -2077,7 +2070,7 @@ Donnees extraites (JSON) :
     {
       "code": "logement_inadapte",
       "justification": "On habite  Toulon au 3me tage sans ascenseur",
-      "confiance": 95
+      "confiance": 100
     },
     {
       "code": "perte_autonomie_recente",
@@ -2086,15 +2079,15 @@ Donnees extraites (JSON) :
     },
     {
       "code": "anxiete",
-      "justification": "On a besoin d'un hbergement temporaire pour que je puisse me faire oprer du dos, ou d'un soutien bien plus fort. Je ne sais plus  qui m'adresser.",
-      "confiance": 95
+      "justification": "Je sens que je fatigue",
+      "confiance": 90
     }
   ],
   "evaluation.confiance.comid": {
     "epuisement_aidant": 95,
-    "logement_inadapte": 95,
+    "logement_inadapte": 100,
     "perte_autonomie_recente": 95,
-    "anxiete": 95
+    "anxiete": 90
   },
   "evaluation.comid.multimorbidite": false,
   "evaluation.comid.douleurs": false,
@@ -2160,7 +2153,7 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA pour : 'M. Chen, 52 ans, habite  Toulon. Il est en situat...'
 
 --- DEBUG : ANALYSE EXPERTE ---
-M. C., 52 ans, habitant  Toulon, en situation de handicap moteur et bnficiaire de la PCH, cherche des informations sur les logements adapts  son fauteuil roulant dans la commune et souhaiterait savoir s'il existe des prestataires spcialiss pour l'aide humaine le week-end.
+M. C., 52 ans, habite  Toulon et cherche des informations sur les logements adapts  son fauteuil roulant dans la commune et souhaiterait savoir s'il existe des prestataires spcialiss pour l'aide humaine le week-end.
 Ville extraite : Toulon
 Mdecin : incertain
 Malveillance : aucune
@@ -2183,8 +2176,8 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "non_renseigne",
-  "demande.proposition_mail": "M. C., g de 52 ans et habitant  Toulon, en situation de handicap moteur et bnficiaire de la PCH, cherche des informations sur les logements adapts  son fauteuil roulant dans la commune et souhaiterait savoir s'il existe des prestataires spcialiss pour l'aide humaine le week-end.",
-  "demande.resume_structur": "M. C., 52 ans, habitant  Toulon, en situation de handicap moteur et bnficiaire de la PCH, cherche des informations sur les logements adapts  son fauteuil roulant dans la commune et souhaiterait savoir s'il existe des prestataires spcialiss pour l'aide humaine le week-end.",
+  "demande.proposition_mail": "Monsieur C., g de 52 ans et habitant  Toulon, cherche des informations sur les logements adapts  son fauteuil roulant dans la commune et souhaite savoir s'il existe des prestataires spcialiss pour l'aide humaine le week-end.",
+  "demande.resume_structur": "M. C., 52 ans, habite  Toulon et cherche des informations sur les logements adapts  son fauteuil roulant dans la commune et souhaiterait savoir s'il existe des prestataires spcialiss pour l'aide humaine le week-end.",
   "evaluation.confiance.variables": {
     "age": 100,
     "ville": 100,
@@ -2203,12 +2196,12 @@ Donnees extraites (JSON) :
   "evaluation.comid.justifications": [
     {
       "code": "logement_inadapte",
-      "justification": "il est en situation de handicap moteur et bnficie de la PCH",
+      "justification": "habite  Toulon et cherche des informations sur les logements adapts  son fauteuil roulant dans la commune",
       "confiance": 95
     },
     {
       "code": "isolement_social",
-      "justification": "il habite  Toulon",
+      "justification": "il est en situation de handicap moteur et bnficie de la PCH, ce qui peut entraner un isolement social",
       "confiance": 70
     }
   ],
@@ -2282,7 +2275,7 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 
 --- DEBUG : ANALYSE EXPERTE ---
 Mme M., 80 ans, est actuellement hospitalise  l'hpital Sainte Musse suite  une mauvaise chute. Elle s'inquite beaucoup pour son retour  domicile car elle vit seule au 3me tage. Elle a besoin que quelqu'un l'aide  organiser sa sortie et  remplir ses dossiers administratifs car elle a perdu ses papiers lors de son admission en urgence.
-Ville extraite : None
+Ville extraite : La Valette
 Mdecin : identifie
 Malveillance : aucune
 Hospitalisation : en_cours
@@ -2292,7 +2285,7 @@ tat Logement : propre
 Donnees extraites (JSON) :
 {
   "usager.identite.age_estime": 80,
-  "usager.localisation.commune_residence": null,
+  "usager.localisation.commune_residence": "La Valette",
   "usager.situation_actuelle.APA": "non",
   "usager.situation_actuelle.PCH": "inconnu",
   "usager.situation_actuelle.GIR": null,
@@ -2304,12 +2297,12 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "propre",
-  "demande.proposition_mail": "Mme M., ge de 80 ans, est hospitalise suite  une mauvaise chute. Elle s'inquite pour son retour  domicile et ncessite un accompagnement pour organiser sa sortie et remplir ses dossiers administratifs.",
+  "demande.proposition_mail": "Mme M., ge de 80 ans, est hospitalise  l'hpital Sainte Musse suite  une mauvaise chute. Elle s'inquite pour son retour  domicile et a besoin d'aide pour organiser sa sortie et remplir ses dossiers administratifs.",
   "demande.resume_structur": "Mme M., 80 ans, est actuellement hospitalise  l'hpital Sainte Musse suite  une mauvaise chute. Elle s'inquite beaucoup pour son retour  domicile car elle vit seule au 3me tage. Elle a besoin que quelqu'un l'aide  organiser sa sortie et  remplir ses dossiers administratifs car elle a perdu ses papiers lors de son admission en urgence.",
   "evaluation.confiance.variables": {
     "age": 100,
-    "ville": 0,
-    "apa": 100,
+    "ville": 100,
+    "apa": 0,
     "pch": 0,
     "gir": 0,
     "professionnels_domicile": 100,
@@ -2324,12 +2317,12 @@ Donnees extraites (JSON) :
   "evaluation.comid.justifications": [
     {
       "code": "perte_autonomie_recente",
-      "justification": "elle s'inquite beaucoup pour son retour  domicile car elle vit seule au 3me tage",
+      "justification": "elle a besoin que quelqu'un l'aide  organiser sa sortie et  remplir ses dossiers administratifs car elle a perdu ses papiers lors de son admission en urgence.",
       "confiance": 95
     },
     {
       "code": "isolement_social",
-      "justification": "elle vit seule",
+      "justification": "elle vit seule au 3me tage",
       "confiance": 95
     }
   ],
@@ -2410,12 +2403,12 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA (Dterministe, Temp=0.0) pour : 'M. Pierre age de 88 ans vis seul  domicile polypathologie avais oubli ma visi...'
 
 --- DEBUG : ANALYSE EXPERTE ---
-M. P., g de 88 ans, vit seul  domicile et a oubli sa visite mdicale. Il a un voisin qui l'aide pour faire ses courses.
+Analyse manquante
 Ville extraite : Toulon
-Mdecin : incertain
+Mdecin : absent
 Malveillance : aucune
 Hospitalisation : aucun
-tat Logement : incurie
+tat Logement : non_renseigne
 --- FIN DEBUG ---
 
 Donnes extraites (JSON) :
@@ -2425,16 +2418,16 @@ Donnes extraites (JSON) :
   "usager.situation_actuelle.APA": "non",
   "usager.situation_actuelle.PCH": "inconnu",
   "usager.situation_actuelle.GIR": null,
-  "vulnerabilites.sante.suivi_medical.medecin_traitant": "incertain",
+  "vulnerabilites.sante.suivi_medical.medecin_traitant": "absent",
   "usager.situation_actuelle.suspicion_malveillance": "aucune",
   "adresseur.degre_urgence_percu": "faible",
   "vulnerabilites.sante.hospitalisation.statut": "aucun",
   "demande.motif_principal": "evaluation_globale",
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
-  "usager.cadre_de_vie.etat_logement": "incurie",
-  "demande.proposition_mail": "Monsieur, g de 88 ans et vivant  Toulon, a oubli sa visite mdicale et ncessite une aide pour organiser ses soins.",
-  "demande.resume_structur": "M. P., g de 88 ans, vit seul  domicile et a oubli sa visite mdicale. Il a un voisin qui l'aide pour faire ses courses.",
+  "usager.cadre_de_vie.etat_logement": "non_renseigne",
+  "demande.proposition_mail": "Monsieur, g de 88 ans et vivant  Toulon, a oubli sa visite mdicale prvue. Il vit seul  domicile et bnficie d'un aide pour faire ses courses. Il est polypathologue et a une difficult  la marche.",
+  "demande.resume_structur": "",
   "evaluation.confiance.variables": {
     "age": 100,
     "ville": 100,
@@ -2443,42 +2436,47 @@ Donnes extraites (JSON) :
     "gir": 0,
     "professionnels_domicile": 100,
     "aidant_regulier": 100,
-    "medecin_traitant": 0,
+    "medecin_traitant": 100,
     "malveillance": 100,
     "urgence": 100,
     "hospitalisation": 100,
     "motif": 100,
-    "etat_logement": 100
+    "etat_logement": 0
   },
   "evaluation.comid.justifications": [
     {
       "code": "addiction",
-      "justification": "addition  l'alcool",
+      "justification": "addiction  l'alcool",
       "confiance": 100
     },
     {
-      "code": "perte_autonomie_recente",
-      "justification": "difficult  la marche",
+      "code": "troubles_cognitifs",
+      "justification": "oubli ma visite prvue",
       "confiance": 95
     },
     {
       "code": "isolement_social",
-      "justification": "vit seul",
+      "justification": "vit seul  domicile",
+      "confiance": 95
+    },
+    {
+      "code": "logement_inadapte",
+      "justification": "refrigirateur ne fonctionne plus",
       "confiance": 95
     }
   ],
   "evaluation.confiance.comid": {
     "addiction": 100,
-    "perte_autonomie_recente": 95,
+    "troubles_cognitifs": 95,
     "isolement_social": 95,
-    "logement_inadapte": 100,
+    "logement_inadapte": 95,
     "multimorbidite": 100
   },
   "evaluation.comid.multimorbidite": true,
   "evaluation.comid.douleurs": false,
   "evaluation.comid.allergies": false,
   "evaluation.comid.polymedication": false,
-  "evaluation.comid.troubles_cognitifs": false,
+  "evaluation.comid.troubles_cognitifs": true,
   "evaluation.comid.precarite_financiere": false,
   "evaluation.comid.epuisement_aidant": false,
   "evaluation.comid.litteratie_faible": false,
@@ -2495,7 +2493,7 @@ Donnes extraites (JSON) :
   "evaluation.comid.agressivite": false,
   "evaluation.comid.opposition_soins": false,
   "evaluation.comid.degradation_recente": false,
-  "evaluation.comid.perte_autonomie_recente": true,
+  "evaluation.comid.perte_autonomie_recente": false,
   "evaluation.comid.transition_parcours": false,
   "evaluation.comid.trouble_cognitif_aigu": false,
   "evaluation.comid.imprevisibilite": false,
@@ -2520,17 +2518,17 @@ Score Total : 5 (Situation non complexe)
 Objectif : Orientation clinique recommande par l'valuation clinique multicritre (Score : 80 pts).
 Contact : 04 22 44 84 73 | None
 
-[ CRT - Centre de Ressources Territorial (Accompagnement Renforc) ] - Priorit : 65
-Objectif : Orientation clinique recommande par l'valuation clinique multicritre (Score : 65 pts).
+[ CRT - Centre de Ressources Territorial (Accompagnement Renforc) ] - Priorit : 60
+Objectif : Orientation clinique recommande par l'valuation clinique multicritre (Score : 60 pts).
 Contact : 06 83 38 39 39 | 421 Av 1er Bataillon Infanterie de Marine du Pacifique 83130 La Garde
 
-[ DAC - Dispositif d'Appui  la Coordination ] - Priorit : 35
-Objectif : Orientation clinique recommande par l'valuation clinique multicritre (Score : 35 pts).
-Contact : 04 94 35 32 01 | None
+[ CPTS - Communaut Professionnelle Territoriale de Sant ] - Priorit : 50
+Objectif : Orientation clinique recommande par l'valuation clinique multicritre (Score : 50 pts).
+Contact : 06 63 63 63 91 | 3 Rue Aspirant Franois Philippe 83260 La Crau
 
-[ UTS / ASPI - Unit Territoriale Sociale (Action Sociale Prvention Insertion) ] - Priorit : 30
-Objectif : Orientation clinique recommande par l'valuation clinique multicritre (Score : 30 pts).
-Contact : 04 83 95 56 50 | 53 Impasse Blriot Immeuble Le Frdric 83130 La Garde
+[ DAC - Dispositif d'Appui  la Coordination ] - Priorit : 20
+Objectif : Orientation clinique recommande par l'valuation clinique multicritre (Score : 20 pts).
+Contact : 04 94 35 32 01 | None
 
 BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 
@@ -2547,7 +2545,7 @@ BDD - Dossier sauvegard avec succs en base de donnes de manire anonymise.
 1. Extraction IA pour : 'Mme Bernard, 88 ans, habite  La Seyne-sur-Mer. El...'
 
 --- DEBUG : ANALYSE EXPERTE ---
-Mme B., 88 ans, habitante  La Seyne-sur-Mer, est trs isole. Elle est victime de spoliation financire par son petit-fils qui lui vole de l'argent. Elle est trs amaigrie et n'a plus de quoi s'acheter  manger car son compte est vide.
+Mme B., 88 ans, habitante  La Seyne-sur-Mer, est trs isole. Elle est victime de spoliation financire par son petit-fils qui lui vole de l'argent. Elle est terrorise  l'ide de parler et trs amaigrie.
 Ville extraite : La Seyne-sur-Mer
 Mdecin : incertain
 Malveillance : spoliation_financiere
@@ -2570,8 +2568,8 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "non",
   "usager.cadre_de_vie.aidant_regulier": "non",
   "usager.cadre_de_vie.etat_logement": "non_renseigne",
-  "demande.proposition_mail": "Mme B., 88 ans, habitante  La Seyne-sur-Mer, est victime de spoliation financire par son petit-fils qui lui vole de l'argent. Elle est trs amaigrie et n'a plus de quoi s'acheter  manger car son compte est vide. Nous sollicitons votre intervention pour une aide alimentaire.",
-  "demande.resume_structur": "Mme B., 88 ans, habitante  La Seyne-sur-Mer, est trs isole. Elle est victime de spoliation financire par son petit-fils qui lui vole de l'argent. Elle est trs amaigrie et n'a plus de quoi s'acheter  manger car son compte est vide.",
+  "demande.proposition_mail": "Mme B., 88 ans, habitante  La Seyne-sur-Mer, est victime de spoliation financire par son petit-fils qui lui vole de l'argent. Elle est terrorise  l'ide de parler et trs amaigrie.",
+  "demande.resume_structur": "Mme B., 88 ans, habitante  La Seyne-sur-Mer, est trs isole. Elle est victime de spoliation financire par son petit-fils qui lui vole de l'argent. Elle est terrorise  l'ide de parler et trs amaigrie.",
   "evaluation.confiance.variables": {
     "age": 100,
     "ville": 100,
@@ -2581,9 +2579,9 @@ Donnees extraites (JSON) :
     "professionnels_domicile": 100,
     "aidant_regulier": 100,
     "medecin_traitant": 0,
-    "malveillance": 90,
-    "urgence": 95,
-    "hospitalisation": 95,
+    "malveillance": 100,
+    "urgence": 100,
+    "hospitalisation": 100,
     "motif": 100,
     "etat_logement": 0
   },
@@ -2600,7 +2598,7 @@ Donnees extraites (JSON) :
     },
     {
       "code": "perte_autonomie_recente",
-      "justification": "ne plus pouvoir s'acheter  manger",
+      "justification": "ne plus de quoi s'acheter  manger",
       "confiance": 95
     },
     {
@@ -2721,7 +2719,7 @@ Donnees extraites (JSON) :
   "vulnerabilites.sante.professionnels_domicile": "inconnu",
   "usager.cadre_de_vie.aidant_regulier": "inconnu",
   "usager.cadre_de_vie.etat_logement": "propre",
-  "demande.proposition_mail": "Monsieur, g de 74 ans et habitant  Toulon, souffre de diabte, d'hypertension et d'insuffisance rnale chronique. Il est en difficult pour payer son loyer et ses factures et demande un accompagnement social.",
+  "demande.proposition_mail": "Monsieur, g de 74 ans et habitant  Toulon, souffre de diabte, d'hypertension et d'insuffisance rnale chronique. Il a besoin d'un accompagnement social pour l'aider dans ses dmarches administratives et payer son loyer et ses factures.",
   "demande.resume_structur": "Patient de 74 ans  Toulon, souffrant de diabte, d'hypertension et d'insuffisance rnale chronique, en difficult pour payer son loyer et ses factures, demandant un accompagnement social.",
   "evaluation.confiance.variables": {
     "age": 100,
@@ -2746,32 +2744,32 @@ Donnees extraites (JSON) :
     },
     {
       "code": "douleurs",
-      "justification": "il souffre en permanence dans les jambes",
+      "justification": "souffre en permanence dans les jambes",
       "confiance": 95
     },
     {
       "code": "polymedication",
-      "justification": "il prend 8 mdicaments par jour",
+      "justification": "prend 8 mdicaments par jour",
       "confiance": 95
     },
     {
       "code": "precarite_financiere",
-      "justification": "il commence  avoir du mal  payer son loyer et ses factures",
+      "justification": "a du mal  payer son loyer et ses factures",
       "confiance": 95
     },
     {
       "code": "isolement_social",
-      "justification": "il vit seul",
+      "justification": "vit seule",
       "confiance": 70
     },
     {
       "code": "logement_inadapte",
-      "justification": "son appartement est au 4me tage sans ascenseur",
+      "justification": "appartement au 4me tage sans ascenseur",
       "confiance": 95
     },
     {
       "code": "anxiete",
-      "justification": "il est trs anxieux pour sa sant",
+      "justification": "est trs anxieux pour sa sant",
       "confiance": 100
     }
   ],
@@ -2882,10 +2880,10 @@ Donnes extraites (JSON) :
   "adresseur.degre_urgence_percu": "faible",
   "vulnerabilites.sante.hospitalisation.statut": "aucun",
   "demande.motif_principal": "evaluation_globale",
-  "vulnerabilites.sante.professionnels_domicile": "non",
-  "usager.cadre_de_vie.aidant_regulier": "aucun",
+  "vulnerabilites.sante.professionnels_domicile": "inconnu",
+  "usager.cadre_de_vie.aidant_regulier": "inconnu",
   "usager.cadre_de_vie.etat_logement": "diogene",
-  "demande.proposition_mail": "Mme G. M., ge de 83 ans et vivant  Ollioules, prsente un logement insalubre et encombr (syndrome de Diogne). Elle est isole et n'a pas d'aidant. Nous sollicitons votre intervention pour une valuation globale et un soutien  domicile.",
+  "demande.proposition_mail": "Mme G. M., ge de 83 ans et habitant  Ollioules, vit dans un logement extrmement insalubre et encombr. Elle est isole et n'a pas d'aidant. Nous sollicitons votre intervention pour une valuation globale et un soutien  domicile.",
   "demande.resume_structur": "Mme G. M., 83 ans, vit seule  Ollioules dans un appartement devenu extrmement insalubre et encombr de dchets et d'objets accumuls (syndrome de Diogne). Elle est en situation de grand isolement social et n'a aucun aidant  proximit. L'infirmire librale qui passe pour son traitement contre l'hypertension signale un risque majeur de chute et de frquents oublis de mdicaments (mise en danger). De plus, elle n'a plus de mdecin traitant depuis 6 mois et ne bnficie pas de l'APA.",
   "evaluation.confiance.variables": {
     "age": 100,
@@ -2893,8 +2891,8 @@ Donnes extraites (JSON) :
     "apa": 0,
     "pch": 0,
     "gir": 0,
-    "professionnels_domicile": 80,
-    "aidant_regulier": 80,
+    "professionnels_domicile": 0,
+    "aidant_regulier": 0,
     "medecin_traitant": 90,
     "malveillance": 95,
     "urgence": 95,

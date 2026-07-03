@@ -92,6 +92,7 @@ async def analyze(request: AnalyzeRequest):
 
     # 3. Moteur d'orientation
     orientation_results = orientation_engine.evaluate_orientation(extracted_data, comid_results)
+    score_breakdown = getattr(orientation_results, "score_breakdown", [])
 
     # 4. Territorialisation (Contacts locaux)
     patient_city = extracted_data.get("usager.localisation.commune_residence")
@@ -105,7 +106,8 @@ async def analyze(request: AnalyzeRequest):
         # Assemble all orientation details to store in a single JSON column
         details = {
             "orientation_results": orientation_results,
-            "orientation_with_contacts": orientation_with_contacts
+            "orientation_with_contacts": orientation_with_contacts,
+            "score_breakdown": score_breakdown
         }
         dossier_id = db_manager.save_dossier(
             texte_original=safe_text,
@@ -130,6 +132,7 @@ async def analyze(request: AnalyzeRequest):
             "facteurs_detectes": comid_results["items_detectes"]
         },
         "orientation_suggeree": orientation_with_contacts,
+        "score_breakdown": score_breakdown,
         "status": "analyse_terminee_en_attente_de_relecture"
     }
 
