@@ -54,6 +54,33 @@ let dossierId = null;
 let schemaPivot = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Gestion du thème clair/sombre
+    const themeToggle = document.getElementById('theme-toggle');
+    const currentTheme = localStorage.getItem('theme') || 'dark';
+    
+    const iconMoon = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`;
+    const iconSun = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`;
+    
+    if (currentTheme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        themeToggle.innerHTML = iconMoon; // Affiche la lune pour passer en mode sombre
+    } else {
+        document.documentElement.removeAttribute('data-theme');
+        themeToggle.innerHTML = iconSun; // Affiche le soleil pour passer en mode clair
+    }
+
+    themeToggle.addEventListener('click', () => {
+        if (document.documentElement.hasAttribute('data-theme')) {
+            document.documentElement.removeAttribute('data-theme');
+            localStorage.setItem('theme', 'dark');
+            themeToggle.innerHTML = iconSun;
+        } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+            localStorage.setItem('theme', 'light');
+            themeToggle.innerHTML = iconMoon;
+        }
+    });
+
     const btnSubmit = document.getElementById('btn-submit');
     const inputArea = document.getElementById('situation-input');
     const spinner = document.getElementById('btn-spinner');
@@ -110,10 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
             schemaPivot = data.schema_pivot;
 
             // Remplissage des KPIs globaux
-            resScore.textContent = `${data.evaluation_complexe.score_total} / ${Object.keys(COMID_LABELS).length}`;
-            resLevel.textContent = data.evaluation_complexe.label;
-            resCommune.textContent = schemaPivot["usager.localisation.commune_residence"] || "Non spécifiée";
-            resLevel.className = 'kpi-value ' + getComplexityClass(data.evaluation_complexe.score_total);
+            // resScore, resLevel et resCommune supprimés de l'interface
 
             // Données JSON brutes
             //jsonOutput.textContent = JSON.stringify(schemaPivot, null, 2);
@@ -146,7 +170,6 @@ document.addEventListener('DOMContentLoaded', () => {
             structuresTitle.textContent = "Recherche d'informations supplémentaires :";
             structuresList.innerHTML = `
                 <div class="empty-state card fadeInUp" style="padding: 2.5rem; text-align: center; border: 1px dashed var(--accent-purple); border-radius: var(--radius);">
-                    <div class="empty-icon" style="font-size: 3rem; margin-bottom: 1rem;">🧭</div>
                     <h4 style="font-size: 1.15rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.75rem;">Plus d'informations cliniques requises</h4>
                     <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5; font-size: 0.92rem;">
                         Aucune autre structure d'orientation n'est disponible pour ce cas. Afin d'affiner le diagnostic et de débloquer de nouvelles éligibilités, veuillez enrichir votre description de situation clinique à gauche (précisez si chute récente, dénutrition, épuisement de l'aidant régulier, hospitalisation, ou opposition aux aides).
@@ -443,7 +466,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             structuresList.innerHTML = `
                 <div class="success-card fadeInUp">
-                    <div class="success-icon">🎉</div>
                     <h4 style="font-size: 1.2rem; font-weight: 700; color: #22c55e;">Dossier Validé & Enregistré</h4>
                     <p style="color: var(--text-secondary); max-width: 480px; font-size: 0.92rem; line-height: 1.5; margin: 0 auto;">
                         L'orientation finale vers <strong>${label}</strong> a été enregistrée avec succès. Les données de diagnostic pivot et de traçabilité COMID sont sauvegardées dans votre base locale.
@@ -501,6 +523,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     z-index: 1000;
                     animation: modalFadeIn 0.25s ease-out;
                 }
+                .mini-kpi-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    gap: 4px;
+}
                 .modal-card {
                     background: var(--bg-secondary, #ffffff);
                     border: 1px solid var(--border-glass, rgba(74, 109, 245, 0.3));
@@ -898,7 +932,6 @@ Cordialement,`;
         modal.innerHTML = `
             <div class="modal-card" style="max-width: 600px;">
                 <div class="modal-header">
-                    <span class="modal-logo">📧</span>
                     <h3>Générer un mail d'orientation</h3>
                 </div>
                 <div class="modal-body">
