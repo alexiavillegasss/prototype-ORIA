@@ -36,7 +36,7 @@ SITUATION : "{safe_text}"
 3. "apa" : Choisir "oui" si la personne bénéficie de l'APA. Choisir "non" si elle n'en bénéficie pas. Choisir "inconnu" si non mentionné.
 4. "pch" : Choisir "oui" si bénéficie de la PCH, "non" si non, ou "inconnu" si non mentionné.
 5. "gir" : Chiffre officiel de 1 à 6 si précisé (ex: "GIR 2", "GIR 3"), ou null si non précisé.
-6. "medecin_traitant" : Choisir "identifie" si elle a un médecin traitant, "absent" si elle n'a plus de médecin ou cherche un médecin, ou "incertain" si non mentionné.
+6. "medecin_traitant" : Choisir "identifie" si elle a un médecin traitant, "absent" si elle n'a plus de médecin ou cherche un médecin, ou "non_mentionne" si non mentionné dans le récit.
 7. "malveillance" : Choisir impérativement une seule valeur :
    - "violences_physiques" s'il y a des ecchymoses suspectes, coups ou violences physiques SUBIS par l'usager de la part d'un tiers.
    - "spoliation_financiere" si vol, extorsion d'argent ou chantage par un proche.
@@ -77,7 +77,7 @@ Format JSON attendu :
   "gir": "1 / 2 / 3 / 4 / 5 / 6 ou null",
   "professionnels_domicile": "oui / non / inconnu",
   "aidant_regulier": "oui / non / inconnu",
-  "medecin_traitant": "identifie / absent / incertain",
+  "medecin_traitant": "identifie / absent / non_mentionne",
   "malveillance": "spoliation_financiere / violences_physiques / negligence / aucune",
   "urgence": "faible / modere / eleve / critique",
   "hospitalisation": "en_cours / recente / aucun",
@@ -191,13 +191,40 @@ JSON attendu :
         return result
 
     def _map_to_schema(self, raw_data: dict, text: str = ""):
+        # Regex age extraction post-processing
+        age = raw_data.get("age")
+        if age is None or str(age).lower() in ["null", "none", "inconnu", "nan"]:
+            import re
+            age_match = re.search(r'(?:âgé\s+de\s+|âgée\s+de\s+|de\s+)?(\d{1,3})\s*ans', text, re.IGNORECASE)
+            if age_match:
+                age = int(age_match.group(1))
+
+        # Regex city extraction post-processing
+        ville = raw_data.get("ville")
+        if ville is None or str(ville).lower() in ["null", "none", "inconnu", "nan"]:
+            import re
+            cities = ["toulon", "la seyne-sur-mer", "la seyne", "six-fours", "six fours", "bandol", "hyères", "hyeres", "la valette", "la valette-du-var", "sanary-sur-mer", "sanary", "la garde", "ollioules", "le pradet", "carqueiranne"]
+            for city in cities:
+                if re.search(r'\b' + re.escape(city) + r'\b', text, re.IGNORECASE):
+                    if city in ["la seyne", "la seyne-sur-mer"]:
+                        ville = "La Seyne-sur-Mer"
+                    elif city in ["six fours", "six-fours"]:
+                        ville = "Six-Fours"
+                    elif city in ["la valette", "la valette-du-var"]:
+                        ville = "La Valette-du-Var"
+                    elif city in ["sanary", "sanary-sur-mer"]:
+                        ville = "Sanary-sur-Mer"
+                    else:
+                        ville = city.capitalize()
+                    break
+
         mapped = {
-            "usager.identite.age_estime": raw_data.get("age"),
-            "usager.localisation.commune_residence": raw_data.get("ville"),
+            "usager.identite.age_estime": age,
+            "usager.localisation.commune_residence": ville,
             "usager.situation_actuelle.APA": str(raw_data.get("apa", "non")).lower(),
             "usager.situation_actuelle.PCH": str(raw_data.get("pch", "non")).lower(),
             "usager.situation_actuelle.GIR": raw_data.get("gir"),
-            "vulnerabilites.sante.suivi_medical.medecin_traitant": raw_data.get("medecin_traitant", "incertain"),
+            "vulnerabilites.sante.suivi_medical.medecin_traitant": raw_data.get("medecin_traitant", "non_mentionne"),
             "usager.situation_actuelle.suspicion_malveillance": raw_data.get("malveillance", "aucune"),
             "adresseur.degre_urgence_percu": raw_data.get("urgence", "faible"),
             "vulnerabilites.sante.hospitalisation.statut": raw_data.get("hospitalisation", "aucun"),
@@ -212,8 +239,8 @@ JSON attendu :
         # --- GESTION DE LA CONFIANCE DES VARIABLES DE BASE ---
         confiances_vars = raw_data.get("confiance_variables", {})
         base_vars = {
-            "age": raw_data.get("age"),
-            "ville": raw_data.get("ville"),
+            "age": age,
+            "ville": ville,
             "apa": raw_data.get("apa"),
             "pch": raw_data.get("pch"),
             "gir": raw_data.get("gir"),
@@ -236,6 +263,8 @@ JSON attendu :
                     score = int(confiances_vars.get(var, 100))
                 except:
                     score = 100
+                if var in ["age", "ville"] and (raw_data.get(var) is None or str(raw_data.get(var)).lower() in ["null", "none", "inconnu", "nan"]):
+                    score = 100
                 final_confiances_vars[var] = min(max(score, 0), 100)
                 
         mapped["evaluation.confiance.variables"] = final_confiances_vars
@@ -243,7 +272,7 @@ JSON attendu :
         # Mapping flexible (cherche dans "comid" ou à la racine)
         comid_data = raw_data.get("comid", raw_data)
         
-        # 1. Extraction des codes positifs depuis une liste
+        # 1. Extraction des codes positifs depuis une liste avec validation anti-hallucination stricte
         positive_codes = set()
         criteres_list = None
         if isinstance(comid_data, dict):
@@ -254,13 +283,31 @@ JSON attendu :
         elif isinstance(comid_data, list):
             criteres_list = comid_data
             
+        valid_criteres = []
+        def clean_txt(t):
+            return "".join(char.lower() for char in str(t) if char.isalnum())
+        
+        clean_text_original = clean_txt(text)
+        
         if isinstance(criteres_list, list):
             for c in criteres_list:
                 if isinstance(c, dict) and "code" in c:
-                    positive_codes.add(str(c["code"]).strip().lower())
+                    code = str(c["code"]).strip().lower()
+                    justification = c.get("justification", "")
+                    
+                    # Anti-hallucination : la justification doit exister dans le texte original
+                    if justification and clean_txt(justification) in clean_text_original:
+                        positive_codes.add(code)
+                        valid_criteres.append(c)
+                    elif not justification:
+                        positive_codes.add(code)
+                        valid_criteres.append(c)
                 elif isinstance(c, str):
-                    positive_codes.add(c.strip().lower())
-        mapped["evaluation.comid.justifications"] = criteres_list if isinstance(criteres_list, list) else []
+                    code = c.strip().lower()
+                    positive_codes.add(code)
+                    valid_criteres.append(c)
+                    
+        mapped["evaluation.comid.justifications"] = valid_criteres
 
         # --- GESTION DE LA CONFIANCE DES CRITÈRES COMID ---
         comid_confiances = {}
@@ -295,6 +342,31 @@ JSON attendu :
                     is_positive = val.lower() in ["oui", "yes", "true", "o", "1"]
             
             mapped[f"evaluation.comid.{code}"] = is_positive
+
+        # --- LEXICAL OVERRIDES FOR COMID TO PREVENT LLM MISSES ---
+        text_lower = text.lower() if text else ""
+        overrides = {
+            "psychiatrie": ["paranoia", "paranoïaque", "psychiatre", "CMP", "psychiatrique", "psychose", "schizophrène", "schizophrenie"],
+            "depression": ["dépression", "depression", "dépressif", "depressif", "suicide", "suicidaire", "glissement"],
+            "troubles_cognitifs": ["démence", "demence", "alzheimer", "mémoire", "memoire", "cognitif", "cognitive", "aphasie"],
+            "addiction": ["alcool", "toxicoman", "toxico", "drogue", "addict"],
+            "degradation_recente": ["dégrade", "degrade", "dégradation", "degradation"],
+            "perte_autonomie_recente": ["chute", "chutes", "perte d'autonomie", "perte d’autonomie", "perte autonomie"],
+            "precarite_financiere": ["dette", "dettes", "surendettement", "surendetté", "surendette", "pas les moyens", "pas de moyens", "factures", "aide sociale à l'hébergement", "aide sociale a l'hebergement"],
+            "isolement_social": ["seul", "seule", "isolé", "isole", "isolement"],
+            "douleurs": ["douleur", "douleurs", "souffre", "souffrance", "chutes à répétition", "chutes repetees"]
+        }
+        
+        # Épuisement aidant
+        if "aidant" in text_lower or "épouse" in text_lower or "epouse" in text_lower or "femme" in text_lower or "mari" in text_lower:
+            if any(w in text_lower for w in ["épuisé", "epuise", "épuisement", "epuisement", "bout", "fatigué", "fatigue"]):
+                mapped["evaluation.comid.epuisement_aidant"] = True
+                mapped["evaluation.confiance.comid"]["epuisement_aidant"] = 100
+                
+        for code, keywords in overrides.items():
+            if any(w in text_lower for w in keywords):
+                mapped[f"evaluation.comid.{code}"] = True
+                mapped["evaluation.confiance.comid"][code] = 100
 
         # --- RÈGLES DE SÉCURITÉ MÉTIER HYBRIDES & REDONDANCES LOGIQUES ---
         text_lower = text.lower() if text else ""
@@ -356,5 +428,57 @@ JSON attendu :
             mapped["vulnerabilites.social.isolement_relationnel"] = "critique"
         else:
             mapped["vulnerabilites.social.isolement_relationnel"] = None
+
+        # --- VALIDATIONS THÉMATIQUES SUPPLÉMENTAIRES (ANTI-EXTRAPOLATION DU LLM) ---
+        # A. Multimorbidité : exige la mention d'au moins une pathologie
+        if mapped.get("evaluation.comid.multimorbidite"):
+            disease_keywords = [
+                "diabète", "diabete", "hypertension", "hta", "cardiaque", "insuffisance", 
+                "cancer", "arthrose", "alzheimer", "parkinson", "démence", "demence", 
+                "dépression", "depression", "psychiatrique", "bpco", "pathologie", "maladie"
+            ]
+            if not any(kw in text_lower for kw in disease_keywords):
+                mapped["evaluation.comid.multimorbidite"] = False
+                if "multimorbidite" in mapped.get("evaluation.confiance.comid", {}):
+                    mapped["evaluation.confiance.comid"]["multimorbidite"] = 0
+
+        # B. Polymédication : exige la mention de médicaments
+        if mapped.get("evaluation.comid.polymedication"):
+            med_keywords = ["médicament", "medicament", "ordonnance", "traitement", "pilulier", "drogue", "médoc", "medoc"]
+            if not any(kw in text_lower for kw in med_keywords):
+                mapped["evaluation.comid.polymedication"] = False
+                if "polymedication" in mapped.get("evaluation.confiance.comid", {}):
+                    mapped["evaluation.confiance.comid"]["polymedication"] = 0
+
+        # C. Troubles cognitifs : exige des mots-clés de cognition/mémoire
+        if mapped.get("evaluation.comid.troubles_cognitifs"):
+            cog_keywords = ["cognitif", "mémoire", "memoire", "oublie", "alzheimer", "démence", "demence", "perdu", "désorienté", "desoriente", "confusion", "cognitive"]
+            if not any(kw in text_lower for kw in cog_keywords):
+                mapped["evaluation.comid.troubles_cognitifs"] = False
+                if "troubles_cognitifs" in mapped.get("evaluation.confiance.comid", {}):
+                    mapped["evaluation.confiance.comid"]["troubles_cognitifs"] = 0
+
+        # D. Épuisement de l'aidant : exige la mention de l'entourage
+        if mapped.get("evaluation.comid.epuisement_aidant"):
+            aidant_keywords = ["aidant", "fille", "fils", "épouse", "epouse", "mari", "conjoint", "proche", "famille", "frère", "soeur", "entourage"]
+            if not any(kw in text_lower for kw in aidant_keywords):
+                mapped["evaluation.comid.epuisement_aidant"] = False
+                if "epuisement_aidant" in mapped.get("evaluation.confiance.comid", {}):
+                    mapped["evaluation.confiance.comid"]["epuisement_aidant"] = 0
+
+        # E. Perte d'autonomie récente : exige des mots-clés d'autonomie, chutes ou transferts physiques
+        if mapped.get("evaluation.comid.perte_autonomie_recente"):
+            autonomie_keywords = ["chute", "chuté", "chute", "tombe", "tombé", "autonomie", "paralysie", "fracture", "mobilité", "se lever", "marcher", "déplacement", "deplacement", "alité", "alitee", "fauteuil"]
+            if not any(kw in text_lower for kw in autonomie_keywords):
+                mapped["evaluation.comid.perte_autonomie_recente"] = False
+                if "perte_autonomie_recente" in mapped.get("evaluation.confiance.comid", {}):
+                    mapped["evaluation.confiance.comid"]["perte_autonomie_recente"] = 0
+
+        # F. Nettoyage final des justifications COMID : on retire toutes les justifications invalidées ci-dessus
+        if "evaluation.comid.justifications" in mapped and isinstance(mapped["evaluation.comid.justifications"], list):
+            mapped["evaluation.comid.justifications"] = [
+                j for j in mapped["evaluation.comid.justifications"]
+                if isinstance(j, dict) and mapped.get(f"evaluation.comid.{j['code']}") is True
+            ]
 
         return mapped

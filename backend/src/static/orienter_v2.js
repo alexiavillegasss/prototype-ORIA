@@ -9,7 +9,12 @@ const STRUCTURE_COLORS = {
     'DAC': '#fb923c',
     'CPTS': '#fbbf24',
     'SERVICE_SOCIAL_HOPITAL': '#fb7185',
-    'POLICE': '#3b82f6'
+    'POLICE': '#3b82f6',
+    'PRADO': '#ec4899',
+    'MISAS': '#10b981',
+    "fil d'argent": '#f43f5e',
+    'CONSULTATION MÉMOIRE': '#8b5cf6',
+    'COMPAGNONS_BATISSEURS': '#64748b'
 };
 
 // Dictionnaire complet des 30 critères COMID pour la traçabilité clinique dans l'interface
@@ -234,6 +239,22 @@ document.addEventListener('DOMContentLoaded', () => {
                         <!-- Rempli dynamiquement -->
                     </div>
                 </div>
+
+                <!-- Section Attribution des Points & Phrases -->
+                <div class="explain-section" style="border-top: 1px solid var(--border-glass); padding-top: 1rem;">
+                    <span class="explain-subtitle">Attribution des points (Besoins & Phrases identifiés)</span>
+                    <div id="points-needs-list" style="display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.5rem;">
+                        <!-- Rempli dynamiquement -->
+                    </div>
+                </div>
+
+                <!-- Section Scores des structures -->
+                <div class="explain-section" style="border-top: 1px solid var(--border-glass); padding-top: 1rem;">
+                    <span class="explain-subtitle">Scores et exclusions des structures</span>
+                    <div id="points-scores-grid" class="signals-grid" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
+                        <!-- Rempli dynamiquement -->
+                    </div>
+                </div>
             </div>
             
             <!-- Bloc des coordonnées territoriales -->
@@ -278,6 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnWhy.addEventListener('click', () => {
             if (explainPane.style.display === 'none') {
                 renderComidJustifications(card.querySelector('#comid-proof-list'));
+                renderPointsExplanation(card);
                 explainPane.style.display = 'flex';
                 btnWhy.innerHTML = '<span class="icon">✕</span> Masquer les détails';
             } else {
@@ -313,6 +335,85 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="comid-proof-quote">« ${j.justification} »</span>
             `;
             container.appendChild(card);
+        });
+    }
+
+    /**
+     * Renseigne l'attribution des points et scores dans le conteneur HTML
+     */
+    function renderPointsExplanation(card) {
+        const needsContainer = card.querySelector('#points-needs-list');
+        const scoresContainer = card.querySelector('#points-scores-grid');
+        
+        if (!needsContainer || !scoresContainer) return;
+        
+        needsContainer.innerHTML = '';
+        scoresContainer.innerHTML = '';
+        
+        const priorisations = schemaPivot["evaluation.moteur_points.priorisations_declenchees"] || [];
+        const exclusions = schemaPivot["evaluation.moteur_points.exclusions_declenchees"] || [];
+        const besoins = schemaPivot["evaluation.moteur_points.besoins_identifies"] || [];
+        const scores = schemaPivot["evaluation.moteur_points.scores"] || {};
+        
+        // 1. Rendu des besoins
+        if (priorisations.length > 0) {
+            needsContainer.innerHTML = `
+                <div style="font-size: 0.88rem; color: #f87171; font-weight: 600;">
+                    ⚡ Garde-fou prioritaire déclenché pour : ${priorisations.join(', ')} (Calcul par points court-circuité)
+                </div>
+            `;
+        } else if (besoins.length === 0) {
+            needsContainer.innerHTML = `
+                <div style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">
+                    Aucun besoin identifié dans le récit pour le calcul des points.
+                </div>
+            `;
+        } else {
+            besoins.forEach(b => {
+                const item = document.createElement('div');
+                item.style.padding = '0.5rem';
+                item.style.background = 'rgba(255, 255, 255, 0.02)';
+                item.style.border = '1px solid var(--border-glass)';
+                item.style.borderRadius = '6px';
+                item.style.fontSize = '0.85rem';
+                item.innerHTML = `
+                    <div style="font-weight: 600; color: var(--text-primary);">${b.detaille}</div>
+                    <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">
+                        Catégorie : ${b.categorie} | <span style="color: var(--accent-blue);">+1 pt</span> pour : ${b.structures_cochees.join(', ')}
+                    </div>
+                `;
+                needsContainer.appendChild(item);
+            });
+        }
+        
+        // 2. Rendu des scores des structures
+        const sortedScores = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+        
+        sortedScores.forEach(([struct, score]) => {
+            const item = document.createElement('div');
+            item.className = 'signal-item';
+            item.style.display = 'flex';
+            item.style.flexDirection = 'row';
+            item.style.justifyContent = 'space-between';
+            item.style.alignItems = 'center';
+            item.style.padding = '0.5rem 0.75rem';
+            
+            const isExcluded = exclusions.includes(struct) || score === -9999;
+            const color = STRUCTURE_COLORS[struct] || '#64748b';
+            
+            let scoreBadge = '';
+            if (isExcluded) {
+                scoreBadge = `<span style="color: #ef4444; font-weight: 700; font-size: 0.75rem; background: rgba(239, 68, 68, 0.1); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(239, 68, 68, 0.3);">EXCLU</span>`;
+                item.style.opacity = '0.5';
+            } else {
+                scoreBadge = `<span style="color: ${color}; font-weight: 700; font-size: 0.9rem;">${score} pts</span>`;
+            }
+            
+            item.innerHTML = `
+                <span class="signal-title" style="color: ${color}; font-size: 0.82rem;">${struct}</span>
+                ${scoreBadge}
+            `;
+            scoresContainer.appendChild(item);
         });
     }
 
