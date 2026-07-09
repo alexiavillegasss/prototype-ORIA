@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/style_v2.css">
 </head>
 <body>
 
@@ -21,9 +21,14 @@
             <div class="header-title-center">
                 <h2 class="subtitle">Tableau de Bord – Flux d'Orientation</h2>
             </div>
-            <div class="header-badge" id="badge-total">
-                <span class="badge-label">Dossiers analysés</span>
-                <span class="badge-value" id="total-dossiers">–</span>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <button id="theme-toggle" class="btn-primary" style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-glass); padding: 0.5rem; box-shadow: none; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer;">
+                    <!-- L'icône sera injectée par JS -->
+                </button>
+                <div class="header-badge" id="badge-total">
+                    <span class="badge-label">Dossiers analysés</span>
+                    <span class="badge-value" id="total-dossiers">–</span>
+                </div>
             </div>
         </div>
     </header>
@@ -135,6 +140,38 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <script>
+        // Gestion du thème clair/sombre (Synchronisé avec l'interface principale via localStorage)
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('theme-toggle');
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+            
+            const iconMoon = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`;
+            const iconSun = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`;
+            
+            if (currentTheme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                themeToggle.innerHTML = iconMoon;
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                themeToggle.innerHTML = iconSun;
+            }
+
+            themeToggle.addEventListener('click', () => {
+                if (document.documentElement.hasAttribute('data-theme')) {
+                    document.documentElement.removeAttribute('data-theme');
+                    localStorage.setItem('theme', 'dark');
+                    themeToggle.innerHTML = iconSun;
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    localStorage.setItem('theme', 'light');
+                    themeToggle.innerHTML = iconMoon;
+                }
+                // Optionnel : redessiner le graphique Sankey si besoin avec un événement
+                window.dispatchEvent(new Event('resize'));
+            });
+        });
+    </script>
     <script src="/static/app.js"></script>
 </body>
 </html>
