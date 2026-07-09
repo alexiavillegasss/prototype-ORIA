@@ -638,6 +638,8 @@ body {
     .struct-contact {
         grid-template-columns: 1fr;
     }
+}
+
 /* Bandeau d'actions (Horizontal) */
 .action-banner {
     background: var(--bg-card);
