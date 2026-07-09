@@ -80,6 +80,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Gestion du Menu Hamburger
+    const menuToggle = document.getElementById('menu-toggle');
+    const dropdownMenu = document.getElementById('dropdown-menu');
+    
+    if (menuToggle && dropdownMenu) {
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation(); // Empêche la fermeture immédiate
+            dropdownMenu.classList.toggle('hidden');
+        });
+
+        // Fermer le menu si on clique ailleurs
+        document.addEventListener('click', (e) => {
+            if (!dropdownMenu.contains(e.target) && !menuToggle.contains(e.target)) {
+                dropdownMenu.classList.add('hidden');
+            }
+        });
+    }
+
     const btnSubmit = document.getElementById('btn-submit');
     const inputArea = document.getElementById('situation-input');
     const spinner = document.getElementById('btn-spinner');

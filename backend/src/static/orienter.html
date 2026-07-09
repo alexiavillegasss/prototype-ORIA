@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style_v2.css?v=17">
+    <link rel="stylesheet" href="/static/style_v2.css?v=19">
     
     <style>
         /* Styles Premium additionnels pour le diagnostic interactif */
@@ -243,6 +243,23 @@
                     <span class="badge-label">Mode</span>
                     <span class="badge-value" style="font-size: 1.1rem; color: var(--accent-purple);">Test Temps Réel</span>
                 </div>
+                <!-- Menu Hamburger -->
+                <div style="position: relative;">
+                    <button id="menu-toggle" class="btn-primary" style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-glass); padding: 0.5rem; box-shadow: none; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <div id="dropdown-menu" class="dropdown-menu hidden">
+                        <a href="#" class="dropdown-item disabled" title="Fonctionnalité à venir" onclick="return false;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+                            Remplir ma FO/Grille
+                        </a>
+                        <a href="/dashboard" class="dropdown-item" title="Accéder au tableau de bord">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                            Tableau de bord
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
@@ -251,18 +268,6 @@
 
     <!-- Main Container -->
     <main class="orientation-container">
-        
-        <!-- Menu d'actions (Bandeau élégant intégré) -->
-        <div class="action-banner-inline">
-            <a href="#" class="btn-pill disabled" title="Fonctionnalité à venir" onclick="return false;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
-                Remplir ma FO/Grille
-            </a>
-            <a href="/dashboard" class="btn-pill primary" title="Accéder au tableau de bord">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                Tableau de bord
-            </a>
-        </div>
         
         <!-- Colonne Gauche : Saisie -->
         <section class="input-pane">
@@ -324,6 +329,6 @@
         <p>Prototype ORIA – Module d'évaluation interactif</p>
     </footer>
 
-    <script src="/static/orienter_v2.js?v=12"></script>
+    <script src="/static/orienter_v2.js?v=13"></script>
 </body>
 </html>
