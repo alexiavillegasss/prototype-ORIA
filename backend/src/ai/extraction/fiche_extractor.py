@@ -497,8 +497,15 @@ Réponds UNIQUEMENT par ce JSON complet :
                 
         # Fallback python pour les aides à domicile ratées par l'IA
         if not parsed.get("aide_1"):
-            if "infirmière" in text_lower or "infirmier" in text_lower or "idel" in text_lower:
-                parsed["aide_1"] = "Infirmière"
+            if "infirmi" in text_lower or "idel" in text_lower:
+                freq = ""
+                if "matin" in text_lower:
+                    freq = " le matin"
+                elif "soir" in text_lower:
+                    freq = " le soir"
+                elif "jour" in text_lower or "quotidien" in text_lower:
+                    freq = " tous les jours"
+                parsed["aide_1"] = f"Infirmière{freq}"
             
         # Toujours forcer la date d'émission au jour J
         parsed["emetteur_date"] = datetime.datetime.now().strftime("%d/%m/%Y")
