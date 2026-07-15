@@ -320,9 +320,16 @@ class PDFGenerator:
             "mail famille aidant": extracted_data.get("aidant_email", ""),
             "lien famille aidant": extracted_data.get("aidant_lien", ""),
             "adresse famille aidant": extracted_data.get("aidant_adresse", ""),
-            
-            "motif de la demande": "\n".join(filter(None, [extracted_data.get(f"motif_{i}") for i in range(1, 4)]))
+            "motif de la demande": "",
         }
+        
+        motifs = [str(extracted_data.get(f"motif_{i}", "")).strip() for i in range(1, 4)]
+        motifs = [m for m in motifs if m]
+        unique_motifs = []
+        for m in motifs:
+            if m not in unique_motifs and not any(m in other for other in unique_motifs):
+                unique_motifs.append(m)
+        field_values["motif de la demande"] = "\n".join(unique_motifs)
         
         if extracted_data.get("usager_vit_seul") is True:
             field_values["Vit seul"] = True
@@ -377,8 +384,16 @@ class PDFGenerator:
             "TéléphoneRow1": extracted_data.get("aidant_tel", ""),
             "ADRESSERow1": extracted_data.get("aidant_adresse", ""),
             
-            "Texte3": "\n".join(filter(None, [extracted_data.get(f"motif_{i}") for i in range(1, 4)])),
+            "Texte3": "",
         }
+        
+        motifs = [str(extracted_data.get(f"motif_{i}", "")).strip() for i in range(1, 4)]
+        motifs = [m for m in motifs if m]
+        unique_motifs = []
+        for m in motifs:
+            if m not in unique_motifs and not any(m in other for other in unique_motifs):
+                unique_motifs.append(m)
+        field_values["Texte3"] = "\n".join(unique_motifs)
         
         adresse = extracted_data.get("usager_adresse", "")
         if adresse:
