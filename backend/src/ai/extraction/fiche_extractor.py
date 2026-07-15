@@ -387,38 +387,40 @@ Réponds UNIQUEMENT par ce JSON complet :
         # POST-PROCESSING
         import re
         
-        # Nettoyage usager_nom_usage
+        # Nettoyage usager_nom_usage et usager_prenoms
         nom = parsed.get("usager_nom_usage", "")
         prenom = parsed.get("usager_prenoms", "")
         
+        # Enlever les titres
+        for titre in ["monsieur", "madame", "mme", "m.", "veuve", "vve"]:
+            nom = re.sub(r'(?i)\b' + titre + r'\b', "", nom)
+            prenom = re.sub(r'(?i)\b' + titre + r'\b', "", prenom)
+            
         # Anti-hallucination : l'IA invente ou copie "L'usager"
         if nom and nom.lower() in ["l'usager", "usager"]:
-            parsed["usager_nom_usage"] = ""
             nom = ""
             
         # Anti-hallucination : si le nom ou prénom n'est pas dans le texte
         if nom and nom.lower() not in text_lower:
-            parsed["usager_nom_usage"] = ""
             nom = ""
             
         # Anti-hallucination : ville dans le nom
         if nom and any(ville in nom.lower() for ville in ["seyne", "toulon", "hyeres", "hyères", "marseille", "frejus", "fréjus"]):
-            parsed["usager_nom_usage"] = ""
             nom = ""
             
         if prenom and prenom.lower() not in text_lower:
-            parsed["usager_prenoms"] = ""
             prenom = ""
             
-        # Enlever les titres
-        for titre in ["monsieur", "madame", "mme", "m.", "veuve", "vve"]:
-            nom = re.sub(r'(?i)\b' + titre + r'\b', "", nom)
+        # Anti-hallucination prénom ("la fille de...")
+        if prenom and ("fille" in prenom.lower() or "fils" in prenom.lower() or len(prenom.split()) > 3):
+            prenom = ""
             
         # Si le prénom est dans le nom, l'enlever
         if prenom and prenom.lower() in nom.lower():
             nom = re.sub(r'(?i)' + re.escape(prenom), "", nom)
             
         parsed["usager_nom_usage"] = nom.replace(",", "").strip()
+        parsed["usager_prenoms"] = prenom.replace(",", "").strip()
         
         # Fallback python ultra-robuste pour vit_seul
         if parsed.get("usager_vit_seul") is None:
@@ -432,12 +434,20 @@ Réponds UNIQUEMENT par ce JSON complet :
                     parsed["usager_adresse"] = ville.title()
                     break
         
-        # Anti-hallucination pour l'émetteur : si le nom inventé n'est pas dans le texte
+        # Anti-hallucination pour l'émetteur
         emetteur_nom = parsed.get("emetteur_nom", "")
-        if emetteur_nom and emetteur_nom.lower() not in text_lower:
+        emetteur_prenom = parsed.get("emetteur_prenom", "")
+        for titre in ["monsieur", "madame", "mme", "m.", "veuve", "vve"]:
+            emetteur_nom = re.sub(r'(?i)\b' + titre + r'\b', "", emetteur_nom)
+            emetteur_prenom = re.sub(r'(?i)\b' + titre + r'\b', "", emetteur_prenom)
+            
+        parsed["emetteur_nom"] = emetteur_nom.strip()
+        parsed["emetteur_prenom"] = emetteur_prenom.strip()
+            
+        if parsed["emetteur_nom"] and parsed["emetteur_nom"].lower() not in text_lower:
             parsed["emetteur_nom"] = ""
             
-        # Securité anti-hallucination pour l'émetteur : si pas de nom, on vide le prénom (mais on garde le service s'il s'agit du lien de parenté ou de la profession)
+        # Securité anti-hallucination pour l'émetteur : si pas de nom, on vide le prénom
         if not parsed.get("emetteur_nom"):
             parsed["emetteur_prenom"] = ""
             parsed["emetteur_telephone"] = ""
@@ -450,10 +460,17 @@ Réponds UNIQUEMENT par ce JSON complet :
             if t_val and t_val not in text_no_space:
                 parsed[t_field] = ""
                 
-        # Anti-hallucination : l'IA confond les durées ("depuis 4 ans") avec l'âge, ou invente "20??"
-        age = str(parsed.get("usager_date_naissance", ""))
-        if "depuis" in age.lower() or ("4" in age and "troubles" in text_lower) or "?" in age:
+        # Age -> Année de naissance (comme affiné ce matin)
+        age_str = str(parsed.get("usager_date_naissance", ""))
+        if "depuis" in age_str.lower() or ("4" in age_str and "troubles" in text_lower) or "?" in age_str:
             parsed["usager_date_naissance"] = ""
+        elif age_str and "/" not in age_str:
+            match = re.search(r'\b(\d{1,3})\b', age_str)
+            if match:
+                age = int(match.group(1))
+                if age < 130:
+                    year = datetime.datetime.now().year - age
+                    parsed["usager_date_naissance"] = str(year)
             
         # Anti-hallucination pour l'aidant : si le nom inventé n'est pas dans le texte
         aidant_nom = parsed.get("aidant_nom", "")
