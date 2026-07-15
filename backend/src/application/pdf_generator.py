@@ -268,8 +268,11 @@ class PDFGenerator:
         elif "famille" in str(extracted_data.get("emetteur_service", "")).lower():
             field_values["autres demandeur"] = "Famille"
 
-        # Aidant
-        field_values["Texte13"] = f"{extracted_data.get('aidant_nom', '')} - Tel: {extracted_data.get('aidant_tel', '')}".strip(" -")
+        # Usager Email (Texte13 was mistakenly used for Aidant)
+        field_values["Texte13"] = extracted_data.get("usager_email", "")
+        
+        # Hospitalisation (Par défaut: Non)
+        field_values["Non_2"] = True
 
         # Motifs
         field_values["Compléments dinformation 1"] = extracted_data.get("motif_1", "")
