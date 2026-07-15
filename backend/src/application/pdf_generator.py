@@ -360,7 +360,6 @@ class PDFGenerator:
         if not self.clic_provence_verte_template_path:
             raise ValueError("Provence Verte template path not configured")
         doc = fitz.open(self.clic_provence_verte_template_path)
-        page = doc[0]
         
         field_values = {
             "declarant nom prenom": f"{extracted_data.get('emetteur_nom', '')} {extracted_data.get('emetteur_prenom', '')}".strip(),
@@ -373,35 +372,51 @@ class PDFGenerator:
             "madame prenom": extracted_data.get("usager_prenoms", ""),
             "madame date de naissance": extracted_data.get("usager_date_naissance", ""),
             "madame telephone": extracted_data.get("usager_telephone", ""),
-            "madame adresse": extracted_data.get("usager_adresse", ""),
             
             "NOM et PRENOM lien de parentéRow1": f"{extracted_data.get('aidant_nom', '')} - {extracted_data.get('aidant_lien', '')}".strip(" -"),
             "TéléphoneRow1": extracted_data.get("aidant_tel", ""),
             "ADRESSERow1": extracted_data.get("aidant_adresse", ""),
             
-            "Texte2": extracted_data.get("motif_1", ""),
-            "Texte3": extracted_data.get("motif_2", ""),
-            "Texte4": extracted_data.get("motif_3", ""),
+            "Texte3": "\n".join(filter(None, [extracted_data.get(f"motif_{i}") for i in range(1, 4)])),
         }
         
-        if extracted_data.get("usager_sexe") == "F":
+        adresse = extracted_data.get("usager_adresse", "")
+        if adresse:
+            if not any(char.isdigit() for char in adresse):
+                field_values["ville"] = adresse
+            else:
+                field_values["madame adresse"] = adresse
+                
+        sexe = str(extracted_data.get("usager_sexe", "")).lower()
+        if "femme" in sexe:
             field_values["Madame"] = True
-        elif extracted_data.get("usager_sexe") == "M":
+        elif "homme" in sexe:
             field_values["Monsieur"] = True
             
-        if extracted_data.get("usager_vit_seul") is True:
-            field_values["Oui"] = True
-        elif extracted_data.get("usager_vit_seul") is False:
-            field_values["Non"] = True
+        vit_seul = extracted_data.get("usager_vit_seul")
+        if vit_seul is True:
+            field_values["Oui_2"] = True
+        elif vit_seul is False:
+            field_values["Non_2"] = True
             
-        for widget in page.widgets():
-            if widget.field_name in field_values:
-                val = field_values[widget.field_name]
-                if isinstance(val, bool):
-                    widget.field_value = val
-                elif val:
-                    widget.field_value = str(val)
-                widget.update()
+        aides_text = (str(extracted_data.get("aide_1", "")) + " " + str(extracted_data.get("aide_2", ""))).lower()
+        if aides_text.strip():
+            field_values["Oui"] = True
+            field_values["Texte2"] = aides_text.title()
+            
+        if "infirmi" in aides_text or "idel" in aides_text:
+            field_values["fill_16"] = "Infirmier Libéral"
+            field_values["fill_17"] = "Quotidien"
+            
+        for page in doc:
+            for widget in page.widgets():
+                if widget.field_name in field_values:
+                    val = field_values[widget.field_name]
+                    if isinstance(val, bool):
+                        widget.field_value = val
+                    elif val:
+                        widget.field_value = str(val)
+                    widget.update()
                 
         out_pdf = io.BytesIO()
         doc.save(out_pdf)
