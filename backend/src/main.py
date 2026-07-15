@@ -51,7 +51,9 @@ db_manager = DatabaseManager(db_path=os.path.join(BASE_DIR, 'oria_database.db'))
 pdf_generator = PDFGenerator(
     dac_template_path=os.path.join(STATIC_DIR, "fiche_dac_vierge.pdf"),
     clic_template_path=os.path.join(STATIC_DIR, "fiche_clic_LaSeyne_vierge.pdf"),
-    clic_toulon_template_path=os.path.join(STATIC_DIR, "fiche_clic_Toulon.pdf")
+    clic_toulon_template_path=os.path.join(STATIC_DIR, "fiche_clic_Toulon.pdf"),
+    clic_provence_verte_template_path=os.path.join(STATIC_DIR, "fiche_clic_ProvenceVerte.pdf"),
+    clic_hadage_template_path=os.path.join(STATIC_DIR, "fiche_clic_Hadage.pdf")
 )
 
 # -----------------------------
@@ -383,6 +385,33 @@ async def generate_clic_toulon_pdf(request: AnalyzeRequest):
             content=pdf_bytes, 
             media_type="application/pdf", 
             headers={"Content-Disposition": "attachment; filename=fiche_orientation_clic_toulon.pdf"}
+        )
+    except Exception as e:
+        return {"error": f"Erreur lors de la génération du PDF : {str(e)}"}
+
+
+@app.post("/api/orientation/clic_provence_verte/generate_pdf")
+async def generate_clic_provence_verte_pdf(request: AnalyzeRequest):
+    try:
+        extracted_data = await fiche_extractor.extract_for_clic(request.text)
+        pdf_bytes = pdf_generator._fill_clic_provence_verte(extracted_data)
+        return Response(
+            content=pdf_bytes, 
+            media_type="application/pdf", 
+            headers={"Content-Disposition": "attachment; filename=fiche_orientation_clic_provence_verte.pdf"}
+        )
+    except Exception as e:
+        return {"error": f"Erreur lors de la génération du PDF : {str(e)}"}
+
+@app.post("/api/orientation/clic_hadage/generate_pdf")
+async def generate_clic_hadage_pdf(request: AnalyzeRequest):
+    try:
+        extracted_data = await fiche_extractor.extract_for_clic(request.text)
+        pdf_bytes = pdf_generator._fill_clic_hadage(extracted_data)
+        return Response(
+            content=pdf_bytes, 
+            media_type="application/pdf", 
+            headers={"Content-Disposition": "attachment; filename=fiche_orientation_clic_hadage.pdf"}
         )
     except Exception as e:
         return {"error": f"Erreur lors de la génération du PDF : {str(e)}"}

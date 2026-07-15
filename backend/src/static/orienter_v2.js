@@ -78,7 +78,95 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('theme', 'light');
             themeToggle.innerHTML = iconMoon;
         }
-    });
+    
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Provence Verte sous format PDF
+     */
+    window.downloadClicProvenceVertePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicProvenceVertePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_provence_verte/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_provence_verte.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Provence Verte.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Hadage sous format PDF
+     */
+    window.downloadClicHadagePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicHadagePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_hadage/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_hadage.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Hadage.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+});
 
     // Gestion du Menu Hamburger
     const menuToggle = document.getElementById('menu-toggle');
@@ -88,14 +176,190 @@ document.addEventListener('DOMContentLoaded', () => {
         menuToggle.addEventListener('click', (e) => {
             e.stopPropagation(); // Empêche la fermeture immédiate
             dropdownMenu.classList.toggle('hidden');
-        });
+        
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Provence Verte sous format PDF
+     */
+    window.downloadClicProvenceVertePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicProvenceVertePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_provence_verte/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_provence_verte.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Provence Verte.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Hadage sous format PDF
+     */
+    window.downloadClicHadagePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicHadagePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_hadage/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_hadage.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Hadage.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+});
 
         // Fermer le menu si on clique ailleurs
         document.addEventListener('click', (e) => {
             if (!dropdownMenu.contains(e.target) && !menuToggle.contains(e.target)) {
                 dropdownMenu.classList.add('hidden');
             }
-        });
+        
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Provence Verte sous format PDF
+     */
+    window.downloadClicProvenceVertePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicProvenceVertePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_provence_verte/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_provence_verte.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Provence Verte.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Hadage sous format PDF
+     */
+    window.downloadClicHadagePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicHadagePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_hadage/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_hadage.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Hadage.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+});
     }
 
     const btnSubmit = document.getElementById('btn-submit');
@@ -133,7 +397,95 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ text: text })
+            
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Provence Verte sous format PDF
+     */
+    window.downloadClicProvenceVertePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicProvenceVertePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_provence_verte/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
             });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_provence_verte.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Provence Verte.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Hadage sous format PDF
+     */
+    window.downloadClicHadagePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicHadagePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_hadage/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_hadage.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Hadage.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+});
 
             if (!response.ok) {
                 throw new Error("Erreur serveur lors de l'analyse.");
@@ -173,7 +525,95 @@ document.addEventListener('DOMContentLoaded', () => {
             spinner.style.display = 'none';
             btnSubmit.querySelector('.btn-text').textContent = 'Lancer l\'Analyse';
         }
-    });
+    
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Provence Verte sous format PDF
+     */
+    window.downloadClicProvenceVertePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicProvenceVertePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_provence_verte/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_provence_verte.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Provence Verte.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Hadage sous format PDF
+     */
+    window.downloadClicHadagePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicHadagePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_hadage/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_hadage.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Hadage.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+});
 
     /**
      * Rentre l'orientation courante ou l'état de fallback si aucune n'est disponible
@@ -287,7 +727,95 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btnYes) {
             btnYes.addEventListener('click', () => {
                 handleOuiElleConvient(struct.label, struct.structure_type, struct);
+            
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Provence Verte sous format PDF
+     */
+    window.downloadClicProvenceVertePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicProvenceVertePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_provence_verte/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
             });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_provence_verte.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Provence Verte.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Hadage sous format PDF
+     */
+    window.downloadClicHadagePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicHadagePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_hadage/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_hadage.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Hadage.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+});
         }
 
         // Liaison de l'animation de toggle d'explications
@@ -302,7 +830,95 @@ document.addEventListener('DOMContentLoaded', () => {
                 explainPane.style.display = 'none';
                 btnWhy.innerHTML = '<span class="icon">🔍</span> Pourquoi cette orientation ?';
             }
-        });
+        
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Provence Verte sous format PDF
+     */
+    window.downloadClicProvenceVertePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicProvenceVertePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_provence_verte/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_provence_verte.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Provence Verte.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Hadage sous format PDF
+     */
+    window.downloadClicHadagePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicHadagePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_hadage/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_hadage.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Hadage.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+});
     };
 
     /**
@@ -331,7 +947,95 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="comid-proof-quote">« ${j.justification} »</span>
             `;
             container.appendChild(card);
-        });
+        
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Provence Verte sous format PDF
+     */
+    window.downloadClicProvenceVertePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicProvenceVertePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_provence_verte/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_provence_verte.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Provence Verte.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Hadage sous format PDF
+     */
+    window.downloadClicHadagePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicHadagePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_hadage/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_hadage.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Hadage.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+});
     }
 
     /**
@@ -353,7 +1057,95 @@ document.addEventListener('DOMContentLoaded', () => {
                     status: `Validé - ${type}`,
                     structure_choisie: label
                 })
+            
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Provence Verte sous format PDF
+     */
+    window.downloadClicProvenceVertePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicProvenceVertePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_provence_verte/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
             });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_provence_verte.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Provence Verte.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Hadage sous format PDF
+     */
+    window.downloadClicHadagePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicHadagePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_hadage/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_hadage.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Hadage.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+});
 
             if (!response.ok) {
                 throw new Error("Erreur de validation.");
@@ -606,7 +1398,95 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('btn-step2-non').onclick = () => {
             modal.style.display = 'none';
             // Non = validate and show success with visualising button (semi-filled with current info)
-            window.validateCurrentOrientation(label, type, { showDacPdf: true });
+            window.validateCurrentOrientation(label, type, { showDacPdf: true 
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Provence Verte sous format PDF
+     */
+    window.downloadClicProvenceVertePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicProvenceVertePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_provence_verte/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_provence_verte.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Provence Verte.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Hadage sous format PDF
+     */
+    window.downloadClicHadagePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicHadagePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_hadage/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_hadage.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Hadage.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+});
         };
 
         document.getElementById('btn-step2-oui').onclick = () => {
@@ -627,7 +1507,95 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             document.getElementById('btn-step2-oui-continue').onclick = () => {
                 modal.style.display = 'none';
-                window.validateCurrentOrientation(label, type, { showDacPdf: true });
+                window.validateCurrentOrientation(label, type, { showDacPdf: true 
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Provence Verte sous format PDF
+     */
+    window.downloadClicProvenceVertePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicProvenceVertePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_provence_verte/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_provence_verte.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Provence Verte.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Hadage sous format PDF
+     */
+    window.downloadClicHadagePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicHadagePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_hadage/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_hadage.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Hadage.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+});
             };
         };
     }
@@ -695,7 +1663,95 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         document.getElementById('btn-clic-step2-oui-continue').onclick = () => {
             modal.style.display = 'none';
-            window.validateCurrentOrientation(label, type, { showClicPdf: true });
+            window.validateCurrentOrientation(label, type, { showClicPdf: true 
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Provence Verte sous format PDF
+     */
+    window.downloadClicProvenceVertePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicProvenceVertePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_provence_verte/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_provence_verte.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Provence Verte.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Hadage sous format PDF
+     */
+    window.downloadClicHadagePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicHadagePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_hadage/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_hadage.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Hadage.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+});
         };
     }
 
@@ -762,7 +1818,95 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.getElementById('btn-clic-toulon-step2-non').onclick = () => {
             modal.style.display = 'none';
-            window.validateCurrentOrientation(label, type, { showClicToulonPdf: true });
+            window.validateCurrentOrientation(label, type, { showClicToulonPdf: true 
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Provence Verte sous format PDF
+     */
+    window.downloadClicProvenceVertePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicProvenceVertePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_provence_verte/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_provence_verte.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Provence Verte.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Hadage sous format PDF
+     */
+    window.downloadClicHadagePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicHadagePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_hadage/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_hadage.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Hadage.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+});
         };
 
         document.getElementById('btn-clic-toulon-step2-oui').onclick = () => {
@@ -788,7 +1932,95 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         document.getElementById('btn-clic-toulon-step3-continue').onclick = () => {
             modal.style.display = 'none';
-            window.validateCurrentOrientation(label, type, { showClicToulonPdf: true });
+            window.validateCurrentOrientation(label, type, { showClicToulonPdf: true 
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Provence Verte sous format PDF
+     */
+    window.downloadClicProvenceVertePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicProvenceVertePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_provence_verte/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_provence_verte.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Provence Verte.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Hadage sous format PDF
+     */
+    window.downloadClicHadagePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicHadagePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_hadage/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_hadage.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Hadage.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+});
         };
     }
 
@@ -892,7 +2124,95 @@ Cordialement,`;
                 const originalText = btn.innerText;
                 btn.innerText = "✓ Copié !";
                 setTimeout(() => btn.innerText = originalText, 2000);
+            
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Provence Verte sous format PDF
+     */
+    window.downloadClicProvenceVertePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicProvenceVertePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_provence_verte/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
             });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_provence_verte.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Provence Verte.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Hadage sous format PDF
+     */
+    window.downloadClicHadagePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicHadagePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_hadage/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_hadage.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Hadage.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+});
         };
 
         document.getElementById('btn-mail-ouvrir').onclick = () => {
@@ -930,7 +2250,95 @@ Cordialement,`;
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ text: text })
+            
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Provence Verte sous format PDF
+     */
+    window.downloadClicProvenceVertePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicProvenceVertePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_provence_verte/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
             });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_provence_verte.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Provence Verte.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Hadage sous format PDF
+     */
+    window.downloadClicHadagePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicHadagePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_hadage/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_hadage.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Hadage.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+});
 
             if (!response.ok) {
                 throw new Error("Erreur de téléchargement");
@@ -978,7 +2386,95 @@ Cordialement,`;
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ text: text })
+            
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Provence Verte sous format PDF
+     */
+    window.downloadClicProvenceVertePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicProvenceVertePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_provence_verte/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
             });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_provence_verte.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Provence Verte.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Hadage sous format PDF
+     */
+    window.downloadClicHadagePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicHadagePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_hadage/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_hadage.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Hadage.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+});
 
             if (!response.ok) {
                 throw new Error("Erreur de téléchargement");
@@ -1026,7 +2522,95 @@ Cordialement,`;
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ text: text })
+            
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Provence Verte sous format PDF
+     */
+    window.downloadClicProvenceVertePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicProvenceVertePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_provence_verte/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
             });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_provence_verte.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Provence Verte.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Hadage sous format PDF
+     */
+    window.downloadClicHadagePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicHadagePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_hadage/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_hadage.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Hadage.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+});
 
             if (!response.ok) {
                 throw new Error("Erreur de téléchargement");
@@ -1080,6 +2664,94 @@ Cordialement,`;
         schemaPivot = null;
         inputArea.focus();
     };
+
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Provence Verte sous format PDF
+     */
+    window.downloadClicProvenceVertePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicProvenceVertePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_provence_verte/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_provence_verte.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Provence Verte.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Hadage sous format PDF
+     */
+    window.downloadClicHadagePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('input-text').value;
+
+        const btn = document.querySelector('[onclick="downloadClicHadagePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_hadage/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_hadage.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Hadage.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
 });
 
 /**

@@ -3,10 +3,12 @@ import io
 import datetime
 
 class PDFGenerator:
-    def __init__(self, dac_template_path: str = None, clic_template_path: str = None, clic_toulon_template_path: str = None):
+    def __init__(self, dac_template_path: str = None, clic_template_path: str = None, clic_toulon_template_path: str = None, clic_provence_verte_template_path: str = None, clic_hadage_template_path: str = None):
         self.dac_template_path = dac_template_path
         self.clic_template_path = clic_template_path
         self.clic_toulon_template_path = clic_toulon_template_path
+        self.clic_provence_verte_template_path = clic_provence_verte_template_path
+        self.clic_hadage_template_path = clic_hadage_template_path
 
     def generate_dac_pdf(self, extracted_data: dict) -> bytes:
         if not self.dac_template_path:
@@ -289,3 +291,104 @@ class PDFGenerator:
         doc.close()
         return pdf_bytes
 
+
+    def _fill_clic_hadage(self, extracted_data: dict) -> bytes:
+        if not self.clic_hadage_template_path:
+            raise ValueError("Hadage template path not configured")
+        doc = fitz.open(self.clic_hadage_template_path)
+        page = doc[0]
+        
+        field_values = {
+            "date emetteur": extracted_data.get("emetteur_date", ""),
+            "nom emetteur": extracted_data.get("emetteur_nom", ""),
+            "prenom emetteur": extracted_data.get("emetteur_prenom", ""),
+            "service fonction qualite emetteur": extracted_data.get("emetteur_service", ""),
+            "telephone emetteur": extracted_data.get("emetteur_telephone", ""),
+            "mail emetteur": extracted_data.get("emetteur_email", ""),
+            
+            "nom personne": extracted_data.get("usager_nom_usage", ""),
+            "nom naissance personne": extracted_data.get("usager_nom_naissance", ""),
+            "prénom personne": extracted_data.get("usager_prenoms", ""),
+            "sexe personne": extracted_data.get("usager_sexe", ""),
+            "naissance personne": extracted_data.get("usager_date_naissance", ""),
+            "adresse personne": extracted_data.get("usager_adresse", ""),
+            "telephone personne": extracted_data.get("usager_telephone", ""),
+            "mail personne": extracted_data.get("usager_email", ""),
+            
+            "nom famille aidant": extracted_data.get("aidant_nom", ""),
+            "telephone famille aidant": extracted_data.get("aidant_tel", ""),
+            "mail famille aidant": extracted_data.get("aidant_email", ""),
+            "lien famille aidant": extracted_data.get("aidant_lien", ""),
+            "adresse famille aidant": extracted_data.get("aidant_adresse", ""),
+            
+            "motif de la demande": "\n".join(filter(None, [extracted_data.get(f"motif_{i}") for i in range(1, 4)]))
+        }
+        
+        if extracted_data.get("usager_vit_seul") is True:
+            field_values["Vit seul"] = True
+            
+        for widget in page.widgets():
+            if widget.field_name in field_values:
+                val = field_values[widget.field_name]
+                if isinstance(val, bool):
+                    widget.field_value = val
+                elif val:
+                    widget.field_value = str(val)
+                widget.update()
+                
+        out_pdf = io.BytesIO()
+        doc.save(out_pdf)
+        doc.close()
+        return out_pdf.getvalue()
+
+    def _fill_clic_provence_verte(self, extracted_data: dict) -> bytes:
+        if not self.clic_provence_verte_template_path:
+            raise ValueError("Provence Verte template path not configured")
+        doc = fitz.open(self.clic_provence_verte_template_path)
+        page = doc[0]
+        
+        field_values = {
+            "declarant nom prenom": f"{extracted_data.get('emetteur_nom', '')} {extracted_data.get('emetteur_prenom', '')}".strip(),
+            "declarant service": extracted_data.get("emetteur_service", ""),
+            "declarant telephone": extracted_data.get("emetteur_telephone", ""),
+            "declarant mail": extracted_data.get("emetteur_email", ""),
+            
+            "madame nom": extracted_data.get("usager_nom_usage", ""),
+            "madame nom de naissance": extracted_data.get("usager_nom_naissance", ""),
+            "madame prenom": extracted_data.get("usager_prenoms", ""),
+            "madame date de naissance": extracted_data.get("usager_date_naissance", ""),
+            "madame telephone": extracted_data.get("usager_telephone", ""),
+            "madame adresse": extracted_data.get("usager_adresse", ""),
+            
+            "NOM et PRENOM lien de parentéRow1": f"{extracted_data.get('aidant_nom', '')} - {extracted_data.get('aidant_lien', '')}".strip(" -"),
+            "TéléphoneRow1": extracted_data.get("aidant_tel", ""),
+            "ADRESSERow1": extracted_data.get("aidant_adresse", ""),
+            
+            "Texte2": extracted_data.get("motif_1", ""),
+            "Texte3": extracted_data.get("motif_2", ""),
+            "Texte4": extracted_data.get("motif_3", ""),
+        }
+        
+        if extracted_data.get("usager_sexe") == "F":
+            field_values["Madame"] = True
+        elif extracted_data.get("usager_sexe") == "M":
+            field_values["Monsieur"] = True
+            
+        if extracted_data.get("usager_vit_seul") is True:
+            field_values["Oui"] = True
+        elif extracted_data.get("usager_vit_seul") is False:
+            field_values["Non"] = True
+            
+        for widget in page.widgets():
+            if widget.field_name in field_values:
+                val = field_values[widget.field_name]
+                if isinstance(val, bool):
+                    widget.field_value = val
+                elif val:
+                    widget.field_value = str(val)
+                widget.update()
+                
+        out_pdf = io.BytesIO()
+        doc.save(out_pdf)
+        doc.close()
+        return out_pdf.getvalue()
