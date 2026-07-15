@@ -17,13 +17,13 @@ Analyse le récit suivant pour remplir précisément une Fiche d'Orientation DAC
 - RÈGLE POUR "INCONNU" : Mets la valeur exacte `"INCONNU"` UNIQUEMENT SI l'utilisateur précise expressément avec des mots qu'il ne possède pas l'information (ex: "je n'ai pas son adresse", "c'est inconnu", "je ne sais pas"). Ne déduis pas "INCONNU" par toi-même juste parce que l'info manque. S'il ne dit rien, mets `""`.
 - **NE DÉDUIS RIEN** : N'invente aucune information. Si ce n'est pas écrit noir sur blanc, laisse vide `""`.
 - **RÈGLES STRICTES** : 
-  - Dans `nom_usage`, mets le nom de famille DU PATIENT. Ne mets JAMAIS les titres (Monsieur, Madame, Veuve, etc). Ne mets JAMAIS la profession ou le nom de l'émetteur (ex: si le texte dit "Je suis assistante sociale", ne mets pas ça dans le nom du patient). Si le texte décrit le patient de manière anonyme (ex: "un monsieur de 36 ans", "cette dame"), laisse vide `""` ! Si tu vois le prénom dedans, retire-le. Si le nom n'est pas donné, laisse vide `""`.
-  - Dans `prenoms`, mets UNIQUEMENT le vrai prénom du patient. Si aucun prénom n'est donné, laisse STRICTEMENT vide `""`. N'utilise jamais les mots anonymes, titres, origines ou nationalités (ex: "Afghan").
+  - Dans `nom_usage`, mets le nom de famille DU PATIENT. Ne mets JAMAIS les titres (Monsieur, Madame, Veuve, etc). Si un seul nom est donné après Monsieur/Madame (ex: "Monsieur Lafayette"), c'est TOUJOURS le nom de famille, mets-le dans `nom_usage`.
+  - Dans `prenoms`, mets UNIQUEMENT le vrai prénom du patient. Si aucun prénom n'est donné, laisse STRICTEMENT vide `""`. N'utilise jamais les mots anonymes, titres, ou le nom de famille.
   - Si un âge est donné pour le patient (ex: 36 ans), écris simplement cet âge (ex: "36") dans `date_naissance`. Ne te trompe pas avec d'autres durées mentionnées dans le texte (ex: "depuis 20 ans"). Si aucun âge ni date n'est donné, laisse strictement vide `""`.
   - Ne confonds pas la ville de résidence avec la ville de naissance : si la personne "habite à Toulon", cela va dans `adresse_complete`. `commune_naissance` reste vide `""`.
   - Pour l'adresse, n'invente rien. Si seule la ville est donnée (ex: "Toulon"), mets juste "Toulon".
   - Pour `vit_seul`, mets "Non" si le texte indique clairement que la personne est accompagnée (ex: "habite avec moi", "vit avec son fils"). S'il n'y a aucune précision, laisse strictement vide `""`. Ne déduis rien.
-  - Pour `lieu_actuel`, si le texte ne précise pas explicitement s'il vit à domicile ou en établissement (ou s'il est à la rue/en cours d'expulsion), laisse STRICTEMENT vide `""`. Ne déduis JAMAIS "domicile" par défaut.
+  - Pour `lieu_actuel`, si le texte ne contient pas EXPLICITEMENT les mots "domicile", "chez lui", "appartement", "maison" ou "établissement", laisse STRICTEMENT vide `""`. Ne déduis JAMAIS "domicile" juste parce qu'il vit dans une ville ou a une "expulsion locative".
   - Pour `apa`, `gir`, `ald`, `mdph` : ne les déduis JAMAIS de l'âge ou de la situation. S'ils ne sont pas mentionnés, laisse vide `""` ou `null`.
   - Pour `hospit_recente` : mets `true` SI ET SEULEMENT SI le mot "hôpital", "hospitalisation", ou "urgences" est dans le texte. Sinon, mets `false` et laisse `hospit_date` et `hospit_motif` vides `""`. 
   - Si une hospitalisation est mentionnée mais que la date est floue (ex: "dimanche", "il y a 3 semaines"), écris cette phrase exacte dans `hospit_date`. Ne laisse pas vide si l'utilisateur a donné un repère temporel.
@@ -184,6 +184,15 @@ Réponds UNIQUEMENT par ce JSON complet :
             parsed["prenoms"] = ""
             prenom = ""
             
+        # Correction si le LLM a mis le seul nom dans "prenoms" au lieu de "nom_usage"
+        if prenom and not nom:
+            # S'il y a un seul mot et pas de nom, c'est sûrement le nom de famille
+            if len(prenom.split()) == 1:
+                parsed["nom_usage"] = prenom.upper()
+                parsed["prenoms"] = ""
+                nom = prenom.upper()
+                prenom = ""
+            
         if prenom and prenom.lower() in nom.lower():
             nom = re.sub(r'(?i)' + re.escape(prenom), "", nom).replace(",", "").strip()
             parsed["nom_usage"] = nom
@@ -202,6 +211,11 @@ Réponds UNIQUEMENT par ce JSON complet :
         if vit_seul:
             if not any(x in text_lower for x in ["seul", "seule", "vit avec", "habite avec", "mari", "femme", "épouse", "epouse", "enfant", "fils", "fille", "conjoint", "famille"]):
                 parsed["vit_seul"] = ""
+                
+        lieu_actuel = parsed.get("lieu_actuel", "")
+        if "domicile" in lieu_actuel.lower():
+            if not any(x in text_lower for x in ["domicile", "chez", "appartement", "maison", "logement"]):
+                parsed["lieu_actuel"] = ""
             
         cercle = parsed.get("cercle_de_soins", [])
         for pro in cercle:
