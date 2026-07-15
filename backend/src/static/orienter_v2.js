@@ -383,6 +383,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         📄 Visualiser la fiche d'orientation CLIC Toulon
                     </button>
                 `;
+            } else if (options && options.showClicProvenceVertePdf) {
+                pdfButtonHtml = `
+                    <button onclick="downloadClicProvenceVertePdf()" class="btn-primary" style="background: #10b981; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); margin-top: 1rem; margin-left: 0.5rem;">
+                        📄 Visualiser la fiche d'orientation CLIC Provence Verte
+                    </button>
+                `;
+            } else if (options && options.showClicHadagePdf) {
+                pdfButtonHtml = `
+                    <button onclick="downloadClicHadagePdf()" class="btn-primary" style="background: #f59e0b; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); margin-top: 1rem; margin-left: 0.5rem;">
+                        📄 Visualiser la fiche d'orientation CLIC Hadage
+                    </button>
+                `;
             }
 
             structuresList.innerHTML = `
@@ -418,6 +430,10 @@ document.addEventListener('DOMContentLoaded', () => {
             window.showClicWizard(label, type);
         } else if (type === 'CLIC' && (label.toLowerCase().includes('toulon') || commune.includes('toulon'))) {
             window.showClicToulonWizard(label, type);
+        } else if (type === 'CLIC' && (label.toLowerCase().includes('provence verte') || commune.includes('brignoles') || commune.includes('bras') || commune.includes('cotignac'))) {
+            window.validateCurrentOrientation(label, type, { showClicProvenceVertePdf: true });
+        } else if (type === 'CLIC' && (label.toLowerCase().includes('hadage') || commune.includes('hyères') || commune.includes('hyeres') || commune.includes('bormes'))) {
+            window.validateCurrentOrientation(label, type, { showClicHadagePdf: true });
         } else if (structData && structData.email) {
             window.showGenericMailWizard(structData);
         } else {
