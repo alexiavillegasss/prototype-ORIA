@@ -232,8 +232,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="explain-subtitle">Variables clés extraites</span>
                     <div class="signals-grid">
                         <div class="signal-item">
-                            <span class="signal-title">Motif principal</span>
-                            <span>${schemaPivot["demande.motif_principal"] || 'Maintien standard'}</span>
+                            <span class="signal-title">Besoin principal</span>
+                            <span>${formatBesoinPrincipal(schemaPivot["demande.besoin_principal"])}</span>
                         </div>
                         <div class="signal-item">
                             <span class="signal-title">Médecin traitant</span>
@@ -1210,4 +1210,11 @@ function formatHospitalisation(status) {
     if (status === 'en_cours') return 'En cours';
     if (status === 'recente') return 'Récente (< 10 jours)';
     return 'Aucune hospitalisation';
+}
+
+function formatBesoinPrincipal(besoin) {
+    if (!besoin || besoin === 'indetermine') {
+        return 'Indéterminé (superposition ou aucun besoin)';
+    }
+    return besoin;
 }
