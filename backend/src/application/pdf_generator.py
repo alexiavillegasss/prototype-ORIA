@@ -503,7 +503,7 @@ class PDFGenerator:
                 widget.update()
                 
         out_pdf = io.BytesIO()
-        doc.save(out_pdf)
+        doc.save(out_pdf, garbage=4, deflate=True)
         doc.close()
         return out_pdf.getvalue()
 
@@ -595,6 +595,6 @@ class PDFGenerator:
                     widget.update()
                 
         out_pdf = io.BytesIO()
-        doc.save(out_pdf)
+        doc.save(out_pdf, garbage=4, deflate=True)
         doc.close()
         return out_pdf.getvalue()
