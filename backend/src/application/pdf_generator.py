@@ -218,10 +218,10 @@ class PDFGenerator:
         draw_text(extracted_data.get("aide_2"), 21, 674)
 
         for widget in page.widgets():
-            if widget.field_name == "Case à cocher4" and extracted_data.get("usager_vit_seul") is True:
+            if "cocher4" in widget.field_name and extracted_data.get("usager_vit_seul") is True:
                 widget.field_value = True
                 widget.update()
-            elif widget.field_name == "Case à cocher5" and extracted_data.get("usager_vit_seul") is False:
+            elif "cocher5" in widget.field_name and extracted_data.get("usager_vit_seul") is False:
                 widget.field_value = True
                 widget.update()
 
