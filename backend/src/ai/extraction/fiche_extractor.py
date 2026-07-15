@@ -179,7 +179,11 @@ Réponds UNIQUEMENT par ce JSON complet :
             parsed["prenoms"] = ""
             prenom = ""
             
-        # Anti-hallucination : si le prénom n'est même pas dans le texte original, c'est une invention !
+        # Anti-hallucination : si le nom ou prénom n'est même pas dans le texte original, c'est une invention (souvent copié du prompt) !
+        if nom and nom.lower() not in text_lower:
+            parsed["nom_usage"] = ""
+            nom = ""
+            
         if prenom and prenom.lower() not in text_lower:
             parsed["prenoms"] = ""
             prenom = ""
@@ -312,7 +316,7 @@ RÉCIT : "{raw_text}"
 - emetteur_mail (chaîne)
 
 Identité du patient :
-- usager_nom_usage (chaîne, le nom de famille de l'usager, ex: "Dupont")
+- usager_nom_usage (chaîne, le nom de famille de l'usager, ou vide)
 - usager_nom_naissance (chaîne)
 - usager_prenoms (chaîne, le prénom de l'usager, ex: "Michèle")
 - usager_sexe (chaîne: "femme" ou "homme" ou "")
