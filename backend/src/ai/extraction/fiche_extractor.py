@@ -184,6 +184,11 @@ Réponds UNIQUEMENT par ce JSON complet :
             parsed["nom_usage"] = ""
             nom = ""
             
+        # Anti-hallucination : l'IA met parfois la ville à la place du nom
+        if nom and any(ville in nom.lower() for ville in ["seyne", "toulon", "hyeres", "hyères", "marseille", "frejus", "fréjus"]):
+            parsed["nom_usage"] = ""
+            nom = ""
+            
         if prenom and prenom.lower() not in text_lower:
             parsed["prenoms"] = ""
             prenom = ""
