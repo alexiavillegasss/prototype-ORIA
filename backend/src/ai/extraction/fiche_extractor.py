@@ -328,7 +328,7 @@ RÉCIT : "{raw_text}"
 Identité du patient :
 - usager_nom_usage (chaîne, le nom de famille de l'usager, ou vide)
 - usager_nom_naissance (chaîne)
-- usager_prenoms (chaîne, le prénom de l'usager, ou vide)
+- usager_prenoms (chaîne, le prénom de l'usager. ATTENTION: ne confondez pas avec le prénom du demandeur/proche. Laissez vide si non précisé)
 - usager_sexe (chaîne: "femme" ou "homme" ou "")
 - usager_date_naissance (chaîne)
 - usager_adresse (chaîne, l'adresse ou simplement la ville si l'adresse exacte n'est pas connue)
