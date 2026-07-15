@@ -19,10 +19,10 @@ Analyse le récit suivant pour remplir précisément une Fiche d'Orientation DAC
 - **RÈGLES STRICTES** : 
   - Dans `nom_usage`, mets le nom de famille DU PATIENT. Ne mets JAMAIS les titres (Monsieur, Madame, Veuve, etc). Si un seul nom est donné après Monsieur/Madame (ex: "Monsieur Lafayette"), c'est TOUJOURS le nom de famille, mets-le dans `nom_usage`.
   - Dans `prenoms`, mets UNIQUEMENT le vrai prénom du patient. Si aucun prénom n'est donné, laisse STRICTEMENT vide `""`. N'utilise jamais les mots anonymes, titres, ou le nom de famille.
-  - Si un âge est donné pour le patient (ex: 36 ans), écris simplement cet âge (ex: "36") dans `date_naissance`. Ne te trompe pas avec d'autres durées mentionnées dans le texte (ex: "depuis 20 ans"). Si aucun âge ni date n'est donné, laisse strictement vide `""`.
+  - Si un âge est donné pour le patient, écris simplement cet âge (ex: "quatre-vingts") dans `date_naissance`. Ne te trompe pas avec d'autres durées mentionnées dans le texte (ex: "depuis 20 ans"). Si aucun âge ni date n'est donné, laisse strictement vide `""`.
   - Ne confonds pas la ville de résidence avec la ville de naissance : si la personne "habite à Toulon", cela va dans `adresse_complete`. `commune_naissance` reste vide `""`.
   - Pour l'adresse, n'invente rien. Si seule la ville est donnée (ex: "Toulon"), mets juste "Toulon".
-  - Pour `vit_seul`, mets "Non" si le texte indique clairement que la personne est accompagnée (ex: "habite avec moi", "vit avec son fils"). S'il n'y a aucune précision, laisse strictement vide `""`. Ne déduis rien.
+  - Pour `vit_seul`, mets "true" si elle vit seule, et "false" si le texte indique clairement que la personne est accompagnée (ex: "habite avec moi", "vit avec son fils"). S'il n'y a aucune précision, laisse strictement vide `""`. Ne déduis rien.
   - Pour `lieu_actuel`, si le texte ne contient pas EXPLICITEMENT les mots "domicile", "chez lui", "appartement", "maison" ou "établissement", laisse STRICTEMENT vide `""`. Ne déduis JAMAIS "domicile" juste parce qu'il vit dans une ville ou a une "expulsion locative".
   - Pour `apa`, `gir`, `ald`, `mdph` : ne les déduis JAMAIS de l'âge ou de la situation. S'ils ne sont pas mentionnés, laisse vide `""` ou `null`.
   - Pour `hospit_recente` : mets `true` SI ET SEULEMENT SI le mot "hôpital", "hospitalisation", ou "urgences" est dans le texte. Sinon, mets `false` et laisse `hospit_date` et `hospit_motif` vides `""`. 
@@ -305,9 +305,14 @@ Analyse le récit suivant pour remplir précisément une Fiche d'Orientation CLI
 
 ### INSTRUCTIONS DE REMPLISSAGE
 - Si une information n'est pas mentionnée dans le texte, laisse-la STRICTEMENT vide (`""`).
-- Ne déduis rien.
-- NE JAMAIS mettre le nom du patient dans la section Emetteur. L'émetteur est la personne qui FAIT la demande (ex: une assistante sociale, un médecin, un proche). Si le texte décrit juste le patient sans préciser qui écrit la demande, laisse TOUTE la section Emetteur (nom, prenom, service, email, telephone) STRICTEMENT vide `""`. L'IA ne doit JAMAIS mettre le nom de l'usager dans "emetteur_nom".
-- "usager_vit_seul": booléen (true, false, ou null)
+- **NE DÉDUIS RIEN** : N'invente aucune information. Si ce n'est pas écrit noir sur blanc, laisse vide `""`.
+- **RÈGLES STRICTES** :
+  - Dans `usager_nom_usage`, mets le nom de famille DU PATIENT. Ne mets JAMAIS les titres (Monsieur, Madame, Veuve, etc).
+  - Dans `usager_prenoms`, mets UNIQUEMENT le vrai prénom du patient.
+  - Si un âge est donné pour le patient, écris simplement cet âge dans `usager_date_naissance`.
+  - Ne confonds pas la ville de résidence avec la ville de naissance : si la personne "habite à Toulon", cela va dans `usager_adresse`. `usager_ville_naissance` n'existe pas, mais si la ville est donnée pour son lieu de vie actuel, c'est `usager_adresse`.
+  - Pour `usager_adresse`, si seule la ville est donnée (ex: "la Seyne sur Mer"), mets la ville ici. N'invente pas de rue.
+  - Pour `usager_vit_seul`, mets "true" si elle vit seule, et "false" si le texte indique clairement que la personne est accompagnée (ex: "habite avec moi", "vit avec son fils"). S'il n'y a aucune précision, laisse null.
 
 RÉCIT : "{raw_text}"
 
@@ -323,10 +328,10 @@ RÉCIT : "{raw_text}"
 Identité du patient :
 - usager_nom_usage (chaîne, le nom de famille de l'usager, ou vide)
 - usager_nom_naissance (chaîne)
-- usager_prenoms (chaîne, le prénom de l'usager, ex: "Michèle")
+- usager_prenoms (chaîne, le prénom de l'usager, ou vide)
 - usager_sexe (chaîne: "femme" ou "homme" ou "")
 - usager_date_naissance (chaîne)
-- usager_adresse (chaîne)
+- usager_adresse (chaîne, l'adresse ou simplement la ville si l'adresse exacte n'est pas connue)
 - usager_telephone (chaîne)
 - usager_email (chaîne)
 - usager_vit_seul (booléen: true, false, ou null)
@@ -377,6 +382,7 @@ Réponds UNIQUEMENT par ce JSON complet :
 }}
 """
         parsed = await self.client.generate_json(prompt)
+        text_lower = raw_text.lower()
         
         # POST-PROCESSING
         import re
@@ -385,6 +391,25 @@ Réponds UNIQUEMENT par ce JSON complet :
         nom = parsed.get("usager_nom_usage", "")
         prenom = parsed.get("usager_prenoms", "")
         
+        # Anti-hallucination : l'IA invente ou copie "L'usager"
+        if nom and nom.lower() in ["l'usager", "usager"]:
+            parsed["usager_nom_usage"] = ""
+            nom = ""
+            
+        # Anti-hallucination : si le nom ou prénom n'est pas dans le texte
+        if nom and nom.lower() not in text_lower:
+            parsed["usager_nom_usage"] = ""
+            nom = ""
+            
+        # Anti-hallucination : ville dans le nom
+        if nom and any(ville in nom.lower() for ville in ["seyne", "toulon", "hyeres", "hyères", "marseille", "frejus", "fréjus"]):
+            parsed["usager_nom_usage"] = ""
+            nom = ""
+            
+        if prenom and prenom.lower() not in text_lower:
+            parsed["usager_prenoms"] = ""
+            prenom = ""
+            
         # Enlever les titres
         for titre in ["monsieur", "madame", "mme", "m.", "veuve", "vve"]:
             nom = re.sub(r'(?i)\b' + titre + r'\b', "", nom)
