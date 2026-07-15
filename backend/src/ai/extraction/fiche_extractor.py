@@ -365,6 +365,14 @@ Aides relatives au maintien à domicile :
 - aide_1 (chaîne, les aides DÉJÀ EN PLACE actuellement. Si aucune, laisse STRICTEMENT vide)
 - aide_2 (chaîne)
 
+### PROFESSIONNELS ET INTERVENANTS (CERCLE DE SOINS / AIDES)
+Extraire TOUS les intervenants et professionnels EXPLICITEMENT mentionnés dans le récit (ex: médecin, spécialiste, infirmier, aide à domicile, etc.) sous forme d'une liste `cercle_de_soins`.
+Chaque élément doit être un objet avec :
+- type (chaîne STRICTE parmi : "medecin_traitant", "specialiste", "infirmier", "ssiad_had", "saad", "autre")
+- nom (chaîne, sans AUCUN titre)
+- tel (chaîne)
+- email (chaîne, laisse vide `""` si non précisé)
+
 ### FORMAT JSON (STRICT)
 Réponds UNIQUEMENT par ce JSON complet :
 {{
@@ -391,7 +399,15 @@ Réponds UNIQUEMENT par ce JSON complet :
   "aidant_email": "",
   "aidant_adresse": "",
   "aide_1": "",
-  "aide_2": ""
+  "aide_2": "",
+  "cercle_de_soins": [
+    {
+      "type": "",
+      "nom": "",
+      "tel": "",
+      "email": ""
+    }
+  ]
 }}
 """
         parsed = await self.client.generate_json(prompt)
