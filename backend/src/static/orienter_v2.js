@@ -548,7 +548,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     transition: all 0.2s;
                 }
                 .btn-modal-secondary:hover {
-                    background: rgba(15, 23, 42, 0.1)    /**
+                    background: rgba(15, 23, 42, 0.1);
+                    color: var(--text-primary);
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    }
+
+    /**
      * Gère le questionnaire pas-à-pas DAC
      */
     window.showDacWizard = function(label, type) {
