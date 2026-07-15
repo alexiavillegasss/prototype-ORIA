@@ -75,7 +75,10 @@ Alertes (mettre `true` si le problème est mentionné explicitement ou via des s
 - hospit_motif (chaîne: motif de l'hospitalisation)
 - isolement_social (seul, pas de famille, pas d'amis)
 - epuisement_aidant (famille fatiguée, aidant à bout)
-- diff_financieres (soucis financiers, dettes, surendettement, précarité, impayés)
+- diff_gestion_admin_fin (soucis pour gérer l'administratif ou les finances générales)
+- risque_precarite (situation précaire, très faible revenus)
+- dettes_impayes (surendettement, dettes, impayés)
+- perte_acces_droit (problème d'accès aux droits, papiers d'identité, droit d'asile)
 - logement_inadapte (expulsion, sans-abri, insalubre, inadapté au handicap)
 - incurie_insalubrite (logement très sale, accumulation)
 
@@ -128,7 +131,10 @@ Réponds UNIQUEMENT par ce JSON complet :
     "hospit_motif": "",
     "isolement_social": false,
     "epuisement_aidant": false,
-    "diff_financieres": false,
+    "diff_gestion_admin_fin": false,
+    "risque_precarite": false,
+    "dettes_impayes": false,
+    "perte_acces_droit": false,
     "logement_inadapte": false,
     "incurie_insalubrite": false
   }},
@@ -226,8 +232,17 @@ Réponds UNIQUEMENT par ce JSON complet :
         if not parsed["alertes"].get("troubles_psy"):
             parsed["alertes"]["troubles_psy"] = any(x in text_lower for x in ["santé mentale", "sante mentale", "psy", "dépression", "depression", "angoisse", "suicide", "bipolaire", "schizo"])
         
-        if not parsed["alertes"].get("diff_financieres"):
-            parsed["alertes"]["diff_financieres"] = any(x in text_lower for x in ["financier", "surendettement", "dette", "impayé", "impaye", "précar", "precar", "ressources"])
+        if not parsed["alertes"].get("diff_gestion_admin_fin"):
+            parsed["alertes"]["diff_gestion_admin_fin"] = any(x in text_lower for x in ["soucis administratifs", "gestion administrative", "financier", "budget"])
+            
+        if not parsed["alertes"].get("risque_precarite"):
+            parsed["alertes"]["risque_precarite"] = any(x in text_lower for x in ["précarité", "precarite", "précaris", "precaris", "ressources très faibles"])
+            
+        if not parsed["alertes"].get("dettes_impayes"):
+            parsed["alertes"]["dettes_impayes"] = any(x in text_lower for x in ["dette", "impayé", "impaye", "surendettement"])
+            
+        if not parsed["alertes"].get("perte_acces_droit"):
+            parsed["alertes"]["perte_acces_droit"] = any(x in text_lower for x in ["droit d'asile", "accès aux droits", "acces aux droits", "sans papier", "faire valoir ses droits"])
             
         if not parsed["alertes"].get("logement_inadapte"):
             parsed["alertes"]["logement_inadapte"] = any(x in text_lower for x in ["expulsion", "sans abri", "sdf", "insalubre", "logement inadapté", "logement inadapte", "rue"])

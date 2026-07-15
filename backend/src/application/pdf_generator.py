@@ -90,7 +90,10 @@ class PDFGenerator:
                 field_values["Texte25"] = f"{date_h} - {motif_h}".strip(" -")
         if alertes.get("isolement_social"): checkbox_mappings.append(("Isolement social", True))
         if alertes.get("epuisement_aidant"): checkbox_mappings.append(("Epuisement", True))
-        if alertes.get("diff_financieres"): checkbox_mappings.append(("administrative", True))
+        if alertes.get("diff_gestion_admin_fin"): checkbox_mappings.append(("administrative", True))
+        if alertes.get("risque_precarite"): checkbox_mappings.append(("Risque de pr", True))
+        if alertes.get("dettes_impayes"): checkbox_mappings.append(("Dettes", True))
+        if alertes.get("perte_acces_droit"): checkbox_mappings.append(("droit", True))
         if alertes.get("logement_inadapte"): checkbox_mappings.append(("Logement inadapt", True))
         if alertes.get("incurie_insalubrite"): checkbox_mappings.append(("Incurie", True))
             
