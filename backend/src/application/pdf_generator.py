@@ -274,7 +274,7 @@ class PDFGenerator:
         
         split_phone(extracted_data.get("usager_telephone", ""), ["Texte9", "Texte10", "Texte11", "Texte12", "Texte13"])
         
-        naissance = str(extracted_data.get("usager_date_naissance", ""))
+        naissance = str(extracted_data.get("usager_date_naissance", "")).strip()
         if len(naissance) == 4:
             field_values["Texte8"] = naissance
         else:

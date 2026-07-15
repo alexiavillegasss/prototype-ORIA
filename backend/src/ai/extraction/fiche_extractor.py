@@ -330,7 +330,7 @@ Identité du patient :
 - usager_nom_naissance (chaîne)
 - usager_prenoms (chaîne, le prénom de l'usager. ATTENTION: ne confondez pas avec le prénom du demandeur/proche. Laissez vide si non précisé)
 - usager_sexe (chaîne: "femme" ou "homme" ou "")
-- usager_date_naissance (chaîne)
+- usager_date_naissance (chaîne, la date de naissance OU simplement l'âge s'il est donné, ex: "82 ans")
 - usager_adresse (chaîne, l'adresse ou simplement la ville si l'adresse exacte n'est pas connue)
 - usager_telephone (chaîne)
 - usager_email (chaîne)
