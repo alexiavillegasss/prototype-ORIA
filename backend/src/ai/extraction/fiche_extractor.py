@@ -18,10 +18,12 @@ Analyse le récit suivant pour remplir précisément une Fiche d'Orientation DAC
 - **NE DÉDUIS RIEN** : N'invente aucune information. Si ce n'est pas écrit noir sur blanc, laisse vide `""`.
 - **RÈGLES STRICTES** : 
   - Dans `nom_usage`, mets le nom de famille DU PATIENT. Ne mets JAMAIS les titres (Monsieur, Madame, Veuve, etc). Ne mets JAMAIS la profession ou le nom de l'émetteur (ex: si le texte dit "Je suis assistante sociale", ne mets pas ça dans le nom du patient). Si le texte décrit le patient de manière anonyme (ex: "un monsieur de 36 ans", "cette dame"), laisse vide `""` ! Si tu vois le prénom dedans, retire-le. Si le nom n'est pas donné, laisse vide `""`.
-  - Dans `prenoms`, mets UNIQUEMENT le prénom DU PATIENT. Si aucun prénom n'est donné, laisse vide `""`. N'utilise jamais les titres.
+  - Dans `prenoms`, mets UNIQUEMENT le prénom DU PATIENT. Si aucun prénom n'est donné, laisse vide `""`. N'utilise jamais les mots anonymes ou titres (Monsieur, Madame, etc).
   - Si un âge est donné (ex: 36 ans), écris simplement cet âge (ex: "36" ou "36 ans") dans `date_naissance`. Si ni date ni âge ne sont donnés, laisse strictement vide `""`.
   - Ne confonds pas la ville de résidence avec la ville de naissance : si la personne "habite à Toulon", cela va dans `adresse_complete`. `commune_naissance` reste vide `""`.
-  - Pour `vit_seul`, mets "Non" si le texte indique clairement que la personne est accompagnée (ex: "habite avec moi", "vit avec son fils").
+  - Pour l'adresse, n'invente rien. Si seule la ville est donnée (ex: "Toulon"), mets juste "Toulon".
+  - Pour `vit_seul`, mets "Non" si le texte indique clairement que la personne est accompagnée (ex: "habite avec moi", "vit avec son fils"). S'il n'y a aucune précision, laisse strictement vide `""`. Ne déduis rien.
+  - Pour `lieu_actuel`, si le texte ne précise pas explicitement s'il vit à domicile ou en établissement (ou s'il est à la rue/en cours d'expulsion), laisse vide `""`. Ne déduis pas "domicile" par défaut.
   - Pour `apa`, `gir`, `ald`, `mdph` : ne les déduis JAMAIS de l'âge ou de la situation. S'ils ne sont pas mentionnés, laisse vide `""` ou `null`.
   - Pour `hospit_recente` : mets `true` SI ET SEULEMENT SI le mot "hôpital", "hospitalisation", ou "urgences" est dans le texte. Sinon, mets `false` et laisse `hospit_date` et `hospit_motif` vides `""`. 
   - Si une hospitalisation est mentionnée mais que la date est floue (ex: "dimanche", "il y a 3 semaines"), écris cette phrase exacte dans `hospit_date`. Ne laisse pas vide si l'utilisateur a donné un repère temporel.
@@ -43,7 +45,7 @@ Identité du patient :
 - sexe (chaîne: "F", "M" ou "")
 - date_naissance (chaîne JJ/MM/AAAA)
 - commune_naissance (chaîne)
-- adresse_complete (chaîne, ex: "10 rue des Lilas, Toulon")
+- adresse_complete (chaîne, ex: "Toulon" ou "12 avenue de la Gare, Nice" selon ce qui est écrit)
 - telephone (chaîne, téléphone personnel du patient UNIQUEMENT. N'y mets JAMAIS le numéro d'un médecin ou professionnel)
 - vit_seul (chaîne: "Oui", "Non", "INCONNU", ou "")
 - lieu_actuel (chaîne: "domicile", "etablissement", ou autre texte)
@@ -163,6 +165,10 @@ Réponds UNIQUEMENT par ce JSON complet :
             nom = ""
             
         prenom = parsed.get("prenoms", "")
+        if any(x in prenom.lower() for x in ["ans", "monsieur", "dame", "patient", "usager", "homme", "femme", "m.", "mme"]):
+            parsed["prenoms"] = ""
+            prenom = ""
+            
         if prenom and prenom.lower() in nom.lower():
             nom = re.sub(r'(?i)' + re.escape(prenom), "", nom).replace(",", "").strip()
             parsed["nom_usage"] = nom

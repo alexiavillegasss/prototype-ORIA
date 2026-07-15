@@ -37,6 +37,11 @@ class PDFGenerator:
         field_values["Texte15"] = extracted_data.get("commentaires", "")
         
         # Checkboxes for "Vit seul" and "Lieu"
+        field_values["Oui"] = False
+        field_values["Non"] = False
+        field_values["A domicile"] = False
+        field_values["En établissement"] = False
+        
         vit_seul_val = str(extracted_data.get("vit_seul", "")).upper()
         if vit_seul_val == "OUI":
             field_values["Oui"] = True
@@ -137,6 +142,8 @@ class PDFGenerator:
                     if widget.field_type == fitz.PDF_WIDGET_TYPE_CHECKBOX:
                         if val is True:
                             widget.field_value = True
+                        elif val is False:
+                            widget.field_value = False
                     else:
                         widget.field_value = str(val)
                     widget.update()
