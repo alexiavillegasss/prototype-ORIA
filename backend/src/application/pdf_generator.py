@@ -327,6 +327,21 @@ class PDFGenerator:
         if extracted_data.get("usager_vit_seul") is True:
             field_values["Vit seul"] = True
             
+        aides_text = (str(extracted_data.get("aide_1", "")) + " " + str(extracted_data.get("aide_2", ""))).lower()
+        if "infirmi" in aides_text or "idel" in aides_text:
+            field_values["ok idel"] = True
+            
+        if "ssiad" in aides_text or "soins" in aides_text:
+            field_values["ok ssiad"] = True
+            
+        if "portage" in aides_text or "repas" in aides_text:
+            field_values["ok portage de repas"] = True
+            
+        if "apa" in aides_text:
+            field_values["ok apa"] = True
+            
+        if "domicile" in aides_text or "menage" in aides_text or "ménage" in aides_text:
+            field_values["ok service a domicile"] = True
         for widget in page.widgets():
             if widget.field_name in field_values:
                 val = field_values[widget.field_name]
