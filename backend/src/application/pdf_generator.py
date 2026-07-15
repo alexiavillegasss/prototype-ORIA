@@ -238,11 +238,20 @@ class PDFGenerator:
 
         field_values = {}
         
+        # Helper to split phone numbers
+        def split_phone(phone_str, fields_list):
+            import re
+            digits = re.sub(r"\D", "", phone_str)
+            chunks = [digits[i:i+2] for i in range(0, len(digits), 2)]
+            for i, fname in enumerate(fields_list):
+                if i < len(chunks):
+                    field_values[fname] = chunks[i]
+
         # Emetteur
         field_values["Vos coordonnées nom prénom"] = f"{extracted_data.get('emetteur_nom', '')} {extracted_data.get('emetteur_prenom', '')}".strip()
         field_values["Mail"] = extracted_data.get("emetteur_email", "")
-        field_values["Texte1"] = extracted_data.get("emetteur_telephone", "")
         field_values["Texte14"] = extracted_data.get("emetteur_date", "")
+        split_phone(extracted_data.get("emetteur_telephone", ""), ["Texte1", "Texte2", "Texte3", "Texte4", "Texte5"])
 
         # Usager
         sexe = str(extracted_data.get("usager_sexe", "")).lower()
@@ -254,13 +263,20 @@ class PDFGenerator:
 
         field_values["nom et prenom"] = f"{extracted_data.get('usager_nom_usage', '')} {extracted_data.get('usager_prenoms', '')}".strip()
         field_values["Adresse complète 1"] = extracted_data.get("usager_adresse", "")
-        field_values["Texte9"] = extracted_data.get("usager_telephone", "")
+        
+        split_phone(extracted_data.get("usager_telephone", ""), ["Texte9", "Texte10", "Texte11", "Texte12", "Texte13"])
         
         naissance = str(extracted_data.get("usager_date_naissance", ""))
         if len(naissance) == 4:
             field_values["Texte8"] = naissance
         else:
-            field_values["Texte6"] = naissance
+            parts = naissance.replace("-", "/").split("/")
+            if len(parts) == 3:
+                field_values["Texte6"] = parts[0]
+                field_values["Texte7"] = parts[1]
+                field_values["Texte8"] = parts[2]
+            else:
+                field_values["Texte6"] = naissance
             
         lien = extracted_data.get("aidant_lien", "")
         if lien:
@@ -268,9 +284,6 @@ class PDFGenerator:
         elif "famille" in str(extracted_data.get("emetteur_service", "")).lower():
             field_values["autres demandeur"] = "Famille"
 
-        # Usager Email (Texte13 was mistakenly used for Aidant)
-        field_values["Texte13"] = extracted_data.get("usager_email", "")
-        
         # Hospitalisation (Par défaut: Non)
         field_values["Non_2"] = True
 
