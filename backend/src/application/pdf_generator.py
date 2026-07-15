@@ -241,19 +241,21 @@ class PDFGenerator:
         # Emetteur
         field_values["Vos coordonnées nom prénom"] = f"{extracted_data.get('emetteur_nom', '')} {extracted_data.get('emetteur_prenom', '')}".strip()
         field_values["Mail"] = extracted_data.get("emetteur_email", "")
-        field_values["Texte2"] = extracted_data.get("emetteur_telephone", "")
+        field_values["Texte1"] = extracted_data.get("emetteur_telephone", "")
+        field_values["Texte14"] = extracted_data.get("emetteur_date", "")
 
         # Usager
         sexe = str(extracted_data.get("usager_sexe", "")).lower()
         if "f" in sexe:
             field_values["Mme"] = True
         else:
-            field_values["Monsieur nom prénom"] = True
+            # We match by substring in widget mapping for Monsieur
+            pass
 
         field_values["nom et prenom"] = f"{extracted_data.get('usager_nom_usage', '')} {extracted_data.get('usager_prenoms', '')}".strip()
         field_values["Adresse complète 1"] = extracted_data.get("usager_adresse", "")
-        field_values["Texte6"] = extracted_data.get("usager_telephone", "")
-        field_values["Texte10"] = extracted_data.get("usager_date_naissance", "")
+        field_values["Texte9"] = extracted_data.get("usager_telephone", "")
+        field_values["Texte6"] = extracted_data.get("usager_date_naissance", "")
 
         # Aidant
         field_values["Texte13"] = f"{extracted_data.get('aidant_nom', '')} - Tel: {extracted_data.get('aidant_tel', '')}".strip(" -")
@@ -276,7 +278,45 @@ class PDFGenerator:
                 if fname == "Vit seule" and extracted_data.get("usager_vit_seul") is True:
                     widget.field_value = True
                     widget.update()
+                elif fname == "Vit en couple" and extracted_data.get("usager_vit_seul") is False:
+                    widget.field_value = True
+                    widget.update()
                 
+                if "Monsieur" in fname and "f" not in sexe:
+                    widget.field_value = True
+                    widget.update()
+                
+                # Entourage
+                if fname == "Avec entourage famille proches" and extracted_data.get("aidant_nom"):
+                    widget.field_value = True
+                    widget.update()
+                
+                # Aides
+                aides_text = (str(extracted_data.get("aide_1", "")) + " " + str(extracted_data.get("aide_2", ""))).lower()
+                if "infirmi" in aides_text or "idel" in aides_text or "soin" in aides_text:
+                    if fname == "SSIAD":
+                        widget.field_value = True
+                        widget.update()
+                    if fname == "Oui":  # This is the "Oui" for Services à domicile
+                        widget.field_value = True
+                        widget.update()
+                        
+                if "repas" in aides_text or "portage" in aides_text:
+                    if fname == "Portage de repas":
+                        widget.field_value = True
+                        widget.update()
+                    if fname == "Oui":
+                        widget.field_value = True
+                        widget.update()
+
+                if "ménage" in aides_text or "domicile" in aides_text or "apa" in aides_text:
+                    if fname == "Aide à domicile":
+                        widget.field_value = True
+                        widget.update()
+                    if fname == "Oui":
+                        widget.field_value = True
+                        widget.update()
+
                 # Normal mapping
                 if fname in field_values:
                     val = field_values[fname]
