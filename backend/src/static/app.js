@@ -78,25 +78,25 @@ function getSelectedDimensions() {
 async function loadDashboard() {
     const dims = getSelectedDimensions();
     
-    // Check for duplicate dimensions
-    const activeDims = [dims.dim1, dims.dim2, dims.dim3].filter(d => d !== 'none');
-    const uniqueDims = new Set(activeDims);
-    
-    if (activeDims.length !== uniqueDims.size) {
-        document.getElementById('sankey-chart').style.display = 'none';
-        document.getElementById('sankey-empty').style.display = 'block';
-        document.getElementById('sankey-empty-msg').innerHTML = '<span style="color: var(--text-primary); font-weight: 500;">Veuillez ne pas sélectionner deux dimensions identiques.</span>';
-        return; // Abort
-    }
-
     const url = `/api/dashboard/sankey?dim1=${dims.dim1}&dim2=${dims.dim2}&dim3=${dims.dim3}`;
 
     try {
         const response = await fetch(url);
         const data = await response.json();
 
-        // Update KPIs
+        // Always update KPIs regardless of dimensions
         updateKPIs(data.kpis);
+
+        // Check for duplicate dimensions before rendering Sankey
+        const activeDims = [dims.dim1, dims.dim2, dims.dim3].filter(d => d !== 'none');
+        const uniqueDims = new Set(activeDims);
+        
+        if (activeDims.length !== uniqueDims.size) {
+            document.getElementById('sankey-chart').style.display = 'none';
+            document.getElementById('sankey-empty').style.display = 'block';
+            document.getElementById('sankey-empty-msg').innerHTML = '<span style="color: var(--text-primary); font-weight: 500;">Veuillez ne pas sélectionner deux dimensions identiques.</span>';
+            return;
+        }
 
         // Render Sankey
         if (data.sankey.nodes.length === 0) {
@@ -106,13 +106,14 @@ async function loadDashboard() {
         } else {
             document.getElementById('sankey-chart').style.display = 'block';
             document.getElementById('sankey-empty').style.display = 'none';
+            window.lastSankeyData = data.sankey;
             renderSankey(data.sankey);
         }
     } catch (err) {
         console.error('Erreur lors du chargement du dashboard:', err);
         document.getElementById('sankey-chart').style.display = 'none';
         document.getElementById('sankey-empty').style.display = 'block';
-        document.getElementById('sankey-empty-msg').textContent = 'Une erreur est survenue lors du chargement des données.';
+        document.getElementById('sankey-empty-msg').textContent = 'Erreur JS: ' + (err ? err.stack || err.toString() : 'Inconnue');
     }
 }
 
@@ -120,13 +121,22 @@ async function loadDashboard() {
  * Update KPI cards with values
  */
 function updateKPIs(kpis) {
-    document.getElementById('total-dossiers').textContent = kpis.total_dossiers;
-    document.getElementById('kpi-score-value').textContent = kpis.score_moyen !== null
-        ? kpis.score_moyen.toFixed(1)
-        : '–';
-    document.getElementById('kpi-commune-value').textContent = kpis.commune_top || '–';
-    document.getElementById('kpi-structure-value').textContent = kpis.structure_top || '–';
-    document.getElementById('kpi-complexity-value').textContent = kpis.niveau_top || '–';
+    const totalEl = document.getElementById('total-dossiers');
+    if (totalEl) totalEl.textContent = kpis.total_dossiers;
+
+    const scoreEl = document.getElementById('kpi-score-value');
+    if (scoreEl) {
+        scoreEl.textContent = kpis.score_moyen !== null ? kpis.score_moyen.toFixed(1) : '–';
+    }
+
+    const communeEl = document.getElementById('kpi-commune-value');
+    if (communeEl) communeEl.textContent = kpis.commune_top || '–';
+
+    const structureEl = document.getElementById('kpi-structure-value');
+    if (structureEl) structureEl.textContent = kpis.structure_top || '–';
+
+    const complexityEl = document.getElementById('kpi-complexity-value');
+    if (complexityEl) complexityEl.textContent = kpis.niveau_top || '–';
 }
 
 /**
@@ -244,7 +254,7 @@ function renderSankey(sankeyData) {
                 opacity: 0.35
             },
             label: {
-                color: '#0f172a',
+                color: document.documentElement.getAttribute('data-theme') === 'light' ? '#0f172a' : '#f8fafc',
                 fontFamily: 'Inter',
                 fontSize: 12,
                 fontWeight: 500
@@ -259,7 +269,7 @@ function renderSankey(sankeyData) {
         }]
     };
 
-    chartInstance.setOption(option);
+    chartInstance.setOption(option, true);
 }
 
 // -- Event listeners for dimension selectors --
