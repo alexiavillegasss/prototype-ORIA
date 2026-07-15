@@ -309,7 +309,7 @@ Analyse le récit suivant pour remplir précisément une Fiche d'Orientation CLI
 - **RÈGLES STRICTES** :
   - Dans `usager_nom_usage`, mets le nom de famille DU PATIENT. Ne mets JAMAIS les titres (Monsieur, Madame, Veuve, etc).
   - Dans `usager_prenoms`, mets UNIQUEMENT le vrai prénom du patient.
-  - Si un âge est donné pour le patient, écris simplement cet âge dans `usager_date_naissance`.
+  - Si un âge est donné pour le patient, écris simplement cet âge dans `usager_date_naissance`. ATTENTION: Ne te trompe pas avec d'autres durées mentionnées dans le texte (ex: "depuis 4 ans", "depuis 20 ans"). L'âge doit se rapporter au patient. Si aucun âge n'est donné, laisse vide `""`.
   - Ne confonds pas la ville de résidence avec la ville de naissance : si la personne "habite à Toulon", cela va dans `usager_adresse`. `usager_ville_naissance` n'existe pas, mais si la ville est donnée pour son lieu de vie actuel, c'est `usager_adresse`.
   - Pour `usager_adresse`, si seule la ville est donnée (ex: "la Seyne sur Mer"), mets la ville ici. N'invente pas de rue.
   - Pour `usager_vit_seul`, mets "true" si elle vit seule, et "false" si le texte indique clairement que la personne est accompagnée (ex: "habite avec moi", "vit avec son fils"). S'il n'y a aucune précision, laisse null.
@@ -435,6 +435,11 @@ Réponds UNIQUEMENT par ce JSON complet :
         # Securité anti-hallucination pour l'émetteur : si pas de nom, on vide le reste
         if not parsed.get("emetteur_nom"):
             parsed["emetteur_prenom"] = ""
+            
+        # Anti-hallucination : l'IA confond les durées ("depuis 4 ans") avec l'âge
+        age = str(parsed.get("usager_date_naissance", ""))
+        if "depuis" in age.lower() or ("4" in age and "troubles" in text_lower):
+            parsed["usager_date_naissance"] = ""
             parsed["emetteur_service"] = ""
             parsed["emetteur_telephone"] = ""
             parsed["emetteur_email"] = ""
