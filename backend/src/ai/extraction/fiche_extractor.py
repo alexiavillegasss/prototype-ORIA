@@ -18,12 +18,12 @@ Analyse le récit suivant pour remplir précisément une Fiche d'Orientation DAC
 - **NE DÉDUIS RIEN** : N'invente aucune information. Si ce n'est pas écrit noir sur blanc, laisse vide `""`.
 - **RÈGLES STRICTES** : 
   - Dans `nom_usage`, mets le nom de famille DU PATIENT. Ne mets JAMAIS les titres (Monsieur, Madame, Veuve, etc). Ne mets JAMAIS la profession ou le nom de l'émetteur (ex: si le texte dit "Je suis assistante sociale", ne mets pas ça dans le nom du patient). Si le texte décrit le patient de manière anonyme (ex: "un monsieur de 36 ans", "cette dame"), laisse vide `""` ! Si tu vois le prénom dedans, retire-le. Si le nom n'est pas donné, laisse vide `""`.
-  - Dans `prenoms`, mets UNIQUEMENT le prénom DU PATIENT. Si aucun prénom n'est donné, laisse vide `""`. N'utilise jamais les mots anonymes ou titres (Monsieur, Madame, etc).
-  - Si un âge est donné (ex: 36 ans), écris simplement cet âge (ex: "36" ou "36 ans") dans `date_naissance`. Si ni date ni âge ne sont donnés, laisse strictement vide `""`.
+  - Dans `prenoms`, mets UNIQUEMENT le vrai prénom du patient. Si aucun prénom n'est donné, laisse STRICTEMENT vide `""`. N'utilise jamais les mots anonymes, titres, origines ou nationalités (ex: "Afghan").
+  - Si un âge est donné pour le patient (ex: 36 ans), écris simplement cet âge (ex: "36") dans `date_naissance`. Ne te trompe pas avec d'autres durées mentionnées dans le texte (ex: "depuis 20 ans"). Si aucun âge ni date n'est donné, laisse strictement vide `""`.
   - Ne confonds pas la ville de résidence avec la ville de naissance : si la personne "habite à Toulon", cela va dans `adresse_complete`. `commune_naissance` reste vide `""`.
   - Pour l'adresse, n'invente rien. Si seule la ville est donnée (ex: "Toulon"), mets juste "Toulon".
   - Pour `vit_seul`, mets "Non" si le texte indique clairement que la personne est accompagnée (ex: "habite avec moi", "vit avec son fils"). S'il n'y a aucune précision, laisse strictement vide `""`. Ne déduis rien.
-  - Pour `lieu_actuel`, si le texte ne précise pas explicitement s'il vit à domicile ou en établissement (ou s'il est à la rue/en cours d'expulsion), laisse vide `""`. Ne déduis pas "domicile" par défaut.
+  - Pour `lieu_actuel`, si le texte ne précise pas explicitement s'il vit à domicile ou en établissement (ou s'il est à la rue/en cours d'expulsion), laisse STRICTEMENT vide `""`. Ne déduis JAMAIS "domicile" par défaut.
   - Pour `apa`, `gir`, `ald`, `mdph` : ne les déduis JAMAIS de l'âge ou de la situation. S'ils ne sont pas mentionnés, laisse vide `""` ou `null`.
   - Pour `hospit_recente` : mets `true` SI ET SEULEMENT SI le mot "hôpital", "hospitalisation", ou "urgences" est dans le texte. Sinon, mets `false` et laisse `hospit_date` et `hospit_motif` vides `""`. 
   - Si une hospitalisation est mentionnée mais que la date est floue (ex: "dimanche", "il y a 3 semaines"), écris cette phrase exacte dans `hospit_date`. Ne laisse pas vide si l'utilisateur a donné un repère temporel.
@@ -57,6 +57,7 @@ Situation :
 - ald (booléen ou null)
 - description_situation (chaîne, résumé très clair des faits et de la situation)
 - actions_entreprises (chaîne, qu'est-ce qui a déjà été fait ?)
+- motif_or_description (chaîne, FAIS UN RÉSUMÉ TRÈS DÉTAILLÉ ET COMPLET DE LA SITUATION ENTIÈRE, incluant tout le contexte, les problèmes, et l'histoire. Ne sois pas bref, reprends tous les éléments factuels pertinents.)
 - attentes_dac (chaîne, qu'attend-on du DAC ?)
 
 Alertes (mettre `true` si le problème est mentionné explicitement ou via des synonymes. Ne sois pas trop rigide) :
@@ -93,11 +94,13 @@ Chaque élément doit être un objet avec :
 ### FORMAT JSON (STRICT)
 Réponds UNIQUEMENT par ce JSON complet :
 {{
+  "emetteur_structure": "",
+  "emetteur_service": "",
+  "emetteur_fonction": "",
   "emetteur_nom": "",
   "emetteur_prenom": "",
-  "emetteur_service": "",
   "emetteur_telephone": "",
-  "emetteur_email": "",
+  "emetteur_mail": "",
   "nom_usage": "",
   "nom_naissance": "",
   "prenoms": "",
@@ -107,13 +110,14 @@ Réponds UNIQUEMENT par ce JSON complet :
   "adresse_complete": "",
   "telephone": "",
   "vit_seul": "",
-  "lieu_actuel": "domicile",
+  "lieu_actuel": "",
   "apa": "",
   "gir": "",
   "mdph": null,
   "ald": null,
   "description_situation": "",
   "actions_entreprises": "",
+  "motif_or_description": "",
   "attentes_dac": "",
   "alertes": {{
     "pb_actes_essentiels": false,
@@ -171,13 +175,25 @@ Réponds UNIQUEMENT par ce JSON complet :
             nom = ""
             
         prenom = parsed.get("prenoms", "")
-        if any(x in prenom.lower() for x in ["ans", "monsieur", "dame", "patient", "usager", "homme", "femme", "m.", "mme"]):
+        if any(x in prenom.lower() for x in ["ans", "monsieur", "dame", "patient", "usager", "homme", "femme", "m.", "mme", "afghan", "origine"]):
+            parsed["prenoms"] = ""
+            prenom = ""
+            
+        # Anti-hallucination : si le prénom n'est même pas dans le texte original, c'est une invention !
+        if prenom and prenom.lower() not in text_lower:
             parsed["prenoms"] = ""
             prenom = ""
             
         if prenom and prenom.lower() in nom.lower():
             nom = re.sub(r'(?i)' + re.escape(prenom), "", nom).replace(",", "").strip()
             parsed["nom_usage"] = nom
+            
+        # Correction automatique Service vs Fonction pour l'émetteur
+        service = parsed.get("emetteur_service", "").lower()
+        if "assistant" in service or "medecin" in service or "médecin" in service or "infirmier" in service:
+            if not parsed.get("emetteur_fonction"):
+                parsed["emetteur_fonction"] = parsed["emetteur_service"]
+                parsed["emetteur_service"] = ""
             
         adresse = parsed.get("adresse_complete", "")
         if " à " in adresse:
@@ -268,13 +284,14 @@ Analyse le récit suivant pour remplir précisément une Fiche d'Orientation CLI
 
 RÉCIT : "{raw_text}"
 
-### DONNÉES À EXTRAIRE :
-Emetteur :
-- emetteur_nom (chaîne, nom de famille, ou vide)
+### ADRESSEUR / ÉMETTEUR (Celui qui écrit la demande)
+- emetteur_structure (chaîne, ex: "Hôpital Sainte Musse", "CCAS")
+- emetteur_service (chaîne, le service exact de l'émetteur)
+- emetteur_fonction (chaîne, ex: "Assistante sociale", "Médecin traitant")
+- emetteur_nom (chaîne, nom de famille de l'émetteur)
 - emetteur_prenom (chaîne)
-- emetteur_service (chaîne, profession ou service)
 - emetteur_telephone (chaîne)
-- emetteur_email (chaîne)
+- emetteur_mail (chaîne)
 
 Identité du patient :
 - usager_nom_usage (chaîne, le nom de famille de l'usager, ex: "Dupont")

@@ -15,13 +15,15 @@ class PDFGenerator:
 
         field_values = {}
         
-        # ADRESSEUR (Emetteur)
+        # ADRESSEUR (Page 1 en haut)
+        field_values["Texte1"] = extracted_data.get("emetteur_structure", "")
         field_values["Texte2"] = extracted_data.get("emetteur_service", "")
+        field_values["Texte3"] = extracted_data.get("emetteur_fonction", "")
         field_values["Texte4"] = extracted_data.get("emetteur_nom", "")
         field_values["Texte5"] = extracted_data.get("emetteur_prenom", "")
         field_values["Texte6"] = datetime.datetime.now().strftime("%d/%m/%Y")
         field_values["Texte7"] = extracted_data.get("emetteur_telephone", "")
-        field_values["Texte8"] = extracted_data.get("emetteur_email", "")
+        field_values["Texte8"] = extracted_data.get("emetteur_mail", "")
         
         # Personne Majeure concernée
         field_values["Texte9"] = extracted_data.get("nom_usage", "")
