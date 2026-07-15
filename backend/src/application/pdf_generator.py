@@ -255,7 +255,18 @@ class PDFGenerator:
         field_values["nom et prenom"] = f"{extracted_data.get('usager_nom_usage', '')} {extracted_data.get('usager_prenoms', '')}".strip()
         field_values["Adresse complète 1"] = extracted_data.get("usager_adresse", "")
         field_values["Texte9"] = extracted_data.get("usager_telephone", "")
-        field_values["Texte6"] = extracted_data.get("usager_date_naissance", "")
+        
+        naissance = str(extracted_data.get("usager_date_naissance", ""))
+        if len(naissance) == 4:
+            field_values["Texte8"] = naissance
+        else:
+            field_values["Texte6"] = naissance
+            
+        lien = extracted_data.get("aidant_lien", "")
+        if lien:
+            field_values["autres demandeur"] = f"Famille - {lien}"
+        elif "famille" in str(extracted_data.get("emetteur_service", "")).lower():
+            field_values["autres demandeur"] = "Famille"
 
         # Aidant
         field_values["Texte13"] = f"{extracted_data.get('aidant_nom', '')} - Tel: {extracted_data.get('aidant_tel', '')}".strip(" -")
@@ -274,11 +285,13 @@ class PDFGenerator:
         for page in doc:
             for widget in page.widgets():
                 fname = widget.field_name
-                # Map checkboxes manually
-                if fname == "Vit seule" and extracted_data.get("usager_vit_seul") is True:
+                # Demandeur "Autre préciser"
+                if fname == "Autre prciser" and (extracted_data.get("aidant_lien") or "famille" in str(extracted_data.get("emetteur_service", "")).lower()):
                     widget.field_value = True
                     widget.update()
-                elif fname == "Vit en couple" and extracted_data.get("usager_vit_seul") is False:
+                
+                # Map checkboxes manually
+                if fname == "Vit seule" and extracted_data.get("usager_vit_seul") is True:
                     widget.field_value = True
                     widget.update()
                 
@@ -316,6 +329,18 @@ class PDFGenerator:
                     if fname == "Oui":
                         widget.field_value = True
                         widget.update()
+                        
+                # Motifs (Cases à cocher)
+                motifs_str = (str(extracted_data.get("motif_1", "")) + " " + str(extracted_data.get("motif_2", "")) + " " + str(extracted_data.get("motif_3", ""))).lower()
+                if fname == "Problme de sant" and ("chute" in motifs_str or "santé" in motifs_str or "sante" in motifs_str or "mémoire" in motifs_str or "memoire" in motifs_str or "tête" in motifs_str or "alzheimer" in motifs_str or "malade" in motifs_str):
+                    widget.field_value = True
+                    widget.update()
+                if fname == "Personne isole" and ("isolé" in motifs_str or "seul" in motifs_str or "solitude" in motifs_str):
+                    widget.field_value = True
+                    widget.update()
+                if fname == "Troubles du comportement" and ("comportement" in motifs_str or "agressif" in motifs_str or "méchant" in motifs_str or "démence" in motifs_str or "déambule" in motifs_str or "nuit" in motifs_str):
+                    widget.field_value = True
+                    widget.update()
 
                 # Normal mapping
                 if fname in field_values:
