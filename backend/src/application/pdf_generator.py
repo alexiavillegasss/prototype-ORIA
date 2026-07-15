@@ -69,7 +69,15 @@ class PDFGenerator:
             field_values["Case à cocher27"] = True
             
         # Description
-        field_values["Texte20"] = extracted_data.get("description_situation", "")
+        detailed_motif = extracted_data.get("motif_or_description", "")
+        short_desc = extracted_data.get("description_situation", "")
+        
+        # On injecte le résumé le plus détaillé possible dans la Description Factuelle
+        if len(short_desc) < 200:
+            field_values["Texte20"] = detailed_motif
+        else:
+            field_values["Texte20"] = short_desc
+            
         field_values["Texte21"] = extracted_data.get("actions_entreprises", "")
         field_values["Texte22"] = extracted_data.get("attentes_dac", "")
         

@@ -55,10 +55,10 @@ Situation :
 - gir (chaîne ou null)
 - mdph (booléen ou null)
 - ald (booléen ou null)
-- description_situation (chaîne, résumé très clair des faits et de la situation)
+- description_situation (chaîne, résumé détaillé)
 - actions_entreprises (chaîne, qu'est-ce qui a déjà été fait ?)
-- motif_or_description (chaîne, FAIS UN RÉSUMÉ TRÈS DÉTAILLÉ ET COMPLET DE LA SITUATION ENTIÈRE, incluant tout le contexte, les problèmes, et l'histoire. Ne sois pas bref, reprends tous les éléments factuels pertinents.)
-- attentes_dac (chaîne, qu'attend-on du DAC ?)
+- motif_or_description (chaîne, RECOPIE INTÉGRALEMENT PRESQUE TOUS LES DÉTAILS UTILES DU TEXTE. La description doit être très longue et complète. Reprends tous les éléments factuels.)
+- attentes_dac (chaîne, DÉDUIS ET DÉCRIS EN DÉTAIL les attentes envers le DAC pour aider la personne, ex: "Accompagnement global, coordination médicale et aide administrative")
 
 Alertes (mettre `true` si le problème est mentionné explicitement ou via des synonymes. Ne sois pas trop rigide) :
 - pb_actes_essentiels (se nourrir, se vêtir, se laver, hygiène)
@@ -195,9 +195,13 @@ Réponds UNIQUEMENT par ce JSON complet :
                 parsed["emetteur_fonction"] = parsed["emetteur_service"]
                 parsed["emetteur_service"] = ""
             
-        adresse = parsed.get("adresse_complete", "")
-        if " à " in adresse:
-            parsed["adresse_complete"] = adresse.replace(" à ", ", ")
+        if parsed.get("attentes_dac") and "qu'attend-on" in parsed.get("attentes_dac").lower():
+            parsed["attentes_dac"] = "Besoin d'accompagnement et de coordination pour la prise en charge globale."
+            
+        vit_seul = parsed.get("vit_seul", "")
+        if vit_seul:
+            if not any(x in text_lower for x in ["seul", "seule", "vit avec", "habite avec", "mari", "femme", "épouse", "epouse", "enfant", "fils", "fille", "conjoint", "famille"]):
+                parsed["vit_seul"] = ""
             
         cercle = parsed.get("cercle_de_soins", [])
         for pro in cercle:
@@ -267,7 +271,7 @@ Réponds UNIQUEMENT par ce JSON complet :
             parsed["alertes"]["conduites_addictives"] = any(x in text_lower for x in ["toxico", "addict", "alcool", "drogue", "sevrage", "stupéfiant", "stupefiant"])
             
         if not parsed["alertes"].get("isolement_social"):
-            parsed["alertes"]["isolement_social"] = any(x in text_lower for x in ["isolé", "isole", "pas de famille", "rupture"])
+            parsed["alertes"]["isolement_social"] = any(x in text_lower for x in ["isolé", "isole", "pas de famille", "rupture", "besoin d’être accompagné", "besoin d'être accompagné", "sans appui"])
                 
         return parsed
 
