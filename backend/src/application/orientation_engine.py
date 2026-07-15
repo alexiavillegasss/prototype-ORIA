@@ -374,16 +374,22 @@ class OrientationEngine:
             else:
                 pertinence = "moyenne"
                 
-            # Confection de l'objectif d'orientation en listant les besoins qui correspondent
-            matched_needs_details = []
-            for need in identified_needs:
-                if struct_type in need["structures_cochees"]:
-                    matched_needs_details.append(need["detaille"])
-                    
-            if matched_needs_details:
-                objectif = f"Besoins identifiés : " + ", ".join(matched_needs_details)
+            # Confection de l'objectif d'orientation en montrant uniquement le besoin principal
+            besoin_p = eval_context.get("demande.besoin_principal", "indetermine")
+            if besoin_p and besoin_p != "indetermine":
+                # On vérifie si ce besoin principal est lié à cette structure
+                is_linked = False
+                for need in self.needs_mapping:
+                    if need["detaille"] == besoin_p and struct_type in need["structures_cochees"]:
+                        is_linked = True
+                        break
+                if is_linked:
+                    objectif = f"Besoin identifié : {besoin_p}"
+                else:
+                    objectif = f"Besoin principal : {besoin_p} (Structure complémentaire)"
             else:
-                objectif = "Aucun besoin direct associé."
+                # Si pas de besoin principal trouvé
+                objectif = "Aucun besoin principal trouvé."
                 
             label = self._get_structure_label(struct_type)
             
