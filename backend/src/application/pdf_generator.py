@@ -261,7 +261,15 @@ class PDFGenerator:
             # We match by substring in widget mapping for Monsieur
             pass
 
-        field_values["nom et prenom"] = f"{extracted_data.get('usager_nom_usage', '')} {extracted_data.get('usager_prenoms', '')}".strip()
+        nom = extracted_data.get('usager_nom_usage', '').strip()
+        prenom = extracted_data.get('usager_prenoms', '').strip()
+        em_nom = extracted_data.get('emetteur_nom', '').strip()
+        em_prenom = extracted_data.get('emetteur_prenom', '').strip()
+        
+        if nom.lower() == em_nom.lower() and prenom.lower() == em_prenom.lower() and prenom:
+            prenom = ""
+
+        field_values["nom et prenom"] = f"{nom} {prenom}".strip()
         field_values["Adresse complète 1"] = extracted_data.get("usager_adresse", "")
         
         split_phone(extracted_data.get("usager_telephone", ""), ["Texte9", "Texte10", "Texte11", "Texte12", "Texte13"])
@@ -346,15 +354,26 @@ class PDFGenerator:
                         widget.field_value = True
                         widget.update()
                         
-                # Motifs (Cases à cocher)
-                motifs_str = (str(extracted_data.get("motif_1", "")) + " " + str(extracted_data.get("motif_2", "")) + " " + str(extracted_data.get("motif_3", ""))).lower()
-                if fname == "Problme de sant" and ("chute" in motifs_str or "santé" in motifs_str or "sante" in motifs_str or "mémoire" in motifs_str or "memoire" in motifs_str or "tête" in motifs_str or "alzheimer" in motifs_str or "malade" in motifs_str):
+                # Motifs (Cases à cocher) basés sur les alertes
+                alertes = extracted_data.get("alertes", {})
+                
+                if fname == "Problme de sant" and (alertes.get("pathologies_chroniques") or alertes.get("pb_memoire_decision") or alertes.get("risque_chute")):
                     widget.field_value = True
                     widget.update()
-                if fname == "Personne isole" and ("isolé" in motifs_str or "seul" in motifs_str or "solitude" in motifs_str):
+                
+                if fname == "Personne isole" and alertes.get("isolement_social"):
                     widget.field_value = True
                     widget.update()
-                if fname == "Troubles du comportement" and ("comportement" in motifs_str or "agressif" in motifs_str or "méchant" in motifs_str or "démence" in motifs_str or "déambule" in motifs_str or "nuit" in motifs_str):
+                    
+                if fname == "Troubles du comportement" and (alertes.get("troubles_comportement") or alertes.get("troubles_psy")):
+                    widget.field_value = True
+                    widget.update()
+                    
+                if fname == "Possibilit daddiction" and alertes.get("conduites_addictives"):
+                    widget.field_value = True
+                    widget.update()
+                    
+                if fname == "Logement insalubre" and (alertes.get("logement_inadapte") or alertes.get("incurie_insalubrite")):
                     widget.field_value = True
                     widget.update()
 
