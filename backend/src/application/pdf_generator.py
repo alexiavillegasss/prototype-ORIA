@@ -68,38 +68,26 @@ class PDFGenerator:
         
         # Alertes (Page 2 checkboxes)
         alertes = extracted_data.get("alertes", {})
-        if alertes.get("pb_actes_essentiels"):
-            field_values["Problèmes liés aux actes essentiels de la vie se nourrir se vêtir se laver se déplacer"] = True
-        if alertes.get("pb_activites_domestiques"):
-            field_values["Problèmes liés dans les activités de la vie domestiques courses ménages préparation des repas des médicaments"] = True
-        if alertes.get("pathologies_chroniques"):
-            field_values["Pathologie(s) chronique(s) ou évolutive(s)"] = True
-        if alertes.get("pb_memoire_decision"):
-            field_values["Problèmes d'autonomie décisionnelle ( troubles de la mémoire, risque d'abus de faiblesse)"] = True
-        if alertes.get("conduites_addictives"):
-            field_values["Conduites addictives"] = True
-        if alertes.get("medocs_plus_de_5"):
-            field_values["Prise de médicaments 5"] = True
-        if alertes.get("troubles_psy"):
-            field_values["Troubles psychiatriques  psychiques"] = True
-        if alertes.get("risque_chute"):
-            field_values["Risque de chute"] = True
-        if alertes.get("hospit_recente"):
-            field_values["Hospitalisation récente en urgence"] = True
+        checkbox_mappings = []
+        if alertes.get("pb_actes_essentiels"): checkbox_mappings.append(("actes essentiels", True))
+        if alertes.get("pb_activites_domestiques"): checkbox_mappings.append(("domestiques", True))
+        if alertes.get("pathologies_chroniques"): checkbox_mappings.append(("chronique", True))
+        if alertes.get("pb_memoire_decision"): checkbox_mappings.append(("autonomie", True))
+        if alertes.get("conduites_addictives"): checkbox_mappings.append(("addictives", True))
+        if alertes.get("medocs_plus_de_5"): checkbox_mappings.append(("5", True))
+        if alertes.get("troubles_psy"): checkbox_mappings.append(("psychiatriques", True))
+        if alertes.get("risque_chute"): checkbox_mappings.append(("chute", True))
+        if alertes.get("hospit_recente"): 
+            checkbox_mappings.append(("Hospitalisation", True))
             date_h = alertes.get("hospit_date", "")
             motif_h = alertes.get("hospit_motif", "")
             if date_h or motif_h:
                 field_values["Texte25"] = f"{date_h} - {motif_h}".strip(" -")
-        if alertes.get("isolement_social"):
-            field_values["Isolement social ou familial ruptures des liens"] = True
-        if alertes.get("epuisement_aidant"):
-            field_values["Epuisement absence  indisponibilité de laidant"] = True
-        if alertes.get("diff_financieres"):
-            field_values["Difficultés à la gestion administrative et financière"] = True
-        if alertes.get("logement_inadapte"):
-            field_values["Logement inadapté problème daccessibilité isolement géographique"] = True
-        if alertes.get("incurie_insalubrite"):
-            field_values["Incurie encombrement insalubrité"] = True
+        if alertes.get("isolement_social"): checkbox_mappings.append(("Isolement social", True))
+        if alertes.get("epuisement_aidant"): checkbox_mappings.append(("Epuisement", True))
+        if alertes.get("diff_financieres"): checkbox_mappings.append(("administrative", True))
+        if alertes.get("logement_inadapte"): checkbox_mappings.append(("Logement inadapt", True))
+        if alertes.get("incurie_insalubrite"): checkbox_mappings.append(("Incurie", True))
             
         pro_mapping = {
             "medecin_traitant": ("Texte37", "Texte38", "Texte39"),
@@ -143,6 +131,7 @@ class PDFGenerator:
         for page in doc:
             for widget in page.widgets():
                 fname = widget.field_name
+                # Mapping normal (Textes et quelques cases exactes)
                 if fname in field_values:
                     val = field_values[fname]
                     if widget.field_type == fitz.PDF_WIDGET_TYPE_CHECKBOX:
@@ -151,6 +140,15 @@ class PDFGenerator:
                     else:
                         widget.field_value = str(val)
                     widget.update()
+                
+                # Mapping substring (spécifique aux Alertes pour contrer les bugs d'encodage PDF)
+                if widget.field_type == fitz.PDF_WIDGET_TYPE_CHECKBOX:
+                    for substring, val in checkbox_mappings:
+                        if substring in fname:
+                            if val is True:
+                                widget.field_value = True
+                                widget.update()
+                            break
         
         pdf_bytes = doc.write()
         doc.close()

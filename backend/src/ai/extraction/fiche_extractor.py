@@ -57,25 +57,25 @@ Situation :
 - actions_entreprises (chaîne, qu'est-ce qui a déjà été fait ?)
 - attentes_dac (chaîne, qu'attend-on du DAC ?)
 
-Alertes (mettre `true` si le problème est mentionné, sinon `false`) :
-- pb_actes_essentiels (se nourrir, se vêtir, se laver)
+Alertes (mettre `true` si le problème est mentionné explicitement ou via des synonymes. Ne sois pas trop rigide) :
+- pb_actes_essentiels (se nourrir, se vêtir, se laver, hygiène)
 - pb_activites_domestiques (courses, ménage, repas)
-- pathologies_chroniques
-- pb_memoire_decision
-- troubles_comportement
-- conduites_addictives
+- pathologies_chroniques (maladie grave, cancer, diabète, etc)
+- pb_memoire_decision (oubli, Alzheimer, désorientation)
+- troubles_comportement (agressivité, fugue, cris)
+- conduites_addictives (ancien toxicomane, alcool, drogue, sevrage)
 - medocs_plus_de_5
-- troubles_psy
-- denutrition_perte_poids
-- risque_chute
+- troubles_psy (santé mentale, dépression, angoisse, psychiatrie)
+- denutrition_perte_poids (maigreur, perte d'appétit)
+- risque_chute (tombe souvent, équilibre instable)
 - hospit_recente
 - hospit_date (chaîne: format JJ/MM/AAAA ou date explicite)
 - hospit_motif (chaîne: motif de l'hospitalisation)
-- isolement_social
-- epuisement_aidant
-- diff_financieres
-- logement_inadapte
-- incurie_insalubrite
+- isolement_social (seul, pas de famille, pas d'amis)
+- epuisement_aidant (famille fatiguée, aidant à bout)
+- diff_financieres (soucis financiers, dettes, surendettement, précarité, impayés)
+- logement_inadapte (expulsion, sans-abri, insalubre, inadapté au handicap)
+- incurie_insalubrite (logement très sale, accumulation)
 
 ### PROFESSIONNELS ET INTERVENANTS (CERCLE DE SOINS / AIDES)
 Extraire TOUS les intervenants et professionnels EXPLICITEMENT mentionnés dans le récit (ex: médecin, infirmier, aide à domicile, ADMR, kiné, etc.) sous forme d'une liste `cercle_de_soins`. Il est TRÈS IMPORTANT d'inclure les aides à domicile. N'INVENTE PAS de professionnel.
