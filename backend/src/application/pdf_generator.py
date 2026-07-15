@@ -449,50 +449,6 @@ class PDFGenerator:
             
         if "domicile" in aides_text or "menage" in aides_text or "ménage" in aides_text:
             field_values["ok service a domicile"] = True
-            
-        cercle = extracted_data.get("cercle_de_soins", [])
-        for pro in cercle:
-            t = pro.get("type", "")
-            nom_pro = pro.get("nom", "")
-            tel_pro = pro.get("tel", "")
-            mail_pro = pro.get("email", "")
-            
-            if t == "medecin_traitant":
-                field_values["ok medecin traitant"] = True
-                field_values["nom medecin"] = nom_pro
-                field_values["telephone medecin"] = tel_pro
-                field_values["mail medecin"] = mail_pro
-                
-            elif t == "specialiste":
-                # La case à cocher s'appelle "ok medecin generaliste" dans le PDF pour le spécialiste (erreur de nommage du PDF d'origine)
-                field_values["ok medecin generaliste"] = True
-                field_values["nom medecin spécialiste"] = nom_pro
-                field_values["telephone medecin spécialiste"] = tel_pro
-                field_values["mail medecin spécialiste"] = mail_pro
-                
-            elif t == "infirmier":
-                field_values["ok idel"] = True
-                field_values["IDEL NOM"] = f"{nom_pro} {tel_pro}".strip()
-                
-            elif t == "ssiad_had":
-                field_values["ok ssiad"] = True
-                field_values["SSIAD NOM"] = f"{nom_pro} {tel_pro}".strip()
-                
-            elif t == "pharmacien":
-                field_values["ok pharmacien"] = True
-                field_values["PHARMACIEN"] = f"{nom_pro} {tel_pro}".strip()
-                
-            elif t == "saad":
-                field_values["ok service a domicile"] = True
-                field_values["Service aide a domicile"] = f"{nom_pro} {tel_pro}".strip()
-                
-            elif t == "social":
-                field_values["ok ref social"] = True
-                field_values["REFERENT SOC"] = f"{nom_pro} {tel_pro}".strip()
-                
-            elif t == "autre":
-                field_values["ok autres"] = True
-                field_values["AUTRES"] = f"{nom_pro} {tel_pro}".strip()
         for widget in page.widgets():
             if widget.field_name in field_values:
                 val = field_values[widget.field_name]
@@ -503,7 +459,7 @@ class PDFGenerator:
                 widget.update()
                 
         out_pdf = io.BytesIO()
-        doc.save(out_pdf, garbage=4, deflate=True)
+        doc.save(out_pdf)
         doc.close()
         return out_pdf.getvalue()
 
@@ -595,6 +551,6 @@ class PDFGenerator:
                     widget.update()
                 
         out_pdf = io.BytesIO()
-        doc.save(out_pdf, garbage=4, deflate=True)
+        doc.save(out_pdf)
         doc.close()
         return out_pdf.getvalue()
