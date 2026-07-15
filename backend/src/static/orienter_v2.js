@@ -425,15 +425,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const commune = (schemaPivot && schemaPivot["usager.localisation.commune_residence"]) ? schemaPivot["usager.localisation.commune_residence"].toLowerCase() : "";
         const nomLocal = structData && structData.nom_local ? structData.nom_local.toLowerCase() : "";
 
-        if (type === 'DAC') {
+        if (type.startsWith('DAC')) {
             window.showDacWizard(label, type);
-        } else if (type === 'CLIC' && (label.toLowerCase().includes('seyne') || nomLocal.includes('seyne') || commune.includes('seyne'))) {
+        } else if (type.startsWith('CLIC') && (label.toLowerCase().includes('seyne') || nomLocal.includes('seyne') || commune.includes('seyne'))) {
             window.showClicWizard(label, type);
-        } else if (type === 'CLIC' && (label.toLowerCase().includes('toulon') || nomLocal.includes('toulon') || commune.includes('toulon'))) {
+        } else if (type.startsWith('CLIC') && (label.toLowerCase().includes('toulon') || nomLocal.includes('toulon') || commune.includes('toulon'))) {
             window.showClicToulonWizard(label, type);
-        } else if (type === 'CLIC' && (label.toLowerCase().includes('provence verte') || nomLocal.includes('provence verte') || commune.includes('brignoles') || commune.includes('bras') || commune.includes('cotignac'))) {
+        } else if (type.startsWith('CLIC') && (label.toLowerCase().includes('provence verte') || nomLocal.includes('provence verte') || commune.includes('brignoles') || commune.includes('bras') || commune.includes('cotignac'))) {
             window.validateCurrentOrientation(label, type, { showClicProvenceVertePdf: true });
-        } else if (type === 'CLIC' && (label.toLowerCase().includes('hadage') || nomLocal.includes('hadage') || commune.includes('hyères') || commune.includes('hyeres') || commune.includes('bormes'))) {
+        } else if (type.startsWith('CLIC') && (label.toLowerCase().includes('hadage') || nomLocal.includes('hadage') || commune.includes('hyères') || commune.includes('hyeres') || commune.includes('bormes'))) {
             window.validateCurrentOrientation(label, type, { showClicHadagePdf: true });
         } else if (structData && structData.email) {
             window.showGenericMailWizard(structData);
@@ -1103,7 +1103,7 @@ Cordialement,`;
      */
     window.downloadClicProvenceVertePdf = async function() {
         const analyzeBtn = document.getElementById('analyze-btn');
-        const text = document.getElementById('input-text').value;
+        const text = document.getElementById('situation-input').value.trim();
 
         const btn = document.querySelector('[onclick="downloadClicProvenceVertePdf()"]');
         const originalText = btn.innerHTML;
@@ -1146,7 +1146,7 @@ Cordialement,`;
      */
     window.downloadClicHadagePdf = async function() {
         const analyzeBtn = document.getElementById('analyze-btn');
-        const text = document.getElementById('input-text').value;
+        const text = document.getElementById('situation-input').value.trim();
 
         const btn = document.querySelector('[onclick="downloadClicHadagePdf()"]');
         const originalText = btn.innerHTML;
