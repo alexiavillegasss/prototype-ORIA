@@ -483,6 +483,23 @@ Réponds UNIQUEMENT par ce JSON complet :
         if not parsed.get("emetteur_service") and parsed.get("aidant_lien"):
             parsed["emetteur_service"] = parsed.get("aidant_lien")
             
+        # REVERSE : Si l'émetteur est un proche (fils, fille, mari, epouse, etc), copier dans la case aidant
+        em_service = parsed.get("emetteur_service", "").lower()
+        if any(proche in em_service for proche in ["fille", "fils", "enfant", "mari", "femme", "epouse", "épouse", "conjoint", "compagnon", "voisin", "neveu", "nièce"]):
+            if not parsed.get("aidant_lien"):
+                parsed["aidant_lien"] = parsed.get("emetteur_service", "")
+            if not parsed.get("aidant_nom"):
+                parsed["aidant_nom"] = parsed.get("emetteur_nom", "")
+            if not parsed.get("aidant_tel"):
+                parsed["aidant_tel"] = parsed.get("emetteur_telephone", "")
+            if not parsed.get("aidant_email"):
+                parsed["aidant_email"] = parsed.get("emetteur_email", "")
+                
+        # Fallback python pour les aides à domicile ratées par l'IA
+        if not parsed.get("aide_1"):
+            if "infirmière" in text_lower or "infirmier" in text_lower or "idel" in text_lower:
+                parsed["aide_1"] = "Infirmière"
+            
         # Toujours forcer la date d'émission au jour J
         parsed["emetteur_date"] = datetime.datetime.now().strftime("%d/%m/%Y")
             
