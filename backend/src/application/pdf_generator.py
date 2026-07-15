@@ -393,7 +393,19 @@ class PDFGenerator:
         for m in motifs:
             if m not in unique_motifs and not any(m in other for other in unique_motifs):
                 unique_motifs.append(m)
-        field_values["Texte3"] = "\n".join(unique_motifs)
+        motifs_text = "\n".join(unique_motifs)
+        field_values["Texte3"] = motifs_text
+        
+        # Mapping checkboxes "Vous sollicitez le CLIC pour"
+        motifs_lower = motifs_text.lower()
+        if "ehpad" in motifs_lower or "hébergement" in motifs_lower or "hebergement" in motifs_lower or "structure" in motifs_lower:
+            field_values["Des informations  conseils sur les structures dhébergement"] = True
+        elif "intervenant" in motifs_lower or "mise en place" in motifs_lower or "aide" in motifs_lower:
+            field_values["La mise en place dintervenants Précisez"] = True
+            field_values["Texte4"] = "Aides à domicile / Soins"
+        else:
+            # Default fallback for most cases
+            field_values["Une évaluation gérontologique à domicile"] = True
         
         adresse = extracted_data.get("usager_adresse", "")
         if adresse:
