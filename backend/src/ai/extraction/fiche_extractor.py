@@ -437,15 +437,22 @@ Réponds UNIQUEMENT par ce JSON complet :
         if emetteur_nom and emetteur_nom.lower() not in text_lower:
             parsed["emetteur_nom"] = ""
             
-        # Securité anti-hallucination pour l'émetteur : si pas de nom, on vide le reste (mais on garde le service s'il s'agit du lien de parenté ou de la profession)
+        # Securité anti-hallucination pour l'émetteur : si pas de nom, on vide le prénom (mais on garde le service s'il s'agit du lien de parenté ou de la profession)
         if not parsed.get("emetteur_nom"):
             parsed["emetteur_prenom"] = ""
             parsed["emetteur_telephone"] = ""
             parsed["emetteur_email"] = ""
             
-        # Anti-hallucination : l'IA confond les durées ("depuis 4 ans") avec l'âge
+        # Anti-hallucination : téléphones inventés
+        text_no_space = text_lower.replace(" ", "").replace(".", "")
+        for t_field in ["usager_telephone", "emetteur_telephone", "aidant_tel"]:
+            t_val = str(parsed.get(t_field, "")).replace(" ", "").replace(".", "")
+            if t_val and t_val not in text_no_space:
+                parsed[t_field] = ""
+                
+        # Anti-hallucination : l'IA confond les durées ("depuis 4 ans") avec l'âge, ou invente "20??"
         age = str(parsed.get("usager_date_naissance", ""))
-        if "depuis" in age.lower() or ("4" in age and "troubles" in text_lower):
+        if "depuis" in age.lower() or ("4" in age and "troubles" in text_lower) or "?" in age:
             parsed["usager_date_naissance"] = ""
             
         # Anti-hallucination pour l'aidant : si le nom inventé n'est pas dans le texte
