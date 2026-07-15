@@ -432,7 +432,12 @@ Réponds UNIQUEMENT par ce JSON complet :
                     parsed["usager_adresse"] = ville.title()
                     break
         
-        # Securité anti-hallucination pour l'émetteur : si pas de nom, on vide le prénom (mais on garde le service s'il s'agit du lien de parenté ou de la profession)
+        # Anti-hallucination pour l'émetteur : si le nom inventé n'est pas dans le texte
+        emetteur_nom = parsed.get("emetteur_nom", "")
+        if emetteur_nom and emetteur_nom.lower() not in text_lower:
+            parsed["emetteur_nom"] = ""
+            
+        # Securité anti-hallucination pour l'émetteur : si pas de nom, on vide le reste (mais on garde le service s'il s'agit du lien de parenté ou de la profession)
         if not parsed.get("emetteur_nom"):
             parsed["emetteur_prenom"] = ""
             parsed["emetteur_telephone"] = ""
@@ -442,6 +447,13 @@ Réponds UNIQUEMENT par ce JSON complet :
         age = str(parsed.get("usager_date_naissance", ""))
         if "depuis" in age.lower() or ("4" in age and "troubles" in text_lower):
             parsed["usager_date_naissance"] = ""
+            
+        # Anti-hallucination pour l'aidant : si le nom inventé n'est pas dans le texte
+        aidant_nom = parsed.get("aidant_nom", "")
+        if aidant_nom and aidant_nom.lower() not in text_lower:
+            parsed["aidant_nom"] = ""
+            parsed["aidant_tel"] = ""
+            parsed["aidant_email"] = ""
             
         # Si le service est vide mais qu'on a un lien aidant, et qu'il n'y a pas d'autre émetteur, on peut le mettre
         if not parsed.get("emetteur_service") and parsed.get("aidant_lien"):
