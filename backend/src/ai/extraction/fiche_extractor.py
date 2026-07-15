@@ -337,9 +337,10 @@ Identité du patient :
 - usager_vit_seul (booléen: true, false, ou null)
 
 Motif de la demande :
-- motif_1 (chaîne, ce que la personne demande ou recherche, ex: "mise en place portage de repas")
-- motif_2 (chaîne, autre problème ou besoin)
-- motif_3 (chaîne)
+- motif_1 (chaîne, reformule le besoin principal de manière professionnelle et neutre (ex: "Mise en place d'un portage de repas", "Évaluation globale de la situation"). Ne jamais utiliser "je" ni "ma/mon")
+- motif_2 (chaîne, autre problème ou besoin, reformulé de manière professionnelle. Ex: "Soutien psychologique pour l'aidant")
+- motif_3 (chaîne, autre motif ou vide)
+IMPORTANT : Rédigez tous les motifs de manière impersonnelle ou à l'infinitif. Bannissez les formulations du type "pour ma mère" ou "pour moi-même".
 
 Famille / Aidant à contacter :
 - aidant_nom (chaîne, ou vide)
