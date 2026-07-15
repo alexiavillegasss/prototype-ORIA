@@ -17,9 +17,9 @@ Analyse le récit suivant pour remplir précisément une Fiche d'Orientation DAC
 - RÈGLE POUR "INCONNU" : Mets la valeur exacte `"INCONNU"` UNIQUEMENT SI l'utilisateur précise expressément avec des mots qu'il ne possède pas l'information (ex: "je n'ai pas son adresse", "c'est inconnu", "je ne sais pas"). Ne déduis pas "INCONNU" par toi-même juste parce que l'info manque. S'il ne dit rien, mets `""`.
 - **NE DÉDUIS RIEN** : N'invente aucune information. Si ce n'est pas écrit noir sur blanc, laisse vide `""`.
 - **RÈGLES STRICTES** : 
-  - Dans `nom_usage`, mets le nom de famille. Ne mets JAMAIS les titres (Monsieur, Madame, Veuve, etc). Si tu vois le prénom dedans, retire-le.
-  - Dans `prenoms`, mets UNIQUEMENT le prénom. Si aucun prénom n'est donné, laisse vide `""`. N'utilise jamais les titres.
-  - Si un âge est donné (ex: 85 ans), écris simplement cet âge (ex: "85 ans") dans `date_naissance`. Si ni date ni âge ne sont donnés, laisse strictement vide `""`.
+  - Dans `nom_usage`, mets le nom de famille DU PATIENT. Ne mets JAMAIS les titres (Monsieur, Madame, Veuve, etc). Ne mets JAMAIS la profession ou le nom de l'émetteur (ex: si le texte dit "Je suis assistante sociale", ne mets pas ça dans le nom du patient). Si le texte décrit le patient de manière anonyme (ex: "un monsieur de 36 ans", "cette dame"), laisse vide `""` ! Si tu vois le prénom dedans, retire-le. Si le nom n'est pas donné, laisse vide `""`.
+  - Dans `prenoms`, mets UNIQUEMENT le prénom DU PATIENT. Si aucun prénom n'est donné, laisse vide `""`. N'utilise jamais les titres.
+  - Si un âge est donné (ex: 36 ans), écris simplement cet âge (ex: "36" ou "36 ans") dans `date_naissance`. Si ni date ni âge ne sont donnés, laisse strictement vide `""`.
   - Ne confonds pas la ville de résidence avec la ville de naissance : si la personne "habite à Toulon", cela va dans `adresse_complete`. `commune_naissance` reste vide `""`.
   - Pour `vit_seul`, mets "Non" si le texte indique clairement que la personne est accompagnée (ex: "habite avec moi", "vit avec son fils").
   - Pour `apa`, `gir`, `ald`, `mdph` : ne les déduis JAMAIS de l'âge ou de la situation. S'ils ne sont pas mentionnés, laisse vide `""` ou `null`.
@@ -29,7 +29,14 @@ Analyse le récit suivant pour remplir précisément une Fiche d'Orientation DAC
 RÉCIT : "{raw_text}"
 
 ### DONNÉES À EXTRAIRE :
-Identité :
+Emetteur (la personne qui fait la demande ou décrit la situation) :
+- emetteur_nom (chaîne, nom de famille, ou vide)
+- emetteur_prenom (chaîne, ou vide)
+- emetteur_service (chaîne, profession ou service, ex: "assistante sociale", ou vide)
+- emetteur_telephone (chaîne, ou vide)
+- emetteur_email (chaîne, ou vide)
+
+Identité du patient :
 - nom_usage (chaîne)
 - nom_naissance (chaîne)
 - prenoms (chaîne)
@@ -81,6 +88,11 @@ Chaque élément doit être un objet avec :
 ### FORMAT JSON (STRICT)
 Réponds UNIQUEMENT par ce JSON complet :
 {{
+  "emetteur_nom": "",
+  "emetteur_prenom": "",
+  "emetteur_service": "",
+  "emetteur_telephone": "",
+  "emetteur_email": "",
   "nom_usage": "",
   "nom_naissance": "",
   "prenoms": "",
@@ -135,14 +147,21 @@ Réponds UNIQUEMENT par ce JSON complet :
         # POST-PROCESSING POUR L'AGE ET LES NOMS :
         import re
         date_n = parsed.get("date_naissance", "")
-        if "ans" in date_n.lower():
-            match = re.search(r'(\d+)', date_n)
+        # Si on n'a pas de "/" c'est que ce n'est pas une date complète, c'est sûrement un âge
+        if date_n and "/" not in date_n:
+            match = re.search(r'\b(\d{1,3})\b', date_n)
             if match:
                 age = int(match.group(1))
-                year = datetime.datetime.now().year - age
-                parsed["date_naissance"] = str(year)
+                if age < 130: # Eviter de transformer une vraie année genre "1990" en âge
+                    year = datetime.datetime.now().year - age
+                    parsed["date_naissance"] = str(year)
                 
         nom = parsed.get("nom_usage", "")
+        # Nettoyage des noms anonymes
+        if any(x in nom.lower() for x in ["ans", "monsieur", "dame", "patient", "usager", "homme", "femme"]):
+            parsed["nom_usage"] = ""
+            nom = ""
+            
         prenom = parsed.get("prenoms", "")
         if prenom and prenom.lower() in nom.lower():
             nom = re.sub(r'(?i)' + re.escape(prenom), "", nom).replace(",", "").strip()
@@ -189,8 +208,9 @@ Réponds UNIQUEMENT par ce JSON complet :
                 parsed["alertes"]["hospit_date"] = ""
                 parsed["alertes"]["hospit_motif"] = ""
                 
-        # L'IA hallucine souvent l'APA pour les personnes âgées. On force à vide si le mot n'y est pas.
-        if "apa" not in text_lower:
+        # L'IA hallucine souvent l'APA pour les personnes âgées. On force à vide si le mot exact n'y est pas.
+        # \bapa\b permet de s'assurer qu'on ne matche pas "capacités" par erreur !
+        if not re.search(r'\bapa\b', text_lower):
             parsed["apa"] = ""
                 
         return parsed

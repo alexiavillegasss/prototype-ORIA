@@ -1,5 +1,6 @@
 import fitz
 import io
+import datetime
 
 class PDFGenerator:
     def __init__(self, dac_template_path: str = None, clic_template_path: str = None, clic_toulon_template_path: str = None):
@@ -13,6 +14,14 @@ class PDFGenerator:
         doc = fitz.open(self.dac_template_path)
 
         field_values = {}
+        
+        # ADRESSEUR (Emetteur)
+        field_values["Texte2"] = extracted_data.get("emetteur_service", "")
+        field_values["Texte4"] = extracted_data.get("emetteur_nom", "")
+        field_values["Texte5"] = extracted_data.get("emetteur_prenom", "")
+        field_values["Texte6"] = datetime.datetime.now().strftime("%d/%m/%Y")
+        field_values["Texte7"] = extracted_data.get("emetteur_telephone", "")
+        field_values["Texte8"] = extracted_data.get("emetteur_email", "")
         
         # Personne Majeure concernée
         field_values["Texte9"] = extracted_data.get("nom_usage", "")
