@@ -502,10 +502,9 @@ class PDFGenerator:
                     widget.field_value = str(val)
                 widget.update()
                 
-        out_pdf = io.BytesIO()
-        doc.save(out_pdf)
+        pdf_bytes = doc.write()
         doc.close()
-        return out_pdf.getvalue()
+        return pdf_bytes
 
     def _fill_clic_provence_verte(self, extracted_data: dict) -> bytes:
         if not self.clic_provence_verte_template_path:
@@ -594,7 +593,6 @@ class PDFGenerator:
                         widget.field_value = str(val)
                     widget.update()
                 
-        out_pdf = io.BytesIO()
-        doc.save(out_pdf)
+        pdf_bytes = doc.write()
         doc.close()
-        return out_pdf.getvalue()
+        return pdf_bytes
