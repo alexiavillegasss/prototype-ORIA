@@ -406,7 +406,12 @@ class PDFGenerator:
             
         if "infirmi" in aides_text or "idel" in aides_text:
             field_values["fill_16"] = "Infirmier Libéral"
-            field_values["fill_17"] = "Quotidien"
+            frequence = ""
+            if "matin" in aides_text or "soir" in aides_text or "jour" in aides_text or "quotidien" in aides_text:
+                frequence = "Quotidien"
+            elif "semaine" in aides_text or "fois" in aides_text:
+                frequence = "Hebdomadaire"
+            field_values["fill_17"] = frequence
             
         for page in doc:
             for widget in page.widgets():
