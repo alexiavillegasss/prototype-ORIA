@@ -218,6 +218,25 @@ Réponds UNIQUEMENT par ce JSON complet :
         # \bapa\b permet de s'assurer qu'on ne matche pas "capacités" par erreur !
         if not re.search(r'\bapa\b', text_lower):
             parsed["apa"] = ""
+            
+        # POST-PROCESSING ALERTES (Fallback Regex si le LLM a raté l'info)
+        if "alertes" not in parsed:
+            parsed["alertes"] = {}
+        
+        if not parsed["alertes"].get("troubles_psy"):
+            parsed["alertes"]["troubles_psy"] = any(x in text_lower for x in ["santé mentale", "sante mentale", "psy", "dépression", "depression", "angoisse", "suicide", "bipolaire", "schizo"])
+        
+        if not parsed["alertes"].get("diff_financieres"):
+            parsed["alertes"]["diff_financieres"] = any(x in text_lower for x in ["financier", "surendettement", "dette", "impayé", "impaye", "précar", "precar", "ressources"])
+            
+        if not parsed["alertes"].get("logement_inadapte"):
+            parsed["alertes"]["logement_inadapte"] = any(x in text_lower for x in ["expulsion", "sans abri", "sdf", "insalubre", "logement inadapté", "logement inadapte", "rue"])
+            
+        if not parsed["alertes"].get("conduites_addictives"):
+            parsed["alertes"]["conduites_addictives"] = any(x in text_lower for x in ["toxico", "addict", "alcool", "drogue", "sevrage", "stupéfiant", "stupefiant"])
+            
+        if not parsed["alertes"].get("isolement_social"):
+            parsed["alertes"]["isolement_social"] = any(x in text_lower for x in ["isolé", "isole", "pas de famille", "rupture"])
                 
         return parsed
 
