@@ -318,7 +318,7 @@ RÉCIT : "{raw_text}"
 
 ### ADRESSEUR / ÉMETTEUR (Celui qui écrit la demande)
 - emetteur_structure (chaîne, ex: "Hôpital Sainte Musse", "CCAS")
-- emetteur_service (chaîne, le service exact de l'émetteur)
+- emetteur_service (chaîne, le service, ou le lien de parenté si c'est un proche ex: "Fille", "Fils", "Voisin")
 - emetteur_fonction (chaîne, ex: "Assistante sociale", "Médecin traitant")
 - emetteur_nom (chaîne, nom de famille de l'émetteur)
 - emetteur_prenom (chaîne)
@@ -342,8 +342,8 @@ Motif de la demande :
 - motif_3 (chaîne)
 
 Famille / Aidant à contacter :
-- aidant_nom (chaîne)
-- aidant_lien (chaîne, ex: "fille", "fils", "épouse")
+- aidant_nom (chaîne, ou vide)
+- aidant_lien (chaîne, ex: "fille", "fils", "épouse". Si l'émetteur est un proche, recopie ce lien ici même si le nom n'est pas connu)
 - aidant_tel (chaîne)
 - aidant_email (chaîne)
 - aidant_adresse (chaîne)
@@ -432,17 +432,20 @@ Réponds UNIQUEMENT par ce JSON complet :
                     parsed["usager_adresse"] = ville.title()
                     break
         
-        # Securité anti-hallucination pour l'émetteur : si pas de nom, on vide le reste
+        # Securité anti-hallucination pour l'émetteur : si pas de nom, on vide le prénom (mais on garde le service s'il s'agit du lien de parenté ou de la profession)
         if not parsed.get("emetteur_nom"):
             parsed["emetteur_prenom"] = ""
+            parsed["emetteur_telephone"] = ""
+            parsed["emetteur_email"] = ""
             
         # Anti-hallucination : l'IA confond les durées ("depuis 4 ans") avec l'âge
         age = str(parsed.get("usager_date_naissance", ""))
         if "depuis" in age.lower() or ("4" in age and "troubles" in text_lower):
             parsed["usager_date_naissance"] = ""
-            parsed["emetteur_service"] = ""
-            parsed["emetteur_telephone"] = ""
-            parsed["emetteur_email"] = ""
+            
+        # Si le service est vide mais qu'on a un lien aidant, et qu'il n'y a pas d'autre émetteur, on peut le mettre
+        if not parsed.get("emetteur_service") and parsed.get("aidant_lien"):
+            parsed["emetteur_service"] = parsed.get("aidant_lien")
             
         # Toujours forcer la date d'émission au jour J
         parsed["emetteur_date"] = datetime.datetime.now().strftime("%d/%m/%Y")
