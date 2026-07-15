@@ -11,6 +11,7 @@
 }
 
 :root {
+    color-scheme: dark;
     /* Palette Dark Mode Premium */
     --bg-primary: #0f172a; /* Slate 900 */
     --bg-secondary: #1e293b; /* Slate 800 */
@@ -31,6 +32,7 @@
 }
 
 [data-theme="light"] {
+    color-scheme: light;
     --bg-primary: #dbeafe;
     --bg-secondary: #ffffff;
     --bg-card: rgba(255, 255, 255, 0.9);
@@ -61,6 +63,7 @@ body {
     min-height: 100vh;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    overflow-y: scroll;
 }
 
 /* --- Header --- */
@@ -145,9 +148,10 @@ body {
     max-width: 1400px;
     margin: 2rem auto;
     padding: 0 2.5rem;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.25rem;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
 }
 
 .kpi-card {
@@ -161,6 +165,9 @@ body {
     gap: 1rem;
     box-shadow: var(--shadow-card);
     transition: transform 0.25s ease, box-shadow 0.25s ease;
+    flex: 1;
+    min-width: 280px;
+    max-width: 350px;
 }
 
 .kpi-card:hover {
@@ -292,6 +299,11 @@ body {
     background: var(--bg-secondary);
     color: var(--text-primary);
     padding: 0.5rem;
+}
+
+[data-theme="dark"] .selector-group select option,
+:root:not([data-theme="light"]) .selector-group select option {
+    color: #ffffff;
 }
 
 .selector-arrow {
