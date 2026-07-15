@@ -420,6 +420,18 @@ Réponds UNIQUEMENT par ce JSON complet :
             
         parsed["usager_nom_usage"] = nom.replace(",", "").strip()
         
+        # Fallback python ultra-robuste pour vit_seul
+        if parsed.get("usager_vit_seul") is None:
+            if any(x in text_lower for x in ["vit seul", "vit seule", "habite seul", "habite seule"]):
+                parsed["usager_vit_seul"] = True
+                
+        # Fallback python pour la ville si l'IA l'a ratée
+        if not parsed.get("usager_adresse"):
+            for ville in ["la seyne sur mer", "la seyne-sur-mer", "toulon", "hyères", "hyeres", "marseille", "fréjus", "frejus"]:
+                if ville in text_lower:
+                    parsed["usager_adresse"] = ville.title()
+                    break
+        
         # Securité anti-hallucination pour l'émetteur : si pas de nom, on vide le reste
         if not parsed.get("emetteur_nom"):
             parsed["emetteur_prenom"] = ""
