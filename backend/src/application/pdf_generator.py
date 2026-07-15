@@ -1,11 +1,14 @@
 import fitz
 import io
+import datetime
 
 class PDFGenerator:
-    def __init__(self, dac_template_path: str = None, clic_template_path: str = None, clic_toulon_template_path: str = None):
+    def __init__(self, dac_template_path: str = None, clic_template_path: str = None, clic_toulon_template_path: str = None, clic_provence_verte_template_path: str = None, clic_hadage_template_path: str = None):
         self.dac_template_path = dac_template_path
         self.clic_template_path = clic_template_path
         self.clic_toulon_template_path = clic_toulon_template_path
+        self.clic_provence_verte_template_path = clic_provence_verte_template_path
+        self.clic_hadage_template_path = clic_hadage_template_path
 
     def generate_dac_pdf(self, extracted_data: dict) -> bytes:
         if not self.dac_template_path:
@@ -13,6 +16,16 @@ class PDFGenerator:
         doc = fitz.open(self.dac_template_path)
 
         field_values = {}
+        
+        # ADRESSEUR (Page 1 en haut)
+        field_values["Texte1"] = extracted_data.get("emetteur_structure", "")
+        field_values["Texte2"] = extracted_data.get("emetteur_service", "")
+        field_values["Texte3"] = extracted_data.get("emetteur_fonction", "")
+        field_values["Texte4"] = extracted_data.get("emetteur_nom", "")
+        field_values["Texte5"] = extracted_data.get("emetteur_prenom", "")
+        field_values["Texte6"] = datetime.datetime.now().strftime("%d/%m/%Y")
+        field_values["Texte7"] = extracted_data.get("emetteur_telephone", "")
+        field_values["Texte8"] = extracted_data.get("emetteur_mail", "")
         
         # Personne Majeure concernée
         field_values["Texte9"] = extracted_data.get("nom_usage", "")
@@ -28,6 +41,11 @@ class PDFGenerator:
         field_values["Texte15"] = extracted_data.get("commentaires", "")
         
         # Checkboxes for "Vit seul" and "Lieu"
+        field_values["Oui"] = False
+        field_values["Non"] = False
+        field_values["A domicile"] = False
+        field_values["En établissement"] = False
+        
         vit_seul_val = str(extracted_data.get("vit_seul", "")).upper()
         if vit_seul_val == "OUI":
             field_values["Oui"] = True
@@ -53,44 +71,43 @@ class PDFGenerator:
             field_values["Case à cocher27"] = True
             
         # Description
-        field_values["Texte20"] = extracted_data.get("description_situation", "")
+        detailed_motif = extracted_data.get("motif_or_description", "")
+        short_desc = extracted_data.get("description_situation", "")
+        
+        # On injecte le résumé le plus détaillé possible dans la Description Factuelle
+        if len(short_desc) < 200:
+            field_values["Texte20"] = detailed_motif
+        else:
+            field_values["Texte20"] = short_desc
+            
         field_values["Texte21"] = extracted_data.get("actions_entreprises", "")
         field_values["Texte22"] = extracted_data.get("attentes_dac", "")
         
         # Alertes (Page 2 checkboxes)
         alertes = extracted_data.get("alertes", {})
-        if alertes.get("pb_actes_essentiels"):
-            field_values["Problèmes liés aux actes essentiels de la vie se nourrir se vêtir se laver se déplacer"] = True
-        if alertes.get("pb_activites_domestiques"):
-            field_values["Problèmes liés dans les activités de la vie domestiques courses ménages préparation des repas des médicaments"] = True
-        if alertes.get("pathologies_chroniques"):
-            field_values["Pathologie(s) chronique(s) ou évolutive(s)"] = True
-        if alertes.get("pb_memoire_decision"):
-            field_values["Problèmes d'autonomie décisionnelle ( troubles de la mémoire, risque d'abus de faiblesse)"] = True
-        if alertes.get("conduites_addictives"):
-            field_values["Conduites addictives"] = True
-        if alertes.get("medocs_plus_de_5"):
-            field_values["Prise de médicaments 5"] = True
-        if alertes.get("troubles_psy"):
-            field_values["Troubles psychiatriques  psychiques"] = True
-        if alertes.get("risque_chute"):
-            field_values["Risque de chute"] = True
-        if alertes.get("hospit_recente"):
-            field_values["Hospitalisation récente en urgence"] = True
+        checkbox_mappings = []
+        if alertes.get("pb_actes_essentiels"): checkbox_mappings.append(("actes essentiels", True))
+        if alertes.get("pb_activites_domestiques"): checkbox_mappings.append(("domestiques", True))
+        if alertes.get("pathologies_chroniques"): checkbox_mappings.append(("chronique", True))
+        if alertes.get("pb_memoire_decision"): checkbox_mappings.append(("autonomie", True))
+        if alertes.get("conduites_addictives"): checkbox_mappings.append(("addictives", True))
+        if alertes.get("medocs_plus_de_5"): checkbox_mappings.append(("5", True))
+        if alertes.get("troubles_psy"): checkbox_mappings.append(("psychiatriques", True))
+        if alertes.get("risque_chute"): checkbox_mappings.append(("chute", True))
+        if alertes.get("hospit_recente"): 
+            checkbox_mappings.append(("Hospitalisation", True))
             date_h = alertes.get("hospit_date", "")
             motif_h = alertes.get("hospit_motif", "")
             if date_h or motif_h:
                 field_values["Texte25"] = f"{date_h} - {motif_h}".strip(" -")
-        if alertes.get("isolement_social"):
-            field_values["Isolement social ou familial ruptures des liens"] = True
-        if alertes.get("epuisement_aidant"):
-            field_values["Epuisement absence  indisponibilité de laidant"] = True
-        if alertes.get("diff_financieres"):
-            field_values["Difficultés à la gestion administrative et financière"] = True
-        if alertes.get("logement_inadapte"):
-            field_values["Logement inadapté problème daccessibilité isolement géographique"] = True
-        if alertes.get("incurie_insalubrite"):
-            field_values["Incurie encombrement insalubrité"] = True
+        if alertes.get("isolement_social"): checkbox_mappings.append(("Isolement social", True))
+        if alertes.get("epuisement_aidant"): checkbox_mappings.append(("Epuisement", True))
+        if alertes.get("diff_gestion_admin_fin"): checkbox_mappings.append(("administrative", True))
+        if alertes.get("risque_precarite"): checkbox_mappings.append(("Risque de pr", True))
+        if alertes.get("dettes_impayes"): checkbox_mappings.append(("Dettes", True))
+        if alertes.get("perte_acces_droit"): checkbox_mappings.append(("droit", True))
+        if alertes.get("logement_inadapte"): checkbox_mappings.append(("Logement inadapt", True))
+        if alertes.get("incurie_insalubrite"): checkbox_mappings.append(("Incurie", True))
             
         pro_mapping = {
             "medecin_traitant": ("Texte37", "Texte38", "Texte39"),
@@ -134,14 +151,26 @@ class PDFGenerator:
         for page in doc:
             for widget in page.widgets():
                 fname = widget.field_name
+                # Mapping normal (Textes et quelques cases exactes)
                 if fname in field_values:
                     val = field_values[fname]
                     if widget.field_type == fitz.PDF_WIDGET_TYPE_CHECKBOX:
                         if val is True:
                             widget.field_value = True
+                        elif val is False:
+                            widget.field_value = False
                     else:
                         widget.field_value = str(val)
                     widget.update()
+                
+                # Mapping substring (spécifique aux Alertes pour contrer les bugs d'encodage PDF)
+                if widget.field_type == fitz.PDF_WIDGET_TYPE_CHECKBOX:
+                    for substring, val in checkbox_mappings:
+                        if substring in fname:
+                            if val is True:
+                                widget.field_value = True
+                                widget.update()
+                            break
         
         pdf_bytes = doc.write()
         doc.close()
@@ -191,10 +220,10 @@ class PDFGenerator:
         draw_text(extracted_data.get("aide_2"), 21, 674)
 
         for widget in page.widgets():
-            if widget.field_name == "Case à cocher4" and extracted_data.get("usager_vit_seul") is True:
+            if "cocher4" in widget.field_name and extracted_data.get("usager_vit_seul") is True:
                 widget.field_value = True
                 widget.update()
-            elif widget.field_name == "Case à cocher5" and extracted_data.get("usager_vit_seul") is False:
+            elif "cocher5" in widget.field_name and extracted_data.get("usager_vit_seul") is False:
                 widget.field_value = True
                 widget.update()
 
@@ -209,25 +238,62 @@ class PDFGenerator:
 
         field_values = {}
         
+        # Helper to split phone numbers
+        def split_phone(phone_str, fields_list):
+            import re
+            digits = re.sub(r"\D", "", phone_str)
+            chunks = [digits[i:i+2] for i in range(0, len(digits), 2)]
+            for i, fname in enumerate(fields_list):
+                if i < len(chunks):
+                    field_values[fname] = chunks[i]
+
         # Emetteur
         field_values["Vos coordonnées nom prénom"] = f"{extracted_data.get('emetteur_nom', '')} {extracted_data.get('emetteur_prenom', '')}".strip()
         field_values["Mail"] = extracted_data.get("emetteur_email", "")
-        field_values["Texte2"] = extracted_data.get("emetteur_telephone", "")
+        field_values["Texte14"] = extracted_data.get("emetteur_date", "")
+        split_phone(extracted_data.get("emetteur_telephone", ""), ["Texte1", "Texte2", "Texte3", "Texte4", "Texte5"])
 
         # Usager
         sexe = str(extracted_data.get("usager_sexe", "")).lower()
         if "f" in sexe:
             field_values["Mme"] = True
         else:
-            field_values["Monsieur nom prénom"] = True
+            # We match by substring in widget mapping for Monsieur
+            pass
 
-        field_values["nom et prenom"] = f"{extracted_data.get('usager_nom_usage', '')} {extracted_data.get('usager_prenoms', '')}".strip()
+        nom = extracted_data.get('usager_nom_usage', '').strip()
+        prenom = extracted_data.get('usager_prenoms', '').strip()
+        em_nom = extracted_data.get('emetteur_nom', '').strip()
+        em_prenom = extracted_data.get('emetteur_prenom', '').strip()
+        
+        if nom.lower() == em_nom.lower() and prenom.lower() == em_prenom.lower() and prenom:
+            prenom = ""
+
+        field_values["nom et prenom"] = f"{nom} {prenom}".strip()
         field_values["Adresse complète 1"] = extracted_data.get("usager_adresse", "")
-        field_values["Texte6"] = extracted_data.get("usager_telephone", "")
-        field_values["Texte10"] = extracted_data.get("usager_date_naissance", "")
+        
+        split_phone(extracted_data.get("usager_telephone", ""), ["Texte9", "Texte10", "Texte11", "Texte12", "Texte13"])
+        
+        naissance = str(extracted_data.get("usager_date_naissance", "")).strip()
+        if len(naissance) == 4:
+            field_values["Texte8"] = naissance
+        else:
+            parts = naissance.replace("-", "/").split("/")
+            if len(parts) == 3:
+                field_values["Texte6"] = parts[0]
+                field_values["Texte7"] = parts[1]
+                field_values["Texte8"] = parts[2]
+            else:
+                field_values["Texte6"] = naissance
+            
+        lien = extracted_data.get("aidant_lien", "")
+        if lien:
+            field_values["autres demandeur"] = f"Famille - {lien}"
+        elif "famille" in str(extracted_data.get("emetteur_service", "")).lower():
+            field_values["autres demandeur"] = "Famille"
 
-        # Aidant
-        field_values["Texte13"] = f"{extracted_data.get('aidant_nom', '')} - Tel: {extracted_data.get('aidant_tel', '')}".strip(" -")
+        # Hospitalisation (Par défaut: Non)
+        field_values["Non_2"] = True
 
         # Motifs
         field_values["Compléments dinformation 1"] = extracted_data.get("motif_1", "")
@@ -243,11 +309,74 @@ class PDFGenerator:
         for page in doc:
             for widget in page.widgets():
                 fname = widget.field_name
+                # Demandeur "Autre préciser"
+                if fname == "Autre prciser" and (extracted_data.get("aidant_lien") or "famille" in str(extracted_data.get("emetteur_service", "")).lower()):
+                    widget.field_value = True
+                    widget.update()
+                
                 # Map checkboxes manually
                 if fname == "Vit seule" and extracted_data.get("usager_vit_seul") is True:
                     widget.field_value = True
                     widget.update()
                 
+                if "Monsieur" in fname and "f" not in sexe:
+                    widget.field_value = True
+                    widget.update()
+                
+                # Entourage
+                if fname == "Avec entourage famille proches" and extracted_data.get("aidant_nom"):
+                    widget.field_value = True
+                    widget.update()
+                
+                # Aides
+                aides_text = (str(extracted_data.get("aide_1", "")) + " " + str(extracted_data.get("aide_2", ""))).lower()
+                if "infirmi" in aides_text or "idel" in aides_text or "soin" in aides_text:
+                    if fname == "SSIAD":
+                        widget.field_value = True
+                        widget.update()
+                    if fname == "Oui":  # This is the "Oui" for Services à domicile
+                        widget.field_value = True
+                        widget.update()
+                        
+                if "repas" in aides_text or "portage" in aides_text:
+                    if fname == "Portage de repas":
+                        widget.field_value = True
+                        widget.update()
+                    if fname == "Oui":
+                        widget.field_value = True
+                        widget.update()
+
+                if "ménage" in aides_text or "domicile" in aides_text or "apa" in aides_text:
+                    if fname == "Aide à domicile":
+                        widget.field_value = True
+                        widget.update()
+                    if fname == "Oui":
+                        widget.field_value = True
+                        widget.update()
+                        
+                # Motifs (Cases à cocher) basés sur le texte brut
+                raw = str(extracted_data.get("raw_text", "")).lower()
+                
+                if fname == "Problme de sant" and ("chute" in raw or "santé" in raw or "sante" in raw or "mémoire" in raw or "memoire" in raw or "tête" in raw or "alzheimer" in raw or "malade" in raw or "tombé" in raw):
+                    widget.field_value = True
+                    widget.update()
+                
+                if fname == "Personne isole" and ("isolé" in raw or "seul" in raw or "solitude" in raw):
+                    widget.field_value = True
+                    widget.update()
+                    
+                if fname == "Troubles du comportement" and ("comportement" in raw or "agressif" in raw or "méchant" in raw or "démence" in raw or "déambule" in raw or "nuit" in raw):
+                    widget.field_value = True
+                    widget.update()
+                    
+                if fname == "Possibilit daddiction" and ("alcool" in raw or "addiction" in raw or "drogue" in raw):
+                    widget.field_value = True
+                    widget.update()
+                    
+                if fname == "Logement insalubre" and ("insalubre" in raw or "sale" in raw or "inadapté" in raw or "logement" in raw):
+                    widget.field_value = True
+                    widget.update()
+
                 # Normal mapping
                 if fname in field_values:
                     val = field_values[fname]
@@ -262,3 +391,166 @@ class PDFGenerator:
         doc.close()
         return pdf_bytes
 
+
+    def _fill_clic_hadage(self, extracted_data: dict) -> bytes:
+        if not self.clic_hadage_template_path:
+            raise ValueError("Hadage template path not configured")
+        doc = fitz.open(self.clic_hadage_template_path)
+        page = doc[0]
+        
+        field_values = {
+            "date emetteur": extracted_data.get("emetteur_date", ""),
+            "nom emetteur": extracted_data.get("emetteur_nom", ""),
+            "prenom emetteur": extracted_data.get("emetteur_prenom", ""),
+            "service fonction qualite emetteur": extracted_data.get("emetteur_service", ""),
+            "telephone emetteur": extracted_data.get("emetteur_telephone", ""),
+            "mail emetteur": extracted_data.get("emetteur_email", ""),
+            
+            "nom personne": extracted_data.get("usager_nom_usage", ""),
+            "nom naissance personne": extracted_data.get("usager_nom_naissance", ""),
+            "prénom personne": extracted_data.get("usager_prenoms", ""),
+            "sexe personne": extracted_data.get("usager_sexe", ""),
+            "naissance personne": extracted_data.get("usager_date_naissance", ""),
+            "adresse personne": extracted_data.get("usager_adresse", ""),
+            "telephone personne": extracted_data.get("usager_telephone", ""),
+            "mail personne": extracted_data.get("usager_email", ""),
+            
+            "nom famille aidant": extracted_data.get("aidant_nom", ""),
+            "telephone famille aidant": extracted_data.get("aidant_tel", ""),
+            "mail famille aidant": extracted_data.get("aidant_email", ""),
+            "lien famille aidant": extracted_data.get("aidant_lien", ""),
+            "adresse famille aidant": extracted_data.get("aidant_adresse", ""),
+            "motif de la demande": "",
+        }
+        
+        motifs = [str(extracted_data.get(f"motif_{i}", "")).strip() for i in range(1, 4)]
+        motifs = [m for m in motifs if m]
+        unique_motifs = []
+        for m in motifs:
+            if m not in unique_motifs and not any(m in other for other in unique_motifs):
+                unique_motifs.append(m)
+        field_values["motif de la demande"] = "\n".join(unique_motifs)
+        
+        if extracted_data.get("usager_vit_seul") is True:
+            field_values["Vit seul"] = True
+            
+        aides_text = (str(extracted_data.get("aide_1", "")) + " " + str(extracted_data.get("aide_2", ""))).lower()
+        if "infirmi" in aides_text or "idel" in aides_text:
+            field_values["ok idel"] = True
+            
+        if "ssiad" in aides_text or "soins" in aides_text:
+            field_values["ok ssiad"] = True
+            
+        if "portage" in aides_text or "repas" in aides_text:
+            field_values["ok portage de repas"] = True
+            
+        if "apa" in aides_text:
+            field_values["ok apa"] = True
+            
+        if "domicile" in aides_text or "menage" in aides_text or "ménage" in aides_text:
+            field_values["ok service a domicile"] = True
+        for widget in page.widgets():
+            if widget.field_name in field_values:
+                val = field_values[widget.field_name]
+                if isinstance(val, bool):
+                    widget.field_value = val
+                elif val:
+                    widget.field_value = str(val)
+                widget.update()
+                
+        out_pdf = io.BytesIO()
+        doc.save(out_pdf)
+        doc.close()
+        return out_pdf.getvalue()
+
+    def _fill_clic_provence_verte(self, extracted_data: dict) -> bytes:
+        if not self.clic_provence_verte_template_path:
+            raise ValueError("Provence Verte template path not configured")
+        doc = fitz.open(self.clic_provence_verte_template_path)
+        
+        field_values = {
+            "declarant nom prenom": f"{extracted_data.get('emetteur_nom', '')} {extracted_data.get('emetteur_prenom', '')}".strip(),
+            "declarant service": extracted_data.get("emetteur_service", ""),
+            "declarant telephone": extracted_data.get("emetteur_telephone", ""),
+            "declarant mail": extracted_data.get("emetteur_email", ""),
+            
+            "madame nom": extracted_data.get("usager_nom_usage", ""),
+            "madame nom de naissance": extracted_data.get("usager_nom_naissance", ""),
+            "madame prenom": extracted_data.get("usager_prenoms", ""),
+            "madame date de naissance": extracted_data.get("usager_date_naissance", ""),
+            "madame telephone": extracted_data.get("usager_telephone", ""),
+            
+            "NOM et PRENOM lien de parentéRow1": f"{extracted_data.get('aidant_nom', '')} - {extracted_data.get('aidant_lien', '')}".strip(" -"),
+            "TéléphoneRow1": extracted_data.get("aidant_tel", ""),
+            "ADRESSERow1": extracted_data.get("aidant_adresse", ""),
+            
+            "Texte3": "",
+        }
+        
+        motifs = [str(extracted_data.get(f"motif_{i}", "")).strip() for i in range(1, 4)]
+        motifs = [m for m in motifs if m]
+        unique_motifs = []
+        for m in motifs:
+            if m not in unique_motifs and not any(m in other for other in unique_motifs):
+                unique_motifs.append(m)
+        motifs_text = "\n".join(unique_motifs)
+        field_values["Texte3"] = motifs_text
+        
+        # Mapping checkboxes "Vous sollicitez le CLIC pour"
+        motifs_lower = motifs_text.lower()
+        if "ehpad" in motifs_lower or "hébergement" in motifs_lower or "hebergement" in motifs_lower or "structure" in motifs_lower:
+            field_values["Des informations  conseils sur les structures dhébergement"] = True
+        elif "intervenant" in motifs_lower or "mise en place" in motifs_lower or "aide" in motifs_lower:
+            field_values["La mise en place dintervenants Précisez"] = True
+            field_values["Texte4"] = "Aides à domicile / Soins"
+        else:
+            # Default fallback for most cases
+            field_values["Une évaluation gérontologique à domicile"] = True
+        
+        adresse = extracted_data.get("usager_adresse", "")
+        if adresse:
+            if not any(char.isdigit() for char in adresse):
+                field_values["ville"] = adresse
+            else:
+                field_values["madame adresse"] = adresse
+                
+        sexe = str(extracted_data.get("usager_sexe", "")).lower()
+        if "femme" in sexe:
+            field_values["Madame"] = True
+        elif "homme" in sexe:
+            field_values["Monsieur"] = True
+            
+        vit_seul = extracted_data.get("usager_vit_seul")
+        if vit_seul is True:
+            field_values["Oui_2"] = True
+        elif vit_seul is False:
+            field_values["Non_2"] = True
+            
+        aides_text = (str(extracted_data.get("aide_1", "")) + " " + str(extracted_data.get("aide_2", ""))).lower()
+        if aides_text.strip():
+            field_values["Oui"] = True
+            field_values["Texte2"] = aides_text.title()
+            
+        if "infirmi" in aides_text or "idel" in aides_text:
+            field_values["fill_16"] = "Infirmier Libéral"
+            frequence = ""
+            if "matin" in aides_text or "soir" in aides_text or "jour" in aides_text or "quotidien" in aides_text:
+                frequence = "Quotidien"
+            elif "semaine" in aides_text or "fois" in aides_text:
+                frequence = "Hebdomadaire"
+            field_values["fill_17"] = frequence
+            
+        for page in doc:
+            for widget in page.widgets():
+                if widget.field_name in field_values:
+                    val = field_values[widget.field_name]
+                    if isinstance(val, bool):
+                        widget.field_value = val
+                    elif val:
+                        widget.field_value = str(val)
+                    widget.update()
+                
+        out_pdf = io.BytesIO()
+        doc.save(out_pdf)
+        doc.close()
+        return out_pdf.getvalue()

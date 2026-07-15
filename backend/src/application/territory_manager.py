@@ -47,13 +47,20 @@ class TerritoryManager:
 
     def _find_area(self, city: str):
         """
-        Trouve la clé correspondant à la ville dans le référentiel.
-        Gère les correspondances simples pour le moment.
+        Trouve la clé correspondant à la ville dans le référentiel en ignorant les accents.
         """
-        city_lower = city.lower()
+        import unicodedata
+        
+        def remove_accents(s):
+            if not s:
+                return ""
+            return "".join(c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn')
+
+        city_clean = remove_accents(city).lower()
         
         for area_name in self.territory_data.keys():
-            if city_lower in area_name.lower():
+            area_clean = remove_accents(area_name).lower()
+            if city_clean in area_clean:
                 return self.territory_data[area_name]
         
         return None
