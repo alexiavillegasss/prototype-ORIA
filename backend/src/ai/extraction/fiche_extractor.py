@@ -510,5 +510,6 @@ Réponds UNIQUEMENT par ce JSON complet :
             
         # Toujours forcer la date d'émission au jour J
         parsed["emetteur_date"] = datetime.datetime.now().strftime("%d/%m/%Y")
+        parsed["raw_text"] = raw_text
             
         return parsed

@@ -354,26 +354,26 @@ class PDFGenerator:
                         widget.field_value = True
                         widget.update()
                         
-                # Motifs (Cases à cocher) basés sur les alertes
-                alertes = extracted_data.get("alertes", {})
+                # Motifs (Cases à cocher) basés sur le texte brut
+                raw = str(extracted_data.get("raw_text", "")).lower()
                 
-                if fname == "Problme de sant" and (alertes.get("pathologies_chroniques") or alertes.get("pb_memoire_decision") or alertes.get("risque_chute")):
+                if fname == "Problme de sant" and ("chute" in raw or "santé" in raw or "sante" in raw or "mémoire" in raw or "memoire" in raw or "tête" in raw or "alzheimer" in raw or "malade" in raw or "tombé" in raw):
                     widget.field_value = True
                     widget.update()
                 
-                if fname == "Personne isole" and alertes.get("isolement_social"):
+                if fname == "Personne isole" and ("isolé" in raw or "seul" in raw or "solitude" in raw):
                     widget.field_value = True
                     widget.update()
                     
-                if fname == "Troubles du comportement" and (alertes.get("troubles_comportement") or alertes.get("troubles_psy")):
+                if fname == "Troubles du comportement" and ("comportement" in raw or "agressif" in raw or "méchant" in raw or "démence" in raw or "déambule" in raw or "nuit" in raw):
                     widget.field_value = True
                     widget.update()
                     
-                if fname == "Possibilit daddiction" and alertes.get("conduites_addictives"):
+                if fname == "Possibilit daddiction" and ("alcool" in raw or "addiction" in raw or "drogue" in raw):
                     widget.field_value = True
                     widget.update()
                     
-                if fname == "Logement insalubre" and (alertes.get("logement_inadapte") or alertes.get("incurie_insalubrite")):
+                if fname == "Logement insalubre" and ("insalubre" in raw or "sale" in raw or "inadapté" in raw or "logement" in raw):
                     widget.field_value = True
                     widget.update()
 
