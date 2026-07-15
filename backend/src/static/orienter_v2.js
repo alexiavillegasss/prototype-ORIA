@@ -1214,7 +1214,7 @@ function formatHospitalisation(status) {
 
 function formatBesoinPrincipal(besoin) {
     if (!besoin || besoin === 'indetermine') {
-        return 'Indéterminé (superposition ou aucun besoin)';
+        return 'Aucun besoin principal trouvé';
     }
     return besoin;
 }
