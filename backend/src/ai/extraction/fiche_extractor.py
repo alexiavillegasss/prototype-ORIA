@@ -179,6 +179,18 @@ Réponds UNIQUEMENT par ce JSON complet :
             parsed["prenoms"] = ""
             prenom = ""
             
+        # Anti-collision globale (DAC)
+        em_prenom = str(parsed.get("emetteur_prenom", "")).lower().strip()
+        us_prenom = str(parsed.get("prenoms", "")).lower().strip()
+        em_tel = str(parsed.get("emetteur_telephone", "")).strip()
+        us_tel = str(parsed.get("telephone", "")).strip()
+        em_email = str(parsed.get("emetteur_mail", "")).strip()
+        
+        if em_prenom and em_prenom == us_prenom:
+            parsed["prenoms"] = ""
+        if em_tel and em_tel == us_tel:
+            parsed["telephone"] = ""
+            
         # Anti-hallucination : si le nom ou prénom n'est même pas dans le texte original, c'est une invention (souvent copié du prompt) !
         if nom and nom.lower() not in text_lower:
             parsed["nom_usage"] = ""
@@ -460,6 +472,21 @@ Réponds UNIQUEMENT par ce JSON complet :
             t_val = str(parsed.get(t_field, "")).replace(" ", "").replace(".", "")
             if t_val and t_val not in text_no_space:
                 parsed[t_field] = ""
+                
+        # Anti-collision globale : Si l'émetteur est un proche/aidant, on empêche l'IA de copier ses infos dans l'usager
+        em_prenom = str(parsed.get("emetteur_prenom", "")).lower().strip()
+        us_prenom = str(parsed.get("usager_prenoms", "")).lower().strip()
+        em_tel = str(parsed.get("emetteur_telephone", "")).strip()
+        us_tel = str(parsed.get("usager_telephone", "")).strip()
+        em_email = str(parsed.get("emetteur_email", "")).strip()
+        us_email = str(parsed.get("usager_email", "")).strip()
+        
+        if em_prenom and em_prenom == us_prenom:
+            parsed["usager_prenoms"] = ""
+        if em_tel and em_tel == us_tel:
+            parsed["usager_telephone"] = ""
+        if em_email and em_email == us_email:
+            parsed["usager_email"] = ""
                 
         # Age -> Année de naissance (comme affiné ce matin)
         age_str = str(parsed.get("usager_date_naissance", ""))
