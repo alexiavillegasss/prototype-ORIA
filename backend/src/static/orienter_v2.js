@@ -423,16 +423,17 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     window.handleOuiElleConvient = function(label, type, structData = null) {
         const commune = (schemaPivot && schemaPivot["usager.localisation.commune_residence"]) ? schemaPivot["usager.localisation.commune_residence"].toLowerCase() : "";
+        const nomLocal = structData && structData.nom_local ? structData.nom_local.toLowerCase() : "";
 
         if (type === 'DAC') {
             window.showDacWizard(label, type);
-        } else if (type === 'CLIC' && (label.toLowerCase().includes('seyne') || commune.includes('seyne'))) {
+        } else if (type === 'CLIC' && (label.toLowerCase().includes('seyne') || nomLocal.includes('seyne') || commune.includes('seyne'))) {
             window.showClicWizard(label, type);
-        } else if (type === 'CLIC' && (label.toLowerCase().includes('toulon') || commune.includes('toulon'))) {
+        } else if (type === 'CLIC' && (label.toLowerCase().includes('toulon') || nomLocal.includes('toulon') || commune.includes('toulon'))) {
             window.showClicToulonWizard(label, type);
-        } else if (type === 'CLIC' && (label.toLowerCase().includes('provence verte') || commune.includes('brignoles') || commune.includes('bras') || commune.includes('cotignac'))) {
+        } else if (type === 'CLIC' && (label.toLowerCase().includes('provence verte') || nomLocal.includes('provence verte') || commune.includes('brignoles') || commune.includes('bras') || commune.includes('cotignac'))) {
             window.validateCurrentOrientation(label, type, { showClicProvenceVertePdf: true });
-        } else if (type === 'CLIC' && (label.toLowerCase().includes('hadage') || commune.includes('hyères') || commune.includes('hyeres') || commune.includes('bormes'))) {
+        } else if (type === 'CLIC' && (label.toLowerCase().includes('hadage') || nomLocal.includes('hadage') || commune.includes('hyères') || commune.includes('hyeres') || commune.includes('bormes'))) {
             window.validateCurrentOrientation(label, type, { showClicHadagePdf: true });
         } else if (structData && structData.email) {
             window.showGenericMailWizard(structData);
