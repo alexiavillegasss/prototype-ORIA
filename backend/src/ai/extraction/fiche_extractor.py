@@ -14,13 +14,14 @@ Analyse le récit suivant pour remplir précisément une Fiche d'Orientation DAC
 ### INSTRUCTIONS DE REMPLISSAGE
 - Tous les champs sont obligatoires dans le JSON.
 - Si une information n'est pas mentionnée dans le texte, laisse-la STRICTEMENT vide (`""` pour une chaîne, `false` pour un booléen).
-- RÈGLE POUR "INCONNU" : Mets la valeur exacte `"INCONNU"` UNIQUEMENT SI l'utilisateur précise expressément avec des mots qu'il ne possède pas l'information (ex: "je n'ai pas son adresse", "c'est inconnu", "je ne sais pas"). Ne déduis pas "INCONNU" par toi-même juste parce que l'info manque. S'il ne dit rien, mets `""`.
-- **NE DÉDUIS RIEN** : N'invente aucune information. Si ce n'est pas écrit noir sur blanc, laisse vide `""`.
-- **RÈGLES STRICTES** : 
-  - Dans `nom_usage`, mets le nom de famille DU PATIENT. Ne mets JAMAIS les titres (Monsieur, Madame, Veuve, etc). Si un seul nom est donné après Monsieur/Madame (ex: "Monsieur Lafayette"), c'est TOUJOURS le nom de famille, mets-le dans `nom_usage`.
-  - Dans `prenoms`, mets UNIQUEMENT le vrai prénom du patient. Si aucun prénom n'est donné, laisse STRICTEMENT vide `""`. N'utilise jamais les mots anonymes, titres, ou le nom de famille.
-  - Si un âge est donné pour le patient, écris simplement cet âge (ex: "quatre-vingts") dans `date_naissance`. Ne te trompe pas avec d'autres durées mentionnées dans le texte (ex: "depuis 20 ans"). Si aucun âge ni date n'est donné, laisse strictement vide `""`.
-  - Ne confonds pas la ville de résidence avec la ville de naissance : si la personne "habite à Toulon", cela va dans `adresse_complete`. `commune_naissance` reste vide `""`.
+  - Sépare TOUJOURS le prénom et le nom de famille. 
+  - RÈGLE ABSOLUE SUR "ORIA" : "ORIA" (ou "Oria") est le nom du logiciel. Il est STRICTEMENT INTERDIT de l'utiliser comme prénom ou nom, que ce soit pour le patient (`nom_usage`, `prenoms`) ou pour l'émetteur (`emetteur_nom`, `emetteur_prenom`). Si l'émetteur n'est pas clairement identifié, laisse vide.
+  - Dans `nom_usage`, mets UNIQUEMENT le nom de famille DU PATIENT (souvent écrit en majuscules ou cité en dernier). Ne mets JAMAIS le prénom ici. Ne mets JAMAIS les titres (Monsieur, Madame, Veuve, etc). Si un seul mot est donné après Monsieur/Madame, c'est TOUJOURS le nom de famille, mets-le dans `nom_usage`.
+  - Dans `prenoms`, mets UNIQUEMENT le prénom du patient. N'y mets JAMAIS le nom de famille. Si le texte dit "Emile ELLA", "ELLA" va dans `nom_usage` et "Emile" va dans `prenoms`. Si aucun prénom n'est donné, laisse STRICTEMENT vide `""`.
+  - Dans `date_naissance`, si une date de naissance exacte est donnée, utilise le format JJ/MM/AAAA. Si seul un âge est donné (ex: 80), écris simplement cet âge en chiffres suivi de "ans" (ex: "80 ans"). Ne te trompe pas avec d'autres durées mentionnées dans le texte (ex: "depuis 20 ans"). Si aucun âge ni date n'est donné, laisse strictement vide `""`.
+  - Pour le `sexe`, tu es EXCEPTIONNELLEMENT AUTORISÉ À DÉDUIRE l'information. Si le texte parle d'un homme (ex: "Monsieur", "il", "le patient", ou adjectifs masculins comme "précarisé", "toxicomane"), mets "M". Si le texte parle d'une femme (ex: "Madame", "elle", "la patiente"), mets "F". ATTENTION : Ne te fie JAMAIS au nom de famille (ex: "ELLA") pour déduire le sexe. Base-toi uniquement sur "Monsieur/Madame" et les accords grammaticaux. En cas de doute, laisse vide `""`.
+  - Analyse le SENS RÉEL des phrases. Ne confonds pas la ville de résidence avec la ville de naissance : si la personne "habite à Toulon", cela va dans `adresse_complete`, et `commune_naissance` reste vide `""`. 
+  - RÈGLE ABSOLUE SUR `commune_naissance` : Une commune est EXCLUSIVEMENT un nom de ville (ex: "Paris", "Marseille"). Il est STRICTEMENT INTERDIT d'y mettre une nationalité, une origine, un pays, ou une phrase (ex: "Afghane", "France", "d'origine afghane", "en France depuis..."). Si le texte dit "d'origine Afghane", on ne connait pas la ville de naissance. Tu DOIS laisser `commune_naissance` STRICTEMENT vide `""`. N'extrapole pas.
   - Pour l'adresse, n'invente rien. Si seule la ville est donnée (ex: "Toulon"), mets juste "Toulon".
   - Pour `vit_seul`, mets "true" si elle vit seule, et "false" si le texte indique clairement que la personne est accompagnée (ex: "habite avec moi", "vit avec son fils"). S'il n'y a aucune précision, laisse strictement vide `""`. Ne déduis rien.
   - Pour `lieu_actuel`, si le texte ne contient pas EXPLICITEMENT les mots "domicile", "chez lui", "appartement", "maison" ou "établissement", laisse STRICTEMENT vide `""`. Ne déduis JAMAIS "domicile" juste parce qu'il vit dans une ville ou a une "expulsion locative".
@@ -178,6 +179,29 @@ Réponds UNIQUEMENT par ce JSON complet :
         if any(x in prenom.lower() for x in ["ans", "monsieur", "dame", "patient", "usager", "homme", "femme", "m.", "mme", "afghan", "origine"]):
             parsed["prenoms"] = ""
             prenom = ""
+            
+        # Hardcode block against ORIA
+        if parsed.get("prenoms", "").lower() == "oria": parsed["prenoms"] = ""
+        if parsed.get("nom_usage", "").lower() == "oria": parsed["nom_usage"] = ""
+        if parsed.get("emetteur_prenom", "").lower() == "oria": parsed["emetteur_prenom"] = ""
+        if parsed.get("emetteur_nom", "").lower() == "oria": parsed["emetteur_nom"] = ""
+        
+        # Hardcode block against Nationalities in commune
+        commune = parsed.get("commune_naissance", "").lower()
+        if any(nat in commune for nat in ["afghan", "français", "francais", "origine", "depuis", "italien", "espagnol", "marocain", "algerien", "tunisien"]):
+            parsed["commune_naissance"] = ""
+            
+        # Hardcode gender fallback
+        if "monsieur" in text_lower and "madame" not in text_lower:
+            parsed["sexe"] = "M"
+        elif "madame" in text_lower and "monsieur" not in text_lower:
+            parsed["sexe"] = "F"
+            
+        # Clean up "none" or "null" strings that might come from the AI
+        for field in ["gir", "apa", "mdph", "ald"]:
+            val = parsed.get(field)
+            if val is None or str(val).lower() in ["none", "null"]:
+                parsed[field] = ""
             
         # Anti-collision globale (DAC)
         em_prenom = str(parsed.get("emetteur_prenom", "")).lower().strip()
