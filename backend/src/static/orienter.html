@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style_v2.css?v=19">
+    <link rel="stylesheet" href="/static/style_v2.css?v=21">
     
     <style>
         /* Styles Premium additionnels pour le diagnostic interactif */
@@ -268,7 +268,7 @@
         
         <!-- Colonne Gauche : Saisie -->
         <section class="input-pane">
-            <div class="section-header">
+            <div class="section-header" style="text-align: center;">
                 <h2>Description de la situation</h2>
                 <p class="section-desc">Décrivez librement la situation de la personne âgée (âge, GIR, aides actuelles, alertes de son entourage...).</p>
             </div>
@@ -290,13 +290,12 @@
             <!-- État vide (affiché au départ) -->
             <div id="results-placeholder" class="empty-state">
                 <p>En attente d'une description de cas à analyser.</p>
-                <span class="empty-hint">Saisissez un texte ci-dessus puis cliquez sur <strong>Lancer l'Analyse</strong>.</span>
             </div>
 
             <!-- Conteneur des résultats réels (masqué par défaut) -->
             <div id="results-content" style="display: none;">
                 
-                <div class="section-header">
+                <div class="section-header" style="text-align: center;">
                     <h2>Diagnostic & Orientations</h2>
                     <p class="section-desc">Voici l'analyse générée automatiquement par le moteur d'orientation ORIA.</p>
                 </div>
@@ -326,6 +325,6 @@
         <p>Prototype ORIA – Module d'évaluation interactif</p>
     </footer>
 
-    <script src="/static/orienter_v2.js?v=999"></script>
+    <script src="/static/orienter_v2.js?v=1003"></script>
 </body>
 </html>

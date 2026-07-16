@@ -198,6 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // On extrait l'orientation courante
         const struct = orientations[currentIndex];
+        structuresTitle.style.display = "";
         structuresTitle.textContent = `Proposition d'orientation (${currentIndex + 1} sur ${orientations.length}) :`;
 
         const card = document.createElement('div');
@@ -362,7 +363,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             // Rendu de l'écran de validation finale
-            structuresTitle.textContent = "Orientation validée avec succès :";
+            structuresTitle.style.display = "none";
             
             let pdfButtonHtml = '';
             if (options && options.showDacPdf) {
@@ -396,12 +397,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     </button>
                 `;
             }
+            let displayLabel = label;
+            if (displayLabel.includes("DAC - Situation de complexité")) {
+                displayLabel = "DAC (Dispositif d'appui à la coordination)";
+            }
+            if (displayLabel.includes("CLIC")) {
+                displayLabel = displayLabel.replace(" (Sénior)", "").replace(" (Senior)", "");
+            }
 
             structuresList.innerHTML = `
                 <div class="success-card fadeInUp">
-                    <h4 style="font-size: 1.2rem; font-weight: 700; color: #22c55e;">Dossier Validé & Enregistré</h4>
-                    <p style="color: var(--text-secondary); max-width: 480px; font-size: 0.92rem; line-height: 1.5; margin: 0 auto;">
-                        L'orientation finale vers <strong>${label}</strong> a été enregistrée avec succès. Les données de diagnostic pivot et de traçabilité COMID sont sauvegardées dans votre base locale.
+                    <h4 style="font-size: 1.2rem; font-weight: 700; color: #22c55e; margin-bottom: 0.5rem;">Dossier validé et enregistré</h4>
+                    <p style="color: var(--text-primary); max-width: 480px; font-size: 1.05rem; line-height: 1.5; margin: 0 auto;">
+                        Orientation : <strong>${displayLabel}</strong>
                     </p>
                     <div style="display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap;">
                         <button onclick="resetAnalysis()" class="btn-primary" style="background: #22c55e; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3); margin-top: 1rem;">
