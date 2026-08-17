@@ -981,9 +981,6 @@
                 </div>
             </div>
             <span class="score-level level-simple" id="score-level">Non complexe</span>
-            <button id="btn-save-comid" class="btn-save-comid" onclick="saveComidEvaluation()">
-                💾 Enregistrer l'évaluation
-            </button>
         </div>
 
         <!-- Domains will be injected here by JS -->
@@ -1456,6 +1453,9 @@
         const panel = document.getElementById('results-panel');
         panel.classList.add('visible');
 
+        // Automatic save to DB upon calculation
+        saveComidEvaluation(true);
+
         let total = 0;
         Object.values(state).forEach(v => { if (v === 1) total++; });
 
@@ -1768,7 +1768,7 @@
         }
     }
 
-    async function saveComidEvaluation() {
+    async function saveComidEvaluation(silent = false) {
         let dossierId = '';
         if (currentComidType === 'entree') {
             dossierId = document.getElementById('comid-dossier-id').value.trim();
@@ -1777,7 +1777,7 @@
         }
 
         if (!dossierId) {
-            alert('Veuillez spécifier ou sélectionner un Identifiant de Dossier.');
+            if (!silent) alert('Veuillez spécifier ou sélectionner un Identifiant de Dossier.');
             return;
         }
 
@@ -1807,10 +1807,6 @@
         };
 
         try {
-            const btnSave = document.getElementById('btn-save-comid');
-            btnSave.disabled = true;
-            btnSave.textContent = '⏳ Enregistrement...';
-
             const res = await fetch('/api/comid/evaluations', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -1819,20 +1815,15 @@
 
             if (res.ok) {
                 const data = await res.json();
-                alert(`✅ Évaluation COMID d'${currentComidType === 'entree' ? 'Entrée' : 'Sortie'} enregistrée avec succès !\n\nN° Dossier : ${dossierId}\nScore : ${score}/30 (${niveau})`);
+                if (!silent) {
+                    alert(`✅ Évaluation COMID d'${currentComidType === 'entree' ? 'Entrée' : 'Sortie'} enregistrée avec succès !\n\nN° Dossier : ${dossierId}\nScore : ${score}/30 (${niveau})`);
+                }
                 if (currentComidType === 'entree') {
                     loadEntreeDossiers();
                 }
-            } else {
-                alert('Erreur lors de l\'enregistrement de l\'évaluation.');
             }
         } catch (e) {
             console.error('Erreur save comid:', e);
-            alert('Erreur réseau lors de l\'enregistrement.');
-        } finally {
-            const btnSave = document.getElementById('btn-save-comid');
-            btnSave.disabled = false;
-            btnSave.textContent = '💾 Enregistrer l\'évaluation';
         }
     }
 
