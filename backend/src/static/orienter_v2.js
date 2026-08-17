@@ -14,36 +14,36 @@ const STRUCTURE_COLORS = {
 
 // Dictionnaire complet des 30 critères COMID pour la traçabilité clinique dans l'interface
 const COMID_LABELS = {
-    'multimorbidite': 'Multimorbidité (≥ 3 pathologies chroniques)',
-    'douleurs': 'Douleurs chroniques ou mal contrôlées',
-    'allergies': 'Allergies complexes ou sévères',
-    'polymedication': 'Polymédication (≥ 5 médicaments distincts)',
-    'troubles_cognitifs': 'Troubles cognitifs (Alzheimer ou apparentés)',
-    'precarite_financiere': 'Précarité financière / Ressources faibles',
-    'epuisement_aidant': 'Épuisement critique de l\'aidant régulier',
-    'litteratie_faible': 'Faible littératie en santé / Barrière de langue',
-    'isolement_social': 'Isolement social ou familial prononcé',
-    'logement_inadapte': 'Logement inadapté ou insalubre (ex: incurie)',
-    'depression': 'Troubles de l\'humeur, dépression avérée',
-    'psychiatrie': 'Suivi psychiatrique ou trouble psy actif',
-    'addiction': 'Addiction ou dépendance (alcool, substances)',
-    'anxiete': 'Anxiété majeure ou angoisses exprimées',
-    'fluctuation_mentale': 'Fluctuations rapides de l\'état mental',
-    'sollicitations_recurrentes': 'Sollicitations récurrentes (urgences / médecins)',
-    'conflit_reseau': 'Conflit au sein du réseau d\'intervenants',
-    'inquietude_sante': 'Inquiétude majeure pour sa propre santé',
-    'agressivite': 'Agressivité ou hostilité verbale/physique',
-    'opposition_soins': 'Refus de soins ou d\'aide active à domicile',
-    'degradation_recente': 'Dégradation rapide de la situation (< 1 mois)',
-    'perte_autonomie_recente': 'Perte d\'autonomie motrice ou physique récente',
-    'transition_parcours': 'Rupture ou transition de parcours (sortie hôpital)',
-    'trouble_cognitif_aigu': 'Confusion ou trouble cognitif aigu récent',
-    'imprevisibilite': 'Grande imprévisibilité de l\'état de santé',
-    'multitude_intervenants': 'Multitude d\'intervenants sans coordination',
-    'manque_partenariat': 'Manque de partenariat ou rupture avec les pro',
-    'incoherence_soins': 'Incohérence majeure dans le plan de soins',
-    'probleme_assurance': 'Difficultés de couverture d\'assurance maladie',
-    'lourdeur_reseau': 'Lourdeur administrative ou réseau complexe'
+    'multimorbidite': 'Plusieurs maladies chroniques (>2) et/ou symptôme(s) inexpliqué(s)',
+    'douleurs': 'Douleurs chroniques',
+    'allergies': 'Allergie et/ou intolérance médicamenteuse',
+    'polymedication': 'Polymédication (>5)',
+    'troubles_cognitifs': 'Troubles cognitifs',
+    'precarite_financiere': 'Difficultés financières et/ou incapacité à supporter financièrement des prestations d\'aide et de soins',
+    'epuisement_aidant': 'Absence ou épuisement du proche aidant et/ou tensions familiales',
+    'litteratie_faible': 'Faible niveau de littératie (alphabétisation et/ou barrière linguistique/culturelle)',
+    'isolement_social': 'Isolement social',
+    'logement_inadapte': 'Logement inadapté et/ou barrière environnementale',
+    'depression': 'Dépression et/ou idées suicidaires',
+    'psychiatrie': 'Maladie psychiatrique et/ou troubles psychiques (délires, hallucination, etc.)',
+    'addiction': 'Addiction',
+    'anxiete': 'Anxiété ou angoisse rendant le tableau clinique confus',
+    'fluctuation_mentale': 'Fonctions mentales variant au cours de la journée',
+    'sollicitations_recurrentes': 'Sollicitations récurrentes du réseau primaire et/ou secondaire',
+    'conflit_reseau': 'Communication ambivalente et/ou conflictuelle avec l\'un des membres du réseau primaire et/ou secondaire',
+    'inquietude_sante': 'Inquiétude face à ses symptômes et/ou état de santé et/ou aux informations médicales reçues',
+    'agressivite': 'Agressivité (verbale et/ou physique) ou mutisme',
+    'opposition_soins': 'Résistance ou opposition aux soins, qu\'elles soient actives ou passives',
+    'degradation_recente': 'Dégradation récente de l\'état de santé ressentie par le client',
+    'perte_autonomie_recente': 'Changement global du degré d\'indépendance (AVQ/AIVQ) lors du dernier mois',
+    'transition_parcours': 'Période de transition (annonce diagnostic, retour hospitalisation, décès proche aidant, divorce, travail, etc.)',
+    'trouble_cognitif_aigu': 'Changement aigu des capacités cognitives',
+    'imprevisibilite': 'Non prévisibilité de l\'état de santé',
+    'multitude_intervenants': 'Multitude d\'intervenants dans le réseau secondaire (médecin traitant, spécialiste, soignant, curateur, etc.)',
+    'manque_partenariat': 'Absence ou faible degré de partenariat entre les différents intervenants du réseau primaire et/ou secondaire',
+    'incoherence_soins': 'Incohérence thérapeutique et/ou perte de sens dans la prise en charge du point de vue du professionnel',
+    'probleme_assurance': 'Problème d\'assurance (limitation du remboursement de prise en charge)',
+    'lourdeur_reseau': 'Lourdeur émotionnelle et/ou physique de la prise en charge ressentie par les membres du réseau secondaire (médecins, soignants)'
 };
 
 // Variables d'état globales de la session de diagnostic
@@ -991,3 +991,88 @@ function formatHospitalisation(status) {
     if (status === 'recente') return 'Récente (< 10 jours)';
     return 'Aucune hospitalisation';
 }
+
+// ========================================================
+// DICTÉE VOCALE / RECONNAISSANCE VOCALE WEB SPEECH
+// ========================================================
+let recognition = null;
+let isRecording = false;
+
+window.toggleVoiceDictation = function() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        alert("La reconnaissance vocale n'est pas disponible sur votre navigateur (utilisez Google Chrome ou Microsoft Edge).");
+        return;
+    }
+    const btn = document.getElementById('btn-voice-toggle');
+    const label = document.getElementById('voice-btn-label');
+    const textarea = document.getElementById('situation-input');
+
+    if (isRecording) {
+        if (recognition) recognition.stop();
+        isRecording = false;
+        if (btn) {
+            btn.style.background = "rgba(168, 85, 247, 0.12)";
+            btn.style.borderColor = "rgba(168, 85, 247, 0.3)";
+            btn.style.color = "#c084fc";
+        }
+        if (label) label.textContent = "Activer la dictée vocale";
+        return;
+    }
+
+    recognition = new SpeechRecognition();
+    recognition.lang = 'fr-FR';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.onstart = () => {
+        isRecording = true;
+        if (btn) {
+            btn.style.background = "rgba(239, 68, 68, 0.25)";
+            btn.style.borderColor = "#ef4444";
+            btn.style.color = "#fca5a5";
+        }
+        if (label) label.textContent = "🔴 Écoute en cours...";
+    };
+
+    recognition.onresult = (event) => {
+        let transcript = '';
+        for (let i = 0; i < event.results.length; i++) {
+            transcript += event.results[i][0].transcript;
+        }
+        if (textarea) textarea.value = transcript;
+    };
+
+    recognition.onerror = (event) => {
+        console.error(event.error);
+        isRecording = false;
+        if (btn) {
+            btn.style.background = "rgba(168, 85, 247, 0.12)";
+            btn.style.borderColor = "rgba(168, 85, 247, 0.3)";
+            btn.style.color = "#c084fc";
+        }
+        if (label) label.textContent = "Activer la dictée vocale";
+    };
+
+    recognition.onend = () => {
+        isRecording = false;
+        if (btn) {
+            btn.style.background = "rgba(168, 85, 247, 0.12)";
+            btn.style.borderColor = "rgba(168, 85, 247, 0.3)";
+            btn.style.color = "#c084fc";
+        }
+        if (label) label.textContent = "Activer la dictée vocale";
+    };
+
+    recognition.start();
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode');
+    if (mode === 'voice') {
+        setTimeout(() => {
+            window.toggleVoiceDictation();
+        }, 600);
+    }
+});

@@ -554,3 +554,98 @@ class PDFGenerator:
         doc.save(out_pdf)
         doc.close()
         return out_pdf.getvalue()
+
+    def generate_comid_pdf(self, comid_data: dict) -> bytes:
+        def clean(t):
+            if not t: return ""
+            s = str(t)
+            s = s.replace("’", "'").replace("‘", "'").replace("«", '"').replace("»", '"').replace("–", "-").replace("—", "-")
+            # Replace non-latin1 characters if any remain
+            return s.encode('latin-1', 'replace').decode('latin-1')
+
+        doc = fitz.open()
+        page = doc.new_page(width=595, height=842) # A4 size
+        
+        # Colors
+        blue_dark = (15/255, 23/255, 42/255)
+        blue_accent = (59/255, 130/255, 246/255)
+        text_dark = (30/255, 41/255, 59/255)
+        gray_light = (241/255, 245/255, 249/255)
+        gray_border = (203/255, 213/255, 225/255)
+        
+        # Header box
+        page.draw_rect(fitz.Rect(30, 30, 565, 95), color=None, fill=blue_dark)
+        page.insert_text(fitz.Point(45, 60), clean("ORIA - RAPPORT D'EVALUATION CLINIQUE COMID"), fontsize=13, color=(1, 1, 1), fontname="helv")
+        page.insert_text(fitz.Point(45, 80), clean("Grille de Complexite Multidimensionnelle a Domicile (imad Geneve)"), fontsize=10, color=(0.7, 0.8, 1), fontname="helv")
+        
+        # Date box
+        date_str = clean(comid_data.get("date", datetime.datetime.now().strftime("%d/%m/%Y a %H:%M")))
+        total_score = comid_data.get("score", 0)
+        level_str = clean(comid_data.get("level", "Non complexe"))
+        
+        page.draw_rect(fitz.Rect(30, 110, 565, 175), color=gray_border, fill=gray_light, width=0.5)
+        page.insert_text(fitz.Point(45, 145), clean(f"Date d'evaluation clinique : {date_str}"), fontsize=11, color=text_dark, fontname="helv")
+        
+        # Score Badge Box
+        score_color = (34/255, 197/255, 94/255) if total_score <= 5 else ((245/255, 158/255, 11/255) if total_score <= 9 else (239/255, 68/255, 68/255))
+        page.draw_rect(fitz.Rect(370, 120, 550, 165), color=score_color, fill=score_color)
+        page.insert_text(fitz.Point(382, 140), clean(f"SCORE : {total_score} / 30"), fontsize=12, color=(1, 1, 1), fontname="helv")
+        page.insert_text(fitz.Point(382, 155), clean(level_str.upper()[:22]), fontsize=8, color=(1, 1, 1), fontname="helv")
+
+        # Table Header
+        y = 195
+        page.insert_text(fitz.Point(30, y), clean("SYNTHESE PAR DOMAINES CLINIQUES"), fontsize=11, color=text_dark, fontname="helv")
+        y += 12
+        
+        page.draw_rect(fitz.Rect(30, y, 565, y+20), color=None, fill=blue_dark)
+        page.insert_text(fitz.Point(40, y+14), clean("Domaine d'Evaluation"), fontsize=9, color=(1,1,1), fontname="helv")
+        page.insert_text(fitz.Point(430, y+14), clean("Score (Oui)"), fontsize=9, color=(1,1,1), fontname="helv")
+        page.insert_text(fitz.Point(500, y+14), clean("Statut"), fontsize=9, color=(1,1,1), fontname="helv")
+        y += 20
+        
+        domain_scores = comid_data.get("domainScores", {})
+        domains_list = [
+            ("1. Facteurs de sante / Medicaux", domain_scores.get("sante-medicale", 0)),
+            ("2. Facteurs socio-economiques", domain_scores.get("socio-economique", 0)),
+            ("3. Facteurs de sante mentale", domain_scores.get("sante-mentale", 0)),
+            ("4. Facteurs comportementaux", domain_scores.get("comportementaux", 0)),
+            ("5. Facteurs d'instabilite clinique", domain_scores.get("instabilite", 0)),
+            ("6. Facteurs lies aux intervenants", domain_scores.get("intervenants", 0)),
+        ]
+        
+        for idx, (d_title, score_val) in enumerate(domains_list):
+            bg = (248/255, 250/255, 252/255) if idx % 2 == 0 else (1, 1, 1)
+            page.draw_rect(fitz.Rect(30, y, 565, y+20), color=gray_border, fill=bg, width=0.5)
+            page.insert_text(fitz.Point(40, y+14), clean(d_title), fontsize=9, color=text_dark, fontname="helv")
+            page.insert_text(fitz.Point(440, y+14), clean(f"{score_val} / 5"), fontsize=9, color=text_dark, fontname="helv")
+            status = clean("Present" if score_val > 0 else "Aucun")
+            page.insert_text(fitz.Point(500, y+14), status, fontsize=9, color=(239/255, 68/255, 68/255) if score_val > 0 else (100/255, 116/255, 139/255), fontname="helv")
+            y += 20
+            
+        y += 20
+        page.insert_text(fitz.Point(30, y), clean("DETAILS DES FACTEURS DE COMPLEXITE IDENTIFIES (OUI)"), fontsize=11, color=text_dark, fontname="helv")
+        y += 12
+        
+        checked_items = comid_data.get("checkedItems", [])
+        if not checked_items:
+            y += 15
+            page.insert_text(fitz.Point(30, y), clean("Aucun critere de complexite coche."), fontsize=9, color=(100/255, 116/255, 139/255), fontname="helv")
+        else:
+            for item in checked_items:
+                if y > 780:
+                    page = doc.new_page(width=595, height=842)
+                    y = 40
+                lbl = clean(item.get("label", item.get("code", "")))
+                rect_text = fitz.Rect(40, y, 550, y+18)
+                page.insert_textbox(rect_text, f"-  {lbl}", fontsize=8.5, color=text_dark, fontname="helv")
+                y += 18
+                
+        # Footer
+        footer_y = 815
+        page.draw_line(fitz.Point(30, footer_y), fitz.Point(565, footer_y), color=gray_border, width=0.5)
+        page.insert_text(fitz.Point(30, footer_y+15), clean("ORIA - Plateforme d'Orientation Clinique et d'Analyse de la Complexite | Referentiel COMID (imad Geneve)"), fontsize=8, color=(148/255, 163/255, 184/255), fontname="helv")
+        
+        out_pdf = io.BytesIO()
+        doc.save(out_pdf)
+        doc.close()
+        return out_pdf.getvalue()

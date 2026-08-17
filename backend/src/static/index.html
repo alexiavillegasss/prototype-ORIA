@@ -22,9 +22,6 @@
     <!-- Header -->
     <header id="dashboard-header">
         <div class="header-content">
-            <a href="/orienter" class="back-arrow" title="Retour à l'orientation" style="position: absolute; left: -60px; top: 50%; transform: translateY(-50%); background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: var(--accent-blue); display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; text-decoration: none; transition: all 0.2s ease-in-out; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-            </a>
             <div class="logo-group">
                 <img src="/static/logo.png" alt="Logo ORIA" class="logo-img">
             </div>
@@ -35,6 +32,23 @@
                 <button id="theme-toggle" class="btn-primary" style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-glass); padding: 0.5rem; box-shadow: none; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer;">
                     <!-- L'icône sera injectée par JS -->
                 </button>
+                <!-- Menu Hamburger -->
+                <div style="position: relative;">
+                    <button id="menu-toggle" class="btn-primary" style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-glass); padding: 0.5rem; box-shadow: none; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <div id="dropdown-menu" class="dropdown-menu hidden">
+                        <a href="/remplir" class="dropdown-item" title="Accéder à la sélection Fiche d'Orientation / Grille COMID">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+                            Remplir ma fiche d'orientation / grille
+                        </a>
+                        <a href="/orienter" class="dropdown-item" title="Moteur d'orientation interactif">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+                            Moteur d'orientation
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
@@ -130,6 +144,33 @@
         <div id="sankey-chart"></div>
         <div id="sankey-empty" class="empty-state" style="display: none;">
             <p id="sankey-empty-msg">Aucun dossier enregistré pour le moment.</p>
+        </div>
+    </section>
+
+    <!-- Section Suivi & Comparatif COMID Entrée / Sortie -->
+    <section id="comid-comparison-section" style="max-width: 1300px; margin: 2rem auto; padding: 0 1.5rem;">
+        <div class="section-header" style="margin-bottom: 1.25rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Suivi de la Complexité COMID (Entrée vs Sortie)</h2>
+            <p style="font-size: 0.9rem; color: var(--text-secondary);">Mesurez l'évolution du score de complexité clinique des seniors bilantés entre l'admission et la sortie.</p>
+        </div>
+
+        <div class="table-container" style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow-card); overflow-x: auto;">
+            <table id="comid-comparison-table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--border-glass); font-size: 0.85rem; color: var(--text-secondary); height: 40px;">
+                        <th style="padding: 0.75rem;">N° Dossier</th>
+                        <th style="padding: 0.75rem;">Senior</th>
+                        <th style="padding: 0.75rem;">Score Entrée</th>
+                        <th style="padding: 0.75rem;">Score Sortie</th>
+                        <th style="padding: 0.75rem;">Évolution (&Delta;)</th>
+                        <th style="padding: 0.75rem;">Impact</th>
+                        <th style="padding: 0.75rem;">Statut Bilan</th>
+                    </tr>
+                </thead>
+                <tbody id="comid-comparison-tbody">
+                    <!-- Dynamic Rows -->
+                </tbody>
+            </table>
         </div>
     </section>
 
@@ -348,6 +389,17 @@
                     loadDashboard();
                 }
             });
+
+            // Menu Hamburger
+            const menuToggle = document.getElementById('menu-toggle');
+            const dropdownMenu = document.getElementById('dropdown-menu');
+            if (menuToggle && dropdownMenu) {
+                menuToggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdownMenu.classList.toggle('hidden');
+                });
+                document.addEventListener('click', () => dropdownMenu.classList.add('hidden'));
+            }
         });
     </script>
     <script src="/static/app.js?v=6"></script>

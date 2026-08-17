@@ -291,4 +291,71 @@ window.addEventListener('resize', () => {
 document.addEventListener('DOMContentLoaded', () => {
     initSelectors();
     loadDashboard();
+    loadComidComparisonTable();
 });
+
+/**
+ * Fetch and display COMID Entree vs Sortie comparison table
+ */
+async function loadComidComparisonTable() {
+    const tbody = document.getElementById('comid-comparison-tbody');
+    if (!tbody) return;
+
+    try {
+        const res = await fetch('/api/comid/comparisons');
+        if (!res.ok) return;
+
+        const data = await res.json();
+        if (!data || data.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="padding: 1.5rem; text-align: center; color: var(--text-muted);">
+                        Aucune évaluation COMID enregistrée pour le moment. Enregistrez des COMID d'Entrée et de Sortie sur la page COMID pour voir la comparaison ici.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        let html = '';
+        data.forEach(item => {
+            let deltaBadge = '<span style="color: var(--text-muted);">–</span>';
+            let impactText = '<span style="color: var(--text-muted);">En cours</span>';
+
+            if (item.delta_score !== null) {
+                if (item.delta_score > 0) {
+                    deltaBadge = `<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700;">-${item.delta_score} pts (${item.evolution_pct}%)</span>`;
+                    impactText = `<span style="color: #10b981; font-weight: 600;">🟢 Complexité réduite</span>`;
+                } else if (item.delta_score < 0) {
+                    deltaBadge = `<span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700;">+${Math.abs(item.delta_score)} pts</span>`;
+                    impactText = `<span style="color: #ef4444; font-weight: 600;">🔴 Complexité accrue</span>`;
+                } else {
+                    deltaBadge = `<span style="background: rgba(148, 163, 184, 0.15); color: var(--text-secondary); padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 600;">0 pt (Stable)</span>`;
+                    impactText = `<span style="color: var(--text-secondary);">⚪ Complexité stable</span>`;
+                }
+            }
+
+            const entreeText = item.score_entree !== null ? `<strong>${item.score_entree}/30</strong> (${item.niveau_entree})` : '<span style="color: var(--text-muted);">–</span>';
+            const sortieText = item.score_sortie !== null ? `<strong>${item.score_sortie}/30</strong> (${item.niveau_sortie})` : '<span style="color: var(--text-muted); font-style: italic;">En attente sortie</span>';
+
+            html += `
+                <tr style="border-bottom: 1px solid var(--border-glass); height: 48px;">
+                    <td style="padding: 0.75rem; font-weight: 700; color: var(--accent-blue);">${item.dossier_id}</td>
+                    <td style="padding: 0.75rem; font-weight: 500;">${item.senior_nom || item.dossier_id}</td>
+                    <td style="padding: 0.75rem;">${entreeText}</td>
+                    <td style="padding: 0.75rem;">${sortieText}</td>
+                    <td style="padding: 0.75rem;">${deltaBadge}</td>
+                    <td style="padding: 0.75rem;">${impactText}</td>
+                    <td style="padding: 0.75rem;">
+                        <span style="font-size: 0.8rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(59, 130, 246, 0.1); color: var(--text-primary);">
+                            ${item.statut_resolution}
+                        </span>
+                    </td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = html;
+    } catch (e) {
+        console.error('Erreur chargement comid comparison:', e);
+    }
+}
