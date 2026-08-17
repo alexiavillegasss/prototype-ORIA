@@ -288,11 +288,17 @@ window.addEventListener('resize', () => {
 });
 
 // -- Launch --
-document.addEventListener('DOMContentLoaded', () => {
+function startDashboardApp() {
     initSelectors();
     loadDashboard();
     loadComidComparisonTable();
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startDashboardApp);
+} else {
+    startDashboardApp();
+}
 
 /**
  * Fetch and display COMID Entree vs Sortie comparison table
