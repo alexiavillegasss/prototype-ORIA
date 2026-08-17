@@ -224,6 +224,14 @@ def get_comid_comparisons():
     """Récupère les données comparatives Entrée vs Sortie pour le tableau de bord."""
     return db_manager.get_comid_comparisons()
 
+@app.delete("/api/comid/evaluations/{dossier_id}")
+def delete_comid_dossier(dossier_id: str):
+    """Supprime les évaluations d'un dossier COMID."""
+    success = db_manager.delete_comid_evaluations_by_dossier(dossier_id)
+    if not success:
+        return {"error": "Dossier introuvable."}
+    return {"message": f"Dossier {dossier_id} supprimé avec succès."}
+
 # -----------------------------
 # API SANKEY DATA
 # -----------------------------

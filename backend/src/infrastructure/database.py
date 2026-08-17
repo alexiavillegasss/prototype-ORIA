@@ -233,3 +233,11 @@ class DatabaseManager:
                     "statut_resolution": "Complète" if (entree and sortie) else "Seulement Entrée" if entree else "Seulement Sortie"
                 })
             return comparisons
+
+    def delete_comid_evaluations_by_dossier(self, dossier_id: str) -> bool:
+        """Supprime toutes les évaluations COMID rattachées à un dossier_id."""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('DELETE FROM comid_evaluations WHERE dossier_id = ?', (dossier_id,))
+            conn.commit()
+            return cursor.rowcount > 0
