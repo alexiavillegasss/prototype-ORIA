@@ -846,6 +846,11 @@
             transform: translateY(-1px);
         }
 
+        .input-group.hidden,
+        .entree-info-badge.hidden {
+            display: none !important;
+        }
+
         .entree-info-badge {
             display: flex;
             align-items: center;
@@ -900,6 +905,22 @@
     <!-- Main Content -->
     <main class="comid-layout">
 
+        <!-- En-tête simplifié COMID (Consigne) -->
+        <div class="comid-page-header">
+            <div class="comid-header-instruction">
+                Cochez <strong>Oui</strong> ou <strong>Non</strong> pour chacun des 30 critères ci-dessous afin de calculer le score global et connaître le niveau de complexité de la situation clinique selon le référentiel COMID.
+            </div>
+            <button class="comid-toggle-btn" onclick="toggleComidInfo(this)">
+                <span>En savoir plus sur le COMID</span>
+                <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="comid-info-dropdown hidden" id="comid-info-dropdown">
+                <p class="comid-header-text">
+                    Le <strong>COMID</strong>, Complexité Multidimensionnelle à Domicile, est un instrument d'évaluation clinique multidimensionnelle développé par l'<strong>imad</strong> (<em>Institution genevoise de maintien à domicile — Busnel, Marjollet & Perrier-Gros-Claude, 2018</em>). Il permet aux professionnels de santé d'analyser et d'objectiver la complexité des prises en soins à domicile à travers <strong>30 critères répartis en 6 domaines</strong>.
+                </p>
+            </div>
+        </div>
+
         <!-- Carte de sélection : COMID Entrée vs Sortie & Identifiant -->
         <div class="comid-type-card" id="comid-type-card">
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
@@ -938,22 +959,6 @@
 
             <div id="entree-summary-badge" class="entree-info-badge hidden">
                 <!-- Infobulle dynamique pour le COMID de Sortie -->
-            </div>
-        </div>
-
-        <!-- En-tête simplifié COMID -->
-        <div class="comid-page-header">
-            <div class="comid-header-instruction">
-                Cochez <strong>Oui</strong> ou <strong>Non</strong> pour chacun des 30 critères ci-dessous afin de calculer le score global et connaître le niveau de complexité de la situation clinique selon le référentiel COMID.
-            </div>
-            <button class="comid-toggle-btn" onclick="toggleComidInfo(this)">
-                <span>En savoir plus sur le COMID</span>
-                <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div class="comid-info-dropdown hidden" id="comid-info-dropdown">
-                <p class="comid-header-text">
-                    Le <strong>COMID</strong>, Complexité Multidimensionnelle à Domicile, est un instrument d'évaluation clinique multidimensionnelle développé par l'<strong>imad</strong> (<em>Institution genevoise de maintien à domicile — Busnel, Marjollet & Perrier-Gros-Claude, 2018</em>). Il permet aux professionnels de santé d'analyser et d'objectiver la complexité des prises en soins à domicile à travers <strong>30 critères répartis en 6 domaines</strong>.
-                </p>
             </div>
         </div>
 
@@ -1776,12 +1781,20 @@
             return;
         }
 
-        const score = totalScore;
-        let niveau = 'Faible';
-        if (score >= 10) niveau = 'Élevée';
-        else if (score >= 5) niveau = 'Modérée';
+        // Calculate score from state (v === 1)
+        let score = 0;
+        const checkedCriterias = [];
+        Object.entries(state).forEach(([k, v]) => {
+            if (v === 1) {
+                score++;
+                checkedCriterias.push(k);
+            }
+        });
 
-        const checkedCriterias = Object.keys(state).filter(k => state[k] === true);
+        let niveau = 'Non complexe';
+        if (score >= 10) niveau = 'Très complexe';
+        else if (score >= 6) niveau = 'À risque';
+
         const seniorNom = document.getElementById('comid-senior-nom').value.trim();
 
         const payload = {
@@ -1806,7 +1819,10 @@
 
             if (res.ok) {
                 const data = await res.json();
-                alert(`✅ Évaluation COMID d'${currentComidType === 'entree' ? 'Entrée' : 'Sortie'} enregistrée avec succès pour le dossier ${dossierId} !\nScore: ${score}/30 (${niveau})`);
+                alert(`✅ Évaluation COMID d'${currentComidType === 'entree' ? 'Entrée' : 'Sortie'} enregistrée avec succès !\n\nN° Dossier : ${dossierId}\nScore : ${score}/30 (${niveau})`);
+                if (currentComidType === 'entree') {
+                    loadEntreeDossiers();
+                }
             } else {
                 alert('Erreur lors de l\'enregistrement de l\'évaluation.');
             }
