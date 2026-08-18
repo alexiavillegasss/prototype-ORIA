@@ -93,7 +93,7 @@ async def analyze(request: AnalyzeRequest):
     comid_results = scoring_engine.calculate_comid_score(extracted_data)
 
     # 3. Moteur d'orientation
-    orientation_results = orientation_engine.evaluate_orientation(extracted_data, comid_results)
+    orientation_results = orientation_engine.evaluate_orientation(extracted_data, comid_results, original_text=request.text)
 
     # 4. Territorialisation (Contacts locaux)
     patient_city = extracted_data.get("usager.localisation.commune_residence")

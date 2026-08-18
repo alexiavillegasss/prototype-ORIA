@@ -581,6 +581,12 @@
     "source": "analyse",
     "description": "Motif principal de la demande."
   },
+  "demande.besoin_principal": {
+    "type": "string",
+    "required": true,
+    "source": "analyse",
+    "description": "Besoin principal de la demande (référentiel Excel)."
+  },
   "demande.motifs_secondaires": {
     "type": "array",
     "required": false,
