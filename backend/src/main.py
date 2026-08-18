@@ -1,7 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, FileResponse, Response
-from fastapi import Request
 from pydantic import BaseModel
 from typing import Optional
 from collections import Counter

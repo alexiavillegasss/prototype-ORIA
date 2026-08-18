@@ -276,9 +276,9 @@
             <div class="glass-card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
                     <span style="font-size: 0.84rem; color: var(--text-secondary); font-weight: 500;">Saisie de la situation :</span>
-                    <button id="btn-voice-toggle" type="button" onclick="toggleVoiceDictation()" style="background: rgba(168, 85, 247, 0.12); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 8px; padding: 0.4rem 0.85rem; font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.2s ease;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
-                        <span id="voice-btn-label">Activer la dictée vocale</span>
+                    <button id="btn-voice-toggle" type="button" style="background: rgba(239, 68, 68, 0.12); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 8px; padding: 0.4rem 0.85rem; font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.2s ease; position: relative; z-index: 10; pointer-events: auto;" title="Activer la dictée vocale temps réel">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+                        <span id="voice-btn-label" style="pointer-events: none;">Dictée vocale</span>
                     </button>
                 </div>
                 <textarea id="situation-input" placeholder="Exemple : Mme Marie Durant a 82 ans, elle réside à Saint-Gilles. Son médecin traitant s'inquiète car elle a fait deux chutes ce mois-ci. Elle refuse l'APA mais sa fille nous signale que sa situation à domicile devient instable..."></textarea>

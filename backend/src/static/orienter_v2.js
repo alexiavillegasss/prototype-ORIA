@@ -1100,86 +1100,106 @@ function formatBesoinPrincipal(besoin) {
     return besoin;
 }
 // ========================================================
-// DICTÉE VOCALE / RECONNAISSANCE VOCALE WEB SPEECH
+// DICTÉE VOCALE EN TEMPS RÉEL (NATIVE NAVIGATEUR)
 // ========================================================
-let recognition = null;
-let isRecording = false;
+let activeRecognition = null;
+let isDictating = false;
 
 window.toggleVoiceDictation = function() {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-        alert("La reconnaissance vocale n'est pas disponible sur votre navigateur (utilisez Google Chrome ou Microsoft Edge).");
-        return;
-    }
     const btn = document.getElementById('btn-voice-toggle');
     const label = document.getElementById('voice-btn-label');
     const textarea = document.getElementById('situation-input');
 
-    if (isRecording) {
-        if (recognition) recognition.stop();
-        isRecording = false;
-        if (btn) {
-            btn.style.background = "rgba(168, 85, 247, 0.12)";
-            btn.style.borderColor = "rgba(168, 85, 247, 0.3)";
-            btn.style.color = "#c084fc";
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (isDictating) {
+        // STOP DICTÉE
+        isDictating = false;
+        if (activeRecognition) {
+            try { 
+                activeRecognition.abort(); 
+                activeRecognition.stop(); 
+            } catch(e){}
+            activeRecognition = null;
         }
-        if (label) label.textContent = "Activer la dictée vocale";
+        if (btn) {
+            btn.style.background = "rgba(239, 68, 68, 0.12)";
+            btn.style.borderColor = "rgba(239, 68, 68, 0.35)";
+            btn.style.color = "#f87171";
+        }
+        if (label) label.textContent = "Dictée vocale";
         return;
     }
 
-    recognition = new SpeechRecognition();
-    recognition.lang = 'fr-FR';
-    recognition.continuous = true;
-    recognition.interimResults = true;
+    if (!SpeechRecognition) {
+        alert("La reconnaissance vocale nécessite un navigateur compatible comme Google Chrome ou Microsoft Edge.");
+        return;
+    }
 
-    recognition.onstart = () => {
-        isRecording = true;
-        if (btn) {
-            btn.style.background = "rgba(239, 68, 68, 0.25)";
-            btn.style.borderColor = "#ef4444";
-            btn.style.color = "#fca5a5";
-        }
-        if (label) label.textContent = "🔴 Écoute en cours...";
-    };
+    try {
+        activeRecognition = new SpeechRecognition();
+        activeRecognition.lang = 'fr-FR';
+        activeRecognition.continuous = false;
+        activeRecognition.interimResults = true;
 
-    recognition.onresult = (event) => {
-        let transcript = '';
-        for (let i = 0; i < event.results.length; i++) {
-            transcript += event.results[i][0].transcript;
-        }
-        if (textarea) textarea.value = transcript;
-    };
+        let initialText = textarea ? textarea.value : '';
 
-    recognition.onerror = (event) => {
-        console.error(event.error);
-        isRecording = false;
-        if (btn) {
-            btn.style.background = "rgba(168, 85, 247, 0.12)";
-            btn.style.borderColor = "rgba(168, 85, 247, 0.3)";
-            btn.style.color = "#c084fc";
-        }
-        if (label) label.textContent = "Activer la dictée vocale";
-    };
+        activeRecognition.onstart = () => {
+            isDictating = true;
+            if (btn) {
+                btn.style.background = "rgba(239, 68, 68, 0.3)";
+                btn.style.borderColor = "#ef4444";
+                btn.style.color = "#ffffff";
+            }
+            if (label) label.textContent = "🔴 Écoute en direct... (Clic pour stopper)";
+        };
 
-    recognition.onend = () => {
-        isRecording = false;
-        if (btn) {
-            btn.style.background = "rgba(168, 85, 247, 0.12)";
-            btn.style.borderColor = "rgba(168, 85, 247, 0.3)";
-            btn.style.color = "#c084fc";
-        }
-        if (label) label.textContent = "Activer la dictée vocale";
-    };
+        activeRecognition.onresult = (event) => {
+            let currentTranscript = '';
+            for (let i = 0; i < event.results.length; i++) {
+                currentTranscript += event.results[i][0].transcript;
+            }
+            if (textarea) {
+                textarea.value = initialText ? (initialText.trim() + ' ' + currentTranscript) : currentTranscript;
+            }
+        };
 
-    recognition.start();
+        activeRecognition.onerror = (err) => {
+            console.error('Erreur reconnaissance vocale:', err);
+            isDictating = false;
+            activeRecognition = null;
+            if (btn) {
+                btn.style.background = "rgba(239, 68, 68, 0.12)";
+                btn.style.borderColor = "rgba(239, 68, 68, 0.35)";
+                btn.style.color = "#f87171";
+            }
+            if (label) label.textContent = "Dictée vocale";
+        };
+
+        activeRecognition.onend = () => {
+            isDictating = false;
+            activeRecognition = null;
+            if (btn) {
+                btn.style.background = "rgba(239, 68, 68, 0.12)";
+                btn.style.borderColor = "rgba(239, 68, 68, 0.35)";
+                btn.style.color = "#f87171";
+            }
+            if (label) label.textContent = "Dictée vocale";
+        };
+
+        activeRecognition.start();
+    } catch (err) {
+        console.error('Erreur accès micro:', err);
+        alert("Impossible de démarrer le microphone. Veuillez vérifier les autorisations de votre navigateur.");
+    }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const mode = urlParams.get('mode');
-    if (mode === 'voice') {
-        setTimeout(() => {
+    const voiceBtn = document.getElementById('btn-voice-toggle');
+    if (voiceBtn) {
+        voiceBtn.addEventListener('click', (e) => {
+            e.preventDefault();
             window.toggleVoiceDictation();
-        }, 600);
+        });
     }
 });
