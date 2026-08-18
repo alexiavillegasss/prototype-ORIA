@@ -20,9 +20,10 @@ class WhisperTranscriber:
         if not self.client:
             try:
                 from faster_whisper import WhisperModel
-                logger.info("Chargement du modèle local faster-whisper (tiny)...")
-                self.local_model = WhisperModel("tiny", device="cpu", compute_type="int8")
-                logger.info("Modèle local faster-whisper prêt !")
+                logger.info("Chargement du modèle local de précision 'small'...")
+                # Modèle 'small' pour une haute précision en français et sur le vocabulaire médical/géographique
+                self.local_model = WhisperModel("small", device="cpu", compute_type="int8")
+                logger.info("Modèle local Whisper 'small' prêt !")
             except Exception as e:
                 logger.warning(f"Impossible de pré-charger faster-whisper: {e}")
 
@@ -50,16 +51,17 @@ class WhisperTranscriber:
                         model="whisper-1",
                         file=audio_file,
                         language="fr",
-                        prompt="Dictée médicale et médico-sociale en français : situation de personne âgée, autonomie, GIR, APA, chutes, aidant, hospitalisation, maintien à domicile."
+                        prompt="Dictée médicale et médico-sociale en français : Sanary-sur-Mer, Toulon, La Seyne-sur-Mer, Hyères, La Valette, Ollioules, fauteuil roulant, syndrome de Diogène, aidant, autonomie, GIR, APA, DAC, CLIC, CCAS, structure d'orientation, maintien à domicile."
                     )
                     return response.text.strip()
             
-            # 2. Utilisation du modèle pré-chargé faster-whisper local
+            # 2. Utilisation du modèle pré-chargé 'small' local
             if self.local_model:
                 segments, _ = self.local_model.transcribe(
                     tmp_path, 
-                    language="fr", 
-                    initial_prompt="Dictée médicale et médico-sociale en français : situation de personne âgée, autonomie, GIR, APA, chutes, aidant, hospitalisation."
+                    language="fr",
+                    beam_size=5,
+                    initial_prompt="Dictée médicale et médico-sociale en français : Sanary-sur-Mer, Toulon, La Seyne-sur-Mer, Hyères, La Valette, Ollioules, fauteuil roulant, syndrome de Diogène, aidant, autonomie, GIR, APA, DAC, CLIC, CCAS, structure d'orientation, maintien à domicile."
                 )
                 text = " ".join([segment.text for segment in segments])
                 return text.strip()
@@ -67,8 +69,13 @@ class WhisperTranscriber:
             # 3. Fallback instanciation dynamique
             try:
                 from faster_whisper import WhisperModel
-                model = WhisperModel("tiny", device="cpu", compute_type="int8")
-                segments, _ = model.transcribe(tmp_path, language="fr")
+                model = WhisperModel("small", device="cpu", compute_type="int8")
+                segments, _ = model.transcribe(
+                    tmp_path, 
+                    language="fr", 
+                    beam_size=5,
+                    initial_prompt="Dictée médicale et médico-sociale en français : Sanary-sur-Mer, Toulon, fauteuil roulant, syndrome de Diogène, aidant, autonomie, GIR, APA."
+                )
                 text = " ".join([segment.text for segment in segments])
                 return text.strip()
             except Exception as e:
