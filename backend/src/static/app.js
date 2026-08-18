@@ -78,25 +78,25 @@ function getSelectedDimensions() {
 async function loadDashboard() {
     const dims = getSelectedDimensions();
     
-    // Check for duplicate dimensions
-    const activeDims = [dims.dim1, dims.dim2, dims.dim3].filter(d => d !== 'none');
-    const uniqueDims = new Set(activeDims);
-    
-    if (activeDims.length !== uniqueDims.size) {
-        document.getElementById('sankey-chart').style.display = 'none';
-        document.getElementById('sankey-empty').style.display = 'block';
-        document.getElementById('sankey-empty-msg').innerHTML = '<span style="color: var(--text-primary); font-weight: 500;">Veuillez ne pas sélectionner deux dimensions identiques.</span>';
-        return; // Abort
-    }
-
     const url = `/api/dashboard/sankey?dim1=${dims.dim1}&dim2=${dims.dim2}&dim3=${dims.dim3}`;
 
     try {
         const response = await fetch(url);
         const data = await response.json();
 
-        // Update KPIs
+        // Always update KPIs regardless of dimensions
         updateKPIs(data.kpis);
+
+        // Check for duplicate dimensions before rendering Sankey
+        const activeDims = [dims.dim1, dims.dim2, dims.dim3].filter(d => d !== 'none');
+        const uniqueDims = new Set(activeDims);
+        
+        if (activeDims.length !== uniqueDims.size) {
+            document.getElementById('sankey-chart').style.display = 'none';
+            document.getElementById('sankey-empty').style.display = 'block';
+            document.getElementById('sankey-empty-msg').innerHTML = '<span style="color: var(--text-primary); font-weight: 500;">Veuillez ne pas sélectionner deux dimensions identiques.</span>';
+            return;
+        }
 
         // Render Sankey
         if (data.sankey.nodes.length === 0) {
@@ -106,13 +106,14 @@ async function loadDashboard() {
         } else {
             document.getElementById('sankey-chart').style.display = 'block';
             document.getElementById('sankey-empty').style.display = 'none';
+            window.lastSankeyData = data.sankey;
             renderSankey(data.sankey);
         }
     } catch (err) {
         console.error('Erreur lors du chargement du dashboard:', err);
         document.getElementById('sankey-chart').style.display = 'none';
         document.getElementById('sankey-empty').style.display = 'block';
-        document.getElementById('sankey-empty-msg').textContent = 'Une erreur est survenue lors du chargement des données.';
+        document.getElementById('sankey-empty-msg').textContent = 'Erreur JS: ' + (err ? err.stack || err.toString() : 'Inconnue');
     }
 }
 
@@ -120,13 +121,22 @@ async function loadDashboard() {
  * Update KPI cards with values
  */
 function updateKPIs(kpis) {
-    document.getElementById('total-dossiers').textContent = kpis.total_dossiers;
-    document.getElementById('kpi-score-value').textContent = kpis.score_moyen !== null
-        ? kpis.score_moyen.toFixed(1)
-        : '–';
-    document.getElementById('kpi-commune-value').textContent = kpis.commune_top || '–';
-    document.getElementById('kpi-structure-value').textContent = kpis.structure_top || '–';
-    document.getElementById('kpi-complexity-value').textContent = kpis.niveau_top || '–';
+    const totalEl = document.getElementById('total-dossiers');
+    if (totalEl) totalEl.textContent = kpis.total_dossiers;
+
+    const scoreEl = document.getElementById('kpi-score-value');
+    if (scoreEl) {
+        scoreEl.textContent = kpis.score_moyen !== null ? kpis.score_moyen.toFixed(1) : '–';
+    }
+
+    const communeEl = document.getElementById('kpi-commune-value');
+    if (communeEl) communeEl.textContent = kpis.commune_top || '–';
+
+    const structureEl = document.getElementById('kpi-structure-value');
+    if (structureEl) structureEl.textContent = kpis.structure_top || '–';
+
+    const complexityEl = document.getElementById('kpi-complexity-value');
+    if (complexityEl) complexityEl.textContent = kpis.niveau_top || '–';
 }
 
 /**
@@ -244,7 +254,7 @@ function renderSankey(sankeyData) {
                 opacity: 0.35
             },
             label: {
-                color: '#0f172a',
+                color: document.documentElement.getAttribute('data-theme') === 'light' ? '#0f172a' : '#f8fafc',
                 fontFamily: 'Inter',
                 fontSize: 12,
                 fontWeight: 500
@@ -259,7 +269,7 @@ function renderSankey(sankeyData) {
         }]
     };
 
-    chartInstance.setOption(option);
+    chartInstance.setOption(option, true);
 }
 
 // -- Event listeners for dimension selectors --
@@ -278,7 +288,80 @@ window.addEventListener('resize', () => {
 });
 
 // -- Launch --
-document.addEventListener('DOMContentLoaded', () => {
+function startDashboardApp() {
     initSelectors();
     loadDashboard();
-});
+    loadComidComparisonTable();
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startDashboardApp);
+} else {
+    startDashboardApp();
+}
+
+/**
+ * Fetch and display COMID Entree vs Sortie comparison table
+ */
+async function loadComidComparisonTable() {
+    const tbody = document.getElementById('comid-comparison-tbody');
+    if (!tbody) return;
+
+    try {
+        const res = await fetch('/api/comid/comparisons');
+        if (!res.ok) return;
+
+        const data = await res.json();
+        if (!data || data.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="padding: 1.5rem; text-align: center; color: var(--text-muted);">
+                        Aucune évaluation COMID enregistrée pour le moment. Enregistrez des COMID d'Entrée et de Sortie sur la page COMID pour voir la comparaison ici.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        let html = '';
+        data.forEach(item => {
+            let deltaBadge = '<span style="color: var(--text-muted);">–</span>';
+            let impactText = '<span style="color: var(--text-muted);">En cours</span>';
+
+            if (item.delta_score !== null) {
+                if (item.delta_score > 0) {
+                    deltaBadge = `<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700;">-${item.delta_score} pts (${item.evolution_pct}%)</span>`;
+                    impactText = `<span style="color: #10b981; font-weight: 600;">🟢 Complexité réduite</span>`;
+                } else if (item.delta_score < 0) {
+                    deltaBadge = `<span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700;">+${Math.abs(item.delta_score)} pts</span>`;
+                    impactText = `<span style="color: #ef4444; font-weight: 600;">🔴 Complexité accrue</span>`;
+                } else {
+                    deltaBadge = `<span style="background: rgba(148, 163, 184, 0.15); color: var(--text-secondary); padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 600;">0 pt (Stable)</span>`;
+                    impactText = `<span style="color: var(--text-secondary);">⚪ Complexité stable</span>`;
+                }
+            }
+
+            const entreeText = item.score_entree !== null ? `<strong>${item.score_entree}/30</strong> (${item.niveau_entree})` : '<span style="color: var(--text-muted);">–</span>';
+            const sortieText = item.score_sortie !== null ? `<strong>${item.score_sortie}/30</strong> (${item.niveau_sortie})` : '<span style="color: var(--text-muted); font-style: italic;">En attente sortie</span>';
+
+            html += `
+                <tr style="border-bottom: 1px solid var(--border-glass); height: 48px;">
+                    <td style="padding: 0.75rem; font-weight: 700; color: var(--accent-blue);">${item.dossier_id}</td>
+                    <td style="padding: 0.75rem; font-weight: 500;">${item.senior_nom || item.dossier_id}</td>
+                    <td style="padding: 0.75rem;">${entreeText}</td>
+                    <td style="padding: 0.75rem;">${sortieText}</td>
+                    <td style="padding: 0.75rem;">${deltaBadge}</td>
+                    <td style="padding: 0.75rem;">${impactText}</td>
+                    <td style="padding: 0.75rem;">
+                        <span style="font-size: 0.8rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(59, 130, 246, 0.1); color: var(--text-primary);">
+                            ${item.statut_resolution}
+                        </span>
+                    </td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = html;
+    } catch (e) {
+        console.error('Erreur chargement comid comparison:', e);
+    }
+}

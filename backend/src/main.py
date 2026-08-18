@@ -3,6 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, FileResponse, Response
 from fastapi import Request
 from pydantic import BaseModel
+from typing import Optional
 from collections import Counter
 
 import os
@@ -51,7 +52,9 @@ db_manager = DatabaseManager(db_path=os.path.join(BASE_DIR, 'oria_database.db'))
 pdf_generator = PDFGenerator(
     dac_template_path=os.path.join(STATIC_DIR, "fiche_dac_vierge.pdf"),
     clic_template_path=os.path.join(STATIC_DIR, "fiche_clic_LaSeyne_vierge.pdf"),
-    clic_toulon_template_path=os.path.join(STATIC_DIR, "fiche_clic_Toulon.pdf")
+    clic_toulon_template_path=os.path.join(STATIC_DIR, "fiche_clic_Toulon.pdf"),
+    clic_provence_verte_template_path=os.path.join(STATIC_DIR, "fiche_clic_ProvenceVerte.pdf"),
+    clic_hadage_template_path=os.path.join(STATIC_DIR, "fiche_clic_Hadage.pdf")
 )
 
 # -----------------------------
@@ -154,6 +157,35 @@ def orienter():
     with open(html_path, "r", encoding="utf-8") as f:
         return f.read()
 
+@app.get("/remplir", response_class=HTMLResponse)
+def remplir():
+    """Sert la page HTML de sélection FO/Grille COMID."""
+    html_path = os.path.join(STATIC_DIR, "remplir.html")
+    with open(html_path, "r", encoding="utf-8") as f:
+        return f.read()
+
+@app.get("/fiches", response_class=HTMLResponse)
+def fiches():
+    """Sert la page HTML de sélection des Fiches d'Orientation."""
+    html_path = os.path.join(STATIC_DIR, "fiches.html")
+    with open(html_path, "r", encoding="utf-8") as f:
+        return f.read()
+
+@app.get("/comid", response_class=HTMLResponse)
+def comid():
+    """Sert la page HTML de la grille COMID interactive."""
+    html_path = os.path.join(STATIC_DIR, "comid.html")
+    with open(html_path, "r", encoding="utf-8") as f:
+        return f.read()
+
+class ComidEvalRequest(BaseModel):
+    dossier_id: str
+    senior_nom: Optional[str] = ""
+    type_eval: str  # 'entree' ou 'sortie'
+    score: int
+    niveau: str
+    criteres: Optional[list] = []
+
 @app.post("/api/dossiers/{dossier_id}/validate")
 def validate_dossier(dossier_id: int, request: ValidateRequest):
     """Valide l'orientation d'un dossier par le professionnel."""
@@ -165,6 +197,40 @@ def validate_dossier(dossier_id: int, request: ValidateRequest):
     if not success:
         return {"error": "Dossier introuvable."}
     return {"message": "Orientation enregistrée avec succès en base de données !"}
+
+# -----------------------------
+# API COMID EVALUATIONS (ENTREE / SORTIE)
+# -----------------------------
+@app.post("/api/comid/evaluations")
+def save_comid_evaluation(request: ComidEvalRequest):
+    """Sauvegarde une évaluation COMID (Entrée ou Sortie)."""
+    eval_id = db_manager.save_comid_eval(
+        dossier_id=request.dossier_id,
+        senior_nom=request.senior_nom,
+        type_eval=request.type_eval,
+        score=request.score,
+        niveau=request.niveau,
+        criteres=request.criteres
+    )
+    return {"message": "Évaluation COMID enregistrée avec succès !", "id": eval_id}
+
+@app.get("/api/comid/dossiers-entree")
+def get_entree_dossiers():
+    """Récupère les dossiers avec évaluation d'entrée pour la liaison en sortie."""
+    return db_manager.get_entree_dossiers()
+
+@app.get("/api/comid/comparisons")
+def get_comid_comparisons():
+    """Récupère les données comparatives Entrée vs Sortie pour le tableau de bord."""
+    return db_manager.get_comid_comparisons()
+
+@app.delete("/api/comid/evaluations/{dossier_id}")
+def delete_comid_dossier(dossier_id: str):
+    """Supprime les évaluations d'un dossier COMID."""
+    success = db_manager.delete_comid_evaluations_by_dossier(dossier_id)
+    if not success:
+        return {"error": "Dossier introuvable."}
+    return {"message": f"Dossier {dossier_id} supprimé avec succès."}
 
 # -----------------------------
 # API SANKEY DATA
@@ -386,3 +452,51 @@ async def generate_clic_toulon_pdf(request: AnalyzeRequest):
         )
     except Exception as e:
         return {"error": f"Erreur lors de la génération du PDF : {str(e)}"}
+
+
+@app.post("/api/orientation/clic_provence_verte/generate_pdf")
+async def generate_clic_provence_verte_pdf(request: AnalyzeRequest):
+    try:
+        extracted_data = await fiche_extractor.extract_for_clic(request.text)
+        pdf_bytes = pdf_generator._fill_clic_provence_verte(extracted_data)
+        return Response(
+            content=pdf_bytes, 
+            media_type="application/pdf", 
+            headers={"Content-Disposition": "attachment; filename=fiche_orientation_clic_provence_verte.pdf"}
+        )
+    except Exception as e:
+        return {"error": f"Erreur lors de la génération du PDF : {str(e)}"}
+
+@app.post("/api/orientation/clic_hadage/generate_pdf")
+async def generate_clic_hadage_pdf(request: AnalyzeRequest):
+    try:
+        extracted_data = await fiche_extractor.extract_for_clic(request.text)
+        pdf_bytes = pdf_generator._fill_clic_hadage(extracted_data)
+        return Response(
+            content=pdf_bytes, 
+            media_type="application/pdf", 
+            headers={"Content-Disposition": "attachment; filename=fiche_orientation_clic_hadage.pdf"}
+        )
+    except Exception as e:
+        return {"error": f"Erreur lors de la génération du PDF : {str(e)}"}
+
+class ComidPDFRequest(BaseModel):
+    email: str = ""
+    score: int = 0
+    level: str = "Non complexe"
+    date: str = ""
+    domainScores: dict = {}
+    checkedItems: list = []
+
+@app.post("/api/comid/generate_pdf")
+async def generate_comid_pdf_endpoint(request: ComidPDFRequest):
+    try:
+        pdf_bytes = pdf_generator.generate_comid_pdf(request.dict())
+        filename = f"Synthese_COMID_Score_{request.score}.pdf"
+        return Response(
+            content=pdf_bytes, 
+            media_type="application/pdf", 
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+    except Exception as e:
+        return {"error": f"Erreur lors de la génération du PDF COMID : {str(e)}"}

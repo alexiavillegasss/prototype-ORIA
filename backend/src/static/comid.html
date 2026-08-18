@@ -1,0 +1,1833 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ORIA – Grille COMID : évaluation de la complexité multidimensionnelle à domicile">
+    <title>ORIA – Grille COMID</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style_v2.css?v=21">
+
+    <style>
+        /* ============================================
+           COMID Grille – Page-specific styles
+           ============================================ */
+
+        .comid-layout {
+            max-width: 900px;
+            margin: 2rem auto 4rem;
+            padding: 0 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.75rem;
+        }
+
+        /* --- En-tête simplifié COMID --- */
+        .comid-page-header {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1.1rem 1.4rem;
+            box-shadow: var(--shadow-card);
+            margin-bottom: 1.25rem;
+        }
+
+        .comid-header-instruction {
+            font-size: 0.88rem;
+            color: var(--text-primary);
+            margin-top: 0.25rem;
+            line-height: 1.45;
+        }
+
+        .comid-toggle-btn {
+            background: transparent;
+            border: none;
+            color: var(--accent-blue);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            margin-top: 0.65rem;
+            padding: 0;
+            transition: color 0.2s;
+        }
+
+        .comid-toggle-btn:hover {
+            color: #93c5fd;
+        }
+
+        .comid-toggle-btn .chevron-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .comid-toggle-btn.open .chevron-icon {
+            transform: rotate(180deg);
+        }
+
+        .comid-info-dropdown {
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .comid-info-dropdown.hidden {
+            display: none;
+        }
+
+        .comid-header-text {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.55;
+            margin: 0;
+        }
+
+        /* --- Email Field --- */
+        .comid-email-field {
+            margin-top: 1rem;
+            padding-top: 0.85rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .comid-email-field label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+        }
+
+        .comid-email-field label svg {
+            color: var(--accent-blue);
+        }
+
+        .email-input-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .comid-email-input {
+            width: 100%;
+            max-width: 420px;
+            padding: 0.6rem 0.9rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.88rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .comid-email-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .email-hint {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+        }
+
+        .btn-email-pdf, .btn-download-pdf {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.65rem 1.25rem;
+            border-radius: var(--radius-sm);
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .btn-email-pdf {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: #ffffff;
+        }
+        .btn-email-pdf:hover {
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .btn-download-pdf {
+            background: rgba(59, 130, 246, 0.12);
+            color: var(--accent-blue);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        .btn-download-pdf:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        /* --- Score bar (sticky) --- */
+        .score-bar {
+            position: sticky;
+            top: 80px;
+            z-index: 50;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1.25rem 1.5rem;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: box-shadow 0.3s;
+        }
+
+        .score-bar-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 90px;
+        }
+
+        .score-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+            letter-spacing: -0.03em;
+        }
+
+        .score-max {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .score-bar-center {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .score-gauge-track {
+            width: 100%;
+            height: 10px;
+            background: rgba(148, 163, 184, 0.15);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .score-gauge-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.4s ease, background 0.4s ease;
+            width: 0%;
+            background: #22c55e;
+        }
+
+        .score-gauge-markers {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            padding: 0 2px;
+        }
+
+        .score-level {
+            font-size: 0.88rem;
+            font-weight: 600;
+            padding: 0.3rem 0.85rem;
+            border-radius: 20px;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+
+        .level-simple { background: rgba(34, 197, 94, 0.12); color: #22c55e; }
+        .level-risque { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
+        .level-complexe { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
+
+        /* --- Domain section --- */
+        .domain-section {
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+            margin-top: 2.25rem;
+        }
+        .domain-section:first-child {
+            margin-top: 1rem;
+        }
+        .domain-section:nth-child(1) { animation-delay: 0.05s; }
+        .domain-section:nth-child(2) { animation-delay: 0.10s; }
+        .domain-section:nth-child(3) { animation-delay: 0.15s; }
+        .domain-section:nth-child(4) { animation-delay: 0.20s; }
+        .domain-section:nth-child(5) { animation-delay: 0.25s; }
+        .domain-section:nth-child(6) { animation-delay: 0.30s; }
+
+        .domain-header {
+            display: flex;
+            align-items: baseline;
+            gap: 0.75rem;
+            margin-bottom: 0.9rem;
+            padding-top: 0.25rem;
+        }
+
+        .domain-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #60a5fa;
+            letter-spacing: -0.01em;
+            margin: 0;
+        }
+
+        .domain-count {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .domain-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+        }
+
+        /* --- Item row --- */
+        .comid-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-sm);
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .comid-item:hover {
+            border-color: rgba(148, 163, 184, 0.3);
+        }
+
+        .comid-item.checked-yes {
+            border-color: rgba(59, 130, 246, 0.4);
+            background: rgba(59, 130, 246, 0.04);
+        }
+
+        .comid-item.checked-no {
+            border-color: rgba(239, 68, 68, 0.35);
+            background: rgba(239, 68, 68, 0.03);
+        }
+
+        .item-number {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            min-width: 22px;
+            text-align: center;
+        }
+
+        .item-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .item-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        /* Help toggle */
+        .item-help-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--accent-blue);
+            cursor: pointer;
+            margin-top: 0.35rem;
+            padding: 0.15rem 0;
+            background: none;
+            border: none;
+            font-family: inherit;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .item-help-toggle:hover { opacity: 1; }
+        .item-help-toggle svg { width: 14px; height: 14px; }
+
+        .item-help-content {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.35s ease, opacity 0.25s ease, margin 0.25s ease;
+            margin-top: 0;
+        }
+
+        .item-help-content.open {
+            max-height: 500px;
+            opacity: 1;
+            margin-top: 0.5rem;
+        }
+
+        .item-help-box {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.55;
+            padding: 0.75rem 1rem;
+            background: rgba(148, 163, 184, 0.06);
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-blue);
+        }
+
+        .item-help-box em {
+            display: block;
+            margin-top: 0.4rem;
+            color: var(--text-muted);
+            font-size: 0.78rem;
+        }
+
+        /* Radio buttons Non / Oui */
+        .item-radios {
+            display: flex;
+            gap: 0.35rem;
+            flex-shrink: 0;
+        }
+
+        .radio-btn {
+            width: 52px;
+            height: 36px;
+            border: 1px solid var(--border-glass);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-muted);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .radio-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+
+        .radio-btn.active-no {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: #ef4444;
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .radio-btn.active-yes {
+            background: rgba(59, 130, 246, 0.3);
+            border-color: var(--accent-blue);
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        [data-theme="light"] .radio-btn.active-no {
+            background: rgba(239, 68, 68, 0.2);
+            color: #7f1d1d;
+        }
+
+        [data-theme="light"] .radio-btn.active-yes {
+            background: rgba(59, 130, 246, 0.2);
+            color: #1e3a8a;
+        }
+
+        /* --- Calculer button --- */
+        .btn-calculer-wrap {
+            display: flex;
+            justify-content: center;
+            margin-top: 0.5rem;
+        }
+
+        .btn-calculer {
+            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 1rem 3rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.35);
+            letter-spacing: 0.01em;
+        }
+
+        .btn-calculer:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.5);
+        }
+
+        .btn-calculer svg { width: 20px; height: 20px; }
+
+        /* --- Results panel --- */
+        .results-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            backdrop-filter: blur(12px);
+            border-radius: var(--radius);
+            padding: 2.5rem 2rem;
+            box-shadow: var(--shadow-card);
+            display: none;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .results-panel.visible {
+            display: flex;
+            animation: fadeInUp 0.4s ease forwards;
+        }
+
+        .results-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+        }
+
+        .results-date {
+            text-align: center;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-top: -1rem;
+        }
+
+        /* Gradient score bar (Simple -> Complexe) */
+        .gradient-bar-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .gradient-bar-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .gradient-bar-labels .label-simple { color: #22c55e; }
+        .gradient-bar-labels .label-complexe { color: #ef4444; }
+
+        .gradient-bar-track {
+            width: 100%;
+            height: 18px;
+            border-radius: 10px;
+            background: linear-gradient(to right, #22c55e 0%, #84cc16 16%, #eab308 33%, #f59e0b 50%, #f97316 66%, #ef4444 83%, #dc2626 100%);
+            position: relative;
+        }
+
+        .gradient-bar-marker {
+            position: absolute;
+            top: -4px;
+            width: 4px;
+            height: 26px;
+            background: var(--text-primary);
+            border-radius: 2px;
+            transition: left 0.5s ease;
+            box-shadow: 0 0 6px rgba(0,0,0,0.4);
+        }
+
+        .gradient-bar-scale {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            padding: 0 2px;
+        }
+
+        /* Chart + Table layout */
+        .results-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 700px) {
+            .results-body { grid-template-columns: 1fr; }
+        }
+
+        .radar-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .radar-wrap canvas {
+            max-width: 320px;
+            max-height: 320px;
+        }
+
+        /* Summary table */
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .summary-table thead th {
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            padding: 0.6rem 0.5rem;
+            border-bottom: 2px solid var(--border-glass);
+        }
+
+        .summary-table thead th:first-child {
+            text-align: left;
+        }
+
+        .summary-table tbody td {
+            padding: 0.65rem 0.5rem;
+            border-bottom: 1px solid var(--border-glass);
+            color: var(--text-secondary);
+        }
+
+        .summary-table tbody td:first-child {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .summary-table tbody td:nth-child(2),
+        .summary-table tbody td:nth-child(3) {
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .summary-table tfoot td {
+            padding: 0.75rem 0.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            border-top: 2px solid var(--border-glass);
+        }
+
+        .summary-table tfoot td:nth-child(2),
+        .summary-table tfoot td:nth-child(3) {
+            text-align: center;
+        }
+
+        /* Interpretation badge */
+        .results-interpretation {
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-sm);
+            align-self: center;
+        }
+
+        .results-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary {
+            background: rgba(148, 163, 184, 0.1);
+            color: var(--text-primary);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem 1.5rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(148, 163, 184, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 640px) {
+            .score-bar {
+                flex-direction: column;
+                gap: 0.75rem;
+                text-align: center;
+            }
+            .comid-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.6rem;
+            }
+            .item-radios {
+                align-self: flex-end;
+            }
+        }
+
+        /* --- Two additional questions --- */
+        .additional-section {
+            margin-top: 0.5rem;
+        }
+
+        .additional-section .domain-header {
+            margin-bottom: 0.75rem;
+        }
+
+        .additional-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-sm);
+            padding: 1rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .additional-item .item-label {
+            font-size: 0.9rem;
+        }
+
+        .additional-radios {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .additional-radios .radio-btn {
+            width: auto;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+
+        .additional-radios .radio-btn.active-selected {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        /* ---- COMID Entrée / Sortie & Identification ---- */
+        .comid-type-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius);
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.25rem;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .type-pills-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .type-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.65rem 1.2rem;
+            border-radius: 10px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border-glass);
+            background: rgba(148, 163, 184, 0.08);
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+
+        .type-pill:hover {
+            border-color: rgba(59, 130, 246, 0.4);
+            color: var(--text-primary);
+        }
+
+        .type-pill.active-entree {
+            background: rgba(37, 99, 235, 0.15);
+            color: #2563eb;
+            border-color: #2563eb;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+        }
+
+        .type-pill.active-sortie {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border-color: #10b981;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+        }
+
+        [data-theme="dark"] .type-pill.active-entree {
+            color: #60a5fa;
+            border-color: #3b82f6;
+        }
+
+        [data-theme="dark"] .type-pill.active-sortie {
+            color: #34d399;
+            border-color: #10b981;
+        }
+
+        .dossier-inputs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1rem;
+            align-items: flex-end;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .comid-field-input, .comid-field-select {
+            padding: 0.65rem 0.85rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-glass);
+            background: var(--bg-main);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .comid-field-input:focus, .comid-field-select:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .btn-save-comid {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.65rem 1.25rem;
+            background: var(--accent-blue);
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-left: auto;
+            white-space: nowrap;
+        }
+
+        .btn-save-comid:hover {
+            background: #1d4ed8;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .input-group.hidden,
+        .entree-info-badge.hidden {
+            display: none !important;
+        }
+
+        .entree-info-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: rgba(59, 130, 246, 0.08);
+            border: 1px dashed rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            font-size: 0.88rem;
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header id="dashboard-header">
+        <div class="header-content">
+            <div class="logo-group">
+                <img src="/static/logo.png" alt="Logo ORIA" class="logo-img">
+            </div>
+            <div class="header-title-center">
+                <h2 class="subtitle">Grille COMID</h2>
+            </div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <button id="theme-toggle" class="btn-primary" style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-glass); padding: 0.5rem; box-shadow: none; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                </button>
+                <div style="position: relative;">
+                    <button id="menu-toggle" class="btn-primary" style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-glass); padding: 0.5rem; box-shadow: none; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                    </button>
+                    <div id="dropdown-menu" class="dropdown-menu hidden">
+                        <a href="/orienter" class="dropdown-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+                            Moteur d'orientation
+                        </a>
+                        <a href="/remplir" class="dropdown-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            Remplir ma fiche d'orientation / grille
+                        </a>
+                        <a href="/dashboard" class="dropdown-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                            Tableau de bord
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="comid-layout">
+
+        <!-- En-tête simplifié COMID (Consigne) -->
+        <div class="comid-page-header">
+            <div class="comid-header-instruction">
+                Cochez <strong>Oui</strong> ou <strong>Non</strong> pour chacun des 30 critères ci-dessous afin de calculer le score global et connaître le niveau de complexité de la situation clinique selon le référentiel COMID.
+            </div>
+            <button class="comid-toggle-btn" onclick="toggleComidInfo(this)">
+                <span>En savoir plus sur le COMID</span>
+                <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="comid-info-dropdown hidden" id="comid-info-dropdown">
+                <p class="comid-header-text">
+                    Le <strong>COMID</strong>, Complexité Multidimensionnelle à Domicile, est un instrument d'évaluation clinique multidimensionnelle développé par l'<strong>imad</strong> (<em>Institution genevoise de maintien à domicile — Busnel, Marjollet & Perrier-Gros-Claude, 2018</em>). Il permet aux professionnels de santé d'analyser et d'objectiver la complexité des prises en soins à domicile à travers <strong>30 critères répartis en 6 domaines</strong>.
+                </p>
+            </div>
+        </div>
+
+        <!-- Carte de sélection : COMID Entrée vs Sortie & Identifiant -->
+        <div class="comid-type-card" id="comid-type-card">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                <div>
+                    <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;">Type d'évaluation & Identification :</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary);">Choisissez si vous réalisez le COMID à l'entrée ou à la sortie du senior pour calculer l'évolution de la complexité.</p>
+                </div>
+                <div class="type-pills-row">
+                    <button type="button" class="type-pill active-entree" id="btn-type-entree" onclick="setComidEvalType('entree')">
+                        📥 COMID d'Entrée
+                    </button>
+                    <button type="button" class="type-pill" id="btn-type-sortie" onclick="setComidEvalType('sortie')">
+                        📤 COMID de Sortie
+                    </button>
+                </div>
+            </div>
+
+            <div class="dossier-inputs-grid">
+                <div class="input-group" id="group-dossier-id">
+                    <label for="comid-dossier-id">N° / Identifiant du Dossier :</label>
+                    <input type="text" id="comid-dossier-id" placeholder="Ex: DOS-2026-001" class="comid-field-input" value="DOS-101">
+                </div>
+
+                <div class="input-group hidden" id="group-dossier-select">
+                    <label for="comid-dossier-select">Rattacher au dossier d'entrée existant :</label>
+                    <select id="comid-dossier-select" onchange="onSelectEntreeDossier(this)" class="comid-field-select">
+                        <option value="">-- Sélectionner un dossier d'entrée --</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="comid-senior-nom">Nom / Prénom du Senior (Optionnel) :</label>
+                    <input type="text" id="comid-senior-nom" placeholder="Ex: Jean Dupont" class="comid-field-input">
+                </div>
+            </div>
+
+            <div id="entree-summary-badge" class="entree-info-badge hidden">
+                <!-- Infobulle dynamique pour le COMID de Sortie -->
+            </div>
+        </div>
+
+        <!-- Sticky Score Bar -->
+        <div class="score-bar" id="score-bar">
+            <div class="score-bar-left">
+                <span class="score-value" id="score-display">0</span>
+                <span class="score-max">/ 30</span>
+            </div>
+            <div class="score-bar-center">
+                <div class="score-gauge-track">
+                    <div class="score-gauge-fill" id="score-gauge"></div>
+                </div>
+                <div class="score-gauge-markers">
+                    <span>0</span>
+                    <span>5</span>
+                    <span>10</span>
+                    <span>20</span>
+                    <span>30</span>
+                </div>
+            </div>
+            <span class="score-level level-simple" id="score-level">Non complexe</span>
+        </div>
+
+        <!-- Domains will be injected here by JS -->
+        <div id="domains-container"></div>
+
+        <!-- Two additional questions -->
+        <div class="additional-section" id="additional-section">
+            <div class="domain-header">
+                <div class="domain-icon interv">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                </div>
+                <div>
+                    <div class="domain-title">Questions complémentaires</div>
+                    <div class="domain-count">Estimation professionnelle</div>
+                </div>
+            </div>
+            <div class="domain-items">
+                <div class="additional-item">
+                    <div class="item-label">Selon votre estimation, considérez-vous cette situation comme complexe ?</div>
+                    <div class="additional-radios" id="q-estimation">
+                        <button class="radio-btn" data-val="non" onclick="selectAdditional('q-estimation', this)">Non</button>
+                        <button class="radio-btn" data-val="plutot-non" onclick="selectAdditional('q-estimation', this)">Plutôt non</button>
+                        <button class="radio-btn" data-val="plutot-oui" onclick="selectAdditional('q-estimation', this)">Plutôt oui</button>
+                        <button class="radio-btn" data-val="oui" onclick="selectAdditional('q-estimation', this)">Oui</button>
+                    </div>
+                </div>
+                <div class="additional-item">
+                    <div class="item-label">Si oui, depuis combien de temps cette situation est-elle complexe ?</div>
+                    <div class="additional-radios" id="q-duree">
+                        <button class="radio-btn" data-val="<1mois" onclick="selectAdditional('q-duree', this)">< 1 mois</button>
+                        <button class="radio-btn" data-val="1-3mois" onclick="selectAdditional('q-duree', this)">1 à 3 mois</button>
+                        <button class="radio-btn" data-val="3-6mois" onclick="selectAdditional('q-duree', this)">3 à 6 mois</button>
+                        <button class="radio-btn" data-val="6-12mois" onclick="selectAdditional('q-duree', this)">6 à 12 mois</button>
+                        <button class="radio-btn" data-val=">12mois" onclick="selectAdditional('q-duree', this)">> 12 mois</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calculer Button -->
+        <div class="btn-calculer-wrap">
+            <button class="btn-calculer" id="btn-calculer" onclick="showResults()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><line x1="16" x2="16" y1="10" y2="10"/><line x1="12" x2="12" y1="10" y2="10"/><line x1="8" x2="8" y1="10" y2="10"/><line x1="12" x2="12" y1="14" y2="14"/><line x1="8" x2="8" y1="14" y2="14"/><line x1="12" x2="12" y1="18" y2="18"/><line x1="8" x2="8" y1="18" y2="18"/></svg>
+                Calculer
+            </button>
+        </div>
+
+        <!-- Results Panel -->
+        <div class="results-panel" id="results-panel">
+            <div class="results-title" id="results-title">SYNTHÈSE DES RÉSULTATS</div>
+            <div class="results-date" id="results-date"></div>
+
+            <!-- Gradient Score Bar -->
+            <div class="gradient-bar-section">
+                <div class="gradient-bar-labels">
+                    <span class="label-simple">Simple</span>
+                    <span class="label-complexe">Complexe</span>
+                </div>
+                <div class="gradient-bar-track">
+                    <div class="gradient-bar-marker" id="gradient-marker"></div>
+                </div>
+                <div class="gradient-bar-scale">
+                    <span>0</span><span>5</span><span>10</span><span>15</span><span>20</span><span>25</span><span>30</span>
+                </div>
+            </div>
+
+            <!-- Radar Chart + Table -->
+            <div class="results-body">
+                <div class="radar-wrap">
+                    <canvas id="radar-chart" width="320" height="320"></canvas>
+                </div>
+                <div>
+                    <table class="summary-table" id="summary-table">
+                        <thead>
+                            <tr><th></th><th>Non</th><th>Oui</th></tr>
+                        </thead>
+                        <tbody id="summary-tbody"></tbody>
+                        <tfoot id="summary-tfoot"></tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <div class="results-interpretation" id="results-interpretation"></div>
+
+            <div class="results-actions">
+                <button class="btn-download-pdf" onclick="downloadPdfSummary()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Télécharger la synthèse PDF
+                </button>
+                <button class="btn-secondary" onclick="resetAll()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                    Recommencer
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer id="dashboard-footer">
+        <p>Prototype ORIA – Grille COMID (source : imad Genève, Busnel et al. 2018)</p>
+    </footer>
+
+    <!-- Chart.js for radar chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+    <script>
+    // ========================================================
+    // COMID DATA – 6 domaines, 30 items, aide contextuelle
+    // ========================================================
+    const COMID_DOMAINS = [
+        {
+            id: "sante-medicale",
+            title: "Facteurs de santé / Médicaux",
+            iconClass: "med",
+            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
+            items: [
+                {
+                    code: "multimorbidite",
+                    label: "Plusieurs maladies chroniques (>2) et/ou symptôme(s) inexpliqué(s)",
+                    help: "<strong>Maladies chroniques :</strong> Affections de longue durée qui évoluent lentement.<br><br><strong>Symptômes inexpliqués :</strong> Manifestations exprimées et/ou ressenties par le client liés à des affections que l'on ne peut pas identifier avec certitude au moyen d'un examen physique et/ou d'autres épreuves de diagnostic (Park & Gilmour, 2017).",
+                    examples: "Cardiopathies, accidents vasculaires cérébraux, cancer, affections respiratoires chroniques, diabète, etc. (Organisation Mondiale de la Santé, 2018). Côlon irritable, fatigue chronique, fibromyalgie, etc."
+                },
+                {
+                    code: "douleurs",
+                    label: "Douleurs chroniques",
+                    help: "« Expérience [persistante ou récurrente] sensorielle et émotionnelle désagréable liée à une lésion tissulaire existante ou potentielle, ou décrite en terme évoquant une telle lésion, évoluant depuis plus 3 à 6 mois et/ou susceptibles d'affecter de façon péjorative le comportement ou le bien-être du patient » (Agence Nationale d'Accréditation et d'Evaluation en Santé (ANAES), 1999).<br><br>Elles ont des conséquences sur les capacités fonctionnelles, relationnelles et émotionnelles du patient dans ses activités quotidiennes.",
+                    examples: "Arthrose, douleurs neuropathiques chez un diabétique, zona, douleurs séquellaires d'un AVC, etc."
+                },
+                {
+                    code: "allergies",
+                    label: "Allergie et/ou intolérance médicamenteuse",
+                    help: "Réaction anormale et spécifique de l'organisme au contact d'une substance étrangère (allergène) qui n'entraîne pas de trouble chez la plupart des sujets (Larousse, S.d.).<br><br>Les réactions allergiques peuvent être du type immédiat, les troubles apparaissant déjà quelques minutes après la prise du médicament, ou du type tardif. Les troubles liés à une réaction allergique tardive apparaissent avec un retard de plusieurs jours ou même de plusieurs semaines (Centre d’Allergie Suisse, 2017).",
+                    examples: "<strong>Réactions allergiques du type immédiat :</strong> rougeurs, urticaires, gonflements de la peau ou des muqueuses (angio-œdème), symptômes de type rhume (rhinite), troubles respiratoires.<br><strong>Réactions allergiques du type tardif :</strong> manifestations cutanées de type rougeole (exanthème maculopapuleux) avec de fortes démangeaisons et partiellement une formation de cloques (forme bulleuse), rougeurs parfois douloureuses avec infiltrations de sang (pétéchies), sensation générale de maladie avec fièvre et abattement."
+                },
+                {
+                    code: "polymedication",
+                    label: "Polymédication (>5)",
+                    help: "« Administration de nombreux médicaments de façon simultanée ou par l’administration d’un nombre excessif de médicaments » (Bjerrum, Rosholm, Hallas & Kragstrup, 1997) <a href=\"http://www.irdes.fr/recherche/questions-d-economie-de-la-sante/204-la-polymedication-definitions-mesures-et-enjeux.pdf\" target=\"_blank\" style=\"color: #60a5fa; text-decoration: underline;\">lien ici</a>.<br><br>Elle est fréquente chez les personnes âgées, liée aux polypathologies et aux maladies chroniques. Elle peut également être inappropriée et peut comporter des risques d’effets indésirables ou des interactions médicamenteuses, augmente le risque de chutes, voire augmente la mortalité. Est considéré comme une polymédication, l’administration de plus de 5 substances différentes dans les 7 jours, administré par le client lui-même et/ou son proche aidant et/ou un professionnel de l’aide et des soins (Frazier, 2005; Monegat, Sermet, Perronin & Rococo, 2014).",
+                    examples: ""
+                },
+                {
+                    code: "troubles_cognitifs",
+                    label: "Troubles cognitifs",
+                    help: "« Diminution des aptitudes intellectuelles associées ou non à des lésions cérébrales. » (Delaloye, 2010) diagnostic médical établi et/ou symptomatologie.",
+                    examples: "troubles de la mémoire, trouble de l’attention/concentration, trouble de la perception, trouble du jugement, ralentissement de la pensée, difficultés à s’organiser, difficultés à résoudre des problèmes. Y a-t-il présence d'un ou plusieurs troubles cognitifs qui impactent les AVQ et/ou AIVQ ?"
+                }
+            ]
+        },
+        {
+            id: "socio-economique",
+            title: "Facteurs socio-économiques",
+            iconClass: "socio",
+            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+            items: [
+                {
+                    code: "precarite_financiere",
+                    label: "Difficultés financières et/ou incapacité à supporter financièrement des prestations d’aide et de soins et/ou de traitements et/ou de moyens auxiliaires et/ou de transports et/ou d’alimentation.",
+                    help: "Difficultés et/ou incapacités à subvenir/gérer son quotidien administratif, effectuer ses paiements éventuellement ceux de sa famille, sans relais social/familial/réseau. Revenus financiers insuffisants, vulnérabilités. Absence de demande d’aide financière (ex: allocation pour impotence).",
+                    examples: "retards dans des paiements, frigo vide, aliments peu variés et en quantité limitée, état bucco-dentaire altéré, état vestimentaire précaire, refus de prestations indispensables et/ou commande de matériel, etc."
+                },
+                {
+                    code: "epuisement_aidant",
+                    label: "Absence ou épuisement du proche aidant et/ou tensions familiales",
+                    help: "Le proche aidant est une personne (famille, ami, voisin, connaissance) qui dispense des soins et/ou de l’aide et accompagnement à titre non-professionnel avec régularité depuis une durée importante et/ou de manière intense par rapport l’entourage. L’exercice de ce rôle peut engendrer l’apparition de tensions, d’incompréhensions, de conflits dans leur relation ainsi que dans celle de l’entourage.<br><br>L'épuisement du proche aidant peut être ou non exprimé de différentes manières comme une atteinte de l’état de santé, une fatigue, une anxiété et/ou un stress chronique important, une détresse physique et/ou psychique (dépression, colère ou en conflit à propos de l’aide apportée), un besoin de répit, de ne plus être en mesure de poursuivre l’aide apportée, un sentiment d’isolement social, des difficultés financières.",
+                    examples: ""
+                },
+                {
+                    code: "litteratie_faible",
+                    label: "Faible niveau de littératie* (lié à des problèmes d’alphabétisation et/ou barrière linguistique et/ou culturelle)",
+                    help: "« Aptitude à comprendre et à utiliser l’information […] en vue d’atteindre des buts personnels et d'étendre ses connaissances et ses capacités » (Organisation de Coopération et de Développement Economiques (OCDE), 2000).",
+                    examples: "personnes âgées, immigrants récents, personnes dont la langue maternelle n'est pas la langue officielle du pays des soins, faible niveau scolaire."
+                },
+                {
+                    code: "isolement_social",
+                    label: "Isolement social",
+                    help: "Exclusion involontaire de la vie sociale et des liens sociaux (famille, amis, voisins, activités sociales, etc.). Une personne qui se retire d'une vie sociale par choix n'est pas isolée.<br><br><em>Questions qui peuvent aider à identifier l’isolement social : A-t-elle des contacts avec des amis, de la famille visites, contacts téléphoniques, courriels, etc? Qu'est-ce qu'elle aime comme activité sociale ? Souhaiterait-elle plus de lien social ?</em>",
+                    examples: ""
+                },
+                {
+                    code: "logement_inadapte",
+                    label: "Logement inadapté et/ou barrière environnementale",
+                    help: "Tout type de problème dans le logement et ses abords immédiats qui rendraient la vie du client difficile ou dangereuse.",
+                    examples: "cuisine encombrée, réfrigérateur qui ne fonctionne pas, présence de souris, de cafards, de punaises de lit, sols glissants, seuils, accès au logement difficile, absence d’ascenseur, de rampe d’accès, violence dans le quartier, etc."
+                }
+            ]
+        },
+        {
+            id: "sante-mentale",
+            title: "Facteurs de santé mentale",
+            iconClass: "mental",
+            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a8 8 0 0 0-8 8c0 6 8 12 8 12s8-6 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>',
+            items: [
+                {
+                    code: "depression",
+                    label: "Dépression et/ou idées suicidaires",
+                    help: "« La dépression constitue un trouble mental courant, caractérisé par la tristesse, la perte d'intérêt ou de plaisir, des sentiments de culpabilité ou de faible estime de soi, des troubles du sommeil ou de l'appétit, d'une sensation de fatigue et d'un manque de concentration. La dépression peut perdurer ou devenir récurrente, entravant ainsi de façon substantielle l’aptitude d’un individu à faire face à sa vie quotidienne. À son paroxysme, elle peut conduire au suicide » (Organisation Mondiale de la Santé, 2018).<br><br>Cet item sera coché positif si les symptômes sont objectivables. N'est pas pris en compte un épisode dépressif passé sur lequel il n'y a plus de traitement en cours.",
+                    examples: ""
+                },
+                {
+                    code: "psychiatrie",
+                    label: "Maladie psychiatrique et/ou troubles psychiques (délires, hallucination, etc.)",
+                    help: "Diagnostic médical établi et/ou symptomatologie objectivable.",
+                    examples: "trouble de la perception de soi ou de la réalité, trouble de l'humeur, perturbations des relations interpersonnelles, opération de la pensée perturbée, limitation de l'autonomie et/ou niveau de dépendance dans la gestion du quotidien."
+                },
+                {
+                    code: "addiction",
+                    label: "Addiction",
+                    help: "Rapport pathologique qu'entretient une personne à une substance ou à un comportement ; en cours de sevrage ou non, avec un traitement de substitution ou non, avec une réduction et un contrôle de la consommation ou non.",
+                    examples: "Addiction au sexe, aux jeux vidéo, à une substance licite ou illicite, aux médicaments."
+                },
+                {
+                    code: "anxiete",
+                    label: "Anxiété ou angoisse rendant le tableau clinique confus",
+                    help: "Sentiment de malaise, d'appréhension et d'inquiétude dont l'origine peut être inconsciente ou pas.<br>Perception d'un danger, réel ou subjectif.",
+                    examples: ""
+                },
+                {
+                    code: "fluctuation_mentale",
+                    label: "Fonctions mentales variant au cours de la journée",
+                    help: "Manifestations comportementales et/ou humeurs variant au cours de la journée.<br>Labilité émotionnelle (changement rapide et important de l’humeur, variabilité et instabilité).",
+                    examples: "débordements de joie, tranquillité et décharges spectaculaires de colère ou de larmes."
+                }
+            ]
+        },
+        {
+            id: "comportementaux",
+            title: "Facteurs comportementaux",
+            iconClass: "comport",
+            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 15h8"/><path d="M9 9h.01"/><path d="M15 9h.01"/></svg>',
+            items: [
+                {
+                    code: "sollicitations_recurrentes",
+                    label: "Sollicitations récurrentes du réseau primaire et/ou secondaire",
+                    help: "Demandes d’aide, de soutien, de présence, d’information, fréquentes/répétées, d’importance différente, exprimées ou non par le client auprès des professionnels et non professionnels, auprès de son proche aidant ou toute personne qui l’entoure.",
+                    examples: "appels téléphoniques fréquents, besoin de réassurance…"
+                },
+                {
+                    code: "conflit_reseau",
+                    label: "Communication ambivalente et/ou conflictuelle avec l’un des membres du réseau primaire et/ou secondaire",
+                    help: "Propos et/ou attitudes objectivés comme contradictoires et/ou variants et/ou conflictuels au sujet de ses besoins, ses problématiques de santé et/ou ses objectifs de santé ou vie, envers le réseau primaire ou secondaire.<br>Ils peuvent altérer la relation soignant-soigné et la relation avec le réseau primaire.",
+                    examples: ""
+                },
+                {
+                    code: "inquietude_sante",
+                    label: "Inquiétude face à ses symptômes et/ou état de santé et/ou aux informations médicales reçues",
+                    help: "Inquiétude sur l’évolution de sa maladie et/ou d’une récidive (cancer par ex. ou autre) par le biais de questionnements auprès du soignant concernant sa pathologie, ses symptômes, son état de santé.<br>Il s'agit de la santé physique et/ou psychique du client.",
+                    examples: ""
+                },
+                {
+                    code: "agressivite",
+                    label: "Agressivité (verbale et/ou physique) ou mutisme",
+                    help: "Modalités de communication et/ou propos et/ou gestes et/ou comportements (actifs ou passifs) menaçants, dévalorisants, disqualifiants, déstabilisants de la part du client envers le réseau primaire et/ou secondaire.",
+                    examples: ""
+                },
+                {
+                    code: "opposition_soins",
+                    label: "Résistance ou opposition aux soins, qu’elles soient actives ou passives",
+                    help: "Négociations fréquentes pour un ou plusieurs soins, ou refus catégorique, ou épisodes répétés de refus, ou mise en place de stratégies d'évitement.",
+                    examples: "annulation des prestations, absence, mise en échec des propositions et/ou actions d’aide et/ou de soins."
+                }
+            ]
+        },
+        {
+            id: "instabilite",
+            title: "Facteurs d'instabilité clinique",
+            iconClass: "instab",
+            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>',
+            items: [
+                {
+                    code: "degradation_recente",
+                    label: "Dégradation récente de l’état de santé ressentie par le client",
+                    help: "Perception du client, de son état de santé, verbalisée comme allant moins bien depuis maximum le dernier mois.",
+                    examples: ""
+                },
+                {
+                    code: "perte_autonomie_recente",
+                    label: "Changement global du degré d’indépendance (AVQ/AIVQ) lors du dernier mois",
+                    help: "",
+                    examples: "diminution de la participation aux AVQ / AIVQ, difficultés à suivre des conseils de traitement, péjoration du degré d'indépendance, etc."
+                },
+                {
+                    code: "transition_parcours",
+                    label: "Période de transition (annonce diagnostic, retour hospitalisation, décès proche aidant, divorce, travail, etc.)",
+                    help: "Période de vie ou de maladie dans laquelle se passe un certain nombres de changements.<br>« Une transition indique qu'il y a un changement dans l'état de santé, les rôles et relations, les attentes, ou les habiletés. Cela signifie qu'il y a changement des besoins de la personne dans tous les systèmes et dimensions. La transition requière de la personne qu'elle intègre :<ul><li>de nouvelles connaissances,</li><li>d'autres comportements,</li><li>qu'elle modifie la façon qu'elle a de se définir dans le contexte social, par rapport à sa santé ou sa maladie, ou de ses besoins personnels et environnementaux qui affectent son état de santé » (Meleis, Sawyer, Im, Messias & Schumacher, 2000).</li></ul>",
+                    examples: "annonce diagnostic, retour hospitalisation, hospitalisation du proche aidant, décès proche aidant, divorce, licenciement, etc."
+                },
+                {
+                    code: "trouble_cognitif_aigu",
+                    label: "Changement aigu des capacités cognitives",
+                    help: "Changement rapide du comportement habituel du client (Haute Autorité de Santé, 2009).",
+                    examples: "inversion récente du rythme nycthéméral (veille /sommeil), troubles de la mémoire, de la pensée, distractibilité, langage perturbé, désorientation, perception modifiée de l’environnement, agitation, irritabilité, impatience, déambulation, euphorie, manque d’attention, diminution de la vigilance, léthargie, apathie, etc."
+                },
+                {
+                    code: "imprevisibilite",
+                    label: "Non prévisibilité de l’état de santé (apparition de symptômes inhabituels, décompensation d’une pathologie chronique, plaies, douleurs, etc.)",
+                    help: "Incertitude et/ou impossibilité de prévoir l'évolution de l'état de santé et/ou les comportements du client dans les prochains jours, semaines.",
+                    examples: "changements fréquents du traitement et /ou des posologies, instabilité physique et/ou psychique, une ou plusieurs hospitalisations en urgence ...ou non dans les 3 derniers mois, intervention d’un médecin en urgence au domicile dans les 3 derniers mois. Par l’affirmative d’un des exemples la notion d’imprévisibilité est à prendre en compte (HAS, 2014)."
+                }
+            ]
+        },
+        {
+            id: "intervenants",
+            title: "Facteurs liés aux intervenants",
+            iconClass: "interv",
+            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+            items: [
+                {
+                    code: "multitude_intervenants",
+                    label: "Multitude d’intervenants dans le réseau secondaire (médecin traitant, spécialiste, soignant, curateur, etc.)",
+                    help: "Nombre de professionnels +3 (médicaux, soignants, sociaux, etc.) qui interviennent régulièrement et interagissent dans la situation du client.",
+                    examples: ""
+                },
+                {
+                    code: "manque_partenariat",
+                    label: "Absence ou faible degré de partenariat entre les différents intervenants du réseau primaire et/ou secondaire",
+                    help: "Absence ou lien faible par un manque de communication ou de connaissance des intervenants.",
+                    examples: ""
+                },
+                {
+                    code: "incoherence_soins",
+                    label: "Incohérence thérapeutique et/ou perte de sens dans la prise en charge du point de vue du professionnel",
+                    help: "Défaut de logique, de compréhension, de continuité, de coordination entre la pensée, l'expression et les actes dans la prise en soins réalisée auprès du client.",
+                    examples: "désaccords, contradictions, incompréhension, différences de point de vue entre les intervenants et/ou le client, perte de sens dans la prise en soin, vision différentes entre le patient, proches aidants, médecin, infirmier-ère, etc."
+                },
+                {
+                    code: "probleme_assurance",
+                    label: "Problème d’assurance (limitation du remboursement de prise en charge)",
+                    help: "Problème d'assurance ayant un impact sur la prise en soins.",
+                    examples: "limitation du remboursement de prise en charge, limitation de la prise en charge posée par l’assurance du client, non remboursement de frais médicaux, etc."
+                },
+                {
+                    code: "lourdeur_reseau",
+                    label: "Lourdeur émotionnelle et/ou physique de la prise en charge ressentie par les membres du réseau secondaire (médecins, soignants)",
+                    help: "<strong>Lourdeur émotionnelle</strong> : sentiment d'impuissance, de perte de contrôle, de tristesse, de peine, de colère, d’anxiété, de perception de se sentir agressé ou persécuté, d’envahissement émotionnel dans sa sphère privée.<br><br><strong>Lourdeur physique</strong> : situation nécessitant l'emploi d'une force physique soutenue et récurrente en plus des moyens auxiliaires, passages multiples dans la journée, absence de moyens auxiliaires ou moyens auxiliaires inadaptés, etc.",
+                    examples: ""
+                }
+            ]
+        }
+    ];
+
+    // ========================================================
+    // STATE
+    // ========================================================
+    const state = {}; // code -> 0 | 1
+    let globalIndex = 0;
+
+    // ========================================================
+    // RENDER
+    // ========================================================
+    function renderDomains() {
+        const container = document.getElementById('domains-container');
+        let html = '';
+        let itemNum = 0;
+
+        COMID_DOMAINS.forEach((domain, di) => {
+            html += `<div class="domain-section">`;
+            html += `<div class="domain-header">`;
+            html += `<h2 class="domain-title">${domain.title}</h2>`;
+            html += `<span class="domain-count">(${domain.items.length} critères)</span>`;
+            html += `</div>`;
+            html += `<div class="domain-items">`;
+
+            domain.items.forEach((item, ii) => {
+                itemNum++;
+                state[item.code] = null; // not answered yet
+                const helpId = `help-${item.code}`;
+                html += `
+                <div class="comid-item" id="item-${item.code}">
+                    <span class="item-number">${itemNum}</span>
+                    <div class="item-content">
+                        <div class="item-label">${item.label}</div>
+                        <button class="item-help-toggle" onclick="toggleHelp('${helpId}', event)">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>
+                            Aide
+                        </button>
+                        <div class="item-help-content" id="${helpId}">
+                            <div class="item-help-box">
+                                ${item.help}
+                                ${item.examples ? `<em>Exemples : ${item.examples}</em>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item-radios">
+                        <button class="radio-btn" id="btn-no-${item.code}" onclick="setAnswer('${item.code}', 0)">Non</button>
+                        <button class="radio-btn" id="btn-yes-${item.code}" onclick="setAnswer('${item.code}', 1)">Oui</button>
+                    </div>
+                </div>`;
+            });
+
+            html += `</div></div>`;
+        });
+
+        container.innerHTML = html;
+    }
+
+    // ========================================================
+    // INTERACTIONS
+    // ========================================================
+    function setAnswer(code, value) {
+        state[code] = value;
+        const itemEl = document.getElementById(`item-${code}`);
+        const btnNo = document.getElementById(`btn-no-${code}`);
+        const btnYes = document.getElementById(`btn-yes-${code}`);
+
+        btnNo.classList.remove('active-no');
+        btnYes.classList.remove('active-yes');
+        itemEl.classList.remove('checked-yes', 'checked-no');
+
+        if (value === 0) {
+            btnNo.classList.add('active-no');
+            itemEl.classList.add('checked-no');
+        } else {
+            btnYes.classList.add('active-yes');
+            itemEl.classList.add('checked-yes');
+        }
+
+        updateScore();
+    }
+
+    function toggleHelp(id, event) {
+        event.stopPropagation();
+        const el = document.getElementById(id);
+        el.classList.toggle('open');
+    }
+
+    function selectAdditional(groupId, btn) {
+        const group = document.getElementById(groupId);
+        group.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('active-selected'));
+        btn.classList.add('active-selected');
+    }
+
+    // ========================================================
+    // SCORE CALCULATION
+    // ========================================================
+    function updateScore() {
+        let total = 0;
+        Object.values(state).forEach(v => { if (v === 1) total++; });
+
+        // Update display
+        document.getElementById('score-display').textContent = total;
+
+        // Gauge
+        const pct = (total / 30) * 100;
+        const gauge = document.getElementById('score-gauge');
+        gauge.style.width = pct + '%';
+
+        // Level
+        const levelEl = document.getElementById('score-level');
+        levelEl.classList.remove('level-simple', 'level-risque', 'level-complexe');
+
+        if (total <= 5) {
+            gauge.style.background = '#22c55e';
+            levelEl.textContent = 'Non complexe';
+            levelEl.classList.add('level-simple');
+        } else if (total <= 9) {
+            gauge.style.background = '#f59e0b';
+            levelEl.textContent = '\u00c0 risque';
+            levelEl.classList.add('level-risque');
+        } else {
+            gauge.style.background = '#ef4444';
+            levelEl.textContent = 'Complexe';
+            levelEl.classList.add('level-complexe');
+        }
+    }
+
+    let radarChart = null;
+
+    function showResults() {
+        const panel = document.getElementById('results-panel');
+        panel.classList.add('visible');
+
+        // Automatic save to DB upon calculation
+        saveComidEvaluation(true);
+
+        let total = 0;
+        Object.values(state).forEach(v => { if (v === 1) total++; });
+
+        // Date
+        const now = new Date();
+        const months = ['janvier','f\u00e9vrier','mars','avril','mai','juin','juillet','ao\u00fbt','septembre','octobre','novembre','d\u00e9cembre'];
+        document.getElementById('results-date').textContent =
+            `au ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+
+        // Gradient bar marker
+        const marker = document.getElementById('gradient-marker');
+        const markerPct = (total / 30) * 100;
+        marker.style.left = `calc(${markerPct}% - 2px)`;
+
+        // Compute domain scores
+        const domainLabels = [];
+        const domainScores = [];
+        const domainNon = [];
+        const domainOui = [];
+        const domainNames = [
+            'Sant\u00e9 m\u00e9dicale',
+            'Socio-\u00e9conomiques',
+            'Sant\u00e9 mentale',
+            'Comportementaux',
+            'Instabilit\u00e9',
+            'Intervenants'
+        ];
+
+        COMID_DOMAINS.forEach((domain, i) => {
+            let oui = 0;
+            domain.items.forEach(item => {
+                if (state[item.code] === 1) oui++;
+            });
+            const non = domain.items.length - oui;
+            domainLabels.push(domainNames[i]);
+            domainScores.push(oui);
+            domainNon.push(non);
+            domainOui.push(oui);
+        });
+
+        // --- Radar Chart ---
+        const canvas = document.getElementById('radar-chart');
+        const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+        const gridColor = isDark ? 'rgba(148,163,184,0.2)' : 'rgba(100,116,139,0.15)';
+        const labelColor = isDark ? '#cbd5e1' : '#475569';
+
+        if (radarChart) radarChart.destroy();
+
+        radarChart = new Chart(canvas, {
+            type: 'radar',
+            data: {
+                labels: domainLabels,
+                datasets: [{
+                    label: 'Score',
+                    data: domainScores,
+                    backgroundColor: 'rgba(59, 130, 246, 0.15)',
+                    borderColor: 'rgba(59, 130, 246, 0.7)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(59, 130, 246, 0.9)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 1,
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 5,
+                        ticks: {
+                            stepSize: 1,
+                            color: labelColor,
+                            backdropColor: 'transparent',
+                            font: { size: 10 }
+                        },
+                        grid: { color: gridColor },
+                        angleLines: { color: gridColor },
+                        pointLabels: {
+                            color: labelColor,
+                            font: { size: 11, weight: '500', family: 'Inter' }
+                        }
+                    }
+                }
+            }
+        });
+
+        // --- Summary Table ---
+        const tbody = document.getElementById('summary-tbody');
+        const tfoot = document.getElementById('summary-tfoot');
+        let tbodyHtml = '';
+        let totalNon = 0, totalOui = 0;
+
+        const tableNames = [
+            'Sant\u00e9 m\u00e9dicale',
+            'Socio-\u00e9conomiques',
+            'Sant\u00e9 mentale aggravant l\u2019\u00e9tat de sant\u00e9',
+            'Comportementaux du patient',
+            'Instabilit\u00e9 et d\u00e9t\u00e9rioration de l\u2019\u00e9tat de sant\u00e9',
+            'Intervenants et syst\u00e8me de soins'
+        ];
+
+        COMID_DOMAINS.forEach((domain, i) => {
+            const non = domainNon[i];
+            const oui = domainOui[i];
+            totalNon += non;
+            totalOui += oui;
+            tbodyHtml += `<tr><td>${tableNames[i]}</td><td>${non}</td><td>${oui}</td></tr>`;
+        });
+        tbody.innerHTML = tbodyHtml;
+        tfoot.innerHTML = `<tr><td>Total</td><td>${totalNon}</td><td>${totalOui}</td></tr>`;
+
+        // --- Interpretation badge ---
+        const interp = document.getElementById('results-interpretation');
+        interp.classList.remove('level-simple', 'level-risque', 'level-complexe');
+        if (total <= 5) {
+            interp.textContent = 'Situation non complexe \u2014 Score total : ' + total + ' / 30';
+            interp.classList.add('level-simple');
+        } else if (total <= 9) {
+            interp.textContent = 'Situation \u00e0 risque de complexit\u00e9 \u2014 Score total : ' + total + ' / 30';
+            interp.classList.add('level-risque');
+        } else {
+            interp.textContent = 'Situation complexe \u2014 Score total : ' + total + ' / 30';
+            interp.classList.add('level-complexe');
+        }
+
+        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function getComidPayload() {
+        const score = Object.values(state).filter(v => v === 1).length;
+        
+        let level = 'Situation non complexe';
+        if (score > 9) level = 'Situation complexe';
+        else if (score >= 6) level = 'Situation à risque de complexité';
+        
+        const domainScores = {};
+        COMID_DOMAINS.forEach(domain => {
+            let oui = 0;
+            domain.items.forEach(item => {
+                if (state[item.code] === 1) oui++;
+            });
+            domainScores[domain.id] = oui;
+        });
+
+        const checkedItems = [];
+        COMID_DOMAINS.forEach(domain => {
+            domain.items.forEach(item => {
+                if (state[item.code] === 1) {
+                    checkedItems.push({ code: item.code, label: item.label });
+                }
+            });
+        });
+
+        return {
+            score: score,
+            level: level,
+            date: new Date().toLocaleDateString('fr-FR') + ' à ' + new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}),
+            domainScores: domainScores,
+            checkedItems: checkedItems
+        };
+    }
+
+    async function downloadPdfSummary() {
+        const payload = getComidPayload();
+        try {
+            const res = await fetch('/api/comid/generate_pdf', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) throw new Error("Erreur lors de la génération du PDF");
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Synthese_COMID_Score_${payload.score}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error(err);
+            alert("Erreur lors de la génération du PDF : " + err.message);
+        }
+    }
+
+    function toggleComidInfo(btn) {
+        const dropdown = document.getElementById('comid-info-dropdown');
+        btn.classList.toggle('open');
+        dropdown.classList.toggle('hidden');
+    }
+
+    function resetAll() {
+        Object.keys(state).forEach(k => { state[k] = null; });
+        document.querySelectorAll('.radio-btn').forEach(b => {
+            b.classList.remove('active-no', 'active-yes', 'active-selected');
+        });
+        document.querySelectorAll('.comid-item').forEach(el => {
+            el.classList.remove('checked-yes', 'checked-no');
+        });
+        document.getElementById('results-panel').classList.remove('visible');
+        if (radarChart) { radarChart.destroy(); radarChart = null; }
+        updateScore();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ========================================================
+    // INIT
+    // ========================================================
+    renderDomains();
+    updateScore();
+
+    // Theme toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const sunIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`;
+    const moonIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`;
+
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        themeToggle.innerHTML = theme === 'light' ? moonIcon : sunIcon;
+    }
+    const savedTheme = localStorage.getItem('oria-theme') || 'dark';
+    applyTheme(savedTheme);
+    themeToggle.addEventListener('click', () => {
+        const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        localStorage.setItem('oria-theme', next);
+        applyTheme(next);
+    });
+
+    // Hamburger menu
+    const menuToggle = document.getElementById('menu-toggle');
+    const dropdownMenu = document.getElementById('dropdown-menu');
+    menuToggle.addEventListener('click', (e) => { e.stopPropagation(); dropdownMenu.classList.toggle('hidden'); });
+    document.addEventListener('click', () => dropdownMenu.classList.add('hidden'));
+
+    // ========================================================
+    // COMID ENTRÉE / SORTIE & SAVING
+    // ========================================================
+    let currentComidType = 'entree'; // 'entree' or 'sortie'
+    let entreeDossiersList = [];
+
+    async function loadEntreeDossiers() {
+        try {
+            const res = await fetch('/api/comid/dossiers-entree');
+            if (res.ok) {
+                entreeDossiersList = await res.json();
+                const select = document.getElementById('comid-dossier-select');
+                if (select) {
+                    select.innerHTML = '<option value="">-- Sélectionner un dossier d\'entrée --</option>';
+                    entreeDossiersList.forEach(d => {
+                        const opt = document.createElement('option');
+                        opt.value = d.dossier_id;
+                        opt.textContent = `${d.dossier_id} - ${d.senior_nom || 'Senior'} (Score Entrée: ${d.score}/30)`;
+                        select.appendChild(opt);
+                    });
+                }
+            }
+        } catch (e) {
+            console.error('Erreur chargement dossiers d\'entrée:', e);
+        }
+    }
+
+    function setComidEvalType(type) {
+        currentComidType = type;
+        const btnEntree = document.getElementById('btn-type-entree');
+        const btnSortie = document.getElementById('btn-type-sortie');
+        const groupDossierId = document.getElementById('group-dossier-id');
+        const groupDossierSelect = document.getElementById('group-dossier-select');
+        const entreeBadge = document.getElementById('entree-summary-badge');
+
+        if (type === 'entree') {
+            btnEntree.classList.add('active-entree');
+            btnSortie.classList.remove('active-sortie');
+            groupDossierId.classList.remove('hidden');
+            groupDossierSelect.classList.add('hidden');
+            entreeBadge.classList.add('hidden');
+            const inputId = document.getElementById('comid-dossier-id');
+            if (!inputId.value) {
+                inputId.value = 'DOS-' + Math.floor(100 + Math.random() * 900);
+            }
+        } else {
+            btnSortie.classList.add('active-sortie');
+            btnEntree.classList.remove('active-entree');
+            groupDossierId.classList.add('hidden');
+            groupDossierSelect.classList.remove('hidden');
+            loadEntreeDossiers();
+        }
+    }
+
+    function onSelectEntreeDossier(selectEl) {
+        const selectedId = selectEl.value;
+        const entreeBadge = document.getElementById('entree-summary-badge');
+        const inputNom = document.getElementById('comid-senior-nom');
+        
+        const found = entreeDossiersList.find(d => d.dossier_id === selectedId);
+        if (found) {
+            if (found.senior_nom && !inputNom.value) {
+                inputNom.value = found.senior_nom;
+            }
+            entreeBadge.innerHTML = `
+                <span>📥 <strong>Dossier d'Entrée lié :</strong> ${found.dossier_id} (${found.senior_nom || 'Senior'})</span>
+                <span style="margin-left: auto; font-weight: 700; color: #2563eb;">Score d'Entrée : ${found.score}/30</span>
+            `;
+            entreeBadge.classList.remove('hidden');
+        } else {
+            entreeBadge.classList.add('hidden');
+        }
+    }
+
+    async function saveComidEvaluation(silent = false) {
+        let dossierId = '';
+        if (currentComidType === 'entree') {
+            dossierId = document.getElementById('comid-dossier-id').value.trim();
+        } else {
+            dossierId = document.getElementById('comid-dossier-select').value.trim();
+        }
+
+        if (!dossierId) {
+            if (!silent) alert('Veuillez spécifier ou sélectionner un Identifiant de Dossier.');
+            return;
+        }
+
+        // Calculate score from state (v === 1)
+        let score = 0;
+        const checkedCriterias = [];
+        Object.entries(state).forEach(([k, v]) => {
+            if (v === 1) {
+                score++;
+                checkedCriterias.push(k);
+            }
+        });
+
+        let niveau = 'Non complexe';
+        if (score >= 10) niveau = 'Très complexe';
+        else if (score >= 6) niveau = 'À risque';
+
+        const seniorNom = document.getElementById('comid-senior-nom').value.trim();
+
+        const payload = {
+            dossier_id: dossierId,
+            senior_nom: seniorNom,
+            type_eval: currentComidType,
+            score: score,
+            niveau: niveau,
+            criteres: checkedCriterias
+        };
+
+        try {
+            const res = await fetch('/api/comid/evaluations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                if (!silent) {
+                    alert(`✅ Évaluation COMID d'${currentComidType === 'entree' ? 'Entrée' : 'Sortie'} enregistrée avec succès !\n\nN° Dossier : ${dossierId}\nScore : ${score}/30 (${niveau})`);
+                }
+                if (currentComidType === 'entree') {
+                    loadEntreeDossiers();
+                }
+            }
+        } catch (e) {
+            console.error('Erreur save comid:', e);
+        }
+    }
+
+    loadEntreeDossiers();
+    </script>
+</body>
+</html>

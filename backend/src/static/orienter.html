@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style_v2.css?v=19">
+    <link rel="stylesheet" href="/static/style_v2.css?v=21">
     
     <style>
         /* Styles Premium additionnels pour le diagnostic interactif */
@@ -247,9 +247,9 @@
                     </button>
                     <!-- Dropdown Menu -->
                     <div id="dropdown-menu" class="dropdown-menu hidden">
-                        <a href="#" class="dropdown-item disabled" title="Fonctionnalité à venir" onclick="return false;">
+                        <a href="/remplir" class="dropdown-item" title="Remplir une fiche d'orientation ou la grille COMID">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
-                            Remplir ma FO/Grille
+                            Remplir ma fiche d'orientation / grille
                         </a>
                         <a href="/dashboard" class="dropdown-item" title="Accéder au tableau de bord">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
@@ -268,12 +268,19 @@
         
         <!-- Colonne Gauche : Saisie -->
         <section class="input-pane">
-            <div class="section-header">
+            <div class="section-header" style="text-align: center;">
                 <h2>Description de la situation</h2>
                 <p class="section-desc">Décrivez librement la situation de la personne âgée (âge, GIR, aides actuelles, alertes de son entourage...).</p>
             </div>
             
             <div class="glass-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
+                    <span style="font-size: 0.84rem; color: var(--text-secondary); font-weight: 500;">Saisie de la situation :</span>
+                    <button id="btn-voice-toggle" type="button" onclick="toggleVoiceDictation()" style="background: rgba(168, 85, 247, 0.12); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 8px; padding: 0.4rem 0.85rem; font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.2s ease;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+                        <span id="voice-btn-label">Activer la dictée vocale</span>
+                    </button>
+                </div>
                 <textarea id="situation-input" placeholder="Exemple : Mme Marie Durant a 82 ans, elle réside à Saint-Gilles. Son médecin traitant s'inquiète car elle a fait deux chutes ce mois-ci. Elle refuse l'APA mais sa fille nous signale que sa situation à domicile devient instable..."></textarea>
                 
                 <button id="btn-submit" class="btn-primary">
@@ -290,13 +297,12 @@
             <!-- État vide (affiché au départ) -->
             <div id="results-placeholder" class="empty-state">
                 <p>En attente d'une description de cas à analyser.</p>
-                <span class="empty-hint">Saisissez un texte ci-dessus puis cliquez sur <strong>Lancer l'Analyse</strong>.</span>
             </div>
 
             <!-- Conteneur des résultats réels (masqué par défaut) -->
             <div id="results-content" style="display: none;">
                 
-                <div class="section-header">
+                <div class="section-header" style="text-align: center;">
                     <h2>Diagnostic & Orientations</h2>
                     <p class="section-desc">Voici l'analyse générée automatiquement par le moteur d'orientation ORIA.</p>
                 </div>
@@ -326,6 +332,6 @@
         <p>Prototype ORIA – Module d'évaluation interactif</p>
     </footer>
 
-    <script src="/static/orienter_v2.js?v=13"></script>
+    <script src="/static/orienter_v2.js?v=1003"></script>
 </body>
 </html>
