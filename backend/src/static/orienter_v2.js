@@ -993,92 +993,93 @@ function formatHospitalisation(status) {
 }
 
 // ========================================================
-// DICTÉE VOCALE EN TEMPS RÉEL (FRANÇAIS HAUTE PRÉCISION)
+// DICTÉE VOCALE HAUTE PRÉCISION (WHISPER LOCAL & REALTIME)
 // ========================================================
-let activeRecognition = null;
-let isDictating = false;
+let mediaRecorder = null;
+let audioChunks = [];
+let isWhisperRecording = false;
 
-window.toggleVoiceDictation = function() {
+window.toggleVoiceDictation = async function() {
     const btn = document.getElementById('btn-voice-toggle');
     const label = document.getElementById('voice-btn-label');
     const textarea = document.getElementById('situation-input');
 
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (isDictating) {
-        // STOP DICTÉE
-        isDictating = false;
-        if (activeRecognition) {
-            try { activeRecognition.stop(); } catch(e){}
-            activeRecognition = null;
+    if (isWhisperRecording) {
+        // STOP ENREGISTREMENT
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
         }
-        if (btn) {
-            btn.style.background = "rgba(168, 85, 247, 0.12)";
-            btn.style.borderColor = "rgba(168, 85, 247, 0.3)";
-            btn.style.color = "#c084fc";
-        }
-        if (label) label.textContent = "🎙️ Dictée vocale (Whisper)";
         return;
     }
 
-    if (!SpeechRecognition) {
-        alert("La reconnaissance vocale nécessite un navigateur compatible comme Google Chrome ou Microsoft Edge.");
-        return;
-    }
+    // DÉMARRAGE ENREGISTREMENT MICRO
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            audioChunks = [];
+            mediaRecorder = new MediaRecorder(stream);
 
-    try {
-        activeRecognition = new SpeechRecognition();
-        activeRecognition.lang = 'fr-FR';
-        activeRecognition.continuous = true;
-        activeRecognition.interimResults = true;
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) audioChunks.push(event.data);
+            };
 
-        let initialText = textarea ? textarea.value : '';
+            mediaRecorder.onstart = () => {
+                isWhisperRecording = true;
+                if (btn) {
+                    btn.style.background = "rgba(239, 68, 68, 0.25)";
+                    btn.style.borderColor = "#ef4444";
+                    btn.style.color = "#fca5a5";
+                }
+                if (label) label.textContent = "🔴 Enregistrement... (Clic pour Whisper local)";
+            };
 
-        activeRecognition.onstart = () => {
-            isDictating = true;
-            if (btn) {
-                btn.style.background = "rgba(239, 68, 68, 0.25)";
-                btn.style.borderColor = "#ef4444";
-                btn.style.color = "#fca5a5";
-            }
-            if (label) label.textContent = "🔴 Enregistrement... (Clic pour terminer)";
-        };
+            mediaRecorder.onstop = async () => {
+                isWhisperRecording = false;
+                stream.getTracks().forEach(track => track.stop());
 
-        activeRecognition.onresult = (event) => {
-            let currentTranscript = '';
-            for (let i = 0; i < event.results.length; i++) {
-                currentTranscript += event.results[i][0].transcript;
-            }
-            if (textarea) {
-                textarea.value = initialText ? (initialText.trim() + ' ' + currentTranscript) : currentTranscript;
-            }
-        };
+                if (btn) {
+                    btn.style.background = "rgba(59, 130, 246, 0.2)";
+                    btn.style.borderColor = "#3b82f6";
+                    btn.style.color = "#60a5fa";
+                }
+                if (label) label.textContent = "⚡ Transcription Whisper local...";
 
-        activeRecognition.onerror = (err) => {
-            console.error('Erreur reconnaissance vocale:', err);
-            isDictating = false;
-            if (btn) {
-                btn.style.background = "rgba(168, 85, 247, 0.12)";
-                btn.style.borderColor = "rgba(168, 85, 247, 0.3)";
-                btn.style.color = "#c084fc";
-            }
-            if (label) label.textContent = "🎙️ Dictée vocale (Whisper)";
-        };
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                const formData = new FormData();
+                formData.append('file', audioBlob, 'dictation.webm');
 
-        activeRecognition.onend = () => {
-            isDictating = false;
-            if (btn) {
-                btn.style.background = "rgba(168, 85, 247, 0.12)";
-                btn.style.borderColor = "rgba(168, 85, 247, 0.3)";
-                btn.style.color = "#c084fc";
-            }
-            if (label) label.textContent = "🎙️ Dictée vocale (Whisper)";
-        };
+                try {
+                    const res = await fetch('/api/transcribe', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await res.json();
+                    if (data.text) {
+                        if (textarea) {
+                            textarea.value = textarea.value ? (textarea.value.trim() + '\n\n' + data.text) : data.text;
+                        }
+                    } else if (data.error) {
+                        alert('Erreur Whisper local: ' + data.error);
+                    }
+                } catch (err) {
+                    console.error('Erreur Whisper local:', err);
+                    alert('Erreur réseau lors de la transmission à Whisper.');
+                } finally {
+                    if (btn) {
+                        btn.style.background = "rgba(168, 85, 247, 0.12)";
+                        btn.style.borderColor = "rgba(168, 85, 247, 0.3)";
+                        btn.style.color = "#c084fc";
+                    }
+                    if (label) label.textContent = "🎙️ Dictée vocale (Whisper)";
+                }
+            };
 
-        activeRecognition.start();
-    } catch (err) {
-        console.error('Erreur accès micro:', err);
-        alert("Impossible de démarrer le microphone. Veuillez vérifier les autorisations de votre navigateur.");
+            mediaRecorder.start();
+            return;
+        } catch (err) {
+            console.warn('MediaRecorder error ou micro refuse:', err);
+            alert("Veuillez autoriser l'accès au microphone.");
+        }
     }
 };
 

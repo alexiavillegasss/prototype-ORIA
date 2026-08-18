@@ -43,26 +43,28 @@ class WhisperTranscriber:
                     )
                     return response.text.strip()
             
-            # 2. Tentative avec whisper local (pip install openai-whisper)
+            # 2. Tentative avec faster-whisper local (Ultra rapide sur CPU)
+            try:
+                from faster_whisper import WhisperModel
+                # Modèle 'base' ou 'tiny' en français sur CPU avec int8 pour un chargement rapide
+                model = WhisperModel("base", device="cpu", compute_type="int8")
+                segments, _ = model.transcribe(tmp_path, language="fr", initial_prompt="Dictée médicale et médico-sociale en français : situation de personne âgée, autonomie, GIR, APA, chutes, aidant, hospitalisation, maintien à domicile.")
+                text = " ".join([segment.text for segment in segments])
+                if text.strip():
+                    return text.strip()
+            except Exception as e1:
+                logger.debug(f"Faster-whisper local non disponible ou erreur: {e1}")
+
+            # 3. Tentative avec openai-whisper local
             try:
                 import whisper
                 model = whisper.load_model("base")
                 result = model.transcribe(tmp_path, language="fr")
                 return result.get("text", "").strip()
-            except Exception as e1:
-                logger.debug(f"Whisper local non disponible: {e1}")
-
-            # 3. Tentative avec faster-whisper local
-            try:
-                from faster_whisper import WhisperModel
-                model = WhisperModel("base", compute_type="float32")
-                segments, _ = model.transcribe(tmp_path, language="fr")
-                text = " ".join([segment.text for segment in segments])
-                return text.strip()
             except Exception as e2:
-                logger.debug(f"Faster-whisper local non disponible: {e2}")
+                logger.debug(f"Whisper local non disponible: {e2}")
 
-            raise RuntimeError("Clé OPENAI_API_KEY non configurée et aucun paquet local Whisper disponible. Veuillez renseigner OPENAI_API_KEY dans l'environnement.")
+            raise RuntimeError("Clé OPENAI_API_KEY non configurée et aucun paquet local Whisper (faster-whisper) disponible.")
 
         finally:
             if os.path.exists(tmp_path):
