@@ -129,7 +129,7 @@
             "id": "eligibility_dac_01",
             "structure_type": "DAC",
             "label": "DAC - Refus de soins ou d'aide (Priorité Absolue)",
-            "enabled": true,
+            "enabled": false,
             "all_of": [],
             "any_of": [
                 {
@@ -169,6 +169,46 @@
                     "field": "usager.identite.age_estime",
                     "operator": "<=",
                     "value": 60
+                },
+                {
+                    "field": "evaluation.comid.degradation_recente",
+                    "operator": "==",
+                    "value": true
+                },
+                {
+                    "field": "evaluation.comid.perte_autonomie_recente",
+                    "operator": "==",
+                    "value": true
+                },
+                {
+                    "field": "evaluation.comid.troubles_cognitifs",
+                    "operator": "==",
+                    "value": true
+                },
+                {
+                    "field": "evaluation.comid.trouble_cognitif_aigu",
+                    "operator": "==",
+                    "value": true
+                },
+                {
+                    "field": "evaluation.comid.multimorbidite",
+                    "operator": "==",
+                    "value": true
+                },
+                {
+                    "field": "evaluation.comid.douleurs",
+                    "operator": "==",
+                    "value": true
+                },
+                {
+                    "field": "evaluation.comid.imprevisibilite",
+                    "operator": "==",
+                    "value": true
+                },
+                {
+                    "field": "evaluation.comid.polymedication",
+                    "operator": "==",
+                    "value": true
                 }
             ],
             "result": {
@@ -176,6 +216,68 @@
                 "base_pertinence": "eleve",
                 "base_priority_score": 100,
                 "objectif_orientation": "Contacter votre référent APA au Conseil Départemental (PSCG SS APA) pour toute modification de plan d'aide ou besoin d'accompagnement social supplémentaire."
+            }
+        },
+        {
+            "id": "eligibility_dac_apa_health_01",
+            "structure_type": "DAC",
+            "label": "DAC - Orientation complexe (APA + Problématique de Santé)",
+            "enabled": true,
+            "all_of": [
+                {
+                    "field": "usager.situation_actuelle.APA",
+                    "operator": "==",
+                    "value": "oui"
+                }
+            ],
+            "any_of": [
+                {
+                    "field": "evaluation.comid.degradation_recente",
+                    "operator": "==",
+                    "value": true
+                },
+                {
+                    "field": "evaluation.comid.perte_autonomie_recente",
+                    "operator": "==",
+                    "value": true
+                },
+                {
+                    "field": "evaluation.comid.troubles_cognitifs",
+                    "operator": "==",
+                    "value": true
+                },
+                {
+                    "field": "evaluation.comid.trouble_cognitif_aigu",
+                    "operator": "==",
+                    "value": true
+                },
+                {
+                    "field": "evaluation.comid.multimorbidite",
+                    "operator": "==",
+                    "value": true
+                },
+                {
+                    "field": "evaluation.comid.douleurs",
+                    "operator": "==",
+                    "value": true
+                },
+                {
+                    "field": "evaluation.comid.imprevisibilite",
+                    "operator": "==",
+                    "value": true
+                },
+                {
+                    "field": "evaluation.comid.polymedication",
+                    "operator": "==",
+                    "value": true
+                }
+            ],
+            "none_of": [],
+            "result": {
+                "eligible": true,
+                "base_pertinence": "eleve",
+                "base_priority_score": 105,
+                "objectif_orientation": "Patient bénéficiant déjà de l'APA mais présentant une problématique de santé/dégradation clinique : Nécessite une coordination intensive par le DAC pour réévaluer et sécuriser le maintien à domicile."
             }
         },
         {
@@ -237,12 +339,18 @@
             "structure_type": "CRT",
             "label": "CRT - Centre de Ressources Territorial (Accompagnement Renforcé)",
             "enabled": true,
-            "all_of": [],
+            "all_of": [
+                {
+                    "field": "usager.situation_actuelle.GIR",
+                    "operator": "in",
+                    "value": [1, 2, 3, 4]
+                }
+            ],
             "any_of": [
                 {
                     "field": "demande.motif_principal",
                     "operator": "contains_any",
-                    "value": ["renforcement_domicile", "alternative_ehpad", "maintien_intensif"]
+                    "value": ["renforcement_domicile", "alternative_ehpad", "maintien_intensif", "maintien_renforce", "refus_de_soins", "refus_aide_domicile"]
                 },
                 {
                     "field": "evaluation.comid.epuisement_aidant",
@@ -255,17 +363,12 @@
                     "field": "usager.identite.age_estime",
                     "operator": "<=",
                     "value": 60
-                },
-                {
-                    "field": "usager.situation_actuelle.GIR",
-                    "operator": "in",
-                    "value": [5, 6]
                 }
             ],
             "result": {
                 "eligible": true,
                 "base_pertinence": "eleve",
-                "base_priority_score": 78,
+                "base_priority_score": 88,
                 "objectif_orientation": "Maintien à domicile renforcé et intensif : Alternative à l'EHPAD pour les situations en perte d'autonomie importante ou complexité technique."
             }
         },
@@ -284,7 +387,7 @@
                 {
                     "field": "demande.motif_principal",
                     "operator": "contains_any",
-                    "value": ["maintien_a_domicile", "renforcement_domicile", "aide_a_domicile", "information_aides", "choix_prestataire", "portage_repas", "secours_urgence"]
+                    "value": ["maintien_a_domicile", "renforcement_domicile", "aide_a_domicile", "information_aides", "choix_prestataire", "portage_repas", "secours_urgence", "evaluation_globale", "refus_de_soins", "refus_aide_domicile"]
                 }
             ],
             "none_of": [
@@ -355,11 +458,6 @@
                     "field": "complexite.niveau",
                     "operator": "==",
                     "value": "complexe"
-                },
-                {
-                    "field": "complexite.score_total",
-                    "operator": ">=",
-                    "value": 4
                 }
             ],
             "none_of": [],
@@ -374,7 +472,7 @@
             "id": "eligibility_dac_03",
             "structure_type": "DAC",
             "label": "DAC - Suspicion de Diogène ou incurie",
-            "enabled": true,
+            "enabled": false,
             "all_of": [],
             "any_of": [
                 {
@@ -550,6 +648,53 @@
                 "base_pertinence": "moyenne",
                 "base_priority_score": 50,
                 "objectif_orientation": "Accès aux soins : Recherche de médecin traitant (justifiée par retraite/déménagement) et dispositif MISAS pour éviter le renoncement aux soins."
+            }
+        },
+        {
+            "id": "eligibility_compagnons_01",
+            "structure_type": "COMPAGNONS_BATISSEURS",
+            "label": "Les Compagnons Bâtisseurs (Diogène ou Incurie unique/principale)",
+            "enabled": true,
+            "all_of": [
+                {
+                    "field": "usager.cadre_de_vie.etat_logement",
+                    "operator": "in",
+                    "value": ["diogene", "incurie"]
+                }
+            ],
+            "any_of": [],
+            "none_of": [
+                {
+                    "field": "complexite.niveau",
+                    "operator": "==",
+                    "value": "complexe"
+                },
+                {
+                    "field": "vulnerabilites.social.precarite",
+                    "operator": "in",
+                    "value": ["possible", "probable", "averee"]
+                },
+                {
+                    "field": "evaluation.comid.precarite_financiere",
+                    "operator": "==",
+                    "value": true
+                },
+                {
+                    "field": "usager.situation_actuelle.APA",
+                    "operator": "==",
+                    "value": "oui"
+                },
+                {
+                    "field": "evaluation.comid.perte_autonomie_recente",
+                    "operator": "==",
+                    "value": true
+                }
+            ],
+            "result": {
+                "eligible": true,
+                "base_pertinence": "eleve",
+                "base_priority_score": 90,
+                "objectif_orientation": "Accompagnement auto-réhabilitation et nettoyage/aménagement du logement pour syndrome de Diogène ou incurie sans complexité sanitaire ou sociale majeure."
             }
         }
     ]

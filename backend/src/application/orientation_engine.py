@@ -126,17 +126,30 @@ class OrientationEngine:
                 warning_prefix = "[/!\\ INFORMATIONS INSUFFISANTES : Il est vivement conseille de recueillir plus de precisions sur la situation du patient pour fiabiliser cette orientation] "
                 struct["objectif"] = warning_prefix + struct.get("objectif", "")
 
-        # Si aucune structure n'est éligible à cause d'un manque d'informations
+        # Si aucune structure n'est éligible
         if not final_structures:
-            final_structures.append({
-                "structure_type": "BESOIN_INFOS",
-                "label": "Informations insuffisantes pour orienter",
-                "priorite": 0,
-                "pertinence": "faible",
-                "objectif": "Les informations fournies ne permettent pas de determiner une orientation. Il est necessaire de recueillir plus de precisions (ex: age de la personne, commune de residence, presence d'aides comme l'APA/professionnels, description precise des difficultes ou de la demande).",
-                "score_confiance": 0,
-                "explication_confiance": "Aucune structure n'est eligible car les informations sont trop incompletes ou absentes dans le recit."
-            })
+            age = extracted_data.get("usager.identite.age_estime")
+            ville = extracted_data.get("usager.localisation.commune_residence")
+            if age is not None or (ville is not None and ville != "inconnu" and ville != "non_renseigne"):
+                final_structures.append({
+                    "structure_type": "DAC",
+                    "label": "DAC - Dispositif d'Appui à la Coordination (Orientation indéterminée)",
+                    "priorite": 10,
+                    "pertinence": "moyenne",
+                    "objectif": "Aucun profil type n'a été identifié pour les autres structures. Orientation vers le DAC pour évaluation globale et coordination.",
+                    "score_confiance": 50,
+                    "explication_confiance": "Orientation par défaut car la situation ne correspond à aucun parcours standard."
+                })
+            else:
+                final_structures.append({
+                    "structure_type": "BESOIN_INFOS",
+                    "label": "Informations insuffisantes pour orienter",
+                    "priorite": 0,
+                    "pertinence": "faible",
+                    "objectif": "Les informations fournies ne permettent pas de determiner une orientation. Il est necessaire de recueillir plus de precisions (ex: age de la personne, commune de residence, presence d'aides comme l'APA/professionnels, description precise des difficultes ou de la demande).",
+                    "score_confiance": 0,
+                    "explication_confiance": "Aucune structure n'est eligible car les informations sont trop incompletes ou absentes dans le recit."
+                })
 
         return final_structures
 
