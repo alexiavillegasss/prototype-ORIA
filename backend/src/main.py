@@ -47,7 +47,7 @@ fiche_extractor = FicheExtractor()
 scoring_engine = ScoringEngine(comid_rules_path=COMID_PATH)
 orientation_engine = OrientationEngine(rules_path=ORIENTATION_RULES_PATH)
 territory_manager = TerritoryManager(territory_rules_path=TERRITORY_PATH)
-db_manager = DatabaseManager(db_path=os.path.join(BASE_DIR, 'oria_database.db'))
+db_manager = DatabaseManager()
 pdf_generator = PDFGenerator(
     dac_template_path=os.path.join(STATIC_DIR, "fiche_dac_vierge.pdf"),
     clic_template_path=os.path.join(STATIC_DIR, "fiche_clic_LaSeyne_vierge.pdf"),
