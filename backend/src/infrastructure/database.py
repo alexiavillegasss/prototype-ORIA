@@ -45,6 +45,28 @@ class DatabaseManager:
                 )
             ''')
             conn.commit()
+            
+            # Seeding automatique si la table dossiers_patients est vide
+            cursor.execute('SELECT COUNT(*) FROM dossiers_patients')
+            if cursor.fetchone()[0] == 0:
+                self._seed_initial_patients(cursor)
+                conn.commit()
+
+    def _seed_initial_patients(self, cursor):
+        """Remplit des données de démonstration réalistes pour le diagramme de Sankey."""
+        demo_patients = [
+            ("2026-08-17 10:15:00", "Mme Marie Durant, 82 ans, habite Toulon. Chutes répétées.", json.dumps({"usager.localisation.commune_residence": "Toulon", "usager.identite.age_estime": 82, "usager.situation_actuelle.beneficiaire_apa": "non", "usager.autonomie.gir_estime": 3, "ville": "Toulon", "age": 82}), 14, "Très complexe", json.dumps(["DAC", "CRT"])),
+            ("2026-08-17 11:30:00", "M. Jean Dupont, 78 ans, Sanary-sur-Mer. Épuisement aidant.", json.dumps({"usager.localisation.commune_residence": "Sanary-sur-Mer", "usager.identite.age_estime": 78, "usager.situation_actuelle.beneficiaire_apa": "oui", "usager.autonomie.gir_estime": 2, "ville": "Sanary-sur-Mer", "age": 78}), 18, "Très complexe", json.dumps(["DAC", "CLIC"])),
+            ("2026-08-17 14:20:00", "Mme Huguette Martin, 86 ans, La Seyne-sur-Mer. Aide ménagère.", json.dumps({"usager.localisation.commune_residence": "La Seyne-sur-Mer", "usager.identite.age_estime": 86, "usager.situation_actuelle.beneficiaire_apa": "non", "usager.autonomie.gir_estime": 5, "ville": "La Seyne-sur-Mer", "age": 86}), 4, "Non complexe", json.dumps(["CCAS", "PSCG_SS_APA"])),
+            ("2026-08-17 16:05:00", "Mme Jeanne Fontaine, 74 ans, Hyères. Isolement social.", json.dumps({"usager.localisation.commune_residence": "Hyères", "usager.identite.age_estime": 74, "usager.situation_actuelle.beneficiaire_apa": "non", "usager.autonomie.gir_estime": 4, "ville": "Hyères", "age": 74}), 9, "Complexe", json.dumps(["CLIC", "CCAS"])),
+            ("2026-08-18 09:10:00", "M. Robert Chen, 81 ans, La Valette. Troubles cognitifs.", json.dumps({"usager.localisation.commune_residence": "La Valette", "usager.identite.age_estime": 81, "usager.situation_actuelle.beneficiaire_apa": "oui", "usager.autonomie.gir_estime": 3, "ville": "La Valette", "age": 81}), 12, "Complexe", json.dumps(["CONSULTATION MÉMOIRE", "DAC"])),
+            ("2026-08-18 10:45:00", "Mme Claire Vial, 69 ans, Ollioules. Sortie d'hospitalisation.", json.dumps({"usager.localisation.commune_residence": "Ollioules", "usager.identite.age_estime": 69, "usager.situation_actuelle.beneficiaire_apa": "non", "usager.autonomie.gir_estime": 4, "ville": "Ollioules", "age": 69}), 7, "Complexe", json.dumps(["PRADO", "CLIC"]))
+        ]
+        cursor.executemany('''
+            INSERT INTO dossiers_patients 
+            (date_creation, texte_original, donnees_extraites, score_comid, niveau_comid, structures_orientations)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', demo_patients)
 
     def save_dossier(self, texte_original: str, donnees_extraites: dict, score_comid: int, niveau_comid: str, structures_orientations: list, details_complet: dict = None) -> Optional[int]:
         """Sauvegarde une nouvelle analyse dans la base et retourne son numéro de dossier (ID).
