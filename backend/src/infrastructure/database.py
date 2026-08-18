@@ -4,11 +4,15 @@ from datetime import datetime
 import os
 from typing import Optional
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DEFAULT_DB_PATH = os.path.join(BASE_DIR, "oria_database.db")
+
 class DatabaseManager:
-    def __init__(self, db_path="oria_database.db"):
-        """Initialise la connexion à la base de données SQLite."""
-        # On s'assure que la base est créée à la racine du projet (ou là où le script est lancé)
-        self.db_path = db_path
+    def __init__(self, db_path=None):
+        """Initialise la connexion à la base de données SQLite en garantissant un chemin absolu unique."""
+        if db_path is None:
+            db_path = DEFAULT_DB_PATH
+        self.db_path = os.path.abspath(db_path)
         self._initialize_db()
 
     def _initialize_db(self):
