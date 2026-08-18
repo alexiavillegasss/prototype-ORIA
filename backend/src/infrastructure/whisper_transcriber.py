@@ -8,12 +8,23 @@ class WhisperTranscriber:
     def __init__(self):
         self.api_key = os.environ.get("OPENAI_API_KEY")
         self.client = None
+        self.local_model = None
+
         if self.api_key:
             try:
                 from openai import OpenAI
                 self.client = OpenAI(api_key=self.api_key)
             except Exception as e:
                 logger.warning(f"Impossible d'initialiser le client OpenAI: {e}")
+
+        if not self.client:
+            try:
+                from faster_whisper import WhisperModel
+                logger.info("Chargement du modèle local faster-whisper (tiny)...")
+                self.local_model = WhisperModel("tiny", device="cpu", compute_type="int8")
+                logger.info("Modèle local faster-whisper prêt !")
+            except Exception as e:
+                logger.warning(f"Impossible de pré-charger faster-whisper: {e}")
 
     def transcribe_audio_bytes(self, audio_bytes: bytes, filename: str = "audio.webm") -> str:
         """Transcrit les octets audio en texte français haute précision via Whisper."""
@@ -24,7 +35,7 @@ class WhisperTranscriber:
             tmp_path = tmp.name
 
         try:
-            # 1. Utilisation de l'API Cloud OpenAI Whisper si la clé est présente
+            # 1. API Cloud OpenAI si la clé est renseignée
             if not self.client and os.environ.get("OPENAI_API_KEY"):
                 self.api_key = os.environ.get("OPENAI_API_KEY")
                 try:
@@ -43,28 +54,27 @@ class WhisperTranscriber:
                     )
                     return response.text.strip()
             
-            # 2. Tentative avec faster-whisper local (Ultra rapide sur CPU)
+            # 2. Utilisation du modèle pré-chargé faster-whisper local
+            if self.local_model:
+                segments, _ = self.local_model.transcribe(
+                    tmp_path, 
+                    language="fr", 
+                    initial_prompt="Dictée médicale et médico-sociale en français : situation de personne âgée, autonomie, GIR, APA, chutes, aidant, hospitalisation."
+                )
+                text = " ".join([segment.text for segment in segments])
+                return text.strip()
+
+            # 3. Fallback instanciation dynamique
             try:
                 from faster_whisper import WhisperModel
-                # Modèle 'base' ou 'tiny' en français sur CPU avec int8 pour un chargement rapide
-                model = WhisperModel("base", device="cpu", compute_type="int8")
-                segments, _ = model.transcribe(tmp_path, language="fr", initial_prompt="Dictée médicale et médico-sociale en français : situation de personne âgée, autonomie, GIR, APA, chutes, aidant, hospitalisation, maintien à domicile.")
+                model = WhisperModel("tiny", device="cpu", compute_type="int8")
+                segments, _ = model.transcribe(tmp_path, language="fr")
                 text = " ".join([segment.text for segment in segments])
-                if text.strip():
-                    return text.strip()
-            except Exception as e1:
-                logger.debug(f"Faster-whisper local non disponible ou erreur: {e1}")
+                return text.strip()
+            except Exception as e:
+                logger.error(f"Erreur transcription local: {e}")
 
-            # 3. Tentative avec openai-whisper local
-            try:
-                import whisper
-                model = whisper.load_model("base")
-                result = model.transcribe(tmp_path, language="fr")
-                return result.get("text", "").strip()
-            except Exception as e2:
-                logger.debug(f"Whisper local non disponible: {e2}")
-
-            raise RuntimeError("Clé OPENAI_API_KEY non configurée et aucun paquet local Whisper (faster-whisper) disponible.")
+            raise RuntimeError("Aucun moteur Whisper disponible.")
 
         finally:
             if os.path.exists(tmp_path):
