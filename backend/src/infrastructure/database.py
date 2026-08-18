@@ -52,6 +52,25 @@ class DatabaseManager:
                 self._seed_initial_patients(cursor)
                 conn.commit()
 
+            # Seeding automatique si la table comid_evaluations est vide
+            cursor.execute('SELECT COUNT(*) FROM comid_evaluations')
+            if cursor.fetchone()[0] == 0:
+                self._seed_initial_comid(cursor)
+                conn.commit()
+
+    def _seed_initial_comid(self, cursor):
+        """Remplit des données COMID initiales pour le tableau comparatif Entrée vs Sortie."""
+        demo_comid = [
+            ("DOS-101", "Jean Dupont", "entree", 14, "Très complexe", json.dumps(["multimorbidite", "douleurs", "epuisement_aidant"]), "2026-08-17 15:45:23"),
+            ("DOS-101", "Jean Dupont", "sortie", 5, "Non complexe", json.dumps(["multimorbidite"]), "2026-08-17 15:45:23"),
+            ("DOS-102", "Marie Martin", "entree", 18, "Très complexe", json.dumps(["multimorbidite", "troubles_cognitifs", "precarite_financiere"]), "2026-08-17 15:45:23")
+        ]
+        cursor.executemany('''
+            INSERT INTO comid_evaluations 
+            (dossier_id, senior_nom, type_eval, score, niveau, criteres_json, date_creation)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', demo_comid)
+
     def _seed_initial_patients(self, cursor):
         """Remplit des données de démonstration réalistes pour le diagramme de Sankey."""
         demo_patients = [
