@@ -1,6 +1,0 @@
-Sheet: 05_Sources_regles
-
-        Source                          ID Version                                                                                                             Description
- Ancien moteur        orientation_rules_v1   1.4.0                                                          Règles d'orientation ORIA territoriales de production validées
-Nouveau moteur orientation_rules_hybrid_v1   2.0.0                                                 Règles d'orientation ORIA Hybrides : Garde-fous et Pondération clinique
-          Note                                     Les matrices ont été construites à partir des règles fournies et des notes professionnelles visibles dans les captures.

@@ -24,24 +24,11 @@ Assurez-vous qu'Ollama est démarré sur votre machine et que le modèle Llama 3
 ollama run llama3
 ```
 
-### 2. Lancer les simulations de tests
-Les tests de simulation permettent de valider toute la chaîne décisionnelle.
-```bash
-# Tester le cas de M. Gilbert (Toulon - Dépendance & saturation)
-python tests_simulation/test_mr_gilbert.py
-
-# Tester le cas de Mme Antoinette (La Garde - Épuisement aidant & refus de SAAD)
-python tests_simulation/test_mme_antoinette.py
-
-# Tester le cas de Mme Huguette (La Valette - Spoliation financière & protection d'urgence)
-python tests_simulation/test_mme_huguette.py
-```
-
-### 3. Démarrer le serveur API (FastAPI)
+### 2. Démarrer le serveur API (FastAPI)
 Pour lancer le serveur de production locale en arrière-plan :
 ```bash
 cd backend/src
-uvicorn main:app --reload
+python -m uvicorn main:app --reload
 ```
 L'API sera accessible sur `http://localhost:8000`. L'endpoint `/analyze` permet de soumettre des textes libres pour obtenir l'orientation complète en JSON.
 
