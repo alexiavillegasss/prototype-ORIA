@@ -1139,7 +1139,7 @@ window.toggleVoiceDictation = function() {
     try {
         activeRecognition = new SpeechRecognition();
         activeRecognition.lang = 'fr-FR';
-        activeRecognition.continuous = false;
+        activeRecognition.continuous = true;
         activeRecognition.interimResults = true;
 
         let initialText = textarea ? textarea.value : '';
@@ -1166,6 +1166,10 @@ window.toggleVoiceDictation = function() {
 
         activeRecognition.onerror = (err) => {
             console.error('Erreur reconnaissance vocale:', err);
+            if (err.error === 'no-speech' && isDictating) {
+                // Silence détecté, on conserve l'écoute active
+                return;
+            }
             isDictating = false;
             activeRecognition = null;
             if (btn) {
@@ -1177,14 +1181,23 @@ window.toggleVoiceDictation = function() {
         };
 
         activeRecognition.onend = () => {
-            isDictating = false;
-            activeRecognition = null;
-            if (btn) {
-                btn.style.background = "rgba(239, 68, 68, 0.12)";
-                btn.style.borderColor = "rgba(239, 68, 68, 0.35)";
-                btn.style.color = "#f87171";
+            if (isDictating) {
+                // Si l'utilisateur n'a pas cliqué sur Stop, relancer l'écoute immédiatement
+                if (textarea) initialText = textarea.value;
+                try {
+                    activeRecognition.start();
+                } catch(e) {
+                    console.warn("Relance de l'écoute vocale:", e);
+                }
+            } else {
+                activeRecognition = null;
+                if (btn) {
+                    btn.style.background = "rgba(239, 68, 68, 0.12)";
+                    btn.style.borderColor = "rgba(239, 68, 68, 0.35)";
+                    btn.style.color = "#f87171";
+                }
+                if (label) label.textContent = "Dictée vocale";
             }
-            if (label) label.textContent = "Dictée vocale";
         };
 
         activeRecognition.start();
