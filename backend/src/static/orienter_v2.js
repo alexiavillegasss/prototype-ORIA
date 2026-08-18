@@ -14,36 +14,36 @@ const STRUCTURE_COLORS = {
 
 // Dictionnaire complet des 30 critères COMID pour la traçabilité clinique dans l'interface
 const COMID_LABELS = {
-    'multimorbidite': 'Multimorbidité (≥ 3 pathologies chroniques)',
-    'douleurs': 'Douleurs chroniques ou mal contrôlées',
-    'allergies': 'Allergies complexes ou sévères',
-    'polymedication': 'Polymédication (≥ 5 médicaments distincts)',
-    'troubles_cognitifs': 'Troubles cognitifs (Alzheimer ou apparentés)',
-    'precarite_financiere': 'Précarité financière / Ressources faibles',
-    'epuisement_aidant': 'Épuisement critique de l\'aidant régulier',
-    'litteratie_faible': 'Faible littératie en santé / Barrière de langue',
-    'isolement_social': 'Isolement social ou familial prononcé',
-    'logement_inadapte': 'Logement inadapté ou insalubre (ex: incurie)',
-    'depression': 'Troubles de l\'humeur, dépression avérée',
-    'psychiatrie': 'Suivi psychiatrique ou trouble psy actif',
-    'addiction': 'Addiction ou dépendance (alcool, substances)',
-    'anxiete': 'Anxiété majeure ou angoisses exprimées',
-    'fluctuation_mentale': 'Fluctuations rapides de l\'état mental',
-    'sollicitations_recurrentes': 'Sollicitations récurrentes (urgences / médecins)',
-    'conflit_reseau': 'Conflit au sein du réseau d\'intervenants',
-    'inquietude_sante': 'Inquiétude majeure pour sa propre santé',
-    'agressivite': 'Agressivité ou hostilité verbale/physique',
-    'opposition_soins': 'Refus de soins ou d\'aide active à domicile',
-    'degradation_recente': 'Dégradation rapide de la situation (< 1 mois)',
-    'perte_autonomie_recente': 'Perte d\'autonomie motrice ou physique récente',
-    'transition_parcours': 'Rupture ou transition de parcours (sortie hôpital)',
-    'trouble_cognitif_aigu': 'Confusion ou trouble cognitif aigu récent',
-    'imprevisibilite': 'Grande imprévisibilité de l\'état de santé',
-    'multitude_intervenants': 'Multitude d\'intervenants sans coordination',
-    'manque_partenariat': 'Manque de partenariat ou rupture avec les pro',
-    'incoherence_soins': 'Incohérence majeure dans le plan de soins',
-    'probleme_assurance': 'Difficultés de couverture d\'assurance maladie',
-    'lourdeur_reseau': 'Lourdeur administrative ou réseau complexe'
+    'multimorbidite': 'Plusieurs maladies chroniques (>2) et/ou symptôme(s) inexpliqué(s)',
+    'douleurs': 'Douleurs chroniques',
+    'allergies': 'Allergie et/ou intolérance médicamenteuse',
+    'polymedication': 'Polymédication (>5)',
+    'troubles_cognitifs': 'Troubles cognitifs',
+    'precarite_financiere': 'Difficultés financières et/ou incapacité à supporter financièrement des prestations d\'aide et de soins',
+    'epuisement_aidant': 'Absence ou épuisement du proche aidant et/ou tensions familiales',
+    'litteratie_faible': 'Faible niveau de littératie (alphabétisation et/ou barrière linguistique/culturelle)',
+    'isolement_social': 'Isolement social',
+    'logement_inadapte': 'Logement inadapté et/ou barrière environnementale',
+    'depression': 'Dépression et/ou idées suicidaires',
+    'psychiatrie': 'Maladie psychiatrique et/ou troubles psychiques (délires, hallucination, etc.)',
+    'addiction': 'Addiction',
+    'anxiete': 'Anxiété ou angoisse rendant le tableau clinique confus',
+    'fluctuation_mentale': 'Fonctions mentales variant au cours de la journée',
+    'sollicitations_recurrentes': 'Sollicitations récurrentes du réseau primaire et/ou secondaire',
+    'conflit_reseau': 'Communication ambivalente et/ou conflictuelle avec l\'un des membres du réseau primaire et/ou secondaire',
+    'inquietude_sante': 'Inquiétude face à ses symptômes et/ou état de santé et/ou aux informations médicales reçues',
+    'agressivite': 'Agressivité (verbale et/ou physique) ou mutisme',
+    'opposition_soins': 'Résistance ou opposition aux soins, qu\'elles soient actives ou passives',
+    'degradation_recente': 'Dégradation récente de l\'état de santé ressentie par le client',
+    'perte_autonomie_recente': 'Changement global du degré d\'indépendance (AVQ/AIVQ) lors du dernier mois',
+    'transition_parcours': 'Période de transition (annonce diagnostic, retour hospitalisation, décès proche aidant, divorce, travail, etc.)',
+    'trouble_cognitif_aigu': 'Changement aigu des capacités cognitives',
+    'imprevisibilite': 'Non prévisibilité de l\'état de santé',
+    'multitude_intervenants': 'Multitude d\'intervenants dans le réseau secondaire (médecin traitant, spécialiste, soignant, curateur, etc.)',
+    'manque_partenariat': 'Absence ou faible degré de partenariat entre les différents intervenants du réseau primaire et/ou secondaire',
+    'incoherence_soins': 'Incohérence thérapeutique et/ou perte de sens dans la prise en charge du point de vue du professionnel',
+    'probleme_assurance': 'Problème d\'assurance (limitation du remboursement de prise en charge)',
+    'lourdeur_reseau': 'Lourdeur émotionnelle et/ou physique de la prise en charge ressentie par les membres du réseau secondaire (médecins, soignants)'
 };
 
 // Variables d'état globales de la session de diagnostic
@@ -79,6 +79,24 @@ document.addEventListener('DOMContentLoaded', () => {
             themeToggle.innerHTML = iconMoon;
         }
     });
+
+    // Gestion du Menu Hamburger
+    const menuToggle = document.getElementById('menu-toggle');
+    const dropdownMenu = document.getElementById('dropdown-menu');
+    
+    if (menuToggle && dropdownMenu) {
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation(); // Empêche la fermeture immédiate
+            dropdownMenu.classList.toggle('hidden');
+        });
+
+        // Fermer le menu si on clique ailleurs
+        document.addEventListener('click', (e) => {
+            if (!dropdownMenu.contains(e.target) && !menuToggle.contains(e.target)) {
+                dropdownMenu.classList.add('hidden');
+            }
+        });
+    }
 
     const btnSubmit = document.getElementById('btn-submit');
     const inputArea = document.getElementById('situation-input');
@@ -180,6 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // On extrait l'orientation courante
         const struct = orientations[currentIndex];
+        structuresTitle.style.display = "";
         structuresTitle.textContent = `Proposition d'orientation (${currentIndex + 1} sur ${orientations.length}) :`;
 
         const card = document.createElement('div');
@@ -344,7 +363,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             // Rendu de l'écran de validation finale
-            structuresTitle.textContent = "Orientation validée avec succès :";
+            structuresTitle.style.display = "none";
             
             let pdfButtonHtml = '';
             if (options && options.showDacPdf) {
@@ -365,13 +384,32 @@ document.addEventListener('DOMContentLoaded', () => {
                         📄 Visualiser la fiche d'orientation CLIC Toulon
                     </button>
                 `;
+            } else if (options && options.showClicProvenceVertePdf) {
+                pdfButtonHtml = `
+                    <button onclick="downloadClicProvenceVertePdf()" class="btn-primary" style="background: #10b981; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); margin-top: 1rem; margin-left: 0.5rem;">
+                        📄 Visualiser la fiche d'orientation CLIC Provence Verte
+                    </button>
+                `;
+            } else if (options && options.showClicHadagePdf) {
+                pdfButtonHtml = `
+                    <button onclick="downloadClicHadagePdf()" class="btn-primary" style="background: #f59e0b; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); margin-top: 1rem; margin-left: 0.5rem;">
+                        📄 Visualiser la fiche d'orientation CLIC Hadage
+                    </button>
+                `;
+            }
+            let displayLabel = label;
+            if (displayLabel.includes("DAC - Situation de complexité")) {
+                displayLabel = "DAC (Dispositif d'appui à la coordination)";
+            }
+            if (displayLabel.includes("CLIC")) {
+                displayLabel = displayLabel.replace(" (Sénior)", "").replace(" (Senior)", "");
             }
 
             structuresList.innerHTML = `
                 <div class="success-card fadeInUp">
-                    <h4 style="font-size: 1.2rem; font-weight: 700; color: #22c55e;">Dossier Validé & Enregistré</h4>
-                    <p style="color: var(--text-secondary); max-width: 480px; font-size: 0.92rem; line-height: 1.5; margin: 0 auto;">
-                        L'orientation finale vers <strong>${label}</strong> a été enregistrée avec succès. Les données de diagnostic pivot et de traçabilité COMID sont sauvegardées dans votre base locale.
+                    <h4 style="font-size: 1.2rem; font-weight: 700; color: #22c55e; margin-bottom: 0.5rem;">Dossier validé et enregistré</h4>
+                    <p style="color: var(--text-primary); max-width: 480px; font-size: 1.05rem; line-height: 1.5; margin: 0 auto;">
+                        Orientation : <strong>${displayLabel}</strong>
                     </p>
                     <div style="display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap;">
                         <button onclick="resetAnalysis()" class="btn-primary" style="background: #22c55e; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3); margin-top: 1rem;">
@@ -393,13 +431,18 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     window.handleOuiElleConvient = function(label, type, structData = null) {
         const commune = (schemaPivot && schemaPivot["usager.localisation.commune_residence"]) ? schemaPivot["usager.localisation.commune_residence"].toLowerCase() : "";
+        const nomLocal = structData && structData.nom_local ? structData.nom_local.toLowerCase() : "";
 
-        if (type === 'DAC') {
-            window.showDacWizard(label, type);
-        } else if (type === 'CLIC' && (label.toLowerCase().includes('seyne') || commune.includes('seyne'))) {
-            window.showClicWizard(label, type);
-        } else if (type === 'CLIC' && (label.toLowerCase().includes('toulon') || commune.includes('toulon'))) {
-            window.showClicToulonWizard(label, type);
+        if (type.startsWith('DAC')) {
+            window.validateCurrentOrientation(label, type, { showDacPdf: true });
+        } else if (type.startsWith('CLIC') && (label.toLowerCase().includes('seyne') || nomLocal.includes('seyne') || commune.includes('seyne'))) {
+            window.validateCurrentOrientation(label, type, { showClicPdf: true });
+        } else if (type.startsWith('CLIC') && (label.toLowerCase().includes('toulon') || nomLocal.includes('toulon') || commune.includes('toulon'))) {
+            window.validateCurrentOrientation(label, type, { showClicToulonPdf: true });
+        } else if (type.startsWith('CLIC') && (label.toLowerCase().includes('provence verte') || nomLocal.includes('provence verte') || commune.includes('brignoles') || commune.includes('bras') || commune.includes('cotignac'))) {
+            window.validateCurrentOrientation(label, type, { showClicProvenceVertePdf: true });
+        } else if (type.startsWith('CLIC') && (label.toLowerCase().includes('hadage') || nomLocal.includes('hadage') || commune.includes('hyères') || commune.includes('hyeres') || commune.includes('bormes'))) {
+            window.validateCurrentOrientation(label, type, { showClicHadagePdf: true });
         } else if (structData && structData.email) {
             window.showGenericMailWizard(structData);
         } else {
@@ -525,254 +568,22 @@ document.addEventListener('DOMContentLoaded', () => {
      * Gère le questionnaire pas-à-pas DAC
      */
     window.showDacWizard = function(label, type) {
-        let modal = document.getElementById('dac-wizard-modal');
-        if (!modal) {
-            modal = document.createElement('div');
-            modal.id = 'dac-wizard-modal';
-            modal.className = 'modal-overlay';
-            document.body.appendChild(modal);
-        }
-        
-        ensureWizardStyles();
-
-        showStep1(modal, label, type);
+        window.validateCurrentOrientation(label, type, { showDacPdf: true });
     };
-
-    function showStep1(modal, label, type) {
-        modal.style.display = 'flex';
-        modal.innerHTML = `
-            <div class="modal-card">
-                <div class="modal-header">
-                    <span class="modal-logo">🧭</span>
-                    <h3>Fiche d'Orientation DAC</h3>
-                </div>
-                <div class="modal-body">
-                    <p style="margin-bottom: 0.75rem; font-weight: 600; color: var(--accent-blue);">Orientation détectée : ${label}</p>
-                    <p>Voulez-vous remplir la fiche d'orientation du DAC ?</p>
-                </div>
-                <div class="modal-footer">
-                    <button id="btn-step1-non" class="btn-modal-secondary">Non</button>
-                    <button id="btn-step1-oui" class="btn-modal-primary">Oui</button>
-                </div>
-            </div>
-        `;
-
-        document.getElementById('btn-step1-non').onclick = () => {
-            modal.style.display = 'none';
-            // Non = normal validation as before
-            window.validateCurrentOrientation(label, type);
-        };
-
-        document.getElementById('btn-step1-oui').onclick = () => {
-            showStep2(modal, label, type);
-        };
-    }
-
-    function showStep2(modal, label, type) {
-        modal.innerHTML = `
-            <div class="modal-card">
-                <div class="modal-header">
-                    <span class="modal-logo">📋</span>
-                    <h3>Fiche d'Orientation DAC</h3>
-                </div>
-                <div class="modal-body">
-                    <p>Voulez-vous remplir les informations manquantes ?</p>
-                </div>
-                <div class="modal-footer">
-                    <button id="btn-step2-non" class="btn-modal-secondary">Non</button>
-                    <button id="btn-step2-oui" class="btn-modal-primary">Oui</button>
-                </div>
-            </div>
-        `;
-
-        document.getElementById('btn-step2-non').onclick = () => {
-            modal.style.display = 'none';
-            // Non = validate and show success with visualising button (semi-filled with current info)
-            window.validateCurrentOrientation(label, type, { showDacPdf: true });
-        };
-
-        document.getElementById('btn-step2-oui').onclick = () => {
-            modal.innerHTML = `
-                <div class="modal-card">
-                    <div class="modal-header">
-                        <span class="modal-logo">💡</span>
-                        <h3>Saisie à venir</h3>
-                    </div>
-                    <div class="modal-body">
-                        <p style="margin-bottom: 0.75rem;">Le module de saisie des informations manquantes sera disponible prochainement.</p>
-                        <p>La fiche d'orientation va être visualisée avec les informations déjà extraites et présentes.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button id="btn-step2-oui-continue" class="btn-modal-primary" style="width: 100%;">Visualiser la fiche</button>
-                    </div>
-                </div>
-            `;
-            document.getElementById('btn-step2-oui-continue').onclick = () => {
-                modal.style.display = 'none';
-                window.validateCurrentOrientation(label, type, { showDacPdf: true });
-            };
-        };
-    }
 
     /**
-     * Gère le questionnaire pas-à-pas CLIC
+     * Gère le questionnaire pas-à-pas CLIC La Seyne
      */
     window.showClicWizard = function(label, type) {
-        let modal = document.getElementById('dac-wizard-modal'); // on réutilise la modale DAC
-        if (!modal) {
-            modal = document.createElement('div');
-            modal.id = 'dac-wizard-modal';
-            modal.className = 'modal-overlay';
-            document.body.appendChild(modal);
-        }
-        
-        ensureWizardStyles();
-        showClicStep1(modal, label, type);
+        window.validateCurrentOrientation(label, type, { showClicPdf: true });
     };
-
-    function showClicStep1(modal, label, type) {
-        modal.style.display = 'flex';
-        modal.innerHTML = `
-            <div class="modal-card">
-                <div class="modal-header">
-                    <span class="modal-logo">🧭</span>
-                    <h3>Fiche d'Orientation CLIC</h3>
-                </div>
-                <div class="modal-body">
-                    <p style="margin-bottom: 0.75rem; font-weight: 600; color: #0ea5e9;">Orientation détectée : ${label}</p>
-                    <p>Voulez-vous remplir la fiche d'orientation du CLIC de La Seyne-sur-Mer ?</p>
-                </div>
-                <div class="modal-footer">
-                    <button id="btn-clic-step1-non" class="btn-modal-secondary">Non</button>
-                    <button id="btn-clic-step1-oui" class="btn-modal-primary" style="background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);">Oui</button>
-                </div>
-            </div>
-        `;
-
-        document.getElementById('btn-clic-step1-non').onclick = () => {
-            modal.style.display = 'none';
-            window.validateCurrentOrientation(label, type);
-        };
-
-        document.getElementById('btn-clic-step1-oui').onclick = () => {
-            showClicStep2(modal, label, type);
-        };
-    }
-
-    function showClicStep2(modal, label, type) {
-        modal.innerHTML = `
-            <div class="modal-card">
-                <div class="modal-header">
-                    <span class="modal-logo">💡</span>
-                    <h3>Saisie à venir</h3>
-                </div>
-                <div class="modal-body">
-                    <p style="margin-bottom: 0.75rem;">Le module de saisie des informations manquantes pour le CLIC sera disponible prochainement.</p>
-                    <p>La fiche d'orientation va être générée avec les informations déjà extraites et présentes.</p>
-                </div>
-                <div class="modal-footer">
-                    <button id="btn-clic-step2-oui-continue" class="btn-modal-primary" style="background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%); width: 100%;">Visualiser la fiche</button>
-                </div>
-            </div>
-        `;
-        document.getElementById('btn-clic-step2-oui-continue').onclick = () => {
-            modal.style.display = 'none';
-            window.validateCurrentOrientation(label, type, { showClicPdf: true });
-        };
-    }
 
     /**
      * Gère le questionnaire pas-à-pas CLIC Toulon
      */
     window.showClicToulonWizard = function(label, type) {
-        let modal = document.getElementById('dac-wizard-modal');
-        if (!modal) {
-            modal = document.createElement('div');
-            modal.id = 'dac-wizard-modal';
-            modal.className = 'modal-overlay';
-            document.body.appendChild(modal);
-        }
-        ensureWizardStyles();
-        showClicToulonStep1(modal, label, type);
+        window.validateCurrentOrientation(label, type, { showClicToulonPdf: true });
     };
-
-    function showClicToulonStep1(modal, label, type) {
-        modal.style.display = 'flex';
-        modal.innerHTML = `
-            <div class="modal-card">
-                <div class="modal-header">
-                    <span class="modal-logo">🧭</span>
-                    <h3>Fiche d'Orientation CLIC Toulon</h3>
-                </div>
-                <div class="modal-body">
-                    <p style="margin-bottom: 0.75rem; font-weight: 600; color: #0ea5e9;">Orientation détectée : ${label}</p>
-                    <p>Voulez-vous remplir la fiche d'orientation du CLIC de Toulon ?</p>
-                </div>
-                <div class="modal-footer">
-                    <button id="btn-clic-toulon-step1-non" class="btn-modal-secondary">Non</button>
-                    <button id="btn-clic-toulon-step1-oui" class="btn-modal-primary" style="background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);">Oui</button>
-                </div>
-            </div>
-        `;
-
-        document.getElementById('btn-clic-toulon-step1-non').onclick = () => {
-            modal.style.display = 'none';
-            window.validateCurrentOrientation(label, type);
-        };
-
-        document.getElementById('btn-clic-toulon-step1-oui').onclick = () => {
-            showClicToulonStep2(modal, label, type);
-        };
-    }
-
-    function showClicToulonStep2(modal, label, type) {
-        modal.innerHTML = `
-            <div class="modal-card">
-                <div class="modal-header">
-                    <span class="modal-logo">📋</span>
-                    <h3>Fiche d'Orientation CLIC Toulon</h3>
-                </div>
-                <div class="modal-body">
-                    <p>Voulez-vous remplir les informations manquantes ?</p>
-                </div>
-                <div class="modal-footer">
-                    <button id="btn-clic-toulon-step2-non" class="btn-modal-secondary">Non</button>
-                    <button id="btn-clic-toulon-step2-oui" class="btn-modal-primary" style="background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);">Oui</button>
-                </div>
-            </div>
-        `;
-
-        document.getElementById('btn-clic-toulon-step2-non').onclick = () => {
-            modal.style.display = 'none';
-            window.validateCurrentOrientation(label, type, { showClicToulonPdf: true });
-        };
-
-        document.getElementById('btn-clic-toulon-step2-oui').onclick = () => {
-            showClicToulonStep3(modal, label, type);
-        };
-    }
-
-    function showClicToulonStep3(modal, label, type) {
-        modal.innerHTML = `
-            <div class="modal-card">
-                <div class="modal-header">
-                    <span class="modal-logo">💡</span>
-                    <h3>Saisie à venir</h3>
-                </div>
-                <div class="modal-body">
-                    <p style="margin-bottom: 0.75rem;">Le module de saisie des informations manquantes pour le CLIC de Toulon sera disponible prochainement.</p>
-                    <p>La fiche d'orientation va être générée avec les informations déjà extraites et présentes.</p>
-                </div>
-                <div class="modal-footer">
-                    <button id="btn-clic-toulon-step3-continue" class="btn-modal-primary" style="background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%); width: 100%;">Visualiser la fiche</button>
-                </div>
-            </div>
-        `;
-        document.getElementById('btn-clic-toulon-step3-continue').onclick = () => {
-            modal.style.display = 'none';
-            window.validateCurrentOrientation(label, type, { showClicToulonPdf: true });
-        };
-    }
 
     /**
      * Gère la génération de mail pour toutes les structures ayant un email (CCAS, CPTS, CLIC sans PDF...)
@@ -1062,7 +873,95 @@ Cordialement,`;
         schemaPivot = null;
         inputArea.focus();
     };
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Provence Verte sous format PDF
+     */
+    window.downloadClicProvenceVertePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('situation-input').value.trim();
+
+        const btn = document.querySelector('[onclick="downloadClicProvenceVertePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_provence_verte/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_provence_verte.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Provence Verte.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
+    /**
+     * Télécharge la fiche d'orientation CLIC Hadage sous format PDF
+     */
+    window.downloadClicHadagePdf = async function() {
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const text = document.getElementById('situation-input').value.trim();
+
+        const btn = document.querySelector('[onclick="downloadClicHadagePdf()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Génération en cours...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/orientation/clic_hadage/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau");
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fiche_orientation_clic_hadage.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erreur PDF:", error);
+            alert("Une erreur est survenue lors de la génération du PDF CLIC Hadage.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    };
+
 });
+
 
 /**
  * Attribue une classe CSS en fonction du score COMID
@@ -1092,3 +991,88 @@ function formatHospitalisation(status) {
     if (status === 'recente') return 'Récente (< 10 jours)';
     return 'Aucune hospitalisation';
 }
+
+// ========================================================
+// DICTÉE VOCALE / RECONNAISSANCE VOCALE WEB SPEECH
+// ========================================================
+let recognition = null;
+let isRecording = false;
+
+window.toggleVoiceDictation = function() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        alert("La reconnaissance vocale n'est pas disponible sur votre navigateur (utilisez Google Chrome ou Microsoft Edge).");
+        return;
+    }
+    const btn = document.getElementById('btn-voice-toggle');
+    const label = document.getElementById('voice-btn-label');
+    const textarea = document.getElementById('situation-input');
+
+    if (isRecording) {
+        if (recognition) recognition.stop();
+        isRecording = false;
+        if (btn) {
+            btn.style.background = "rgba(168, 85, 247, 0.12)";
+            btn.style.borderColor = "rgba(168, 85, 247, 0.3)";
+            btn.style.color = "#c084fc";
+        }
+        if (label) label.textContent = "Activer la dictée vocale";
+        return;
+    }
+
+    recognition = new SpeechRecognition();
+    recognition.lang = 'fr-FR';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.onstart = () => {
+        isRecording = true;
+        if (btn) {
+            btn.style.background = "rgba(239, 68, 68, 0.25)";
+            btn.style.borderColor = "#ef4444";
+            btn.style.color = "#fca5a5";
+        }
+        if (label) label.textContent = "🔴 Écoute en cours...";
+    };
+
+    recognition.onresult = (event) => {
+        let transcript = '';
+        for (let i = 0; i < event.results.length; i++) {
+            transcript += event.results[i][0].transcript;
+        }
+        if (textarea) textarea.value = transcript;
+    };
+
+    recognition.onerror = (event) => {
+        console.error(event.error);
+        isRecording = false;
+        if (btn) {
+            btn.style.background = "rgba(168, 85, 247, 0.12)";
+            btn.style.borderColor = "rgba(168, 85, 247, 0.3)";
+            btn.style.color = "#c084fc";
+        }
+        if (label) label.textContent = "Activer la dictée vocale";
+    };
+
+    recognition.onend = () => {
+        isRecording = false;
+        if (btn) {
+            btn.style.background = "rgba(168, 85, 247, 0.12)";
+            btn.style.borderColor = "rgba(168, 85, 247, 0.3)";
+            btn.style.color = "#c084fc";
+        }
+        if (label) label.textContent = "Activer la dictée vocale";
+    };
+
+    recognition.start();
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode');
+    if (mode === 'voice') {
+        setTimeout(() => {
+            window.toggleVoiceDictation();
+        }, 600);
+    }
+});

@@ -1363,5 +1363,27 @@
         }
       }
     }
+  },
+  "Provence Verte (BRAS, BRIGNOLES, CAMPS-LA-SOURCE, CARCES, CHATEAUVERTS, COTIGNAC, CORRENS, ENTRECASTEAUX, GAREOULT, FORCALQUEIRET, LA CELLE, LA ROQUEBRUSSANE, MAZAUGUE, MEOUNE-LES-MONTRIEUX, MONTFORT-SUR-ARGENS, NANS-LES-PINS, NEOULES, OLLIERES, PLAN D'AUPS-SAINTE-BAUME, POURCIEUX, POURRIERES, ROCBARON, ROUGIERS, SAINT-MAXIMIN-LA-SAINTE-BAUME, SAINT-ANASTASIE-SUR-ISSOLE, TOURVES, VIN-SUR-CARAMY)": {
+    "priorite_ccas_sur_uts": false,
+    "structures_disponibles": {
+      "CLIC": {
+        "present": true,
+        "nom": "CLIC Provence Verte",
+        "telephone": "",
+        "email": ""
+      }
+    }
+  },
+  "Hadage (HYERES-LES-PALMIERS, HYERES, HYÈRES, BORME-LES-MIMOSA, BORMES-LES-MIMOSAS, CARQUEIRANNE, CAVALAIRE-SUR-MER, COLLOBRIERES, LA-LONDE-LES-MAURES, LE-RAYOL-CANADEL-SUR-MER, PIERREFEU-DU-VAR)": {
+    "priorite_ccas_sur_uts": false,
+    "structures_disponibles": {
+      "CLIC": {
+        "present": true,
+        "nom": "CLIC Hadage",
+        "telephone": "",
+        "email": ""
+      }
+    }
   }
 }
