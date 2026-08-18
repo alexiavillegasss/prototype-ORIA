@@ -1009,7 +1009,10 @@ window.toggleVoiceDictation = function() {
         // STOP DICTÉE
         isDictating = false;
         if (activeRecognition) {
-            try { activeRecognition.stop(); } catch(e){}
+            try { 
+                activeRecognition.abort(); 
+                activeRecognition.stop(); 
+            } catch(e){}
             activeRecognition = null;
         }
         if (btn) {
@@ -1029,7 +1032,7 @@ window.toggleVoiceDictation = function() {
     try {
         activeRecognition = new SpeechRecognition();
         activeRecognition.lang = 'fr-FR';
-        activeRecognition.continuous = true;
+        activeRecognition.continuous = false;
         activeRecognition.interimResults = true;
 
         let initialText = textarea ? textarea.value : '';
@@ -1057,6 +1060,7 @@ window.toggleVoiceDictation = function() {
         activeRecognition.onerror = (err) => {
             console.error('Erreur reconnaissance vocale:', err);
             isDictating = false;
+            activeRecognition = null;
             if (btn) {
                 btn.style.background = "rgba(239, 68, 68, 0.12)";
                 btn.style.borderColor = "rgba(239, 68, 68, 0.35)";
@@ -1067,6 +1071,7 @@ window.toggleVoiceDictation = function() {
 
         activeRecognition.onend = () => {
             isDictating = false;
+            activeRecognition = null;
             if (btn) {
                 btn.style.background = "rgba(239, 68, 68, 0.12)";
                 btn.style.borderColor = "rgba(239, 68, 68, 0.35)";
@@ -1089,13 +1094,5 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             window.toggleVoiceDictation();
         });
-    }
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const mode = urlParams.get('mode');
-    if (mode === 'voice') {
-        setTimeout(() => {
-            window.toggleVoiceDictation();
-        }, 600);
     }
 });
