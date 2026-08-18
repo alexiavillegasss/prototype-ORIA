@@ -525,7 +525,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Intercepte la validation pour le type DAC pour poser les questions de fiche
+     * Intercepte la validation pour le type DAC ou CLIC avec PDF, ou valide directement
      */
     window.handleOuiElleConvient = function(label, type, structData = null) {
         label = label || "Orientation";
@@ -544,8 +544,6 @@ document.addEventListener('DOMContentLoaded', () => {
             window.validateCurrentOrientation(label, type, { showClicProvenceVertePdf: true });
         } else if (type.startsWith('CLIC') && (safeLabel.includes('hadage') || nomLocal.includes('hadage') || commune.includes('hyères') || commune.includes('hyeres') || commune.includes('bormes'))) {
             window.validateCurrentOrientation(label, type, { showClicHadagePdf: true });
-        } else if (structData && structData.email) {
-            window.showGenericMailWizard(structData);
         } else {
             window.validateCurrentOrientation(label, type);
         }
