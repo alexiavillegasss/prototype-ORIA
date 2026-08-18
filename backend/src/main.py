@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Request
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, FileResponse, Response
 from pydantic import BaseModel
@@ -15,10 +15,8 @@ from application.orientation_engine import OrientationEngine
 from application.territory_manager import TerritoryManager
 from application.pdf_generator import PDFGenerator
 from infrastructure.database import DatabaseManager
-from infrastructure.whisper_transcriber import WhisperTranscriber
 
 app = FastAPI()
-whisper_transcriber = WhisperTranscriber()
 
 # Montage des fichiers statiques (CSS, JS) pour le tableau de bord
 STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
@@ -232,25 +230,6 @@ def delete_comid_dossier(dossier_id: str):
     if not success:
         return {"error": "Dossier introuvable."}
     return {"message": f"Dossier {dossier_id} supprimé avec succès."}
-
-# -----------------------------
-# API TRANSCRIPTION WHISPER
-# -----------------------------
-@app.post("/api/transcribe")
-async def transcribe_audio(file: UploadFile = File(...)):
-    """Reçoit un fichier audio et retourne la transcription Whisper haute précision."""
-    try:
-        contents = await file.read()
-        if not contents:
-            return {"error": "Le fichier audio est vide."}
-        
-        transcription = whisper_transcriber.transcribe_audio_bytes(
-            audio_bytes=contents,
-            filename=file.filename or "audio.webm"
-        )
-        return {"text": transcription}
-    except Exception as e:
-        return {"error": f"Erreur de transcription Whisper : {str(e)}"}
 
 # -----------------------------
 # API SANKEY DATA
