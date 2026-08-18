@@ -1013,11 +1013,11 @@ window.toggleVoiceDictation = function() {
             activeRecognition = null;
         }
         if (btn) {
-            btn.style.background = "rgba(168, 85, 247, 0.12)";
-            btn.style.borderColor = "rgba(168, 85, 247, 0.3)";
-            btn.style.color = "#c084fc";
+            btn.style.background = "rgba(239, 68, 68, 0.12)";
+            btn.style.borderColor = "rgba(239, 68, 68, 0.35)";
+            btn.style.color = "#f87171";
         }
-        if (label) label.textContent = "🎙️ Dictée vocale";
+        if (label) label.textContent = "Dictée vocale";
         return;
     }
 
@@ -1037,9 +1037,9 @@ window.toggleVoiceDictation = function() {
         activeRecognition.onstart = () => {
             isDictating = true;
             if (btn) {
-                btn.style.background = "rgba(239, 68, 68, 0.25)";
+                btn.style.background = "rgba(239, 68, 68, 0.3)";
                 btn.style.borderColor = "#ef4444";
-                btn.style.color = "#fca5a5";
+                btn.style.color = "#ffffff";
             }
             if (label) label.textContent = "🔴 Écoute en direct... (Clic pour stopper)";
         };
@@ -1058,21 +1058,21 @@ window.toggleVoiceDictation = function() {
             console.error('Erreur reconnaissance vocale:', err);
             isDictating = false;
             if (btn) {
-                btn.style.background = "rgba(168, 85, 247, 0.12)";
-                btn.style.borderColor = "rgba(168, 85, 247, 0.3)";
-                btn.style.color = "#c084fc";
+                btn.style.background = "rgba(239, 68, 68, 0.12)";
+                btn.style.borderColor = "rgba(239, 68, 68, 0.35)";
+                btn.style.color = "#f87171";
             }
-            if (label) label.textContent = "🎙️ Dictée vocale";
+            if (label) label.textContent = "Dictée vocale";
         };
 
         activeRecognition.onend = () => {
             isDictating = false;
             if (btn) {
-                btn.style.background = "rgba(168, 85, 247, 0.12)";
-                btn.style.borderColor = "rgba(168, 85, 247, 0.3)";
-                btn.style.color = "#c084fc";
+                btn.style.background = "rgba(239, 68, 68, 0.12)";
+                btn.style.borderColor = "rgba(239, 68, 68, 0.35)";
+                btn.style.color = "#f87171";
             }
-            if (label) label.textContent = "🎙️ Dictée vocale";
+            if (label) label.textContent = "Dictée vocale";
         };
 
         activeRecognition.start();
