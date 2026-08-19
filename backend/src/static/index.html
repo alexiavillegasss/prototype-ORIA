@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Tableau de bord ORIA – Visualisation des flux d'orientation des personnes âgées">
-    <title>ORIA – Tableau de Bord</title>
+    <meta name="description" content="Tableau de bord ORIA – Visualisation des flux et suivis cliniques">
+    <title>ORIA – Tableau de Bord V2</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -14,6 +14,80 @@
             background: rgba(59, 130, 246, 0.2) !important;
             transform: translateY(-50%) translateX(-3px) scale(1.05) !important;
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        /* Tabs Styling */
+        #dashboard-tabs-container {
+            max-width: 1300px;
+            margin: 1.5rem auto 1rem;
+            padding: 0 1.5rem;
+        }
+
+        .tabs-nav {
+            display: flex;
+            gap: 0.75rem;
+            border-bottom: 2px solid var(--border-glass);
+            padding-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .dash-tab-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.75rem 1.35rem;
+            border-radius: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .dash-tab-btn:hover {
+            color: var(--text-primary);
+            border-color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .dash-tab-btn.active {
+            background: var(--accent-blue);
+            color: #ffffff;
+            border-color: var(--accent-blue);
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+        }
+
+        .tab-badge {
+            background: rgba(255, 255, 255, 0.25);
+            color: inherit;
+            font-size: 0.78rem;
+            padding: 0.15rem 0.55rem;
+            border-radius: 12px;
+            font-weight: 700;
+        }
+
+        .dash-tab-btn:not(.active) .tab-badge {
+            background: var(--bg-primary);
+            color: var(--text-muted);
+            border: 1px solid var(--border-glass);
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active-panel {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -26,7 +100,7 @@
                 <img src="/static/logo.png" alt="Logo ORIA" class="logo-img">
             </div>
             <div class="header-title-center">
-                <h2 class="subtitle">Tableau de Bord – Flux d'Orientation</h2>
+                <h2 class="subtitle">Tableau de Bord – ORIA V2</h2>
             </div>
             <div style="display: flex; align-items: center; gap: 1rem;">
                 <button id="theme-toggle" class="btn-primary" style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-glass); padding: 0.5rem; box-shadow: none; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer;">
@@ -87,324 +161,149 @@
                 <span class="kpi-label">Structure la plus sollicitée</span>
             </div>
         </div>
-
     </section>
 
-    <!-- Sankey Section -->
-    <section id="sankey-section">
-        <div class="section-header">
-            <h2>Diagramme de Sankey – Parcours d'Orientation</h2>
-            <p>Choisissez les dimensions à afficher pour explorer les tendances du parcours Personnes Âgées.</p>
+    <!-- Main Navigation Tabs -->
+    <div id="dashboard-tabs-container">
+        <div class="tabs-nav">
+            <button class="dash-tab-btn active" onclick="switchDashboardTab('sankey')" id="tab-btn-sankey">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                <span>Flux & Orientations (Sankey)</span>
+            </button>
+            <button class="dash-tab-btn" onclick="switchDashboardTab('comid')" id="tab-btn-comid">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg>
+                <span>Complexité COMID</span>
+                <span id="tab-count-comid" class="tab-badge">0</span>
+            </button>
+            <button class="dash-tab-btn" onclick="switchDashboardTab('zarit')" id="tab-btn-zarit">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                <span>Fardeau Aidant (ZARIT)</span>
+                <span id="tab-count-zarit" class="tab-badge">0</span>
+            </button>
         </div>
+    </div>
 
-        <!-- Dimension selectors -->
-        <div id="dimension-selectors">
-            <div class="selector-group">
-                <label for="select-dim1">Niveau 1</label>
-                <select id="select-dim1">
-                    <option value="none">-- Ne rien afficher --</option>
-                    <option value="commune" selected>Commune</option>
-                    <option value="tranche_age">Tranche d'âge</option>
-                    <option value="apa">Bénéficiaire APA</option>
-                    <option value="gir">GIR</option>
-                    <option value="medecin_traitant">Médecin traitant</option>
-                    <option value="urgence">Urgence</option>
-                    <option value="complexite">Complexité COMID</option>
-                    <option value="structure">Type de structure</option>
-                </select>
+    <!-- ONGLET 1 : Diagramme de Sankey -->
+    <div id="panel-sankey" class="tab-panel active-panel">
+        <section id="sankey-section" style="max-width: 1300px; margin: 1.5rem auto 3rem; padding: 0 1.5rem;">
+            <div class="section-header">
+                <h2>Diagramme de Sankey – Parcours d'Orientation</h2>
+                <p>Choisissez les dimensions à afficher pour explorer les tendances du parcours Personnes Âgées.</p>
             </div>
-            <div class="selector-arrow">→</div>
-            <div class="selector-group">
-                <label for="select-dim2">Niveau 2</label>
-                <select id="select-dim2">
-                    <option value="none">-- Ne rien afficher --</option>
-                    <option value="commune">Commune</option>
-                    <option value="tranche_age">Tranche d'âge</option>
-                    <option value="apa">Bénéficiaire APA</option>
-                    <option value="gir">GIR</option>
-                    <option value="medecin_traitant">Médecin traitant</option>
-                    <option value="urgence">Urgence</option>
-                    <option value="complexite" selected>Complexité COMID</option>
-                    <option value="structure">Type de structure</option>
-                </select>
+
+            <!-- Dimension selectors -->
+            <div id="dimension-selectors">
+                <div class="selector-group">
+                    <label for="select-dim1">Niveau 1</label>
+                    <select id="select-dim1">
+                        <option value="none">-- Ne rien afficher --</option>
+                        <option value="commune" selected>Commune</option>
+                        <option value="tranche_age">Tranche d'âge</option>
+                        <option value="apa">Bénéficiaire APA</option>
+                        <option value="gir">GIR</option>
+                        <option value="medecin_traitant">Médecin traitant</option>
+                        <option value="urgence">Urgence</option>
+                        <option value="complexite">Complexité COMID</option>
+                        <option value="structure">Type de structure</option>
+                    </select>
+                </div>
+                <div class="selector-arrow">→</div>
+                <div class="selector-group">
+                    <label for="select-dim2">Niveau 2</label>
+                    <select id="select-dim2">
+                        <option value="none">-- Ne rien afficher --</option>
+                        <option value="commune">Commune</option>
+                        <option value="tranche_age">Tranche d'âge</option>
+                        <option value="apa">Bénéficiaire APA</option>
+                        <option value="gir">GIR</option>
+                        <option value="medecin_traitant">Médecin traitant</option>
+                        <option value="urgence">Urgence</option>
+                        <option value="complexite" selected>Complexité COMID</option>
+                        <option value="structure">Type de structure</option>
+                    </select>
+                </div>
+                <div class="selector-arrow">→</div>
+                <div class="selector-group">
+                    <label for="select-dim3">Niveau 3</label>
+                    <select id="select-dim3">
+                        <option value="none">-- Ne rien afficher --</option>
+                        <option value="commune">Commune</option>
+                        <option value="tranche_age">Tranche d'âge</option>
+                        <option value="apa">Bénéficiaire APA</option>
+                        <option value="gir">GIR</option>
+                        <option value="medecin_traitant">Médecin traitant</option>
+                        <option value="urgence">Urgence</option>
+                        <option value="complexite">Complexité COMID</option>
+                        <option value="structure" selected>Type de structure</option>
+                    </select>
+                </div>
             </div>
-            <div class="selector-arrow">→</div>
-            <div class="selector-group">
-                <label for="select-dim3">Niveau 3</label>
-                <select id="select-dim3">
-                    <option value="none">-- Ne rien afficher --</option>
-                    <option value="commune">Commune</option>
-                    <option value="tranche_age">Tranche d'âge</option>
-                    <option value="apa">Bénéficiaire APA</option>
-                    <option value="gir">GIR</option>
-                    <option value="medecin_traitant">Médecin traitant</option>
-                    <option value="urgence">Urgence</option>
-                    <option value="complexite">Complexité COMID</option>
-                    <option value="structure" selected>Type de structure</option>
-                </select>
+
+            <div id="sankey-chart"></div>
+            <div id="sankey-empty" class="empty-state" style="display: none;">
+                <p id="sankey-empty-msg">Aucun dossier enregistré pour le moment.</p>
             </div>
-        </div>
+        </section>
+    </div>
 
-        <div id="sankey-chart"></div>
-        <div id="sankey-empty" class="empty-state" style="display: none;">
-            <p id="sankey-empty-msg">Aucun dossier enregistré pour le moment.</p>
-        </div>
-    </section>
+    <!-- ONGLET 2 : Suivi COMID -->
+    <div id="panel-comid" class="tab-panel">
+        <section id="comid-comparison-section" style="max-width: 1300px; margin: 1.5rem auto 3rem; padding: 0 1.5rem;">
+            <div class="section-header" style="margin-bottom: 1.25rem;">
+                <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Suivi de la Complexité COMID (Entrée vs Sortie)</h2>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Mesurez l'évolution du score de complexité clinique des seniors bilantés entre l'admission et la sortie.</p>
+            </div>
 
-    <!-- Section Suivi & Comparatif COMID Entrée / Sortie -->
-    <section id="comid-comparison-section" style="max-width: 1300px; margin: 2rem auto; padding: 0 1.5rem;">
-        <div class="section-header" style="margin-bottom: 1.25rem;">
-            <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Suivi de la Complexité COMID (Entrée vs Sortie)</h2>
-            <p style="font-size: 0.9rem; color: var(--text-secondary);">Mesurez l'évolution du score de complexité clinique des seniors bilantés entre l'admission et la sortie.</p>
-        </div>
+            <div class="table-container" style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow-card); overflow-x: auto;">
+                <table id="comid-comparison-table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--border-glass); font-size: 0.85rem; color: var(--text-secondary); height: 40px;">
+                            <th style="padding: 0.75rem;">N° Dossier</th>
+                            <th style="padding: 0.75rem;">Senior</th>
+                            <th style="padding: 0.75rem;">Score Entrée</th>
+                            <th style="padding: 0.75rem;">Score Sortie</th>
+                            <th style="padding: 0.75rem;">Évolution (&Delta;)</th>
+                            <th style="padding: 0.75rem;">Impact</th>
+                            <th style="padding: 0.75rem;">Statut Bilan</th>
+                            <th style="padding: 0.75rem; text-align: center;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="comid-comparison-tbody">
+                        <!-- Dynamic Rows -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
 
-        <div class="table-container" style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow-card); overflow-x: auto;">
-            <table id="comid-comparison-table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
-                <thead>
-                    <tr style="border-bottom: 1px solid var(--border-glass); font-size: 0.85rem; color: var(--text-secondary); height: 40px;">
-                        <th style="padding: 0.75rem;">N° Dossier</th>
-                        <th style="padding: 0.75rem;">Senior</th>
-                        <th style="padding: 0.75rem;">Score Entrée</th>
-                        <th style="padding: 0.75rem;">Score Sortie</th>
-                        <th style="padding: 0.75rem;">Évolution (&Delta;)</th>
-                        <th style="padding: 0.75rem;">Impact</th>
-                        <th style="padding: 0.75rem;">Statut Bilan</th>
-                        <th style="padding: 0.75rem; text-align: center;">Action</th>
-                    </tr>
-                </thead>
-                <tbody id="comid-comparison-tbody">
-                    <!-- Dynamic Rows -->
-                </tbody>
-            </table>
-        </div>
-        <script>
-            async function deleteComidDossier(dossierId, seniorNom) {
-                const label = seniorNom ? `dossier "${dossierId}" (${seniorNom})` : `dossier "${dossierId}"`;
-                const confirmation = confirm(`❓ Confirmation de suppression :\n\nVoulez-vous vraiment supprimer le ${label} ?\n\nToutes les évaluations COMID (Entrée et Sortie) rattachées à ce dossier seront effacées.`);
-                
-                if (!confirmation) return;
+    <!-- ONGLET 3 : Suivi ZARIT -->
+    <div id="panel-zarit" class="tab-panel">
+        <section id="zarit-tracking-section" style="max-width: 1300px; margin: 1.5rem auto 3rem; padding: 0 1.5rem;">
+            <div class="section-header" style="margin-bottom: 1.25rem;">
+                <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Suivi du Fardeau de l'Aidant (Échelle de Zarit)</h2>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Consultez et gérez l'épuisement des aidants rattachés aux dossiers cliniques du territoire.</p>
+            </div>
 
-                try {
-                    const res = await fetch(`/api/comid/evaluations/${encodeURIComponent(dossierId)}`, { method: 'DELETE' });
-                    if (res.ok) {
-                        loadComidComparisonTableInline();
-                    } else {
-                        alert('Erreur lors de la suppression du dossier.');
-                    }
-                } catch (e) {
-                    console.error('Erreur deleteComidDossier:', e);
-                }
-            }
-
-            async function loadComidComparisonTableInline() {
-                const tbody = document.getElementById('comid-comparison-tbody');
-                if (!tbody) return;
-
-                try {
-                    const res = await fetch('/api/comid/comparisons');
-                    if (!res.ok) return;
-
-                    const data = await res.json();
-                    if (!data || data.length === 0) {
-                        tbody.innerHTML = `
-                            <tr>
-                                <td colspan="8" style="padding: 1.5rem; text-align: center; color: #94a3b8;">
-                                    Aucune évaluation COMID enregistrée pour le moment. Enregistrez des COMID d'Entrée et de Sortie sur la page COMID pour voir la comparaison ici.
-                                </td>
-                            </tr>
-                        `;
-                        return;
-                    }
-
-                    let html = '';
-                    data.forEach(item => {
-                        let deltaBadge = '<span style="color: #94a3b8;">–</span>';
-                        let impactText = '<span style="color: #94a3b8;">En cours</span>';
-
-                        if (item.delta_score !== null) {
-                            if (item.delta_score > 0) {
-                                deltaBadge = `<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700;">-${item.delta_score} pts (${item.evolution_pct}%)</span>`;
-                                impactText = `<span style="color: #10b981; font-weight: 600;">🟢 Complexité réduite</span>`;
-                            } else if (item.delta_score < 0) {
-                                deltaBadge = `<span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700;">+${Math.abs(item.delta_score)} pts</span>`;
-                                impactText = `<span style="color: #ef4444; font-weight: 600;">🔴 Complexité accrue</span>`;
-                            } else {
-                                deltaBadge = `<span style="background: rgba(148, 163, 184, 0.15); color: #94a3b8; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 600;">0 pt (Stable)</span>`;
-                                impactText = `<span style="color: #94a3b8;">⚪ Complexité stable</span>`;
-                            }
-                        }
-
-                        const entreeText = item.score_entree !== null ? `<strong>${item.score_entree}/30</strong> (${item.niveau_entree})` : '<span style="color: #94a3b8;">–</span>';
-                        const sortieText = item.score_sortie !== null ? `<strong>${item.score_sortie}/30</strong> (${item.niveau_sortie})` : '<span style="color: #94a3b8; font-style: italic;">En attente sortie</span>';
-
-                        html += `
-                            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.08); height: 48px;">
-                                <td style="padding: 0.75rem; font-weight: 700; color: #3b82f6;">${item.dossier_id}</td>
-                                <td style="padding: 0.75rem; font-weight: 500; color: var(--text-primary);">${item.senior_nom || item.dossier_id}</td>
-                                <td style="padding: 0.75rem; color: var(--text-primary);">${entreeText}</td>
-                                <td style="padding: 0.75rem; color: var(--text-primary);">${sortieText}</td>
-                                <td style="padding: 0.75rem;">${deltaBadge}</td>
-                                <td style="padding: 0.75rem;">${impactText}</td>
-                                <td style="padding: 0.75rem;">
-                                    <span style="font-size: 0.8rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(59, 130, 246, 0.15); color: #3b82f6; font-weight: 600;">
-                                        ${item.statut_resolution}
-                                    </span>
-                                </td>
-                                <td style="padding: 0.75rem; text-align: center;">
-                                    <button type="button" onclick="deleteComidDossier('${item.dossier_id}', '${(item.senior_nom || '').replace(/'/g, "\\'")}')" title="Supprimer ce dossier COMID" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; padding: 0.3rem 0.6rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">
-                                        🗑️
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
-                    });
-                    tbody.innerHTML = html;
-                } catch (e) {
-                    console.error('Error loadComidComparisonTableInline:', e);
-                }
-            }
-            loadComidComparisonTableInline();
-        </script>
-    </section>
-
-    <!-- Section Suivi du Fardeau de l'Aidant (Échelle de ZARIT) -->
-    <section id="zarit-tracking-section" style="max-width: 1300px; margin: 2.5rem auto 3rem; padding: 0 1.5rem;">
-        <div class="section-header" style="margin-bottom: 1.25rem;">
-            <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Suivi du Fardeau de l'Aidant (Échelle de Zarit)</h2>
-            <p style="font-size: 0.9rem; color: var(--text-secondary);">Consultez et gérez l'épuisement des aidants rattachés aux dossiers cliniques du territoire.</p>
-        </div>
-
-        <div class="table-container" style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow-card); overflow-x: auto;">
-            <table id="zarit-tracking-table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
-                <thead>
-                    <tr style="border-bottom: 1px solid var(--border-glass); font-size: 0.85rem; color: var(--text-secondary); height: 40px;">
-                        <th style="padding: 0.75rem;">N° Dossier</th>
-                        <th style="padding: 0.75rem;">Senior / Usager</th>
-                        <th style="padding: 0.75rem;">Aidant</th>
-                        <th style="padding: 0.75rem;">Score Zarit</th>
-                        <th style="padding: 0.75rem;">Niveau de Charge</th>
-                        <th style="padding: 0.75rem;">Date d'Évaluation</th>
-                        <th style="padding: 0.75rem; text-align: center;">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="zarit-tracking-tbody">
-                    <!-- Dynamic Rows -->
-                </tbody>
-            </table>
-        </div>
-
-        <script>
-            async function deleteZaritEval(evalId) {
-                if (!confirm("Voulez-vous vraiment supprimer cette évaluation Zarit ?")) return;
-                try {
-                    const res = await fetch(`/api/zarit/evaluations/${evalId}`, { method: 'DELETE' });
-                    if (res.ok) {
-                        loadZaritTableInline();
-                    } else {
-                        alert("Erreur lors de la suppression.");
-                    }
-                } catch (e) {
-                    console.error("Error deleteZaritEval:", e);
-                }
-            }
-
-            async function downloadZaritPDFFromTable(item) {
-                try {
-                    let reponses = [];
-                    if (item.reponses_json) {
-                        try { reponses = JSON.parse(item.reponses_json); } catch(e){}
-                    }
-                    const response = await fetch('/api/zarit/generate_pdf', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            dossier_id: item.dossier_id,
-                            senior_nom: item.senior_nom || "Senior non renseigné",
-                            aidant_nom: item.aidant_nom || "Aidant",
-                            score: item.score,
-                            niveau: item.niveau,
-                            date: item.date_creation || "",
-                            reponses: reponses
-                        })
-                    });
-
-                    if (!response.ok) throw new Error("Erreur génération PDF");
-
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `Grille_Zarit_Score_${item.score}.pdf`;
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
-                } catch (err) {
-                    console.error(err);
-                    alert("Impossible de télécharger le PDF Zarit.");
-                }
-            }
-
-            let zaritDataCache = [];
-            async function loadZaritTableInline() {
-                const tbody = document.getElementById('zarit-tracking-tbody');
-                if (!tbody) return;
-
-                try {
-                    const res = await fetch('/api/zarit/evaluations');
-                    if (!res.ok) return;
-                    zaritDataCache = await res.json();
-
-                    if (!zaritDataCache || zaritDataCache.length === 0) {
-                        tbody.innerHTML = `
-                            <tr>
-                                <td colspan="7" style="padding: 1.5rem; text-align: center; color: #94a3b8;">
-                                    Aucune évaluation Zarit enregistrée pour le moment.
-                                </td>
-                            </tr>
-                        `;
-                        return;
-                    }
-
-                    let html = '';
-                    zaritDataCache.forEach((item, index) => {
-                        let badgeStyle = "background: rgba(34, 197, 94, 0.15); color: #22c55e;";
-                        if (item.score > 60) badgeStyle = "background: rgba(239, 68, 68, 0.15); color: #ef4444; font-weight: 700;";
-                        else if (item.score >= 41) badgeStyle = "background: rgba(245, 158, 11, 0.15); color: #f59e0b; font-weight: 700;";
-                        else if (item.score >= 21) badgeStyle = "background: rgba(59, 130, 246, 0.15); color: #3b82f6;";
-
-                        const dId = item.dossier_id ? `<strong style="color: #3b82f6;">${item.dossier_id}</strong>` : '<span style="color: #94a3b8; font-style: italic;">Non rattaché</span>';
-
-                        html += `
-                            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.08); height: 48px;">
-                                <td style="padding: 0.75rem;">${dId}</td>
-                                <td style="padding: 0.75rem; font-weight: 500; color: var(--text-primary);">${item.senior_nom || 'Senior'}</td>
-                                <td style="padding: 0.75rem; color: var(--text-secondary);">${item.aidant_nom || 'Aidant'}</td>
-                                <td style="padding: 0.75rem;"><strong>${item.score} / 88</strong></td>
-                                <td style="padding: 0.75rem;">
-                                    <span style="font-size: 0.8rem; padding: 0.25rem 0.65rem; border-radius: 20px; ${badgeStyle}">
-                                        ${item.niveau}
-                                    </span>
-                                </td>
-                                <td style="padding: 0.75rem; color: var(--text-muted); font-size: 0.85rem;">${item.date_creation || ''}</td>
-                                <td style="padding: 0.75rem; text-align: center;">
-                                    <button type="button" onclick="downloadZaritPDFFromTable(zaritDataCache[${index}])" title="Télécharger le PDF Zarit" style="background: rgba(245, 158, 11, 0.12); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 6px; padding: 0.3rem 0.65rem; cursor: pointer; font-size: 0.85rem; font-weight: 600; margin-right: 0.4rem;">
-                                        📄 PDF
-                                    </button>
-                                    <button type="button" onclick="deleteZaritEval(${item.id})" title="Supprimer cette évaluation" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; padding: 0.3rem 0.6rem; cursor: pointer; font-size: 0.85rem;">
-                                        🗑️
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
-                    });
-                    tbody.innerHTML = html;
-                } catch (e) {
-                    console.error('Error loadZaritTableInline:', e);
-                }
-            }
-            loadZaritTableInline();
-        </script>
-    </section>
+            <div class="table-container" style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow-card); overflow-x: auto;">
+                <table id="zarit-tracking-table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--border-glass); font-size: 0.85rem; color: var(--text-secondary); height: 40px;">
+                            <th style="padding: 0.75rem;">N° Dossier</th>
+                            <th style="padding: 0.75rem;">Senior / Usager</th>
+                            <th style="padding: 0.75rem;">Aidant</th>
+                            <th style="padding: 0.75rem;">Score Zarit</th>
+                            <th style="padding: 0.75rem;">Niveau de Charge</th>
+                            <th style="padding: 0.75rem;">Date d'Évaluation</th>
+                            <th style="padding: 0.75rem; text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="zarit-tracking-tbody">
+                        <!-- Dynamic Rows -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
 
     <!-- Footer -->
     <footer id="dashboard-footer">
@@ -412,181 +311,231 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
-    <script>
-        // Gestion du thème clair/sombre (Synchronisé avec l'interface principale via localStorage)
-        document.addEventListener('DOMContentLoaded', () => {
-            const themeToggle = document.getElementById('theme-toggle');
-            const currentTheme = localStorage.getItem('theme') || 'dark';
-            
-            const iconMoon = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`;
-            const iconSun = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`;
-            
-            if (currentTheme === 'light') {
-                document.documentElement.setAttribute('data-theme', 'light');
-                themeToggle.innerHTML = iconMoon;
-            } else {
-                document.documentElement.removeAttribute('data-theme');
-                themeToggle.innerHTML = iconSun;
-            }
 
-            themeToggle.addEventListener('click', () => {
-                if (document.documentElement.hasAttribute('data-theme')) {
-                    document.documentElement.removeAttribute('data-theme');
-                    localStorage.setItem('theme', 'dark');
-                    themeToggle.innerHTML = iconSun;
-                } else {
-                    document.documentElement.setAttribute('data-theme', 'light');
-                    localStorage.setItem('theme', 'light');
-                    themeToggle.innerHTML = iconMoon;
+    <script>
+        // --- GESTION DES ONGLETS DU TABLEAU DE BORD ---
+        function switchDashboardTab(tabName) {
+            const panels = document.querySelectorAll('.tab-panel');
+            panels.forEach(p => p.classList.remove('active-panel'));
+
+            const buttons = document.querySelectorAll('.dash-tab-btn');
+            buttons.forEach(b => b.classList.remove('active'));
+
+            const selectedPanel = document.getElementById(`panel-${tabName}`);
+            const selectedBtn = document.getElementById(`tab-btn-${tabName}`);
+
+            if (selectedPanel && selectedBtn) {
+                selectedPanel.classList.add('active-panel');
+                selectedBtn.classList.add('active');
+                window.location.hash = tabName;
+
+                if (tabName === 'sankey' && typeof myChart !== 'undefined' && myChart) {
+                    setTimeout(() => myChart.resize(), 50);
                 }
-                // Mettre à jour la couleur du diagramme sans recharger les données
-                if (typeof window.updateChartTheme === 'function') {
-                    window.updateChartTheme();
-                } else if (typeof renderSankey === 'function' && window.lastSankeyData) {
-                    renderSankey(window.lastSankeyData);
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Tableau de bord ORIA – Visualisation des flux d'orientation des personnes âgées">
-    <title>ORIA – Tableau de Bord</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style_v2.css?v=2">
-    <style>
-        .back-arrow:hover {
-            background: rgba(59, 130, 246, 0.2) !important;
-            transform: translateY(-50%) translateX(-3px) scale(1.05) !important;
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15) !important;
+            }
         }
-    </style>
-</head>
-<body>
 
-    <!-- Header -->
-    <header id="dashboard-header">
-        <div class="header-content">
-            <a href="/orienter" class="back-arrow" title="Retour à l'orientation" style="position: absolute; left: -60px; top: 50%; transform: translateY(-50%); background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: var(--accent-blue); display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; text-decoration: none; transition: all 0.2s ease-in-out; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-            </a>
-            <div class="logo-group">
-                <img src="/static/logo.png" alt="Logo ORIA" class="logo-img">
-            </div>
-            <div class="header-title-center">
-                <h2 class="subtitle">Tableau de Bord – Flux d'Orientation</h2>
-            </div>
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <button id="theme-toggle" class="btn-primary" style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-glass); padding: 0.5rem; box-shadow: none; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer;">
-                    <!-- L'icône sera injectée par JS -->
-                </button>
-            </div>
-        </div>
-    </header>
+        // --- SUPPRESSION & CHARGEMENT DOSSIER COMID ---
+        async function deleteComidDossier(dossierId, seniorNom) {
+            const label = seniorNom ? `dossier "${dossierId}" (${seniorNom})` : `dossier "${dossierId}"`;
+            if (!confirm(`❓ Confirmation de suppression :\n\nVoulez-vous vraiment supprimer le ${label} ?\n\nToutes les évaluations COMID (Entrée et Sortie) rattachées à ce dossier seront effacées.`)) return;
 
-    <!-- KPI Cards -->
-    <section id="kpi-section">
-        <div class="kpi-card" id="kpi-total">
-            <div class="kpi-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-            </div>
-            <div class="kpi-body">
-                <span class="kpi-value" id="total-dossiers">–</span>
-                <span class="kpi-label">Dossiers analysés</span>
-            </div>
-        </div>
+            try {
+                const res = await fetch(`/api/comid/evaluations/${encodeURIComponent(dossierId)}`, { method: 'DELETE' });
+                if (res.ok) {
+                    loadComidComparisonTableInline();
+                } else {
+                    alert('Erreur lors de la suppression du dossier.');
+                }
+            } catch (e) {
+                console.error('Erreur deleteComidDossier:', e);
+            }
+        }
 
-        <div class="kpi-card" id="kpi-commune">
-            <div class="kpi-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-            </div>
-            <div class="kpi-body">
-                <span class="kpi-value" id="kpi-commune-value">–</span>
-                <span class="kpi-label">Commune la plus fréquente</span>
-            </div>
-        </div>
-        <div class="kpi-card" id="kpi-structure">
-            <div class="kpi-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M12 6h.01"></path><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path></svg>
-            </div>
-            <div class="kpi-body">
-                <span class="kpi-value" id="kpi-structure-value">–</span>
-                <span class="kpi-label">Structure la plus sollicitée</span>
-            </div>
-        </div>
+        async function loadComidComparisonTableInline() {
+            const tbody = document.getElementById('comid-comparison-tbody');
+            const badgeCount = document.getElementById('tab-count-comid');
+            if (!tbody) return;
 
-    </section>
+            try {
+                const res = await fetch('/api/comid/comparisons');
+                if (!res.ok) return;
 
-    <!-- Sankey Section -->
-    <section id="sankey-section">
-        <div class="section-header">
-            <h2>Diagramme de Sankey – Parcours d'Orientation</h2>
-            <p>Choisissez les dimensions à afficher pour explorer les tendances du parcours Personnes Âgées.</p>
-        </div>
+                const data = await res.json();
+                if (badgeCount) badgeCount.textContent = data ? data.length : 0;
 
-        <!-- Dimension selectors -->
-        <div id="dimension-selectors">
-            <div class="selector-group">
-                <label for="select-dim1">Niveau 1</label>
-                <select id="select-dim1">
-                    <option value="none">-- Ne rien afficher --</option>
-                    <option value="commune" selected>Commune</option>
-                    <option value="tranche_age">Tranche d'âge</option>
-                    <option value="apa">Bénéficiaire APA</option>
-                    <option value="gir">GIR</option>
-                    <option value="medecin_traitant">Médecin traitant</option>
-                    <option value="urgence">Urgence</option>
-                    <option value="complexite">Complexité COMID</option>
-                    <option value="structure">Type de structure</option>
-                </select>
-            </div>
-            <div class="selector-arrow">→</div>
-            <div class="selector-group">
-                <label for="select-dim2">Niveau 2</label>
-                <select id="select-dim2">
-                    <option value="none">-- Ne rien afficher --</option>
-                    <option value="commune">Commune</option>
-                    <option value="tranche_age">Tranche d'âge</option>
-                    <option value="apa">Bénéficiaire APA</option>
-                    <option value="gir">GIR</option>
-                    <option value="medecin_traitant">Médecin traitant</option>
-                    <option value="urgence">Urgence</option>
-                    <option value="complexite" selected>Complexité COMID</option>
-                    <option value="structure">Type de structure</option>
-                </select>
-            </div>
-            <div class="selector-arrow">→</div>
-            <div class="selector-group">
-                <label for="select-dim3">Niveau 3</label>
-                <select id="select-dim3">
-                    <option value="none">-- Ne rien afficher --</option>
-                    <option value="commune">Commune</option>
-                    <option value="tranche_age">Tranche d'âge</option>
-                    <option value="apa">Bénéficiaire APA</option>
-                    <option value="gir">GIR</option>
-                    <option value="medecin_traitant">Médecin traitant</option>
-                    <option value="urgence">Urgence</option>
-                    <option value="complexite">Complexité COMID</option>
-                    <option value="structure" selected>Type de structure</option>
-                </select>
-            </div>
-        </div>
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" style="padding: 1.5rem; text-align: center; color: #94a3b8;">
+                                Aucune évaluation COMID enregistrée pour le moment. Enregistrez des COMID d'Entrée et de Sortie sur la page COMID pour voir la comparaison ici.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
 
-        <div id="sankey-chart"></div>
-        <div id="sankey-empty" class="empty-state" style="display: none;">
-            <p id="sankey-empty-msg">Aucun dossier enregistré pour le moment.</p>
-        </div>
-    </section>
+                let html = '';
+                data.forEach(item => {
+                    let deltaBadge = '<span style="color: #94a3b8;">–</span>';
+                    let impactText = '<span style="color: #94a3b8;">En cours</span>';
 
-    <!-- Footer -->
-    <footer id="dashboard-footer">
-        <p>Prototype ORIA – Parcours Personnes Âgées – Tableau de bord interne</p>
-    </footer>
+                    if (item.delta_score !== null) {
+                        if (item.delta_score > 0) {
+                            deltaBadge = `<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700;">-${item.delta_score} pts (${item.evolution_pct}%)</span>`;
+                            impactText = `<span style="color: #10b981; font-weight: 600;">🟢 Complexité réduite</span>`;
+                        } else if (item.delta_score < 0) {
+                            deltaBadge = `<span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700;">+${Math.abs(item.delta_score)} pts</span>`;
+                            impactText = `<span style="color: #ef4444; font-weight: 600;">🔴 Complexité accrue</span>`;
+                        } else {
+                            deltaBadge = `<span style="background: rgba(148, 163, 184, 0.15); color: #94a3b8; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 600;">0 pt (Stable)</span>`;
+                            impactText = `<span style="color: #94a3b8;">⚪ Complexité stable</span>`;
+                        }
+                    }
 
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
-    <script>
-        // Gestion du thème clair/sombre (Synchronisé avec l'interface principale via localStorage)
+                    const entreeText = item.score_entree !== null ? `<strong>${item.score_entree}/30</strong> (${item.niveau_entree})` : '<span style="color: #94a3b8;">–</span>';
+                    const sortieText = item.score_sortie !== null ? `<strong>${item.score_sortie}/30</strong> (${item.niveau_sortie})` : '<span style="color: #94a3b8; font-style: italic;">En attente sortie</span>';
+
+                    html += `
+                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.08); height: 48px;">
+                            <td style="padding: 0.75rem; font-weight: 700; color: #3b82f6;">${item.dossier_id}</td>
+                            <td style="padding: 0.75rem; font-weight: 500; color: var(--text-primary);">${item.senior_nom || item.dossier_id}</td>
+                            <td style="padding: 0.75rem; color: var(--text-primary);">${entreeText}</td>
+                            <td style="padding: 0.75rem; color: var(--text-primary);">${sortieText}</td>
+                            <td style="padding: 0.75rem;">${deltaBadge}</td>
+                            <td style="padding: 0.75rem;">${impactText}</td>
+                            <td style="padding: 0.75rem;">
+                                <span style="font-size: 0.8rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(59, 130, 246, 0.15); color: #3b82f6; font-weight: 600;">
+                                    ${item.statut_resolution}
+                                </span>
+                            </td>
+                            <td style="padding: 0.75rem; text-align: center;">
+                                <button type="button" onclick="deleteComidDossier('${item.dossier_id}', '${(item.senior_nom || '').replace(/'/g, "\\'")}')" title="Supprimer ce dossier COMID" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; padding: 0.3rem 0.6rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">
+                                    🗑️
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html;
+            } catch (e) {
+                console.error('Error loadComidComparisonTableInline:', e);
+            }
+        }
+
+        // --- SUPPRESSION, PDF & CHARGEMENT EVALUATIONS ZARIT ---
+        async function deleteZaritEval(evalId) {
+            if (!confirm("Voulez-vous vraiment supprimer cette évaluation Zarit ?")) return;
+            try {
+                const res = await fetch(`/api/zarit/evaluations/${evalId}`, { method: 'DELETE' });
+                if (res.ok) {
+                    loadZaritTableInline();
+                } else {
+                    alert("Erreur lors de la suppression.");
+                }
+            } catch (e) {
+                console.error("Error deleteZaritEval:", e);
+            }
+        }
+
+        async function downloadZaritPDFFromTable(item) {
+            try {
+                let reponses = [];
+                if (item.reponses_json) {
+                    try { reponses = JSON.parse(item.reponses_json); } catch(e){}
+                }
+                const response = await fetch('/api/zarit/generate_pdf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        dossier_id: item.dossier_id,
+                        senior_nom: item.senior_nom || "Senior non renseigné",
+                        aidant_nom: item.aidant_nom || "Aidant",
+                        score: item.score,
+                        niveau: item.niveau,
+                        date: item.date_creation || "",
+                        reponses: reponses
+                    })
+                });
+
+                if (!response.ok) throw new Error("Erreur génération PDF");
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Grille_Zarit_Score_${item.score}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            } catch (err) {
+                console.error(err);
+                alert("Impossible de télécharger le PDF Zarit.");
+            }
+        }
+
+        let zaritDataCache = [];
+        async function loadZaritTableInline() {
+            const tbody = document.getElementById('zarit-tracking-tbody');
+            const badgeCount = document.getElementById('tab-count-zarit');
+            if (!tbody) return;
+
+            try {
+                const res = await fetch('/api/zarit/evaluations');
+                if (!res.ok) return;
+                zaritDataCache = await res.json();
+                if (badgeCount) badgeCount.textContent = zaritDataCache ? zaritDataCache.length : 0;
+
+                if (!zaritDataCache || zaritDataCache.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" style="padding: 1.5rem; text-align: center; color: #94a3b8;">
+                                Aucune évaluation Zarit enregistrée pour le moment.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                let html = '';
+                zaritDataCache.forEach((item, index) => {
+                    let badgeStyle = "background: rgba(34, 197, 94, 0.15); color: #22c55e;";
+                    if (item.score > 60) badgeStyle = "background: rgba(239, 68, 68, 0.15); color: #ef4444; font-weight: 700;";
+                    else if (item.score >= 41) badgeStyle = "background: rgba(245, 158, 11, 0.15); color: #f59e0b; font-weight: 700;";
+                    else if (item.score >= 21) badgeStyle = "background: rgba(59, 130, 246, 0.15); color: #3b82f6;";
+
+                    const dId = item.dossier_id ? `<strong style="color: #3b82f6;">${item.dossier_id}</strong>` : '<span style="color: #94a3b8; font-style: italic;">Non rattaché</span>';
+
+                    html += `
+                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.08); height: 48px;">
+                            <td style="padding: 0.75rem;">${dId}</td>
+                            <td style="padding: 0.75rem; font-weight: 500; color: var(--text-primary);">${item.senior_nom || 'Senior'}</td>
+                            <td style="padding: 0.75rem; color: var(--text-secondary);">${item.aidant_nom || 'Aidant'}</td>
+                            <td style="padding: 0.75rem;"><strong>${item.score} / 88</strong></td>
+                            <td style="padding: 0.75rem;">
+                                <span style="font-size: 0.8rem; padding: 0.25rem 0.65rem; border-radius: 20px; ${badgeStyle}">
+                                    ${item.niveau}
+                                </span>
+                            </td>
+                            <td style="padding: 0.75rem; color: var(--text-muted); font-size: 0.85rem;">${item.date_creation || ''}</td>
+                            <td style="padding: 0.75rem; text-align: center;">
+                                <button type="button" onclick="downloadZaritPDFFromTable(zaritDataCache[${index}])" title="Télécharger le PDF Zarit" style="background: rgba(245, 158, 11, 0.12); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 6px; padding: 0.3rem 0.65rem; cursor: pointer; font-size: 0.85rem; font-weight: 600; margin-right: 0.4rem;">
+                                    📄 PDF
+                                </button>
+                                <button type="button" onclick="deleteZaritEval(${item.id})" title="Supprimer cette évaluation" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; padding: 0.3rem 0.6rem; cursor: pointer; font-size: 0.85rem;">
+                                    🗑️
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html;
+            } catch (e) {
+                console.error('Error loadZaritTableInline:', e);
+            }
+        }
+
+        // --- INIT & THEME TOGGLE ---
         document.addEventListener('DOMContentLoaded', () => {
             const themeToggle = document.getElementById('theme-toggle');
             const currentTheme = localStorage.getItem('theme') || 'dark';
@@ -612,7 +561,6 @@
                     localStorage.setItem('theme', 'light');
                     themeToggle.innerHTML = iconMoon;
                 }
-                // Mettre à jour la couleur du diagramme sans recharger les données
                 if (typeof window.updateChartTheme === 'function') {
                     window.updateChartTheme();
                 } else if (typeof renderSankey === 'function' && window.lastSankeyData) {
@@ -631,6 +579,18 @@
                     dropdownMenu.classList.toggle('hidden');
                 });
                 document.addEventListener('click', () => dropdownMenu.classList.add('hidden'));
+            }
+
+            // Chargement des données
+            loadComidComparisonTableInline();
+            loadZaritTableInline();
+
+            // Vérification de l'onglet actif dans l'URL (#comid, #zarit, #sankey)
+            const initialTab = window.location.hash.replace('#', '');
+            if (['sankey', 'comid', 'zarit'].includes(initialTab)) {
+                switchDashboardTab(initialTab);
+            } else {
+                switchDashboardTab('sankey');
             }
         });
     </script>
