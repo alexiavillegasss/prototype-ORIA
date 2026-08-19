@@ -269,21 +269,10 @@
                     <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Suivi de la Complexité COMID (Entrée vs Sortie)</h2>
                     <p style="font-size: 0.9rem; color: var(--text-secondary);">Mesurez l'évolution du score de complexité clinique des seniors bilantés entre l'admission et la sortie.</p>
                 </div>
-                <div style="display: flex; align-items: center; gap: 0.85rem; flex-wrap: wrap;">
-                    <div style="display: flex; align-items: center; gap: 0.4rem;">
-                        <label for="filter-comid-level" style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary);">Complexité :</label>
-                        <select id="filter-comid-level" onchange="filterComidTableByLevel(this.value)" class="comid-field-select" style="padding: 0.45rem 0.75rem; border-radius: 8px; border: 1px solid var(--border-glass); background: var(--bg-card); color: var(--text-primary); font-size: 0.85rem; font-weight: 600;">
-                            <option value="all">Tous les niveaux</option>
-                            <option value="non_complexe">Non complexe (0–5)</option>
-                            <option value="a_risque">À risque (6–9)</option>
-                            <option value="tres_complexe">Très complexe (>= 10)</option>
-                        </select>
-                    </div>
-                    <button type="button" onclick="exportComidCSV()" class="btn-primary" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); padding: 0.55rem 1.1rem; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.45rem;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        <span>Exporter le tableau en CSV</span>
-                    </button>
-                </div>
+                <button type="button" onclick="exportComidCSV()" class="btn-primary" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); padding: 0.55rem 1.1rem; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.45rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>Exporter le tableau en CSV</span>
+                </button>
             </div>
 
             <div class="table-container" style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow-card); overflow-x: auto;">
@@ -295,7 +284,17 @@
                             <th style="padding: 0.75rem;">Score Entrée</th>
                             <th style="padding: 0.75rem;">Score Sortie</th>
                             <th style="padding: 0.75rem;">Évolution (&Delta;)</th>
-                            <th style="padding: 0.75rem;">Impact</th>
+                            <th style="padding: 0.75rem;">
+                                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                    <span>Impact & Complexité</span>
+                                    <select id="filter-comid-level" onchange="filterComidTableByLevel(this.value)" style="padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid var(--border-glass); background: var(--bg-primary); color: var(--text-primary); font-size: 0.8rem; font-weight: 600; cursor: pointer;">
+                                        <option value="all">Tous ▼</option>
+                                        <option value="non_complexe">Non complexe (0–5)</option>
+                                        <option value="a_risque">À risque (6–9)</option>
+                                        <option value="tres_complexe">Très complexe (>= 10)</option>
+                                    </select>
+                                </div>
+                            </th>
                             <th style="padding: 0.75rem;">Statut Bilan</th>
                         </tr>
                     </thead>
@@ -315,22 +314,10 @@
                     <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Suivi du Fardeau de l'Aidant (Échelle de Zarit)</h2>
                     <p style="font-size: 0.9rem; color: var(--text-secondary);">Consultez et gérez l'épuisement des aidants rattachés aux dossiers cliniques du territoire.</p>
                 </div>
-                <div style="display: flex; align-items: center; gap: 0.85rem; flex-wrap: wrap;">
-                    <div style="display: flex; align-items: center; gap: 0.4rem;">
-                        <label for="filter-zarit-level" style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary);">Niveau de charge :</label>
-                        <select id="filter-zarit-level" onchange="filterZaritTableByLevel(this.value)" class="comid-field-select" style="padding: 0.45rem 0.75rem; border-radius: 8px; border: 1px solid var(--border-glass); background: var(--bg-card); color: var(--text-primary); font-size: 0.85rem; font-weight: 600;">
-                            <option value="all">Tous les niveaux</option>
-                            <option value="leger">Charge légère ou nulle (0–20)</option>
-                            <option value="modere">Charge modérée (21–40)</option>
-                            <option value="severe">Charge sévère (41–60)</option>
-                            <option value="tres_severe">Charge très sévère (> 60)</option>
-                        </select>
-                    </div>
-                    <button type="button" onclick="exportZaritCSV()" class="btn-primary" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 0.55rem 1.1rem; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.45rem;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        <span>Exporter le tableau en CSV</span>
-                    </button>
-                </div>
+                <button type="button" onclick="exportZaritCSV()" class="btn-primary" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 0.55rem 1.1rem; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.45rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>Exporter le tableau en CSV</span>
+                </button>
             </div>
 
             <div class="table-container" style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow-card); overflow-x: auto;">
@@ -341,7 +328,18 @@
                             <th style="padding: 0.75rem;">Senior / Usager</th>
                             <th style="padding: 0.75rem;">Aidant</th>
                             <th style="padding: 0.75rem;">Score Zarit</th>
-                            <th style="padding: 0.75rem;">Niveau de Charge</th>
+                            <th style="padding: 0.75rem;">
+                                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                    <span>Niveau de Charge</span>
+                                    <select id="filter-zarit-level" onchange="filterZaritTableByLevel(this.value)" style="padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid var(--border-glass); background: var(--bg-primary); color: var(--text-primary); font-size: 0.8rem; font-weight: 600; cursor: pointer;">
+                                        <option value="all">Tous ▼</option>
+                                        <option value="leger">Charge légère (0–20)</option>
+                                        <option value="modere">Charge modérée (21–40)</option>
+                                        <option value="severe">Charge sévère (41–60)</option>
+                                        <option value="tres_severe">Charge très sévère (> 60)</option>
+                                    </select>
+                                </div>
+                            </th>
                             <th style="padding: 0.75rem;">Date d'Évaluation</th>
                             <th style="padding: 0.75rem; text-align: center;">Actions</th>
                         </tr>
