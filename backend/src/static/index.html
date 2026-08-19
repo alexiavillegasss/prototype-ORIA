@@ -39,13 +39,17 @@
                     </button>
                     <!-- Dropdown Menu -->
                     <div id="dropdown-menu" class="dropdown-menu hidden">
-                        <a href="/remplir" class="dropdown-item" title="Accéder à la sélection Fiche d'Orientation / Grille COMID">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
-                            Remplir ma fiche d'orientation / grille
+                        <a href="/dashboard" class="dropdown-item" title="Accéder au tableau de bord">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                            Tableau de bord
                         </a>
                         <a href="/orienter" class="dropdown-item" title="Moteur d'orientation interactif">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
                             Moteur d'orientation
+                        </a>
+                        <a href="/remplir" class="dropdown-item" title="Accéder au choix des fiches et grilles">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+                            Remplir ma fiche d'orientation / grille
                         </a>
                     </div>
                 </div>
@@ -265,14 +269,9 @@
 
     <!-- Section Suivi du Fardeau de l'Aidant (Échelle de ZARIT) -->
     <section id="zarit-tracking-section" style="max-width: 1300px; margin: 2.5rem auto 3rem; padding: 0 1.5rem;">
-        <div class="section-header" style="margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-            <div>
-                <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Suivi du Fardeau de l'Aidant (Échelle de Zarit)</h2>
-                <p style="font-size: 0.9rem; color: var(--text-secondary);">Consultez et gérez l'épuisement des aidants rattachés aux dossiers cliniques du territoire.</p>
-            </div>
-            <a href="/zarit" class="btn-primary" style="background: var(--accent-amber); color: #ffffff; padding: 0.55rem 1.1rem; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 600; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);">
-                + Nouvelle Évaluation Zarit
-            </a>
+        <div class="section-header" style="margin-bottom: 1.25rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Suivi du Fardeau de l'Aidant (Échelle de Zarit)</h2>
+            <p style="font-size: 0.9rem; color: var(--text-secondary);">Consultez et gérez l'épuisement des aidants rattachés aux dossiers cliniques du territoire.</p>
         </div>
 
         <div class="table-container" style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow-card); overflow-x: auto;">
