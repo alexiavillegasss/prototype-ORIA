@@ -13,6 +13,7 @@ from ai.extraction.fiche_extractor import FicheExtractor
 from application.scoring_engine import ScoringEngine
 from application.orientation_engine import OrientationEngine
 from application.territory_manager import TerritoryManager
+from application.commune_normalizer import normalize_commune
 from application.pdf_generator import PDFGenerator
 from infrastructure.database import DatabaseManager
 
@@ -47,7 +48,7 @@ fiche_extractor = FicheExtractor()
 scoring_engine = ScoringEngine(comid_rules_path=COMID_PATH)
 orientation_engine = OrientationEngine(rules_path=ORIENTATION_RULES_PATH)
 territory_manager = TerritoryManager(territory_rules_path=TERRITORY_PATH)
-db_manager = DatabaseManager(db_path=os.path.join(BASE_DIR, 'oria_database.db'))
+db_manager = DatabaseManager()
 pdf_generator = PDFGenerator(
     dac_template_path=os.path.join(STATIC_DIR, "fiche_dac_vierge.pdf"),
     clic_template_path=os.path.join(STATIC_DIR, "fiche_clic_LaSeyne_vierge.pdf"),
@@ -244,8 +245,8 @@ def _get_dimension_value(dossier: dict, dimension: str) -> str:
         data = {}
 
     if dimension == "commune":
-        val = data.get("usager.localisation.commune_residence", "")
-        return val if val else "Inconnue"
+        val = data.get("usager.localisation.commune_residence", "") or data.get("ville", "")
+        return normalize_commune(val)
 
     elif dimension == "tranche_age":
         age = data.get("usager.identite.age_estime")
@@ -269,7 +270,21 @@ def _get_dimension_value(dossier: dict, dimension: str) -> str:
             return "85 ans et plus"
 
     elif dimension == "complexite":
-        val = dossier.get("niveau_comid", "")
+        score = dossier.get("score_comid")
+        if score is not None:
+            try:
+                score_int = int(score)
+                if score_int <= 5:
+                    return "Non complexe"
+                elif score_int <= 10:
+                    return "Complexe"
+                else:
+                    return "Très complexe"
+            except (ValueError, TypeError):
+                pass
+        val = str(dossier.get("niveau_comid", ""))
+        if "Validé - " in val:
+            val = val.replace("Validé - ", "").strip()
         return val if val else "Inconnu"
 
     elif dimension == "apa":
@@ -306,17 +321,32 @@ def _get_dimension_value(dossier: dict, dimension: str) -> str:
 
 
 def _get_structure_types(dossier: dict) -> list:
-    """Extrait la liste des types de structures orientées pour un dossier."""
+    """Extrait l'unique structure retenue (celle validée par le professionnel ou la 1ère recommandation)."""
+    details = dossier.get("details_complet") or {}
+    if isinstance(details, dict) and details.get("validation_utilisateur"):
+        val_info = details["validation_utilisateur"]
+        status = str(val_info.get("status", ""))
+        if "Validé - " in status:
+            selected_type = status.replace("Validé - ", "").strip()
+            if selected_type:
+                return [selected_type]
+
+    niveau = str(dossier.get("niveau_comid") or "")
+    if "Validé - " in niveau:
+        selected_type = niveau.replace("Validé - ", "").strip()
+        if selected_type:
+            return [selected_type]
+
     structs = dossier.get("structures_orientations", [])
-    if not isinstance(structs, list):
-        return ["Inconnu"]
-    types = []
-    for s in structs:
-        if isinstance(s, dict):
-            st = s.get("structure_type", "Inconnu")
-            if st and st not in types:
-                types.append(st)
-    return types if types else ["Inconnu"]
+    if isinstance(structs, list) and len(structs) > 0:
+        s0 = structs[0]
+        if isinstance(s0, dict):
+            st = s0.get("structure_type") or s0.get("label") or "Inconnu"
+            return [st]
+        elif isinstance(s0, str) and s0.strip():
+            return [s0.strip()]
+
+    return ["Inconnu"]
 
 
 @app.get("/api/dashboard/sankey")
@@ -339,7 +369,8 @@ def get_sankey_data(dim1: str = "commune", dim2: str = "complexite", dim3: str =
     for d in dossiers:
         data = d.get("donnees_extraites", {})
         if isinstance(data, dict):
-            communes.append(data.get("usager.localisation.commune_residence", "Inconnue") or "Inconnue")
+            raw_c = data.get("usager.localisation.commune_residence", "") or data.get("ville", "")
+            communes.append(normalize_commune(raw_c))
         else:
             communes.append("Inconnue")
 

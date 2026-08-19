@@ -66,6 +66,16 @@ body {
     overflow-y: scroll;
 }
 
+select option {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+}
+
+[data-theme="light"] select option {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+}
+
 /* --- Header --- */
 #dashboard-header {
     background: var(--bg-primary);

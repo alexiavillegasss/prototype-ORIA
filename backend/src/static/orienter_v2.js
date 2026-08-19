@@ -443,69 +443,70 @@ document.addEventListener('DOMContentLoaded', () => {
      * Valide l'orientation en cours auprès de l'API FastApi
      */
     window.validateCurrentOrientation = async function(label, type, options = {}) {
-        if (!dossierId) return;
+        label = label || "Orientation";
+        type = type || "";
 
-        try {
-            const response = await fetch(`/api/dossiers/${dossierId}/validate`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    status: `Validé - ${type}`,
-                    structure_choisie: label
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error("Erreur de validation.");
+        if (dossierId) {
+            try {
+                await fetch(`/api/dossiers/${dossierId}/validate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        status: `Validé - ${type}`,
+                        structure_choisie: label
+                    })
+                });
+            } catch (error) {
+                console.error("Erreur enregistrement validation:", error);
             }
+        }
 
-            const data = await response.json();
+        // Rendu de l'écran de validation finale
+        if (structuresTitle) structuresTitle.style.display = "none";
+        
+        let pdfButtonHtml = '';
+        if (options && options.showDacPdf) {
+            pdfButtonHtml = `
+                <button onclick="downloadDacPdf()" class="btn-primary" style="background: var(--accent-blue); box-shadow: 0 4px 12px rgba(74, 109, 245, 0.3); margin-top: 1rem; margin-left: 0.5rem;">
+                    📄 Visualiser la fiche d'orientation DAC
+                </button>
+            `;
+        } else if (options && options.showClicPdf) {
+            pdfButtonHtml = `
+                <button onclick="downloadClicPdf()" class="btn-primary" style="background: #0ea5e9; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3); margin-top: 1rem; margin-left: 0.5rem;">
+                    📄 Visualiser la fiche d'orientation CLIC La Seyne
+                </button>
+            `;
+        } else if (options && options.showClicToulonPdf) {
+            pdfButtonHtml = `
+                <button onclick="downloadClicToulonPdf()" class="btn-primary" style="background: #38bdf8; box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3); margin-top: 1rem; margin-left: 0.5rem;">
+                    📄 Visualiser la fiche d'orientation CLIC Toulon
+                </button>
+            `;
+        } else if (options && options.showClicProvenceVertePdf) {
+            pdfButtonHtml = `
+                <button onclick="downloadClicProvenceVertePdf()" class="btn-primary" style="background: #10b981; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); margin-top: 1rem; margin-left: 0.5rem;">
+                    📄 Visualiser la fiche d'orientation CLIC Provence Verte
+                </button>
+            `;
+        } else if (options && options.showClicHadagePdf) {
+            pdfButtonHtml = `
+                <button onclick="downloadClicHadagePdf()" class="btn-primary" style="background: #f59e0b; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); margin-top: 1rem; margin-left: 0.5rem;">
+                    📄 Visualiser la fiche d'orientation CLIC Hadage
+                </button>
+            `;
+        }
+        let displayLabel = String(label);
+        if (displayLabel.includes("DAC - Situation de complexité")) {
+            displayLabel = "DAC (Dispositif d'appui à la coordination)";
+        }
+        if (displayLabel.includes("CLIC")) {
+            displayLabel = displayLabel.replace(" (Sénior)", "").replace(" (Senior)", "");
+        }
 
-            // Rendu de l'écran de validation finale
-            structuresTitle.style.display = "none";
-            
-            let pdfButtonHtml = '';
-            if (options && options.showDacPdf) {
-                pdfButtonHtml = `
-                    <button onclick="downloadDacPdf()" class="btn-primary" style="background: var(--accent-blue); box-shadow: 0 4px 12px rgba(74, 109, 245, 0.3); margin-top: 1rem; margin-left: 0.5rem;">
-                        📄 Visualiser la fiche d'orientation DAC
-                    </button>
-                `;
-            } else if (options && options.showClicPdf) {
-                pdfButtonHtml = `
-                    <button onclick="downloadClicPdf()" class="btn-primary" style="background: #0ea5e9; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3); margin-top: 1rem; margin-left: 0.5rem;">
-                        📄 Visualiser la fiche d'orientation CLIC La Seyne
-                    </button>
-                `;
-            } else if (options && options.showClicToulonPdf) {
-                pdfButtonHtml = `
-                    <button onclick="downloadClicToulonPdf()" class="btn-primary" style="background: #38bdf8; box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3); margin-top: 1rem; margin-left: 0.5rem;">
-                        📄 Visualiser la fiche d'orientation CLIC Toulon
-                    </button>
-                `;
-            } else if (options && options.showClicProvenceVertePdf) {
-                pdfButtonHtml = `
-                    <button onclick="downloadClicProvenceVertePdf()" class="btn-primary" style="background: #10b981; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); margin-top: 1rem; margin-left: 0.5rem;">
-                        📄 Visualiser la fiche d'orientation CLIC Provence Verte
-                    </button>
-                `;
-            } else if (options && options.showClicHadagePdf) {
-                pdfButtonHtml = `
-                    <button onclick="downloadClicHadagePdf()" class="btn-primary" style="background: #f59e0b; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); margin-top: 1rem; margin-left: 0.5rem;">
-                        📄 Visualiser la fiche d'orientation CLIC Hadage
-                    </button>
-                `;
-            }
-            let displayLabel = label;
-            if (displayLabel.includes("DAC - Situation de complexité")) {
-                displayLabel = "DAC (Dispositif d'appui à la coordination)";
-            }
-            if (displayLabel.includes("CLIC")) {
-                displayLabel = displayLabel.replace(" (Sénior)", "").replace(" (Senior)", "");
-            }
-
+        if (structuresList) {
             structuresList.innerHTML = `
                 <div class="success-card fadeInUp">
                     <h4 style="font-size: 1.2rem; font-weight: 700; color: #22c55e; margin-bottom: 0.5rem;">Dossier validé et enregistré</h4>
@@ -520,32 +521,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             `;
-
-        } catch (error) {
-            console.error(error);
-            alert("Erreur lors de la sauvegarde de la validation.");
         }
     };
 
     /**
-     * Intercepte la validation pour le type DAC pour poser les questions de fiche
+     * Intercepte la validation pour le type DAC ou CLIC avec PDF, ou valide directement
      */
     window.handleOuiElleConvient = function(label, type, structData = null) {
-        const commune = (schemaPivot && schemaPivot["usager.localisation.commune_residence"]) ? schemaPivot["usager.localisation.commune_residence"].toLowerCase() : "";
-        const nomLocal = structData && structData.nom_local ? structData.nom_local.toLowerCase() : "";
+        label = label || "Orientation";
+        type = type || "";
+        const commune = (schemaPivot && schemaPivot["usager.localisation.commune_residence"]) ? String(schemaPivot["usager.localisation.commune_residence"]).toLowerCase() : "";
+        const nomLocal = structData && structData.nom_local ? String(structData.nom_local).toLowerCase() : "";
+        const safeLabel = String(label).toLowerCase();
 
         if (type.startsWith('DAC')) {
             window.validateCurrentOrientation(label, type, { showDacPdf: true });
-        } else if (type.startsWith('CLIC') && (label.toLowerCase().includes('seyne') || nomLocal.includes('seyne') || commune.includes('seyne'))) {
+        } else if (type.startsWith('CLIC') && (safeLabel.includes('seyne') || nomLocal.includes('seyne') || commune.includes('seyne'))) {
             window.validateCurrentOrientation(label, type, { showClicPdf: true });
-        } else if (type.startsWith('CLIC') && (label.toLowerCase().includes('toulon') || nomLocal.includes('toulon') || commune.includes('toulon'))) {
+        } else if (type.startsWith('CLIC') && (safeLabel.includes('toulon') || nomLocal.includes('toulon') || commune.includes('toulon'))) {
             window.validateCurrentOrientation(label, type, { showClicToulonPdf: true });
-        } else if (type.startsWith('CLIC') && (label.toLowerCase().includes('provence verte') || nomLocal.includes('provence verte') || commune.includes('brignoles') || commune.includes('bras') || commune.includes('cotignac'))) {
+        } else if (type.startsWith('CLIC') && (safeLabel.includes('provence verte') || nomLocal.includes('provence verte') || commune.includes('brignoles') || commune.includes('bras') || commune.includes('cotignac'))) {
             window.validateCurrentOrientation(label, type, { showClicProvenceVertePdf: true });
-        } else if (type.startsWith('CLIC') && (label.toLowerCase().includes('hadage') || nomLocal.includes('hadage') || commune.includes('hyères') || commune.includes('hyeres') || commune.includes('bormes'))) {
+        } else if (type.startsWith('CLIC') && (safeLabel.includes('hadage') || nomLocal.includes('hadage') || commune.includes('hyères') || commune.includes('hyeres') || commune.includes('bormes'))) {
             window.validateCurrentOrientation(label, type, { showClicHadagePdf: true });
-        } else if (structData && structData.email) {
-            window.showGenericMailWizard(structData);
         } else {
             window.validateCurrentOrientation(label, type);
         }
