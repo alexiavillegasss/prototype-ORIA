@@ -945,6 +945,13 @@
             </div>
 
             <div class="dossier-inputs-grid">
+                <div class="input-group" id="group-existing-dossier">
+                    <label for="comid-existing-dossier-select">Rattacher à un dossier existant (Zarit / Orientation) :</label>
+                    <select id="comid-existing-dossier-select" onchange="onSelectExistingDossier(this)" class="comid-field-select">
+                        <option value="">-- Nouveau dossier ou choisir un existant --</option>
+                    </select>
+                </div>
+
                 <div class="input-group" id="group-dossier-id">
                     <label for="comid-dossier-id">N° / Identifiant du Dossier :</label>
                     <input type="text" id="comid-dossier-id" placeholder="Ex: DOS-2026-001" class="comid-field-input" value="DOS-101">
@@ -1705,6 +1712,40 @@
     // ========================================================
     let currentComidType = 'entree'; // 'entree' or 'sortie'
     let entreeDossiersList = [];
+    let allDossiersList = [];
+
+    async function loadAllDossiersDropdown() {
+        try {
+            const res = await fetch('/api/dossiers/dropdown-list');
+            if (res.ok) {
+                allDossiersList = await res.json();
+                const select = document.getElementById('comid-existing-dossier-select');
+                if (select) {
+                    select.innerHTML = '<option value="">-- Nouveau dossier ou choisir un existant --</option>';
+                    allDossiersList.forEach(d => {
+                        const opt = document.createElement('option');
+                        opt.value = d.dossier_id;
+                        opt.textContent = d.display_label;
+                        select.appendChild(opt);
+                    });
+                }
+            }
+        } catch (e) {
+            console.error('Erreur chargement tous dossiers:', e);
+        }
+    }
+
+    function onSelectExistingDossier(selectEl) {
+        const val = selectEl.value;
+        if (!val) return;
+        const found = allDossiersList.find(d => d.dossier_id === val);
+        if (found) {
+            document.getElementById('comid-dossier-id').value = found.dossier_id;
+            if (found.senior_nom) {
+                document.getElementById('comid-senior-nom').value = found.senior_nom;
+            }
+        }
+    }
 
     async function loadEntreeDossiers() {
         try {
@@ -1732,6 +1773,7 @@
         const btnEntree = document.getElementById('btn-type-entree');
         const btnSortie = document.getElementById('btn-type-sortie');
         const groupDossierId = document.getElementById('group-dossier-id');
+        const groupExistingDossier = document.getElementById('group-existing-dossier');
         const groupDossierSelect = document.getElementById('group-dossier-select');
         const entreeBadge = document.getElementById('entree-summary-badge');
 
@@ -1739,6 +1781,7 @@
             btnEntree.classList.add('active-entree');
             btnSortie.classList.remove('active-sortie');
             groupDossierId.classList.remove('hidden');
+            if (groupExistingDossier) groupExistingDossier.classList.remove('hidden');
             groupDossierSelect.classList.add('hidden');
             entreeBadge.classList.add('hidden');
             const inputId = document.getElementById('comid-dossier-id');
@@ -1749,6 +1792,7 @@
             btnSortie.classList.add('active-sortie');
             btnEntree.classList.remove('active-entree');
             groupDossierId.classList.add('hidden');
+            if (groupExistingDossier) groupExistingDossier.classList.add('hidden');
             groupDossierSelect.classList.remove('hidden');
             loadEntreeDossiers();
         }
@@ -1834,6 +1878,7 @@
     }
 
     loadEntreeDossiers();
+    loadAllDossiersDropdown();
     </script>
 </body>
 </html>
