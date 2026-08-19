@@ -214,6 +214,11 @@ def save_comid_evaluation(request: ComidEvalRequest):
     )
     return {"message": "Évaluation COMID enregistrée avec succès !", "id": eval_id}
 
+@app.get("/api/comid/evaluations")
+def get_comid_evaluations():
+    """Récupère la liste de toutes les évaluations COMID (Entrée et Sortie)."""
+    return db_manager.get_comid_evaluations()
+
 @app.get("/api/comid/dossiers-entree")
 def get_entree_dossiers():
     """Récupère les dossiers avec évaluation d'entrée pour la liaison en sortie."""
