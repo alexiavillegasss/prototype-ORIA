@@ -594,3 +594,7 @@ async def generate_zarit_pdf_endpoint(request: ZaritPDFRequest):
         )
     except Exception as e:
         return {"error": f"Erreur lors de la génération du PDF Zarit : {str(e)}"}
+
+@app.get("/api/dossier-360/{dossier_id}")
+def get_dossier_360_endpoint(dossier_id: str):
+    return db_manager.get_dossier_360_details(dossier_id)

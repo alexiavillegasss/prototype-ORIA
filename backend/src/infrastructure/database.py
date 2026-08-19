@@ -321,3 +321,55 @@ class DatabaseManager:
             })
 
         return res
+
+    def get_dossier_360_details(self, dossier_id: str) -> dict:
+        """Récupère l'ensemble synthétique à 360° d'un dossier (Orientation, COMID, Zarit)."""
+        d_id_str = str(dossier_id)
+
+        # 1. Orientation dossier info (dossiers_patients)
+        orientation_info = None
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute('SELECT * FROM dossiers_patients WHERE id = ?', (d_id_str,))
+            row = cursor.fetchone()
+            if row:
+                d = dict(row)
+                try: d['donnees_extraites'] = json.loads(d['donnees_extraites'])
+                except Exception: pass
+                try: d['structures_orientations'] = json.loads(d['structures_orientations'])
+                except Exception: pass
+                orientation_info = d
+
+        # 2. COMID evaluations (entree & sortie)
+        comid_evals = []
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute('SELECT * FROM comid_evaluations WHERE dossier_id = ? ORDER BY date_creation ASC', (d_id_str,))
+            rows = cursor.fetchall()
+            for r in rows:
+                item = dict(r)
+                try: item['criteres'] = json.loads(item['criteres_json'])
+                except Exception: item['criteres'] = []
+                comid_evals.append(item)
+
+        # 3. Zarit evaluations
+        zarit_evals = []
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute('SELECT * FROM zarit_evaluations WHERE dossier_id = ? ORDER BY date_creation DESC', (d_id_str,))
+            rows = cursor.fetchall()
+            for r in rows:
+                item = dict(r)
+                try: item['reponses'] = json.loads(item['reponses_json'])
+                except Exception: item['reponses'] = []
+                zarit_evals.append(item)
+
+        return {
+            "dossier_id": d_id_str,
+            "orientation": orientation_info,
+            "comid": comid_evals,
+            "zarit": zarit_evals
+        }
