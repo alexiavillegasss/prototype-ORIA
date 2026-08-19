@@ -286,11 +286,43 @@ class DatabaseManager:
             return [dict(row) for row in rows]
 
     def get_dossiers_for_dropdown(self) -> list:
-        """Retourne la liste simplifiée des dossiers patients pour alimenter les sélecteurs déroulants."""
-        dossiers = self.get_all_dossiers()
+        """Retourne la liste unifiée de TOUS les dossiers (Évaluations COMID + Orientations) pour les sélecteurs déroulants."""
         res = []
+        seen_ids = set()
+
+        # 1. Évaluations COMID (ex: DOS-TEST1, DOS-TEST2...)
+        comid_evals = self.get_comid_evaluations()
+        dossiers_comid_map = {}
+        for item in comid_evals:
+            d_id = item['dossier_id']
+            if d_id not in dossiers_comid_map:
+                dossiers_comid_map[d_id] = {
+                    "dossier_id": d_id,
+                    "senior_nom": item.get('senior_nom') or d_id,
+                    "score": item.get('score'),
+                    "niveau": item.get('niveau')
+                }
+
+        for d_id, info in dossiers_comid_map.items():
+            seen_ids.add(d_id)
+            nom = info["senior_nom"]
+            score = info["score"]
+            score_txt = f"COMID: {score}/30 ({info['niveau']})" if score is not None else "Évaluation COMID"
+            res.append({
+                "dossier_id": d_id,
+                "senior_nom": nom,
+                "score_comid": score,
+                "niveau_comid": info["niveau"],
+                "display_label": f"Dossier {d_id} - {nom} ({score_txt})"
+            })
+
+        # 2. Dossiers d'Orientation Patients (ex: #619, #620, #621...)
+        dossiers = self.get_all_dossiers()
         for d in dossiers:
             d_id = str(d["id"])
+            if d_id in seen_ids:
+                continue
+            seen_ids.add(d_id)
             data = d.get("donnees_extraites") or {}
             nom = ""
             if isinstance(data, dict):
@@ -302,7 +334,7 @@ class DatabaseManager:
                 nom = f"Senior (Dossier #{d_id})"
 
             score = d.get("score_comid")
-            score_txt = f"COMID: {score}/30" if score is not None else "Sans score"
+            score_txt = f"COMID: {score}/30" if score is not None else "Orientation"
 
             res.append({
                 "dossier_id": d_id,
@@ -311,4 +343,5 @@ class DatabaseManager:
                 "niveau_comid": d.get("niveau_comid"),
                 "display_label": f"Dossier #{d_id} - {nom} ({score_txt})"
             })
+
         return res
