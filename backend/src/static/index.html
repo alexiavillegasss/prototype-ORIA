@@ -285,15 +285,12 @@
                             <th style="padding: 0.75rem;">Score Sortie</th>
                             <th style="padding: 0.75rem;">Évolution (&Delta;)</th>
                             <th style="padding: 0.75rem;">
-                                <div style="display: inline-flex; align-items: center; gap: 0.2rem;">
-                                    <span>Impact & Complexité</span>
-                                    <select id="filter-comid-level" onchange="filterComidTableByLevel(this.value)" title="Filtrer par niveau de complexité" style="background: transparent; border: none; color: #3b82f6; font-size: 0.85rem; font-weight: 700; cursor: pointer; outline: none; padding: 0;">
-                                        <option value="all" style="background: var(--bg-card); color: var(--text-primary);">▼ (Tous)</option>
-                                        <option value="non_complexe" style="background: var(--bg-card); color: var(--text-primary);">Non complexe (0–5)</option>
-                                        <option value="a_risque" style="background: var(--bg-card); color: var(--text-primary);">À risque (6–9)</option>
-                                        <option value="tres_complexe" style="background: var(--bg-card); color: var(--text-primary);">Très complexe (>= 10)</option>
-                                    </select>
-                                </div>
+                                <select id="filter-comid-level" onchange="filterComidTableByLevel(this.value)" style="background: transparent; border: none; color: var(--text-secondary); font-size: 0.85rem; font-weight: 700; cursor: pointer; outline: none; padding: 0; font-family: inherit;">
+                                    <option value="all" style="background: var(--bg-card); color: var(--text-primary);">Impact & Complexité ▼</option>
+                                    <option value="non_complexe" style="background: var(--bg-card); color: var(--text-primary);">Impact : Non complexe (0–5)</option>
+                                    <option value="a_risque" style="background: var(--bg-card); color: var(--text-primary);">Impact : À risque (6–9)</option>
+                                    <option value="tres_complexe" style="background: var(--bg-card); color: var(--text-primary);">Impact : Très complexe (>= 10)</option>
+                                </select>
                             </th>
                             <th style="padding: 0.75rem;">Statut Bilan</th>
                             <th style="padding: 0.75rem; text-align: center;">Actions</th>
@@ -330,16 +327,13 @@
                             <th style="padding: 0.75rem;">Aidant</th>
                             <th style="padding: 0.75rem;">Score Zarit</th>
                             <th style="padding: 0.75rem;">
-                                <div style="display: inline-flex; align-items: center; gap: 0.2rem;">
-                                    <span>Niveau de Charge</span>
-                                    <select id="filter-zarit-level" onchange="filterZaritTableByLevel(this.value)" title="Filtrer par niveau de charge" style="background: transparent; border: none; color: #f59e0b; font-size: 0.85rem; font-weight: 700; cursor: pointer; outline: none; padding: 0;">
-                                        <option value="all" style="background: var(--bg-card); color: var(--text-primary);">▼ (Tous)</option>
-                                        <option value="leger" style="background: var(--bg-card); color: var(--text-primary);">Charge légère (0–20)</option>
-                                        <option value="modere" style="background: var(--bg-card); color: var(--text-primary);">Charge modérée (21–40)</option>
-                                        <option value="severe" style="background: var(--bg-card); color: var(--text-primary);">Charge sévère (41–60)</option>
-                                        <option value="tres_severe" style="background: var(--bg-card); color: var(--text-primary);">Charge très sévère (> 60)</option>
-                                    </select>
-                                </div>
+                                <select id="filter-zarit-level" onchange="filterZaritTableByLevel(this.value)" style="background: transparent; border: none; color: var(--text-secondary); font-size: 0.85rem; font-weight: 700; cursor: pointer; outline: none; padding: 0; font-family: inherit;">
+                                    <option value="all" style="background: var(--bg-card); color: var(--text-primary);">Niveau de Charge ▼</option>
+                                    <option value="leger" style="background: var(--bg-card); color: var(--text-primary);">Niveau de Charge : Légère (0–20)</option>
+                                    <option value="modere" style="background: var(--bg-card); color: var(--text-primary);">Niveau de Charge : Modérée (21–40)</option>
+                                    <option value="severe" style="background: var(--bg-card); color: var(--text-primary);">Niveau de Charge : Sévère (41–60)</option>
+                                    <option value="tres_severe" style="background: var(--bg-card); color: var(--text-primary);">Niveau de Charge : Très sévère (> 60)</option>
+                                </select>
                             </th>
                             <th style="padding: 0.75rem;">Date d'Évaluation</th>
                             <th style="padding: 0.75rem; text-align: center;">Actions</th>
