@@ -227,9 +227,21 @@
                 Cette grille évalue la charge matérielle, émotionnelle et physique qui pèse sur l'aidant d'un senior.
                 Pour chacune des 22 questions ci-dessous, sélectionnez la fréquence qui correspond au ressenti de l'aidant.
             </p>
-            <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
-                <input type="text" id="zarit-senior-nom" placeholder="Nom / Prénom du Senior (Optionnel)" style="padding: 0.55rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-glass); background: var(--bg-primary); color: var(--text-primary); font-size: 0.88rem; flex: 1; min-width: 200px;" />
-                <input type="text" id="zarit-aidant-nom" placeholder="Lien avec l'aidant (ex: Fille, Époux...)" style="padding: 0.55rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-glass); background: var(--bg-primary); color: var(--text-primary); font-size: 0.88rem; flex: 1; min-width: 200px;" />
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 1.25rem;">
+                <div>
+                    <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Rattacher au dossier existant (Optionnel) :</label>
+                    <select id="zarit-dossier-select" onchange="onSelectZaritDossier(this)" class="comid-field-select" style="width: 100%;">
+                        <option value="">-- Sélectionner un dossier existant --</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Nom / Prénom du Senior :</label>
+                    <input type="text" id="zarit-senior-nom" placeholder="Ex: Mme Jeanne Dupont" style="width: 100%; padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-glass); background: var(--bg-main); color: var(--text-primary); font-size: 0.9rem;" />
+                </div>
+                <div>
+                    <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Lien avec l'aidant :</label>
+                    <input type="text" id="zarit-aidant-nom" placeholder="Ex: Fille, Époux..." style="width: 100%; padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-glass); background: var(--bg-main); color: var(--text-primary); font-size: 0.9rem;" />
+                </div>
             </div>
         </div>
 
@@ -403,10 +415,42 @@
             adviceText.textContent = descText;
         }
 
+        let dossiersList = [];
+        let selectedDossierId = null;
+
+        async function loadDossiersDropdown() {
+            try {
+                const res = await fetch('/api/dossiers/dropdown-list');
+                if (res.ok) {
+                    dossiersList = await res.json();
+                    const select = document.getElementById('zarit-dossier-select');
+                    select.innerHTML = '<option value="">-- Sélectionner un dossier existant --</option>';
+                    dossiersList.forEach(d => {
+                        const opt = document.createElement('option');
+                        opt.value = d.dossier_id;
+                        opt.textContent = d.display_label;
+                        select.appendChild(opt);
+                    });
+                }
+            } catch (e) {
+                console.error("Erreur chargement liste dossiers", e);
+            }
+        }
+
+        function onSelectZaritDossier(selectEl) {
+            selectedDossierId = selectEl.value || null;
+            const found = dossiersList.find(d => d.dossier_id === selectedDossierId);
+            if (found) {
+                document.getElementById('zarit-senior-nom').value = found.senior_nom || "";
+            }
+        }
+
         document.getElementById('btn-reset-zarit').addEventListener('click', () => {
             answers = new Array(ZARIT_QUESTIONS.length).fill(0);
             document.getElementById('zarit-senior-nom').value = '';
             document.getElementById('zarit-aidant-nom').value = '';
+            document.getElementById('zarit-dossier-select').value = '';
+            selectedDossierId = null;
             updateScore();
             renderQuestions();
         });
@@ -426,6 +470,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
+                        dossier_id: selectedDossierId,
                         senior_nom: seniorNom || "Senior non renseigné",
                         aidant_nom: aidantNom || "Aidant",
                         score: totalScore,
@@ -460,6 +505,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
+                        dossier_id: selectedDossierId,
                         senior_nom: seniorNom,
                         aidant_nom: aidantNom,
                         score: totalScore,
@@ -512,6 +558,7 @@
         // Init
         renderQuestions();
         updateScore();
+        loadDossiersDropdown();
     </script>
 </body>
 </html>

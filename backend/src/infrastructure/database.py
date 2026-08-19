@@ -48,6 +48,7 @@ class DatabaseManager:
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS zarit_evaluations (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    dossier_id TEXT,
                     senior_nom TEXT,
                     aidant_nom TEXT,
                     score INTEGER NOT NULL,
@@ -56,6 +57,11 @@ class DatabaseManager:
                     date_creation TEXT NOT NULL
                 )
             ''')
+            # Migration si la colonne dossier_id manque
+            try:
+                cursor.execute('ALTER TABLE zarit_evaluations ADD COLUMN dossier_id TEXT')
+            except Exception:
+                pass
             conn.commit()
 
     def save_dossier(self, texte_original: str, donnees_extraites: dict, score_comid: int, niveau_comid: str, structures_orientations: list, details_complet: dict = None) -> Optional[int]:
@@ -258,15 +264,15 @@ class DatabaseManager:
             conn.commit()
             return cursor.rowcount > 0
 
-    def save_zarit_eval(self, senior_nom: str, aidant_nom: str, score: int, niveau: str, reponses: list) -> int:
+    def save_zarit_eval(self, senior_nom: str, aidant_nom: str, score: int, niveau: str, reponses: list, dossier_id: str = None) -> int:
         """Enregistre une évaluation de la grille de Zarit (Fardeau de l'aidant)."""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             date_creation = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             cursor.execute('''
-                INSERT INTO zarit_evaluations (senior_nom, aidant_nom, score, niveau, reponses_json, date_creation)
-                VALUES (?, ?, ?, ?, ?, ?)
-            ''', (senior_nom, aidant_nom, score, niveau, json.dumps(reponses), date_creation))
+                INSERT INTO zarit_evaluations (dossier_id, senior_nom, aidant_nom, score, niveau, reponses_json, date_creation)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (dossier_id, senior_nom, aidant_nom, score, niveau, json.dumps(reponses), date_creation))
             conn.commit()
             return cursor.lastrowid
 
@@ -278,3 +284,31 @@ class DatabaseManager:
             cursor.execute('SELECT * FROM zarit_evaluations ORDER BY date_creation DESC')
             rows = cursor.fetchall()
             return [dict(row) for row in rows]
+
+    def get_dossiers_for_dropdown(self) -> list:
+        """Retourne la liste simplifiée des dossiers patients pour alimenter les sélecteurs déroulants."""
+        dossiers = self.get_all_dossiers()
+        res = []
+        for d in dossiers:
+            d_id = str(d["id"])
+            data = d.get("donnees_extraites") or {}
+            nom = ""
+            if isinstance(data, dict):
+                nom_u = data.get("usager.identite.nom") or ""
+                prenom_u = data.get("usager.identite.prenom") or ""
+                if nom_u or prenom_u:
+                    nom = f"{prenom_u} {nom_u}".strip()
+            if not nom:
+                nom = f"Senior (Dossier #{d_id})"
+
+            score = d.get("score_comid")
+            score_txt = f"COMID: {score}/30" if score is not None else "Sans score"
+
+            res.append({
+                "dossier_id": d_id,
+                "senior_nom": nom,
+                "score_comid": score,
+                "niveau_comid": d.get("niveau_comid"),
+                "display_label": f"Dossier #{d_id} - {nom} ({score_txt})"
+            })
+        return res
