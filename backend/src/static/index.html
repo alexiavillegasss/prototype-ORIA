@@ -444,7 +444,7 @@
                 if (comids.length > 0) {
                     const entree = comids.find(c => c.type_eval === 'entree');
                     const sortie = comids.find(c => c.type_eval === 'sortie');
-                    
+
                     let scoreDelta = '';
                     if (entree && sortie) {
                         const diff = entree.score - sortie.score;
@@ -453,20 +453,48 @@
                         else scoreDelta = `<div style="margin-top: 0.6rem; color: #94a3b8; font-size: 0.85rem;">⚪ Complexité stable</div>`;
                     }
 
+                    const entreeBox = entree ? `
+                        <div style="background: rgba(59, 130, 246, 0.08); padding: 0.85rem; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.2);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 0.78rem; text-transform: uppercase; font-weight: 700; color: #3b82f6;">COMID ADMISSION (ENTRÉE)</span>
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">${entree.date_creation || ''}</span>
+                            </div>
+                            <div style="font-size: 1.2rem; font-weight: 800; color: var(--text-primary); margin: 0.3rem 0;">
+                                ${entree.score} / 30 <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-secondary);">(${entree.niveau})</span>
+                            </div>
+                            <button type="button" onclick="downloadComidPDFFrom360(comids.find(c => c.type_eval === 'entree'))" class="btn-primary" style="margin-top: 0.35rem; background: #3b82f6; color: #ffffff; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none;">
+                                📄 Télécharger PDF COMID Entrée
+                            </button>
+                        </div>
+                    ` : `
+                        <div style="background: rgba(148, 163, 184, 0.08); padding: 0.85rem; border-radius: 8px; border: 1px dashed rgba(148, 163, 184, 0.2); color: var(--text-muted); font-size: 0.88rem;">
+                            COMID Admission (Entrée) : Non renseignée
+                        </div>
+                    `;
+
+                    const sortieBox = sortie ? `
+                        <div style="background: rgba(16, 185, 129, 0.08); padding: 0.85rem; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 0.78rem; text-transform: uppercase; font-weight: 700; color: #10b981;">COMID ÉVALUATION (SORTIE)</span>
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">${sortie.date_creation || ''}</span>
+                            </div>
+                            <div style="font-size: 1.2rem; font-weight: 800; color: var(--text-primary); margin: 0.3rem 0;">
+                                ${sortie.score} / 30 <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-secondary);">(${sortie.niveau})</span>
+                            </div>
+                            <button type="button" onclick="downloadComidPDFFrom360(comids.find(c => c.type_eval === 'sortie'))" class="btn-primary" style="margin-top: 0.35rem; background: #10b981; color: #ffffff; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none;">
+                                📄 Télécharger PDF COMID Sortie
+                            </button>
+                        </div>
+                    ` : `
+                        <div style="background: rgba(148, 163, 184, 0.08); padding: 0.85rem; border-radius: 8px; border: 1px dashed rgba(148, 163, 184, 0.2); color: var(--text-muted); font-size: 0.88rem;">
+                            COMID Évaluation (Sortie) : En attente de sortie
+                        </div>
+                    `;
+
                     comidHtml = `
                         <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                            <div style="background: rgba(59, 130, 246, 0.08); padding: 0.85rem; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.2);">
-                                <div style="font-size: 0.78rem; text-transform: uppercase; font-weight: 700; color: #3b82f6;">COMID Admission (Entrée)</div>
-                                <div style="font-size: 1.2rem; font-weight: 800; color: var(--text-primary); margin-top: 0.2rem;">
-                                    ${entree ? `${entree.score} / 30 <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-secondary);">(${entree.niveau})</span>` : 'Non renseignée'}
-                                </div>
-                            </div>
-                            <div style="background: rgba(16, 185, 129, 0.08); padding: 0.85rem; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2);">
-                                <div style="font-size: 0.78rem; text-transform: uppercase; font-weight: 700; color: #10b981;">COMID Évaluation (Sortie)</div>
-                                <div style="font-size: 1.2rem; font-weight: 800; color: var(--text-primary); margin-top: 0.2rem;">
-                                    ${sortie ? `${sortie.score} / 30 <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-secondary);">(${sortie.niveau})</span>` : 'En attente de sortie'}
-                                </div>
-                            </div>
+                            ${entreeBox}
+                            ${sortieBox}
                             ${scoreDelta}
                         </div>
                     `;
@@ -647,6 +675,40 @@
                 tbody.innerHTML = html;
             } catch (e) {
                 console.error('Error loadComidComparisonTableInline:', e);
+            }
+        }
+
+        async function downloadComidPDFFrom360(item) {
+            if (!item) return;
+            try {
+                const response = await fetch('/api/comid/generate_pdf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        senior_nom: item.senior_nom || "Senior non renseigné",
+                        dossier_id: item.dossier_id || "",
+                        type_eval: item.type_eval || "entree",
+                        score: item.score || 0,
+                        level: item.niveau || "Non complexe",
+                        date: item.date_creation || "",
+                        checkedItems: item.criteres || []
+                    })
+                });
+
+                if (!response.ok) throw new Error("Erreur génération PDF COMID");
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                const labelType = item.type_eval === 'sortie' ? 'Sortie' : 'Entree';
+                a.download = `Synthese_COMID_${labelType}_Dossier_${item.dossier_id || 'sans_num'}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            } catch (err) {
+                console.error(err);
+                alert("Impossible de télécharger le PDF COMID.");
             }
         }
 
