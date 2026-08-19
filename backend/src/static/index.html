@@ -780,13 +780,14 @@
 
                 const entreeText = item.score_entree !== null ? `<strong>${item.score_entree}/30</strong> (${item.niveau_entree})` : '<span style="color: #94a3b8;">–</span>';
                 const sortieText = item.score_sortie !== null ? `<strong>${item.score_sortie}/30</strong> (${item.niveau_sortie})` : '<span style="color: #94a3b8; font-style: italic;">En attente sortie</span>';
+                const seniorDisp = (item.senior_nom && item.senior_nom !== item.dossier_id && item.senior_nom !== 'Senior non renseigné' && item.senior_nom !== 'Usager') ? item.senior_nom : 'Anonyme';
 
                 html += `
                     <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.08); height: 48px;">
                         <td style="padding: 0.75rem;">
                             <span class="dossier-link-btn" onclick="openDossier360('${item.dossier_id}')" title="Ouvrir la fiche 360° du dossier">${item.dossier_id}</span>
                         </td>
-                        <td style="padding: 0.75rem; font-weight: 500; color: var(--text-primary);">${item.senior_nom || item.dossier_id}</td>
+                        <td style="padding: 0.75rem; font-weight: 500; color: var(--text-primary);">${seniorDisp}</td>
                         <td style="padding: 0.75rem; color: var(--text-primary);">${entreeText}</td>
                         <td style="padding: 0.75rem; color: var(--text-primary);">${sortieText}</td>
                         <td style="padding: 0.75rem;">${deltaBadge}</td>
@@ -888,11 +889,12 @@
                 }
 
                 const dId = item.dossier_id ? `<span class="dossier-link-btn" onclick="openDossier360('${item.dossier_id}')" title="Ouvrir la fiche 360° du dossier">${item.dossier_id}</span>` : '<span style="color: #94a3b8; font-style: italic;">Non rattaché</span>';
+                const seniorDispZarit = (item.senior_nom && item.senior_nom !== item.dossier_id && item.senior_nom !== 'Senior non renseigné' && item.senior_nom !== 'Usager') ? item.senior_nom : 'Anonyme';
 
                 html += `
                     <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.08); height: 48px;">
                         <td style="padding: 0.75rem;">${dId}</td>
-                        <td style="padding: 0.75rem; font-weight: 500; color: var(--text-primary);">${item.senior_nom || 'Senior'}</td>
+                        <td style="padding: 0.75rem; font-weight: 500; color: var(--text-primary);">${seniorDispZarit}</td>
                         <td style="padding: 0.75rem; color: var(--text-secondary);">${item.aidant_nom || 'Aidant'}</td>
                         <td style="padding: 0.75rem;"><strong>${score} / 88</strong></td>
                         <td style="padding: 0.75rem;">

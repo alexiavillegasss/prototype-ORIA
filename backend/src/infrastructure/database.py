@@ -227,13 +227,19 @@ class DatabaseManager:
             for row in rows:
                 item = dict(row)
                 d_id = item['dossier_id']
+                s_nom = item.get('senior_nom')
+                if not s_nom or s_nom == d_id or s_nom in ('Senior non renseigné', 'Usager'):
+                    s_nom = 'Anonyme'
                 if d_id not in dossiers_map:
                     dossiers_map[d_id] = {
                         "dossier_id": d_id,
-                        "senior_nom": item.get('senior_nom') or d_id,
+                        "senior_nom": s_nom,
                         "entree": None,
                         "sortie": None
                     }
+                elif s_nom != 'Anonyme':
+                    dossiers_map[d_id]["senior_nom"] = s_nom
+
                 if item['type_eval'] == 'entree':
                     dossiers_map[d_id]['entree'] = item
                 elif item['type_eval'] == 'sortie':
@@ -314,16 +320,19 @@ class DatabaseManager:
         # Uniquement les dossiers ayant un COMID
         for item in self.get_comid_evaluations():
             d_id = item.get('dossier_id')
+            s_nom = item.get('senior_nom')
+            if not s_nom or s_nom == d_id or s_nom in ('Senior non renseigné', 'Usager'):
+                s_nom = "Anonyme"
             if d_id and d_id not in dossiers_map:
                 dossiers_map[d_id] = {
                     "dossier_id": d_id,
-                    "senior_nom": item.get('senior_nom') or "Usager"
+                    "senior_nom": s_nom
                 }
 
         # Trier par identifiant
         for d_id in sorted(dossiers_map.keys()):
             info = dossiers_map[d_id]
-            nom = info["senior_nom"] if info["senior_nom"] and info["senior_nom"] != d_id else "Usager"
+            nom = info["senior_nom"]
             res.append({
                 "dossier_id": d_id,
                 "senior_nom": nom,
