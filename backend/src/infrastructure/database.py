@@ -312,12 +312,13 @@ class DatabaseManager:
             nom = info["senior_nom"]
             score = info["score"]
             score_txt = f"Score COMID: {score}/30 ({info['niveau']})" if score is not None else "Évaluation COMID"
+            nom_display = nom if nom and nom != d_id else "Usager"
             res.append({
                 "dossier_id": d_id,
-                "senior_nom": nom,
+                "senior_nom": nom_display,
                 "score_comid": score,
                 "niveau_comid": info["niveau"],
-                "display_label": f"Dossier {d_id} - {nom} ({score_txt})"
+                "display_label": f"{d_id} – {nom_display}"
             })
 
         return res

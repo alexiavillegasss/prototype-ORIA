@@ -1730,9 +1730,9 @@
                             seen.add(key);
                             const opt = document.createElement('option');
                             opt.value = String(d.id);
-                            const dIdText = d.dossier_id ? `[${d.dossier_id}] ` : '';
-                            const seniorText = d.senior_nom && d.senior_nom !== 'Senior non renseigné' ? d.senior_nom : (d.dossier_id || `Évaluation ZARIT #${d.id}`);
-                            opt.textContent = `${dIdText}${seniorText} (ZARIT: ${d.score}/88 - ${d.niveau})`;
+                            const dId = d.dossier_id || `DOS-ZARIT-${d.id}`;
+                            const seniorText = d.senior_nom && d.senior_nom !== 'Senior non renseigné' ? d.senior_nom : 'Usager Anonyme';
+                            opt.textContent = `${dId} – ${seniorText} (Score ZARIT : ${d.score}/88)`;
                             select.appendChild(opt);
                         }
                     });
