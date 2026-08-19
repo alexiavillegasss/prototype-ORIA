@@ -13,6 +13,7 @@ from ai.extraction.fiche_extractor import FicheExtractor
 from application.scoring_engine import ScoringEngine
 from application.orientation_engine import OrientationEngine
 from application.territory_manager import TerritoryManager
+from application.commune_normalizer import normalize_commune
 from application.pdf_generator import PDFGenerator
 from infrastructure.database import DatabaseManager
 
@@ -244,8 +245,8 @@ def _get_dimension_value(dossier: dict, dimension: str) -> str:
         data = {}
 
     if dimension == "commune":
-        val = data.get("usager.localisation.commune_residence", "")
-        return val if val else "Inconnue"
+        val = data.get("usager.localisation.commune_residence", "") or data.get("ville", "")
+        return normalize_commune(val)
 
     elif dimension == "tranche_age":
         age = data.get("usager.identite.age_estime")
@@ -368,7 +369,8 @@ def get_sankey_data(dim1: str = "commune", dim2: str = "complexite", dim3: str =
     for d in dossiers:
         data = d.get("donnees_extraites", {})
         if isinstance(data, dict):
-            communes.append(data.get("usager.localisation.commune_residence", "Inconnue") or "Inconnue")
+            raw_c = data.get("usager.localisation.commune_residence", "") or data.get("ville", "")
+            communes.append(normalize_commune(raw_c))
         else:
             communes.append("Inconnue")
 
