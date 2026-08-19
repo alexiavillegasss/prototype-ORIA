@@ -333,13 +333,13 @@ async function loadComidComparisonTable() {
             if (item.delta_score !== null) {
                 if (item.delta_score > 0) {
                     deltaBadge = `<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700;">-${item.delta_score} pts (${item.evolution_pct}%)</span>`;
-                    impactText = `<span style="color: #10b981; font-weight: 600;">🟢 Complexité réduite</span>`;
+                    impactText = `<span style="color: #10b981; font-weight: 600;"> Complexité réduite</span>`;
                 } else if (item.delta_score < 0) {
                     deltaBadge = `<span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700;">+${Math.abs(item.delta_score)} pts</span>`;
-                    impactText = `<span style="color: #ef4444; font-weight: 600;">🔴 Complexité accrue</span>`;
+                    impactText = `<span style="color: #ef4444; font-weight: 600;"> Complexité accrue</span>`;
                 } else {
                     deltaBadge = `<span style="background: rgba(148, 163, 184, 0.15); color: var(--text-secondary); padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 600;">0 pt (Stable)</span>`;
-                    impactText = `<span style="color: var(--text-secondary);">⚪ Complexité stable</span>`;
+                    impactText = `<span style="color: var(--text-secondary);"> Complexité stable</span>`;
                 }
             }
 

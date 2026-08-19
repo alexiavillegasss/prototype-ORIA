@@ -193,7 +193,7 @@
             </button>
             <button class="dash-tab-btn" onclick="switchDashboardTab('dossier360')" id="tab-btn-dossier360">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                <span>📁 Fiche Synthèse 360° par Dossier</span>
+                <span>Fiche Synthèse 360° par Dossier</span>
             </button>
         </div>
     </div>
@@ -270,7 +270,7 @@
                     <p style="font-size: 0.9rem; color: var(--text-secondary);">Mesurez l'évolution du score de complexité clinique des seniors bilantés entre l'admission et la sortie.</p>
                 </div>
                 <button type="button" onclick="exportComidCSV()" class="btn-primary" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); padding: 0.55rem 1.1rem; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem;">
-                    📥 Exporter le tableau en CSV
+                    Exporter le tableau en CSV
                 </button>
             </div>
 
@@ -304,7 +304,7 @@
                     <p style="font-size: 0.9rem; color: var(--text-secondary);">Consultez et gérez l'épuisement des aidants rattachés aux dossiers cliniques du territoire.</p>
                 </div>
                 <button type="button" onclick="exportZaritCSV()" class="btn-primary" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 0.55rem 1.1rem; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem;">
-                    📥 Exporter le tableau en CSV
+                    Exporter le tableau en CSV
                 </button>
             </div>
 
@@ -457,9 +457,9 @@
                     let scoreDelta = '';
                     if (entree && sortie) {
                         const diff = entree.score - sortie.score;
-                        if (diff > 0) scoreDelta = `<div style="margin-top: 0.6rem; font-weight: 700; color: #10b981; font-size: 0.85rem;">🟢 Baisse de complexité : -${diff} pts (${roundPct(diff, entree.score)}%)</div>`;
-                        else if (diff < 0) scoreDelta = `<div style="margin-top: 0.6rem; font-weight: 700; color: #ef4444; font-size: 0.85rem;">🔴 Augmentation complexité : +${Math.abs(diff)} pts</div>`;
-                        else scoreDelta = `<div style="margin-top: 0.6rem; color: #94a3b8; font-size: 0.85rem;">⚪ Complexité stable</div>`;
+                        if (diff > 0) scoreDelta = `<div style="margin-top: 0.6rem; font-weight: 700; color: #10b981; font-size: 0.85rem;">Baisse de complexité : -${diff} pts (${roundPct(diff, entree.score)}%)</div>`;
+                        else if (diff < 0) scoreDelta = `<div style="margin-top: 0.6rem; font-weight: 700; color: #ef4444; font-size: 0.85rem;">Augmentation complexité : +${Math.abs(diff)} pts</div>`;
+                        else scoreDelta = `<div style="margin-top: 0.6rem; color: #94a3b8; font-size: 0.85rem;">Complexité stable</div>`;
                     }
 
                     const entreeBox = entree ? `
@@ -472,7 +472,7 @@
                                 ${entree.score} / 30 <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-secondary);">(${entree.niveau})</span>
                             </div>
                             <button type="button" onclick="downloadComidPDFFrom360(comids.find(c => c.type_eval === 'entree'))" class="btn-primary" style="margin-top: 0.35rem; background: #3b82f6; color: #ffffff; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none;">
-                                📄 Télécharger PDF COMID Entrée
+                                Télécharger PDF COMID Entrée
                             </button>
                         </div>
                     ` : `
@@ -491,7 +491,7 @@
                                 ${sortie.score} / 30 <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-secondary);">(${sortie.niveau})</span>
                             </div>
                             <button type="button" onclick="downloadComidPDFFrom360(comids.find(c => c.type_eval === 'sortie'))" class="btn-primary" style="margin-top: 0.35rem; background: #10b981; color: #ffffff; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none;">
-                                📄 Télécharger PDF COMID Sortie
+                                Télécharger PDF COMID Sortie
                             </button>
                         </div>
                     ` : `
@@ -529,7 +529,7 @@
                                 <span style="font-size: 0.8rem; padding: 0.2rem 0.6rem; border-radius: 12px; background: ${badgeColor}22; color: ${badgeColor}; font-weight: 700; margin-left: 0.5rem;">${z.niveau}</span>
                             </div>
                             <button type="button" onclick="downloadZaritPDFFromTable(zaritDataCache[0])" class="btn-primary" style="margin-top: 0.6rem; background: var(--accent-amber); color: #ffffff; padding: 0.45rem 0.85rem; border-radius: 6px; font-size: 0.82rem; font-weight: 600; cursor: pointer; border: none;">
-                                📄 Télécharger le PDF Zarit
+                                Télécharger le PDF Zarit
                             </button>
                         </div>
                     `;
@@ -551,7 +551,7 @@
                     orientCardHtml = `
                         <div style="background: var(--bg-primary); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1.25rem;">
                             <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
-                                🧭 Orientation Initiale
+                                Orientation Initiale
                             </h4>
                             ${orientBody}
                         </div>
@@ -573,7 +573,7 @@
                             <!-- Carte Bilan COMID -->
                             <div style="background: var(--bg-primary); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1.25rem;">
                                 <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
-                                    📋 Bilan Clinique COMID
+                                    Bilan Clinique COMID
                                 </h4>
                                 ${comidHtml}
                             </div>
@@ -581,7 +581,7 @@
                             <!-- Carte Charge ZARIT -->
                             <div style="background: var(--bg-primary); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1.25rem;">
                                 <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
-                                    🛡️ Épuisement Aidant ZARIT
+                                    Épuisement Aidant ZARIT
                                 </h4>
                                 ${zaritHtml}
                             </div>
@@ -602,7 +602,7 @@
         // --- SUPPRESSION & CHARGEMENT DOSSIER COMID ---
         async function deleteComidDossier(dossierId, seniorNom) {
             const label = seniorNom ? `dossier "${dossierId}" (${seniorNom})` : `dossier "${dossierId}"`;
-            if (!confirm(`❓ Confirmation de suppression :\n\nVoulez-vous vraiment supprimer le ${label} ?\n\nToutes les évaluations COMID (Entrée et Sortie) rattachées à ce dossier seront effacées.`)) return;
+            if (!confirm(`Confirmation de suppression :\n\nVoulez-vous vraiment supprimer le ${label} ?\n\nToutes les évaluations COMID (Entrée et Sortie) rattachées à ce dossier seront effacées.`)) return;
 
             try {
                 const res = await fetch(`/api/comid/evaluations/${encodeURIComponent(dossierId)}`, { method: 'DELETE' });
@@ -648,13 +648,13 @@
                     if (item.delta_score !== null) {
                         if (item.delta_score > 0) {
                             deltaBadge = `<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700;">-${item.delta_score} pts (${item.evolution_pct}%)</span>`;
-                            impactText = `<span style="color: #10b981; font-weight: 600;">🟢 Complexité réduite</span>`;
+                            impactText = `<span style="color: #10b981; font-weight: 600;">Complexité réduite</span>`;
                         } else if (item.delta_score < 0) {
                             deltaBadge = `<span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700;">+${Math.abs(item.delta_score)} pts</span>`;
-                            impactText = `<span style="color: #ef4444; font-weight: 600;">🔴 Complexité accrue</span>`;
+                            impactText = `<span style="color: #ef4444; font-weight: 600;">Complexité accrue</span>`;
                         } else {
                             deltaBadge = `<span style="background: rgba(148, 163, 184, 0.15); color: #94a3b8; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700;">0 pt (Stable)</span>`;
-                            impactText = `<span style="color: #94a3b8;">⚪ Complexité stable</span>`;
+                            impactText = `<span style="color: #94a3b8;">Complexité stable</span>`;
                         }
                     }
 
@@ -881,10 +881,10 @@
                             <td style="padding: 0.75rem; color: var(--text-muted); font-size: 0.85rem;">${item.date_creation || ''}</td>
                             <td style="padding: 0.75rem; text-align: center;">
                                 <button type="button" onclick="downloadZaritPDFFromTable(zaritDataCache[${index}])" title="Télécharger le PDF Zarit" style="background: rgba(245, 158, 11, 0.12); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 6px; padding: 0.3rem 0.65rem; cursor: pointer; font-size: 0.85rem; font-weight: 600; margin-right: 0.4rem;">
-                                    📄 PDF
+                                    PDF
                                 </button>
                                 <button type="button" onclick="deleteZaritEval(${item.id})" title="Supprimer cette évaluation" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; padding: 0.3rem 0.6rem; cursor: pointer; font-size: 0.85rem;">
-                                    🗑️
+                                    Supprimer
                                 </button>
                             </td>
                         </tr>
