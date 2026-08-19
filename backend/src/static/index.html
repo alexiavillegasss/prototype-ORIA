@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Tableau de bord ORIA – Visualisation des flux et suivis cliniques">
+    <meta name="description" content="Tableau de bord ORIA – Visualisation des flux et suivis cliniques 360°">
     <title>ORIA – Tableau de Bord V2</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -83,6 +83,17 @@
         .tab-panel.active-panel {
             display: block;
             animation: fadeIn 0.3s ease;
+        }
+
+        .dossier-link-btn {
+            color: #3b82f6;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: underline;
+            transition: color 0.2s ease;
+        }
+        .dossier-link-btn:hover {
+            color: #2563eb;
         }
 
         @keyframes fadeIn {
@@ -179,6 +190,10 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                 <span>Fardeau Aidant (ZARIT)</span>
                 <span id="tab-count-zarit" class="tab-badge">0</span>
+            </button>
+            <button class="dash-tab-btn" onclick="switchDashboardTab('dossier360')" id="tab-btn-dossier360">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <span>📁 Fiche Synthèse 360° par Dossier</span>
             </button>
         </div>
     </div>
@@ -305,6 +320,32 @@
         </section>
     </div>
 
+    <!-- ONGLET 4 : Fiche Synthèse Dossier 360° -->
+    <div id="panel-dossier360" class="tab-panel">
+        <section id="dossier360-section" style="max-width: 1300px; margin: 1.5rem auto 3rem; padding: 0 1.5rem;">
+            <div class="section-header" style="margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Fiche Synthèse 360° par Dossier</h2>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Consultez la synthèse globale d'un dossier patient : Orientation, Complexité COMID et Fardeau Aidant ZARIT.</p>
+                </div>
+                <div style="min-width: 280px;">
+                    <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">SÉLECTIONNER UN DOSSIER :</label>
+                    <select id="dossier360-select" onchange="loadDossier360View(this.value)" class="comid-field-select" style="width: 100%; padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-glass); background: var(--bg-card); color: var(--text-primary); font-size: 0.9rem; font-weight: 600;">
+                        <option value="">-- Choisir un dossier --</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Main 360 Content Container -->
+            <div id="dossier360-content">
+                <div style="padding: 3.5rem 1.5rem; text-align: center; color: var(--text-muted); background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.5; margin-bottom: 1rem;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    <p style="font-size: 1.05rem; font-weight: 500;">Veuillez sélectionner un dossier ci-dessus pour afficher sa fiche synthétique à 360°.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
     <!-- Footer -->
     <footer id="dashboard-footer">
         <p>Prototype ORIA – Parcours Personnes Âgées – Tableau de bord interne</p>
@@ -333,6 +374,190 @@
                     setTimeout(() => myChart.resize(), 50);
                 }
             }
+        }
+
+        function openDossier360(dossierId) {
+            switchDashboardTab('dossier360');
+            const select = document.getElementById('dossier360-select');
+            if (select) {
+                select.value = dossierId;
+                loadDossier360View(dossierId);
+            }
+        }
+
+        // --- CHARGEMENT DU DOSSIER 360° ---
+        async function loadDossiersDropdown360() {
+            try {
+                const res = await fetch('/api/dossiers/dropdown-list');
+                if (res.ok) {
+                    const list = await res.json();
+                    const select = document.getElementById('dossier360-select');
+                    if (select) {
+                        select.innerHTML = '<option value="">-- Choisir un dossier patient --</option>';
+                        list.forEach(d => {
+                            const opt = document.createElement('option');
+                            opt.value = d.dossier_id;
+                            opt.textContent = d.display_label;
+                            select.appendChild(opt);
+                        });
+                    }
+                }
+            } catch (e) {
+                console.error("Erreur chargement dossiers 360 dropdown", e);
+            }
+        }
+
+        async function loadDossier360View(dossierId) {
+            const container = document.getElementById('dossier360-content');
+            if (!dossierId) {
+                container.innerHTML = `
+                    <div style="padding: 3.5rem 1.5rem; text-align: center; color: var(--text-muted); background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius);">
+                        <p style="font-size: 1.05rem; font-weight: 500;">Veuillez sélectionner un dossier ci-dessus pour afficher sa fiche synthétique à 360°.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `<div style="padding: 2.5rem; text-align: center; color: var(--text-muted); font-size: 1rem;">Chargement des données du dossier #${dossierId}...</div>`;
+
+            try {
+                const res = await fetch(`/api/dossier-360/${encodeURIComponent(dossierId)}`);
+                if (!res.ok) throw new Error("Erreur serveur lors de la récupération du dossier");
+                const data = await res.json();
+
+                const orient = data.orientation;
+                const comids = data.comid || [];
+                const zarits = data.zarit || [];
+
+                let seniorNom = `Senior (Dossier #${dossierId})`;
+                if (comids.length > 0 && comids[0].senior_nom) seniorNom = comids[0].senior_nom;
+                else if (zarits.length > 0 && zarits[0].senior_nom) seniorNom = zarits[0].senior_nom;
+                else if (orient && orient.donnees_extraites) {
+                    const dEx = orient.donnees_extraites;
+                    const nom_u = dEx["usager.identite.nom"] || "";
+                    const prenom_u = dEx["usager.identite.prenom"] || "";
+                    if (nom_u || prenom_u) seniorNom = `${prenom_u} ${nom_u}`.trim();
+                }
+
+                // COMID HTML
+                let comidHtml = '<div style="color: var(--text-muted); font-size: 0.88rem; font-style: italic; padding: 0.5rem 0;">Aucune évaluation COMID enregistrée.</div>';
+                if (comids.length > 0) {
+                    const entree = comids.find(c => c.type_eval === 'entree');
+                    const sortie = comids.find(c => c.type_eval === 'sortie');
+                    
+                    let scoreDelta = '';
+                    if (entree && sortie) {
+                        const diff = entree.score - sortie.score;
+                        if (diff > 0) scoreDelta = `<div style="margin-top: 0.6rem; font-weight: 700; color: #10b981; font-size: 0.85rem;">🟢 Baisse de complexité : -${diff} pts (${roundPct(diff, entree.score)}%)</div>`;
+                        else if (diff < 0) scoreDelta = `<div style="margin-top: 0.6rem; font-weight: 700; color: #ef4444; font-size: 0.85rem;">🔴 Augmentation complexité : +${Math.abs(diff)} pts</div>`;
+                        else scoreDelta = `<div style="margin-top: 0.6rem; color: #94a3b8; font-size: 0.85rem;">⚪ Complexité stable</div>`;
+                    }
+
+                    comidHtml = `
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <div style="background: rgba(59, 130, 246, 0.08); padding: 0.85rem; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.2);">
+                                <div style="font-size: 0.78rem; text-transform: uppercase; font-weight: 700; color: #3b82f6;">COMID Admission (Entrée)</div>
+                                <div style="font-size: 1.2rem; font-weight: 800; color: var(--text-primary); margin-top: 0.2rem;">
+                                    ${entree ? `${entree.score} / 30 <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-secondary);">(${entree.niveau})</span>` : 'Non renseignée'}
+                                </div>
+                            </div>
+                            <div style="background: rgba(16, 185, 129, 0.08); padding: 0.85rem; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2);">
+                                <div style="font-size: 0.78rem; text-transform: uppercase; font-weight: 700; color: #10b981;">COMID Évaluation (Sortie)</div>
+                                <div style="font-size: 1.2rem; font-weight: 800; color: var(--text-primary); margin-top: 0.2rem;">
+                                    ${sortie ? `${sortie.score} / 30 <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-secondary);">(${sortie.niveau})</span>` : 'En attente de sortie'}
+                                </div>
+                            </div>
+                            ${scoreDelta}
+                        </div>
+                    `;
+                }
+
+                // ZARIT HTML
+                let zaritHtml = '<div style="color: var(--text-muted); font-size: 0.88rem; font-style: italic; padding: 0.5rem 0;">Aucune grille ZARIT rattachée.</div>';
+                if (zarits.length > 0) {
+                    const z = zarits[0];
+                    let badgeColor = "#22c55e";
+                    if (z.score > 60) badgeColor = "#ef4444";
+                    else if (z.score >= 41) badgeColor = "#f59e0b";
+                    else if (z.score >= 21) badgeColor = "#3b82f6";
+
+                    zaritHtml = `
+                        <div style="background: rgba(245, 158, 11, 0.08); padding: 1rem; border-radius: 8px; border: 1px solid rgba(245, 158, 11, 0.2);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #f59e0b;">Aidant : ${z.aidant_nom || 'Aidant familial'}</span>
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">${z.date_creation || ''}</span>
+                            </div>
+                            <div style="font-size: 1.4rem; font-weight: 800; color: var(--text-primary); margin: 0.4rem 0;">
+                                ${z.score} <span style="font-size: 0.9rem; color: var(--text-muted);">/ 88</span>
+                                <span style="font-size: 0.8rem; padding: 0.2rem 0.6rem; border-radius: 12px; background: ${badgeColor}22; color: ${badgeColor}; font-weight: 700; margin-left: 0.5rem;">${z.niveau}</span>
+                            </div>
+                            <button type="button" onclick="downloadZaritPDFFromTable(zaritDataCache[0])" class="btn-primary" style="margin-top: 0.6rem; background: var(--accent-amber); color: #ffffff; padding: 0.45rem 0.85rem; border-radius: 6px; font-size: 0.82rem; font-weight: 600; cursor: pointer; border: none;">
+                                📄 Télécharger le PDF Zarit
+                            </button>
+                        </div>
+                    `;
+                }
+
+                // ORIENTATION HTML
+                let orientHtml = '<div style="color: var(--text-muted); font-size: 0.88rem; font-style: italic; padding: 0.5rem 0;">Pas d\'orientation initiale enregistrée dans la base.</div>';
+                if (orient) {
+                    const structs = orient.structures_orientations || [];
+                    let structsList = structs.map(s => `<span style="display: inline-block; background: rgba(59, 130, 246, 0.15); color: #3b82f6; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 600; font-size: 0.82rem; margin: 0.2rem;">${s.type || s.nom}</span>`).join(' ');
+
+                    orientHtml = `
+                        <div style="display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.88rem;">
+                            <div><strong>Date d'orientation :</strong> ${orient.date_creation || ''}</div>
+                            <div><strong>Structures préconisées :</strong><div style="margin-top: 0.3rem;">${structsList || 'Aucune'}</div></div>
+                            ${orient.texte_original ? `<div style="margin-top: 0.4rem; padding: 0.65rem; background: var(--bg-primary); border-radius: 6px; font-style: italic; color: var(--text-secondary); max-height: 90px; overflow-y: auto;">"${orient.texte_original}"</div>` : ''}
+                        </div>
+                    `;
+                }
+
+                container.innerHTML = `
+                    <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow-card);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-glass); padding-bottom: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+                            <div>
+                                <span style="font-size: 0.8rem; font-weight: 700; color: #3b82f6; text-transform: uppercase;">Dossier Patient #${dossierId}</span>
+                                <h3 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); margin-top: 0.2rem;">${seniorNom}</h3>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem;">
+                            <!-- Carte 1 : Orientation -->
+                            <div style="background: var(--bg-primary); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1.25rem;">
+                                <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    🧭 Orientation Initiales
+                                </h4>
+                                ${orientHtml}
+                            </div>
+
+                            <!-- Carte 2 : Bilan COMID -->
+                            <div style="background: var(--bg-primary); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1.25rem;">
+                                <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    📋 Bilan Clinique COMID
+                                </h4>
+                                ${comidHtml}
+                            </div>
+
+                            <!-- Carte 3 : Charge ZARIT -->
+                            <div style="background: var(--bg-primary); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1.25rem;">
+                                <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    🛡️ Épuisement Aidant ZARIT
+                                </h4>
+                                ${zaritHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } catch (e) {
+                console.error("Error loadDossier360View:", e);
+                container.innerHTML = `<div style="padding: 2.5rem; color: #ef4444; text-align: center;">Erreur lors de la récupération des détails du dossier.</div>`;
+            }
+        }
+
+        function roundPct(num, total) {
+            if (!total || total === 0) return 0;
+            return Math.round((num / total) * 100);
         }
 
         // --- SUPPRESSION & CHARGEMENT DOSSIER COMID ---
@@ -398,7 +623,9 @@
 
                     html += `
                         <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.08); height: 48px;">
-                            <td style="padding: 0.75rem; font-weight: 700; color: #3b82f6;">${item.dossier_id}</td>
+                            <td style="padding: 0.75rem;">
+                                <span class="dossier-link-btn" onclick="openDossier360('${item.dossier_id}')" title="Ouvrir la fiche 360° du dossier">${item.dossier_id}</span>
+                            </td>
                             <td style="padding: 0.75rem; font-weight: 500; color: var(--text-primary);">${item.senior_nom || item.dossier_id}</td>
                             <td style="padding: 0.75rem; color: var(--text-primary);">${entreeText}</td>
                             <td style="padding: 0.75rem; color: var(--text-primary);">${sortieText}</td>
@@ -504,7 +731,7 @@
                     else if (item.score >= 41) badgeStyle = "background: rgba(245, 158, 11, 0.15); color: #f59e0b; font-weight: 700;";
                     else if (item.score >= 21) badgeStyle = "background: rgba(59, 130, 246, 0.15); color: #3b82f6;";
 
-                    const dId = item.dossier_id ? `<strong style="color: #3b82f6;">${item.dossier_id}</strong>` : '<span style="color: #94a3b8; font-style: italic;">Non rattaché</span>';
+                    const dId = item.dossier_id ? `<span class="dossier-link-btn" onclick="openDossier360('${item.dossier_id}')" title="Ouvrir la fiche 360° du dossier">${item.dossier_id}</span>` : '<span style="color: #94a3b8; font-style: italic;">Non rattaché</span>';
 
                     html += `
                         <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.08); height: 48px;">
@@ -584,10 +811,11 @@
             // Chargement des données
             loadComidComparisonTableInline();
             loadZaritTableInline();
+            loadDossiersDropdown360();
 
-            // Vérification de l'onglet actif dans l'URL (#comid, #zarit, #sankey)
+            // Vérification de l'onglet actif dans l'URL (#comid, #zarit, #sankey, #dossier360)
             const initialTab = window.location.hash.replace('#', '');
-            if (['sankey', 'comid', 'zarit'].includes(initialTab)) {
+            if (['sankey', 'comid', 'zarit', 'dossier360'].includes(initialTab)) {
                 switchDashboardTab(initialTab);
             } else {
                 switchDashboardTab('sankey');
