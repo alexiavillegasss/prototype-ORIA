@@ -285,13 +285,13 @@
                             <th style="padding: 0.75rem;">Score Sortie</th>
                             <th style="padding: 0.75rem;">Évolution (&Delta;)</th>
                             <th style="padding: 0.75rem;">
-                                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                <div style="display: inline-flex; align-items: center; gap: 0.2rem;">
                                     <span>Impact & Complexité</span>
-                                    <select id="filter-comid-level" onchange="filterComidTableByLevel(this.value)" style="padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid var(--border-glass); background: var(--bg-primary); color: var(--text-primary); font-size: 0.8rem; font-weight: 600; cursor: pointer;">
-                                        <option value="all">Tous ▼</option>
-                                        <option value="non_complexe">Non complexe (0–5)</option>
-                                        <option value="a_risque">À risque (6–9)</option>
-                                        <option value="tres_complexe">Très complexe (>= 10)</option>
+                                    <select id="filter-comid-level" onchange="filterComidTableByLevel(this.value)" title="Filtrer par niveau de complexité" style="background: transparent; border: none; color: #3b82f6; font-size: 0.85rem; font-weight: 700; cursor: pointer; outline: none; padding: 0;">
+                                        <option value="all" style="background: var(--bg-card); color: var(--text-primary);">▼ (Tous)</option>
+                                        <option value="non_complexe" style="background: var(--bg-card); color: var(--text-primary);">Non complexe (0–5)</option>
+                                        <option value="a_risque" style="background: var(--bg-card); color: var(--text-primary);">À risque (6–9)</option>
+                                        <option value="tres_complexe" style="background: var(--bg-card); color: var(--text-primary);">Très complexe (>= 10)</option>
                                     </select>
                                 </div>
                             </th>
@@ -329,14 +329,14 @@
                             <th style="padding: 0.75rem;">Aidant</th>
                             <th style="padding: 0.75rem;">Score Zarit</th>
                             <th style="padding: 0.75rem;">
-                                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                <div style="display: inline-flex; align-items: center; gap: 0.2rem;">
                                     <span>Niveau de Charge</span>
-                                    <select id="filter-zarit-level" onchange="filterZaritTableByLevel(this.value)" style="padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid var(--border-glass); background: var(--bg-primary); color: var(--text-primary); font-size: 0.8rem; font-weight: 600; cursor: pointer;">
-                                        <option value="all">Tous ▼</option>
-                                        <option value="leger">Charge légère (0–20)</option>
-                                        <option value="modere">Charge modérée (21–40)</option>
-                                        <option value="severe">Charge sévère (41–60)</option>
-                                        <option value="tres_severe">Charge très sévère (> 60)</option>
+                                    <select id="filter-zarit-level" onchange="filterZaritTableByLevel(this.value)" title="Filtrer par niveau de charge" style="background: transparent; border: none; color: #f59e0b; font-size: 0.85rem; font-weight: 700; cursor: pointer; outline: none; padding: 0;">
+                                        <option value="all" style="background: var(--bg-card); color: var(--text-primary);">▼ (Tous)</option>
+                                        <option value="leger" style="background: var(--bg-card); color: var(--text-primary);">Charge légère (0–20)</option>
+                                        <option value="modere" style="background: var(--bg-card); color: var(--text-primary);">Charge modérée (21–40)</option>
+                                        <option value="severe" style="background: var(--bg-card); color: var(--text-primary);">Charge sévère (41–60)</option>
+                                        <option value="tres_severe" style="background: var(--bg-card); color: var(--text-primary);">Charge très sévère (> 60)</option>
                                     </select>
                                 </div>
                             </th>
