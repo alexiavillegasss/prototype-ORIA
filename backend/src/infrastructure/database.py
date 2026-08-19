@@ -297,21 +297,12 @@ class DatabaseManager:
             return cursor.rowcount > 0
 
     def get_dossiers_for_dropdown(self) -> list:
-        """Retourne tous les dossiers enregistrés dans la base (COMID, Zarit, Fiches)."""
+        """Retourne uniquement les dossiers ayant une évaluation clinique COMID officielle."""
         res = []
         dossiers_map = {}
 
-        # 1. Dossiers COMID
+        # Uniquement les dossiers ayant un COMID
         for item in self.get_comid_evaluations():
-            d_id = item.get('dossier_id')
-            if d_id and d_id not in dossiers_map:
-                dossiers_map[d_id] = {
-                    "dossier_id": d_id,
-                    "senior_nom": item.get('senior_nom') or "Usager"
-                }
-
-        # 2. Dossiers ZARIT
-        for item in self.get_zarit_evaluations():
             d_id = item.get('dossier_id')
             if d_id and d_id not in dossiers_map:
                 dossiers_map[d_id] = {
