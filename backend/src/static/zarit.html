@@ -223,11 +223,11 @@
                 Cette grille évalue la charge matérielle, émotionnelle et physique qui pèse sur l'aidant d'un senior.
                 Pour chacune des 22 questions ci-dessous, sélectionnez la fréquence qui correspond au ressenti de l'aidant.
             </p>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 1.25rem;">
+            <div style="display: grid; grid-template-columns: minmax(280px, 1.4fr) minmax(200px, 1fr) minmax(180px, 1fr); gap: 1rem; margin-top: 1.25rem;">
                 <div>
                     <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Rattacher au dossier existant (Optionnel) :</label>
-                    <select id="zarit-dossier-select" onchange="onSelectZaritDossier(this)" style="width: 100%; padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-glass); background: var(--bg-main); color: var(--text-primary); font-size: 0.9rem; font-family: inherit; outline: none; cursor: pointer;">
-                        <option value="" style="background: var(--bg-card); color: var(--text-primary);">-- Sélectionner un dossier existant --</option>
+                    <select id="zarit-dossier-select" onchange="onSelectZaritDossier(this)" style="width: 100%; padding: 0.6rem 0.75rem; border-radius: 8px; border: 1px solid var(--border-glass); background: var(--bg-main); color: var(--text-primary); font-size: 0.84rem; font-family: inherit; outline: none; cursor: pointer;">
+                        <option value="" style="background: var(--bg-card); color: var(--text-primary);">-- Choisir un dossier existant --</option>
                     </select>
                 </div>
                 <div>
@@ -421,7 +421,7 @@
                 if (res.ok) {
                     dossiersList = await res.json();
                     const select = document.getElementById('zarit-dossier-select');
-                    select.innerHTML = '<option value="" style="background: var(--bg-card); color: var(--text-primary);">-- Sélectionner un dossier existant --</option>';
+                    select.innerHTML = '<option value="" style="background: var(--bg-card); color: var(--text-primary);">-- Choisir un dossier existant --</option>';
                     dossiersList.forEach(d => {
                         const opt = document.createElement('option');
                         opt.value = d.dossier_id;
