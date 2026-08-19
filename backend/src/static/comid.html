@@ -1725,11 +1725,14 @@
                     select.innerHTML = '<option value="">-- Nouveau dossier ou choisir un ZARIT --</option>';
                     const seen = new Set();
                     evaluations.forEach(d => {
-                        if (d.dossier_id && !seen.has(d.dossier_id)) {
-                            seen.add(d.dossier_id);
+                        const key = d.dossier_id || `ZARIT-${d.id}`;
+                        if (!seen.has(key)) {
+                            seen.add(key);
                             const opt = document.createElement('option');
-                            opt.value = d.dossier_id;
-                            opt.textContent = `${d.dossier_id} - ${d.senior_nom || 'Senior'} (ZARIT: ${d.score}/88 - ${d.niveau})`;
+                            opt.value = String(d.id);
+                            const dIdText = d.dossier_id ? `[${d.dossier_id}] ` : '';
+                            const seniorText = d.senior_nom && d.senior_nom !== 'Senior non renseigné' ? d.senior_nom : (d.dossier_id || `Évaluation ZARIT #${d.id}`);
+                            opt.textContent = `${dIdText}${seniorText} (ZARIT: ${d.score}/88 - ${d.niveau})`;
                             select.appendChild(opt);
                         }
                     });
@@ -1743,11 +1746,19 @@
     function onSelectExistingDossier(selectEl) {
         const val = selectEl.value;
         if (!val) return;
-        const found = zaritDossiersList.find(d => d.dossier_id === val);
+        const found = zaritDossiersList.find(d => String(d.id) === String(val));
         if (found) {
-            document.getElementById('comid-dossier-id').value = found.dossier_id;
+            const inputId = document.getElementById('comid-dossier-id');
+            const inputSenior = document.getElementById('comid-senior-nom');
+            
+            if (found.dossier_id) {
+                inputId.value = found.dossier_id;
+            } else {
+                inputId.value = 'DOS-ZARIT-' + found.id;
+            }
+
             if (found.senior_nom && found.senior_nom !== 'Senior non renseigné') {
-                document.getElementById('comid-senior-nom').value = found.senior_nom;
+                inputSenior.value = found.senior_nom;
             }
         }
     }
