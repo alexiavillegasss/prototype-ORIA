@@ -272,6 +272,10 @@ function renderSankey(sankeyData) {
     };
 
     chartInstance.setOption(option, true);
+    window.myChart = chartInstance;
+    setTimeout(() => {
+        if (chartInstance) chartInstance.resize();
+    }, 50);
 }
 
 // -- Event listeners for dimension selectors --
