@@ -217,17 +217,17 @@
         <!-- En-tête de la grille -->
         <div class="zarit-header-card">
             <h2 style="font-size: 1.3rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem;">
-                Échelle de Zarit (Inventaire du Fardeau de l'Aidant)
+                Grille de ZARIT
             </h2>
             <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5;">
                 Cette grille évalue la charge matérielle, émotionnelle et physique qui pèse sur l'aidant d'un senior.
                 Pour chacune des 22 questions ci-dessous, sélectionnez la fréquence qui correspond au ressenti de l'aidant.
             </p>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 1.25rem;">
+            <div style="display: grid; grid-template-columns: minmax(280px, 1.4fr) minmax(200px, 1fr) minmax(180px, 1fr); gap: 1rem; margin-top: 1.25rem;">
                 <div>
                     <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Rattacher au dossier existant (Optionnel) :</label>
-                    <select id="zarit-dossier-select" onchange="onSelectZaritDossier(this)" class="comid-field-select" style="width: 100%;">
-                        <option value="">-- Sélectionner un dossier existant --</option>
+                    <select id="zarit-dossier-select" onchange="onSelectZaritDossier(this)" style="width: 100%; padding: 0.6rem 0.75rem; border-radius: 8px; border: 1px solid var(--border-glass); background: var(--bg-main); color: var(--text-primary); font-size: 0.84rem; font-family: inherit; outline: none; cursor: pointer;">
+                        <option value="" style="background: var(--bg-card); color: var(--text-primary);">-- Choisir un dossier existant --</option>
                     </select>
                 </div>
                 <div>
@@ -282,14 +282,15 @@
         <!-- Boutons d'action -->
         <div style="display: flex; justify-content: space-between; margin-top: 2rem; gap: 1rem; flex-wrap: wrap;">
             <button id="btn-reset-zarit" class="btn-primary" style="background: rgba(148, 163, 184, 0.15); color: var(--text-secondary); border: 1px solid var(--border-glass);">
-                🔄 Réinitialiser la grille
+                Réinitialiser la grille
             </button>
             <div style="display: flex; gap: 1rem;">
                 <button id="btn-save-zarit" class="btn-primary" style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-glass);">
-                    💾 Sauvegarder
+                    Sauvegarder
                 </button>
-                <button id="btn-download-pdf-zarit" class="btn-primary" style="background: var(--accent-amber); color: #ffffff; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);">
-                    📄 Télécharger la grille en PDF
+                <button id="btn-download-pdf-zarit" class="btn-primary" style="background: var(--accent-amber); color: #ffffff; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35); display: inline-flex; align-items: center; gap: 0.45rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>Télécharger la grille en PDF</span>
                 </button>
             </div>
         </div>
@@ -384,9 +385,9 @@
             const adviceTitle = document.getElementById('advice-title');
             const adviceText = document.getElementById('advice-text');
 
-            let levelLabel = "Charge faible";
+            let levelLabel = "Charge légère";
             let badgeClass = "badge-faible";
-            let titleText = "🟢 Charge faible (Score ≤ 20)";
+            let titleText = "🟢 Charge légère (Score 0 à 20)";
             let descText = "Tout va bien pour l'aidant. La situation est maîtrisée. N'hésitez pas à refaire le questionnaire si la situation évolue.";
 
             if (totalScore > 60) {
@@ -395,15 +396,15 @@
                 titleText = "🔴 Charge sévère (Score > 60)";
                 descText = "Attention à l'épuisement sévère ! Risque élevé de rupture d'aidant. N'attendez pas pour demander un relais (ex: CRT, Halte Répit, Accueil de Jour, DAC).";
             } else if (totalScore >= 41) {
-                levelLabel = "Charge modérée";
+                levelLabel = "Charge modérée à sévère";
                 badgeClass = "badge-moderee";
-                titleText = "🟠 Charge modérée (Score 41 à 60)";
-                descText = "L'aidant gère la situation mais la fatigue s'installe. Il est recommandé de faire appel à des aides ponctuelles pour le soulager.";
+                titleText = "🟠 Charge modérée à sévère (Score 41 à 60)";
+                descText = "Attention à la fatigue qui s'installe. Il est fortement recommandé de faire appel à des aides pour soulager l'aidant.";
             } else if (totalScore >= 21) {
-                levelLabel = "Charge légère";
+                levelLabel = "Charge légère à modérée";
                 badgeClass = "badge-legere";
-                titleText = "🔵 Charge légère (Score 21 à 40)";
-                descText = "L'aidant semble maîtriser la situation. Proposer des conseils de prévention et contrôler de temps à autre l'évolution.";
+                titleText = "🔵 Charge légère à modérée (Score 21 à 40)";
+                descText = "L'aidant gère la situation mais une fatigue apparaît. Proposer des conseils de prévention et contrôler de temps à autre l'évolution.";
             }
 
             badgeContainer.innerHTML = `<span class="score-badge ${badgeClass}">${levelLabel}</span>`;
@@ -420,11 +421,13 @@
                 if (res.ok) {
                     dossiersList = await res.json();
                     const select = document.getElementById('zarit-dossier-select');
-                    select.innerHTML = '<option value="">-- Sélectionner un dossier existant --</option>';
+                    select.innerHTML = '<option value="" style="background: var(--bg-card); color: var(--text-primary);">-- Choisir un dossier existant --</option>';
                     dossiersList.forEach(d => {
                         const opt = document.createElement('option');
                         opt.value = d.dossier_id;
                         opt.textContent = d.display_label;
+                        opt.style.background = 'var(--bg-card)';
+                        opt.style.color = 'var(--text-primary)';
                         select.appendChild(opt);
                     });
                 }
@@ -453,10 +456,10 @@
 
         document.getElementById('btn-save-zarit').addEventListener('click', async () => {
             const totalScore = answers.reduce((acc, curr) => acc + curr, 0);
-            let levelLabel = "Charge faible";
+            let levelLabel = "Charge légère";
             if (totalScore > 60) levelLabel = "Charge sévère";
-            else if (totalScore >= 41) levelLabel = "Charge modérée";
-            else if (totalScore >= 21) levelLabel = "Charge légère";
+            else if (totalScore >= 41) levelLabel = "Charge modérée à sévère";
+            else if (totalScore >= 21) levelLabel = "Charge légère à modérée";
 
             const seniorNom = document.getElementById('zarit-senior-nom').value.trim();
             const aidantNom = document.getElementById('zarit-aidant-nom').value.trim();
@@ -488,10 +491,10 @@
 
         document.getElementById('btn-download-pdf-zarit').addEventListener('click', async () => {
             const totalScore = answers.reduce((acc, curr) => acc + curr, 0);
-            let levelLabel = "Charge faible";
+            let levelLabel = "Charge légère";
             if (totalScore > 60) levelLabel = "Charge sévère";
-            else if (totalScore >= 41) levelLabel = "Charge modérée";
-            else if (totalScore >= 21) levelLabel = "Charge légère";
+            else if (totalScore >= 41) levelLabel = "Charge modérée à sévère";
+            else if (totalScore >= 21) levelLabel = "Charge légère à modérée";
 
             const seniorNom = document.getElementById('zarit-senior-nom').value.trim() || "Senior non renseigné";
             const aidantNom = document.getElementById('zarit-aidant-nom').value.trim() || "Aidant";

@@ -25,26 +25,30 @@
 
         .tabs-nav {
             display: flex;
-            gap: 0.75rem;
+            gap: 0.6rem;
             border-bottom: 2px solid var(--border-glass);
-            padding-bottom: 0.75rem;
-            flex-wrap: wrap;
+            padding: 0.6rem 0.25rem 0.75rem 0.25rem;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            align-items: center;
         }
 
         .dash-tab-btn {
             display: inline-flex;
             align-items: center;
-            gap: 0.6rem;
-            padding: 0.75rem 1.35rem;
-            border-radius: 12px;
+            gap: 0.5rem;
+            padding: 0.6rem 0.95rem;
+            border-radius: 10px;
             background: var(--bg-card);
             border: 1px solid var(--border-glass);
             color: var(--text-secondary);
-            font-size: 0.95rem;
+            font-size: 0.88rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.25s ease;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .dash-tab-btn:hover {
@@ -111,7 +115,7 @@
                 <img src="/static/logo.png" alt="Logo ORIA" class="logo-img">
             </div>
             <div class="header-title-center">
-                <h2 class="subtitle">Tableau de Bord – ORIA V2</h2>
+                <h2 class="subtitle">Tableau de Bord</h2>
             </div>
             <div style="display: flex; align-items: center; gap: 1rem;">
                 <button id="theme-toggle" class="btn-primary" style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-glass); padding: 0.5rem; box-shadow: none; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer;">
@@ -175,25 +179,25 @@
     </section>
 
     <!-- Main Navigation Tabs -->
-    <div id="dashboard-tabs-container">
+    <div id="dashboard-tabs-container" style="max-width: 1300px; margin: 0 auto; padding: 0.5rem 1.5rem 0;">
         <div class="tabs-nav">
             <button class="dash-tab-btn active" onclick="switchDashboardTab('sankey')" id="tab-btn-sankey">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                <span>Flux & Orientations (Sankey)</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                <span>Flux et Orientations - Diagramme de Sankey</span>
             </button>
             <button class="dash-tab-btn" onclick="switchDashboardTab('comid')" id="tab-btn-comid">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg>
-                <span>Complexité COMID</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg>
+                <span>Complexité - Grilles COMID</span>
                 <span id="tab-count-comid" class="tab-badge">0</span>
             </button>
             <button class="dash-tab-btn" onclick="switchDashboardTab('zarit')" id="tab-btn-zarit">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                <span>Fardeau Aidant (ZARIT)</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg>
+                <span>Fardeau Aidants - Grille ZARIT</span>
                 <span id="tab-count-zarit" class="tab-badge">0</span>
             </button>
             <button class="dash-tab-btn" onclick="switchDashboardTab('dossier360')" id="tab-btn-dossier360">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                <span>📁 Fiche Synthèse 360° par Dossier</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <span>Synthèses par dossier</span>
             </button>
         </div>
     </div>
@@ -202,7 +206,7 @@
     <div id="panel-sankey" class="tab-panel active-panel">
         <section id="sankey-section" style="max-width: 1300px; margin: 1.5rem auto 3rem; padding: 0 1.5rem;">
             <div class="section-header">
-                <h2>Diagramme de Sankey – Parcours d'Orientation</h2>
+                <h2>Flux et Orientations - Diagramme de Sankey</h2>
                 <p>Choisissez les dimensions à afficher pour explorer les tendances du parcours Personnes Âgées.</p>
             </div>
 
@@ -264,9 +268,15 @@
     <!-- ONGLET 2 : Suivi COMID -->
     <div id="panel-comid" class="tab-panel">
         <section id="comid-comparison-section" style="max-width: 1300px; margin: 1.5rem auto 3rem; padding: 0 1.5rem;">
-            <div class="section-header" style="margin-bottom: 1.25rem;">
-                <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Suivi de la Complexité COMID (Entrée vs Sortie)</h2>
-                <p style="font-size: 0.9rem; color: var(--text-secondary);">Mesurez l'évolution du score de complexité clinique des seniors bilantés entre l'admission et la sortie.</p>
+            <div class="section-header" style="margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Complexité - Grilles COMID</h2>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Mesurez l'évolution du score de complexité clinique des seniors bilantés entre l'admission et la sortie.</p>
+                </div>
+                <button type="button" onclick="exportComidCSV()" class="btn-primary" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); padding: 0.55rem 1.1rem; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.45rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>Exporter le tableau en CSV</span>
+                </button>
             </div>
 
             <div class="table-container" style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow-card); overflow-x: auto;">
@@ -278,9 +288,19 @@
                             <th style="padding: 0.75rem;">Score Entrée</th>
                             <th style="padding: 0.75rem;">Score Sortie</th>
                             <th style="padding: 0.75rem;">Évolution (&Delta;)</th>
-                            <th style="padding: 0.75rem;">Impact</th>
+                            <th style="padding: 0.75rem; width: 210px; min-width: 210px;">
+                                <div style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                                    <select id="filter-comid-level" onchange="filterComidTableByLevel(this.value)" style="background: transparent; border: none; color: var(--text-secondary); font-size: 0.85rem; font-weight: 700; cursor: pointer; outline: none; padding: 0; font-family: inherit; appearance: none; -webkit-appearance: none; -moz-appearance: none;">
+                                        <option value="all" style="background: var(--bg-card); color: var(--text-primary);">Impact & Complexité</option>
+                                        <option value="reduite" style="background: var(--bg-card); color: var(--text-primary);">Complexité réduite</option>
+                                        <option value="accrue" style="background: var(--bg-card); color: var(--text-primary);">Complexité accrue</option>
+                                        <option value="stable" style="background: var(--bg-card); color: var(--text-primary);">Complexité stable</option>
+                                    </select>
+                                    <span style="font-size: 0.75rem; color: var(--text-secondary); pointer-events: none;">▼</span>
+                                </div>
+                            </th>
                             <th style="padding: 0.75rem;">Statut Bilan</th>
-                            <th style="padding: 0.75rem; text-align: center;">Action</th>
+                            <th style="padding: 0.75rem; text-align: center;">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="comid-comparison-tbody">
@@ -294,9 +314,15 @@
     <!-- ONGLET 3 : Suivi ZARIT -->
     <div id="panel-zarit" class="tab-panel">
         <section id="zarit-tracking-section" style="max-width: 1300px; margin: 1.5rem auto 3rem; padding: 0 1.5rem;">
-            <div class="section-header" style="margin-bottom: 1.25rem;">
-                <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Suivi du Fardeau de l'Aidant (Échelle de Zarit)</h2>
-                <p style="font-size: 0.9rem; color: var(--text-secondary);">Consultez et gérez l'épuisement des aidants rattachés aux dossiers cliniques du territoire.</p>
+            <div class="section-header" style="margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Fardeau Aidants - Grille ZARIT</h2>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Consultez et gérez l'épuisement des aidants rattachés aux dossiers cliniques du territoire.</p>
+                </div>
+                <button type="button" onclick="exportZaritCSV()" class="btn-primary" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 0.55rem 1.1rem; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.45rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>Exporter le tableau en CSV</span>
+                </button>
             </div>
 
             <div class="table-container" style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow-card); overflow-x: auto;">
@@ -307,7 +333,18 @@
                             <th style="padding: 0.75rem;">Senior / Usager</th>
                             <th style="padding: 0.75rem;">Aidant</th>
                             <th style="padding: 0.75rem;">Score Zarit</th>
-                            <th style="padding: 0.75rem;">Niveau de Charge</th>
+                            <th style="padding: 0.75rem; width: 220px; min-width: 220px;">
+                                <div style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                                    <select id="filter-zarit-level" onchange="filterZaritTableByLevel(this.value)" style="background: transparent; border: none; color: var(--text-secondary); font-size: 0.85rem; font-weight: 700; cursor: pointer; outline: none; padding: 0; font-family: inherit; appearance: none; -webkit-appearance: none; -moz-appearance: none;">
+                                        <option value="all" style="background: var(--bg-card); color: var(--text-primary);">Niveau de Charge</option>
+                                        <option value="faible" style="background: var(--bg-card); color: var(--text-primary);">Charge faible (0–20)</option>
+                                        <option value="legere" style="background: var(--bg-card); color: var(--text-primary);">Charge légère (21–40)</option>
+                                        <option value="modere" style="background: var(--bg-card); color: var(--text-primary);">Charge modérée (41–60)</option>
+                                        <option value="severe" style="background: var(--bg-card); color: var(--text-primary);">Charge sévère (> 60)</option>
+                                    </select>
+                                    <span style="font-size: 0.75rem; color: var(--text-secondary); pointer-events: none;">▼</span>
+                                </div>
+                            </th>
                             <th style="padding: 0.75rem;">Date d'Évaluation</th>
                             <th style="padding: 0.75rem; text-align: center;">Actions</th>
                         </tr>
@@ -325,8 +362,8 @@
         <section id="dossier360-section" style="max-width: 1300px; margin: 1.5rem auto 3rem; padding: 0 1.5rem;">
             <div class="section-header" style="margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
                 <div>
-                    <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Fiche Synthèse 360° par Dossier</h2>
-                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Consultez la synthèse globale d'un dossier patient : Orientation, Complexité COMID et Fardeau Aidant ZARIT.</p>
+                    <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Synthèses par dossier</h2>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Consultez la synthèse globale d'un dossier patient : Complexité COMID et Fardeau Aidant ZARIT.</p>
                 </div>
                 <div style="min-width: 280px;">
                     <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">SÉLECTIONNER UN DOSSIER :</label>
@@ -407,6 +444,17 @@
             }
         }
 
+        async function downloadComid360Type(type) {
+            if (!currentDossier360Data) return;
+            const evalData = (currentDossier360Data.comid || []).find(c => c.type_eval === type);
+            if (evalData) downloadComidPDFFrom360(evalData);
+        }
+
+        async function downloadZarit360() {
+            if (!currentDossier360Data || !(currentDossier360Data.zarit || []).length) return;
+            downloadZaritPDFFromTable(currentDossier360Data.zarit[0]);
+        }
+
         async function loadDossier360View(dossierId) {
             const container = document.getElementById('dossier360-content');
             if (!dossierId) {
@@ -424,6 +472,7 @@
                 const res = await fetch(`/api/dossier-360/${encodeURIComponent(dossierId)}`);
                 if (!res.ok) throw new Error("Erreur serveur lors de la récupération du dossier");
                 const data = await res.json();
+                currentDossier360Data = data;
 
                 const orient = data.orientation;
                 const comids = data.comid || [];
@@ -448,9 +497,9 @@
                     let scoreDelta = '';
                     if (entree && sortie) {
                         const diff = entree.score - sortie.score;
-                        if (diff > 0) scoreDelta = `<div style="margin-top: 0.6rem; font-weight: 700; color: #10b981; font-size: 0.85rem;">🟢 Baisse de complexité : -${diff} pts (${roundPct(diff, entree.score)}%)</div>`;
-                        else if (diff < 0) scoreDelta = `<div style="margin-top: 0.6rem; font-weight: 700; color: #ef4444; font-size: 0.85rem;">🔴 Augmentation complexité : +${Math.abs(diff)} pts</div>`;
-                        else scoreDelta = `<div style="margin-top: 0.6rem; color: #94a3b8; font-size: 0.85rem;">⚪ Complexité stable</div>`;
+                        if (diff > 0) scoreDelta = `<div style="margin-top: 0.6rem; font-weight: 700; color: #10b981; font-size: 0.85rem;">Baisse de complexité : -${diff} pts (${roundPct(diff, entree.score)}%)</div>`;
+                        else if (diff < 0) scoreDelta = `<div style="margin-top: 0.6rem; font-weight: 700; color: #ef4444; font-size: 0.85rem;">Augmentation complexité : +${Math.abs(diff)} pts</div>`;
+                        else scoreDelta = `<div style="margin-top: 0.6rem; color: #94a3b8; font-size: 0.85rem;">Complexité stable</div>`;
                     }
 
                     const entreeBox = entree ? `
@@ -462,8 +511,8 @@
                             <div style="font-size: 1.2rem; font-weight: 800; color: var(--text-primary); margin: 0.3rem 0;">
                                 ${entree.score} / 30 <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-secondary);">(${entree.niveau})</span>
                             </div>
-                            <button type="button" onclick="downloadComidPDFFrom360(comids.find(c => c.type_eval === 'entree'))" class="btn-primary" style="margin-top: 0.35rem; background: #3b82f6; color: #ffffff; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none;">
-                                📄 Télécharger PDF COMID Entrée
+                            <button type="button" onclick="downloadComid360Type('entree')" class="btn-primary" style="margin-top: 0.35rem; background: #3b82f6; color: #ffffff; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none;">
+                                Télécharger PDF COMID Entrée
                             </button>
                         </div>
                     ` : `
@@ -473,16 +522,16 @@
                     `;
 
                     const sortieBox = sortie ? `
-                        <div style="background: rgba(16, 185, 129, 0.08); padding: 0.85rem; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2);">
+                        <div style="background: rgba(59, 130, 246, 0.08); padding: 0.85rem; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.2);">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <span style="font-size: 0.78rem; text-transform: uppercase; font-weight: 700; color: #10b981;">COMID ÉVALUATION (SORTIE)</span>
+                                <span style="font-size: 0.78rem; text-transform: uppercase; font-weight: 700; color: #3b82f6;">COMID ÉVALUATION (SORTIE)</span>
                                 <span style="font-size: 0.75rem; color: var(--text-muted);">${sortie.date_creation || ''}</span>
                             </div>
                             <div style="font-size: 1.2rem; font-weight: 800; color: var(--text-primary); margin: 0.3rem 0;">
                                 ${sortie.score} / 30 <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-secondary);">(${sortie.niveau})</span>
                             </div>
-                            <button type="button" onclick="downloadComidPDFFrom360(comids.find(c => c.type_eval === 'sortie'))" class="btn-primary" style="margin-top: 0.35rem; background: #10b981; color: #ffffff; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none;">
-                                📄 Télécharger PDF COMID Sortie
+                            <button type="button" onclick="downloadComid360Type('sortie')" class="btn-primary" style="margin-top: 0.35rem; background: #3b82f6; color: #ffffff; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none;">
+                                Télécharger PDF COMID Sortie
                             </button>
                         </div>
                     ` : `
@@ -519,8 +568,8 @@
                                 ${z.score} <span style="font-size: 0.9rem; color: var(--text-muted);">/ 88</span>
                                 <span style="font-size: 0.8rem; padding: 0.2rem 0.6rem; border-radius: 12px; background: ${badgeColor}22; color: ${badgeColor}; font-weight: 700; margin-left: 0.5rem;">${z.niveau}</span>
                             </div>
-                            <button type="button" onclick="downloadZaritPDFFromTable(zaritDataCache[0])" class="btn-primary" style="margin-top: 0.6rem; background: var(--accent-amber); color: #ffffff; padding: 0.45rem 0.85rem; border-radius: 6px; font-size: 0.82rem; font-weight: 600; cursor: pointer; border: none;">
-                                📄 Télécharger le PDF Zarit
+                            <button type="button" onclick="downloadZarit360()" class="btn-primary" style="margin-top: 0.6rem; background: var(--accent-amber); color: #ffffff; padding: 0.45rem 0.85rem; border-radius: 6px; font-size: 0.82rem; font-weight: 600; cursor: pointer; border: none;">
+                                Télécharger le PDF Zarit
                             </button>
                         </div>
                     `;
@@ -542,7 +591,7 @@
                     orientCardHtml = `
                         <div style="background: var(--bg-primary); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1.25rem;">
                             <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
-                                🧭 Orientation Initiale
+                                Orientation Initiale
                             </h4>
                             ${orientBody}
                         </div>
@@ -564,7 +613,7 @@
                             <!-- Carte Bilan COMID -->
                             <div style="background: var(--bg-primary); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1.25rem;">
                                 <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
-                                    📋 Bilan Clinique COMID
+                                    Bilan Clinique COMID
                                 </h4>
                                 ${comidHtml}
                             </div>
@@ -572,7 +621,7 @@
                             <!-- Carte Charge ZARIT -->
                             <div style="background: var(--bg-primary); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1.25rem;">
                                 <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
-                                    🛡️ Épuisement Aidant ZARIT
+                                    Épuisement Aidant ZARIT
                                 </h4>
                                 ${zaritHtml}
                             </div>
@@ -585,6 +634,98 @@
             }
         }
 
+        async function downloadComidPDFFrom360(evalData) {
+            if (!evalData) {
+                alert("Aucune donnée disponible pour ce PDF.");
+                return;
+            }
+            try {
+                let criteres = evalData.criteres || [];
+                if (typeof evalData.criteres_json === 'string') {
+                    try { criteres = JSON.parse(evalData.criteres_json); } catch(e){}
+                }
+
+                const payload = {
+                    score: evalData.score || 0,
+                    level: evalData.niveau || 'Non complexe',
+                    date: evalData.date_creation || '',
+                    checkedItems: criteres,
+                    dossier_id: evalData.dossier_id || '',
+                    senior_nom: evalData.senior_nom || ''
+                };
+
+                const res = await fetch('/api/comid/generate_pdf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    const blob = await res.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    const typeLabel = evalData.type_eval ? evalData.type_eval.toUpperCase() : 'COMID';
+                    a.download = `Synthese_COMID_${evalData.dossier_id || 'Dossier'}_${typeLabel}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                } else {
+                    alert("Erreur lors du téléchargement du PDF COMID.");
+                }
+            } catch (e) {
+                console.error("Erreur PDF COMID:", e);
+                alert("Erreur lors de la génération du PDF COMID.");
+            }
+        }
+
+        async function downloadZaritPDFFromTable(zaritEvalData) {
+            if (!zaritEvalData) {
+                alert("Aucune donnée disponible pour ce PDF Zarit.");
+                return;
+            }
+            try {
+                let reponses = zaritEvalData.reponses || [];
+                if (typeof zaritEvalData.reponses_json === 'string') {
+                    try { reponses = JSON.parse(zaritEvalData.reponses_json); } catch(e){}
+                }
+
+                const payload = {
+                    dossier_id: zaritEvalData.dossier_id || '',
+                    senior_nom: zaritEvalData.senior_nom || 'Senior non renseigné',
+                    aidant_nom: zaritEvalData.aidant_nom || 'Aidant',
+                    score: zaritEvalData.score || 0,
+                    niveau: zaritEvalData.niveau || 'Charge faible',
+                    date: zaritEvalData.date_creation || '',
+                    reponses: reponses
+                };
+
+                const res = await fetch('/api/zarit/generate_pdf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    const blob = await res.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `Grille_Zarit_${zaritEvalData.dossier_id || 'Dossier'}_Score_${zaritEvalData.score}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                } else {
+                    alert("Erreur lors du téléchargement du PDF Zarit.");
+                }
+            } catch (e) {
+                console.error("Erreur PDF Zarit:", e);
+                alert("Erreur lors du téléchargement du PDF Zarit.");
+            }
+        }
+
         function roundPct(num, total) {
             if (!total || total === 0) return 0;
             return Math.round((num / total) * 100);
@@ -592,8 +733,8 @@
 
         // --- SUPPRESSION & CHARGEMENT DOSSIER COMID ---
         async function deleteComidDossier(dossierId, seniorNom) {
-            const label = seniorNom ? `dossier "${dossierId}" (${seniorNom})` : `dossier "${dossierId}"`;
-            if (!confirm(`❓ Confirmation de suppression :\n\nVoulez-vous vraiment supprimer le ${label} ?\n\nToutes les évaluations COMID (Entrée et Sortie) rattachées à ce dossier seront effacées.`)) return;
+            const label = seniorNom && seniorNom !== dossierId ? `le dossier "${dossierId}" (${seniorNom})` : `le dossier "${dossierId}"`;
+            if (!confirm(`Confirmation de suppression :\n\nVoulez-vous vraiment supprimer ${label} ?\n\nToutes les évaluations COMID rattachées à ce dossier seront effacées.`)) return;
 
             try {
                 const res = await fetch(`/api/comid/evaluations/${encodeURIComponent(dossierId)}`, { method: 'DELETE' });
@@ -607,223 +748,212 @@
             }
         }
 
-        async function loadComidComparisonTableInline() {
+        let comidDataCache = [];
+        function renderComidRows(items) {
             const tbody = document.getElementById('comid-comparison-tbody');
-            const badgeCount = document.getElementById('tab-count-comid');
             if (!tbody) return;
 
+            if (!items || items.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="padding: 1.5rem; text-align: center; color: #94a3b8;">
+                            Aucune évaluation COMID ne correspond à ce filtre.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let html = '';
+            items.forEach(item => {
+                let deltaBadge = '<span style="color: #94a3b8;">–</span>';
+                let impactText = '<span style="color: #94a3b8;">En cours</span>';
+
+                if (item.delta_score !== null) {
+                    if (item.delta_score > 0) {
+                        deltaBadge = `<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700;">-${item.delta_score} pts (${item.evolution_pct}%)</span>`;
+                        impactText = `<span style="color: #10b981; font-weight: 600;">Complexité réduite</span>`;
+                    } else if (item.delta_score < 0) {
+                        deltaBadge = `<span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700;">+${Math.abs(item.delta_score)} pts</span>`;
+                        impactText = `<span style="color: #ef4444; font-weight: 600;">Complexité accrue</span>`;
+                    } else {
+                        deltaBadge = `<span style="background: rgba(148, 163, 184, 0.15); color: #94a3b8; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700;">0 pt (Stable)</span>`;
+                        impactText = `<span style="color: #94a3b8;">Complexité stable</span>`;
+                    }
+                }
+
+                const entreeText = item.score_entree !== null ? `<strong>${item.score_entree}/30</strong> (${item.niveau_entree})` : '<span style="color: #94a3b8;">–</span>';
+                const sortieText = item.score_sortie !== null ? `<strong>${item.score_sortie}/30</strong> (${item.niveau_sortie})` : '<span style="color: #94a3b8; font-style: italic;">En attente sortie</span>';
+                const seniorDisp = (item.senior_nom && item.senior_nom !== item.dossier_id && item.senior_nom !== 'Senior non renseigné' && item.senior_nom !== 'Usager') ? item.senior_nom : 'Anonyme';
+
+                html += `
+                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.08); height: 48px;">
+                        <td style="padding: 0.75rem;">
+                            <span class="dossier-link-btn" onclick="openDossier360('${item.dossier_id}')" title="Ouvrir la fiche 360° du dossier">${item.dossier_id}</span>
+                        </td>
+                        <td style="padding: 0.75rem; font-weight: 500; color: var(--text-primary);">${seniorDisp}</td>
+                        <td style="padding: 0.75rem; color: var(--text-primary);">${entreeText}</td>
+                        <td style="padding: 0.75rem; color: var(--text-primary);">${sortieText}</td>
+                        <td style="padding: 0.75rem;">${deltaBadge}</td>
+                        <td style="padding: 0.75rem;">${impactText}</td>
+                        <td style="padding: 0.75rem;">
+                            <span style="font-size: 0.8rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(59, 130, 246, 0.15); color: #3b82f6; font-weight: 600;">
+                                ${item.statut_resolution}
+                            </span>
+                        </td>
+                        <td style="padding: 0.75rem; text-align: center;">
+                            <button type="button" onclick="deleteComidDossier('${item.dossier_id}', '${(item.senior_nom || '').replace(/'/g, "\\'")}')" title="Supprimer ce dossier COMID" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; padding: 0.35rem 0.55rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        async function loadComidComparisonTableInline() {
+            const badgeCount = document.getElementById('tab-count-comid');
             try {
                 const res = await fetch('/api/comid/comparisons');
                 if (!res.ok) return;
-
-                const data = await res.json();
-                if (badgeCount) badgeCount.textContent = data ? data.length : 0;
-
-                if (!data || data.length === 0) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="8" style="padding: 1.5rem; text-align: center; color: #94a3b8;">
-                                Aucune évaluation COMID enregistrée pour le moment. Enregistrez des COMID d'Entrée et de Sortie sur la page COMID pour voir la comparaison ici.
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-
-                let html = '';
-                data.forEach(item => {
-                    let deltaBadge = '<span style="color: #94a3b8;">–</span>';
-                    let impactText = '<span style="color: #94a3b8;">En cours</span>';
-
-                    if (item.delta_score !== null) {
-                        if (item.delta_score > 0) {
-                            deltaBadge = `<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700;">-${item.delta_score} pts (${item.evolution_pct}%)</span>`;
-                            impactText = `<span style="color: #10b981; font-weight: 600;">🟢 Complexité réduite</span>`;
-                        } else if (item.delta_score < 0) {
-                            deltaBadge = `<span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700;">+${Math.abs(item.delta_score)} pts</span>`;
-                            impactText = `<span style="color: #ef4444; font-weight: 600;">🔴 Complexité accrue</span>`;
-                        } else {
-                            deltaBadge = `<span style="background: rgba(148, 163, 184, 0.15); color: #94a3b8; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 600;">0 pt (Stable)</span>`;
-                            impactText = `<span style="color: #94a3b8;">⚪ Complexité stable</span>`;
-                        }
-                    }
-
-                    const entreeText = item.score_entree !== null ? `<strong>${item.score_entree}/30</strong> (${item.niveau_entree})` : '<span style="color: #94a3b8;">–</span>';
-                    const sortieText = item.score_sortie !== null ? `<strong>${item.score_sortie}/30</strong> (${item.niveau_sortie})` : '<span style="color: #94a3b8; font-style: italic;">En attente sortie</span>';
-
-                    html += `
-                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.08); height: 48px;">
-                            <td style="padding: 0.75rem;">
-                                <span class="dossier-link-btn" onclick="openDossier360('${item.dossier_id}')" title="Ouvrir la fiche 360° du dossier">${item.dossier_id}</span>
-                            </td>
-                            <td style="padding: 0.75rem; font-weight: 500; color: var(--text-primary);">${item.senior_nom || item.dossier_id}</td>
-                            <td style="padding: 0.75rem; color: var(--text-primary);">${entreeText}</td>
-                            <td style="padding: 0.75rem; color: var(--text-primary);">${sortieText}</td>
-                            <td style="padding: 0.75rem;">${deltaBadge}</td>
-                            <td style="padding: 0.75rem;">${impactText}</td>
-                            <td style="padding: 0.75rem;">
-                                <span style="font-size: 0.8rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(59, 130, 246, 0.15); color: #3b82f6; font-weight: 600;">
-                                    ${item.statut_resolution}
-                                </span>
-                            </td>
-                            <td style="padding: 0.75rem; text-align: center;">
-                                <button type="button" onclick="deleteComidDossier('${item.dossier_id}', '${(item.senior_nom || '').replace(/'/g, "\\'")}')" title="Supprimer ce dossier COMID" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; padding: 0.3rem 0.6rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">
-                                    🗑️
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                });
-                tbody.innerHTML = html;
+                comidDataCache = await res.json();
+                if (badgeCount) badgeCount.textContent = comidDataCache ? comidDataCache.length : 0;
+                
+                const selectFilter = document.getElementById('filter-comid-level');
+                const filterVal = selectFilter ? selectFilter.value : 'all';
+                filterComidTableByLevel(filterVal);
             } catch (e) {
                 console.error('Error loadComidComparisonTableInline:', e);
             }
         }
 
-        async function downloadComidPDFFrom360(item) {
-            if (!item) return;
-            try {
-                const response = await fetch('/api/comid/generate_pdf', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        senior_nom: item.senior_nom || "Senior non renseigné",
-                        dossier_id: item.dossier_id || "",
-                        type_eval: item.type_eval || "entree",
-                        score: item.score || 0,
-                        level: item.niveau || "Non complexe",
-                        date: item.date_creation || "",
-                        checkedItems: item.criteres || []
-                    })
-                });
-
-                if (!response.ok) throw new Error("Erreur génération PDF COMID");
-
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                const labelType = item.type_eval === 'sortie' ? 'Sortie' : 'Entree';
-                a.download = `Synthese_COMID_${labelType}_Dossier_${item.dossier_id || 'sans_num'}.pdf`;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-            } catch (err) {
-                console.error(err);
-                alert("Impossible de télécharger le PDF COMID.");
+        function filterComidTableByLevel(selectedImpact) {
+            if (!comidDataCache) return;
+            if (selectedImpact === 'all') {
+                renderComidRows(comidDataCache);
+                return;
             }
+            const filtered = comidDataCache.filter(item => {
+                if (selectedImpact === 'reduite') return item.delta_score !== null && item.delta_score > 0;
+                if (selectedImpact === 'accrue') return item.delta_score !== null && item.delta_score < 0;
+                if (selectedImpact === 'stable') return item.delta_score !== null && item.delta_score === 0;
+                return true;
+            });
+            renderComidRows(filtered);
         }
 
-        // --- SUPPRESSION, PDF & CHARGEMENT EVALUATIONS ZARIT ---
-        async function deleteZaritEval(evalId) {
-            if (!confirm("Voulez-vous vraiment supprimer cette évaluation Zarit ?")) return;
+        async function deleteZaritEval(evalId, seniorNom) {
+            const label = seniorNom && seniorNom !== 'Senior' ? `l'évaluation Zarit de "${seniorNom}"` : `cette évaluation Zarit`;
+            if (!confirm(`Confirmation de suppression :\n\nVoulez-vous vraiment supprimer ${label} ?`)) return;
+
             try {
                 const res = await fetch(`/api/zarit/evaluations/${evalId}`, { method: 'DELETE' });
                 if (res.ok) {
                     loadZaritTableInline();
                 } else {
-                    alert("Erreur lors de la suppression.");
+                    alert("Erreur lors de la suppression de l'évaluation Zarit.");
                 }
             } catch (e) {
-                console.error("Error deleteZaritEval:", e);
-            }
-        }
-
-        async function downloadZaritPDFFromTable(item) {
-            try {
-                let reponses = [];
-                if (item.reponses_json) {
-                    try { reponses = JSON.parse(item.reponses_json); } catch(e){}
-                }
-                const response = await fetch('/api/zarit/generate_pdf', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        dossier_id: item.dossier_id,
-                        senior_nom: item.senior_nom || "Senior non renseigné",
-                        aidant_nom: item.aidant_nom || "Aidant",
-                        score: item.score,
-                        niveau: item.niveau,
-                        date: item.date_creation || "",
-                        reponses: reponses
-                    })
-                });
-
-                if (!response.ok) throw new Error("Erreur génération PDF");
-
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `Grille_Zarit_Score_${item.score}.pdf`;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-            } catch (err) {
-                console.error(err);
-                alert("Impossible de télécharger le PDF Zarit.");
+                console.error('Erreur deleteZaritEval:', e);
             }
         }
 
         let zaritDataCache = [];
-        async function loadZaritTableInline() {
+        function renderZaritRows(items) {
             const tbody = document.getElementById('zarit-tracking-tbody');
-            const badgeCount = document.getElementById('tab-count-zarit');
             if (!tbody) return;
 
+            if (!items || items.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="padding: 1.5rem; text-align: center; color: #94a3b8;">
+                            Aucune évaluation Zarit ne correspond à ce filtre.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let html = '';
+            items.forEach((item) => {
+                const score = item.score !== undefined ? item.score : 0;
+                let badgeStyle = "background: rgba(34, 197, 94, 0.15); color: #22c55e;";
+                let levelLabel = "Charge faible";
+
+                if (score > 60) {
+                    badgeStyle = "background: rgba(239, 68, 68, 0.15); color: #ef4444; font-weight: 700;";
+                    levelLabel = "Charge sévère";
+                } else if (score >= 41) {
+                    badgeStyle = "background: rgba(245, 158, 11, 0.15); color: #f59e0b; font-weight: 700;";
+                    levelLabel = "Charge modérée";
+                } else if (score >= 21) {
+                    badgeStyle = "background: rgba(59, 130, 246, 0.15); color: #3b82f6;";
+                    levelLabel = "Charge légère";
+                }
+
+                const dId = item.dossier_id ? `<span class="dossier-link-btn" onclick="openDossier360('${item.dossier_id}')" title="Ouvrir la fiche 360° du dossier">${item.dossier_id}</span>` : '<span style="color: #94a3b8; font-style: italic;">Non rattaché</span>';
+                const seniorDispZarit = (item.senior_nom && item.senior_nom !== item.dossier_id && item.senior_nom !== 'Senior non renseigné' && item.senior_nom !== 'Usager') ? item.senior_nom : 'Anonyme';
+
+                html += `
+                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.08); height: 48px;">
+                        <td style="padding: 0.75rem;">${dId}</td>
+                        <td style="padding: 0.75rem; font-weight: 500; color: var(--text-primary);">${seniorDispZarit}</td>
+                        <td style="padding: 0.75rem; color: var(--text-secondary);">${item.aidant_nom || 'Aidant'}</td>
+                        <td style="padding: 0.75rem;"><strong>${score} / 88</strong></td>
+                        <td style="padding: 0.75rem;">
+                            <span style="font-size: 0.8rem; padding: 0.25rem 0.65rem; border-radius: 20px; ${badgeStyle}">
+                                ${levelLabel}
+                            </span>
+                        </td>
+                        <td style="padding: 0.75rem; color: var(--text-muted); font-size: 0.85rem;">${item.date_creation || ''}</td>
+                        <td style="padding: 0.75rem; text-align: center;">
+                            <div style="display: inline-flex; gap: 0.35rem; align-items: center;">
+                                <button type="button" onclick="downloadZaritPDFFromTable(zaritDataCache.find(x => x.id === ${item.id}))" title="Télécharger le PDF ZARIT" style="background: rgba(245, 158, 11, 0.12); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 6px; padding: 0.35rem 0.55rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                </button>
+                                <button type="button" onclick="deleteZaritEval(${item.id}, '${(item.senior_nom || '').replace(/'/g, "\\'")}')" title="Supprimer cette évaluation ZARIT" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; padding: 0.35rem 0.55rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        async function loadZaritTableInline() {
+            const badgeCount = document.getElementById('tab-count-zarit');
             try {
                 const res = await fetch('/api/zarit/evaluations');
                 if (!res.ok) return;
                 zaritDataCache = await res.json();
                 if (badgeCount) badgeCount.textContent = zaritDataCache ? zaritDataCache.length : 0;
 
-                if (!zaritDataCache || zaritDataCache.length === 0) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="7" style="padding: 1.5rem; text-align: center; color: #94a3b8;">
-                                Aucune évaluation Zarit enregistrée pour le moment.
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-
-                let html = '';
-                zaritDataCache.forEach((item, index) => {
-                    let badgeStyle = "background: rgba(34, 197, 94, 0.15); color: #22c55e;";
-                    if (item.score > 60) badgeStyle = "background: rgba(239, 68, 68, 0.15); color: #ef4444; font-weight: 700;";
-                    else if (item.score >= 41) badgeStyle = "background: rgba(245, 158, 11, 0.15); color: #f59e0b; font-weight: 700;";
-                    else if (item.score >= 21) badgeStyle = "background: rgba(59, 130, 246, 0.15); color: #3b82f6;";
-
-                    const dId = item.dossier_id ? `<span class="dossier-link-btn" onclick="openDossier360('${item.dossier_id}')" title="Ouvrir la fiche 360° du dossier">${item.dossier_id}</span>` : '<span style="color: #94a3b8; font-style: italic;">Non rattaché</span>';
-
-                    html += `
-                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.08); height: 48px;">
-                            <td style="padding: 0.75rem;">${dId}</td>
-                            <td style="padding: 0.75rem; font-weight: 500; color: var(--text-primary);">${item.senior_nom || 'Senior'}</td>
-                            <td style="padding: 0.75rem; color: var(--text-secondary);">${item.aidant_nom || 'Aidant'}</td>
-                            <td style="padding: 0.75rem;"><strong>${item.score} / 88</strong></td>
-                            <td style="padding: 0.75rem;">
-                                <span style="font-size: 0.8rem; padding: 0.25rem 0.65rem; border-radius: 20px; ${badgeStyle}">
-                                    ${item.niveau}
-                                </span>
-                            </td>
-                            <td style="padding: 0.75rem; color: var(--text-muted); font-size: 0.85rem;">${item.date_creation || ''}</td>
-                            <td style="padding: 0.75rem; text-align: center;">
-                                <button type="button" onclick="downloadZaritPDFFromTable(zaritDataCache[${index}])" title="Télécharger le PDF Zarit" style="background: rgba(245, 158, 11, 0.12); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 6px; padding: 0.3rem 0.65rem; cursor: pointer; font-size: 0.85rem; font-weight: 600; margin-right: 0.4rem;">
-                                    📄 PDF
-                                </button>
-                                <button type="button" onclick="deleteZaritEval(${item.id})" title="Supprimer cette évaluation" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; padding: 0.3rem 0.6rem; cursor: pointer; font-size: 0.85rem;">
-                                    🗑️
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                });
-                tbody.innerHTML = html;
+                const selectFilter = document.getElementById('filter-zarit-level');
+                const filterVal = selectFilter ? selectFilter.value : 'all';
+                filterZaritTableByLevel(filterVal);
             } catch (e) {
                 console.error('Error loadZaritTableInline:', e);
             }
+        }
+
+        function filterZaritTableByLevel(selectedLevel) {
+            if (!zaritDataCache) return;
+            if (selectedLevel === 'all') {
+                renderZaritRows(zaritDataCache);
+                return;
+            }
+            const filtered = zaritDataCache.filter(item => {
+                const score = item.score !== undefined ? item.score : 0;
+                if (selectedLevel === 'faible' || selectedLevel === 'leger') return score <= 20;
+                if (selectedLevel === 'legere' || selectedLevel === 'legere_moderee') return score >= 21 && score <= 40;
+                if (selectedLevel === 'modere' || selectedLevel === 'moderee_severe') return score >= 41 && score <= 60;
+                if (selectedLevel === 'severe' || selectedLevel === 'tres_severe') return score > 60;
+                return true;
+            });
+            renderZaritRows(filtered);
         }
 
         // --- INIT & THEME TOGGLE ---

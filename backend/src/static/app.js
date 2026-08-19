@@ -254,10 +254,12 @@ function renderSankey(sankeyData) {
                 opacity: 0.35
             },
             label: {
-                color: document.documentElement.getAttribute('data-theme') === 'light' ? '#0f172a' : '#f8fafc',
+                color: '#0f172a',
                 fontFamily: 'Inter',
                 fontSize: 12,
-                fontWeight: 500
+                fontWeight: 700,
+                textBorderColor: '#ffffff',
+                textBorderWidth: 2
             },
             itemStyle: {
                 borderWidth: 1,
@@ -270,6 +272,10 @@ function renderSankey(sankeyData) {
     };
 
     chartInstance.setOption(option, true);
+    window.myChart = chartInstance;
+    setTimeout(() => {
+        if (chartInstance) chartInstance.resize();
+    }, 50);
 }
 
 // -- Event listeners for dimension selectors --
@@ -304,6 +310,11 @@ if (document.readyState === 'loading') {
  * Fetch and display COMID Entree vs Sortie comparison table
  */
 async function loadComidComparisonTable() {
+    if (typeof loadComidComparisonTableInline === 'function') {
+        loadComidComparisonTableInline();
+        return;
+    }
+
     const tbody = document.getElementById('comid-comparison-tbody');
     if (!tbody) return;
 
@@ -315,7 +326,7 @@ async function loadComidComparisonTable() {
         if (!data || data.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="7" style="padding: 1.5rem; text-align: center; color: var(--text-muted);">
+                    <td colspan="8" style="padding: 1.5rem; text-align: center; color: var(--text-muted);">
                         Aucune évaluation COMID enregistrée pour le moment. Enregistrez des COMID d'Entrée et de Sortie sur la page COMID pour voir la comparaison ici.
                     </td>
                 </tr>
@@ -331,13 +342,13 @@ async function loadComidComparisonTable() {
             if (item.delta_score !== null) {
                 if (item.delta_score > 0) {
                     deltaBadge = `<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700;">-${item.delta_score} pts (${item.evolution_pct}%)</span>`;
-                    impactText = `<span style="color: #10b981; font-weight: 600;">🟢 Complexité réduite</span>`;
+                    impactText = `<span style="color: #10b981; font-weight: 600;"> Complexité réduite</span>`;
                 } else if (item.delta_score < 0) {
                     deltaBadge = `<span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700;">+${Math.abs(item.delta_score)} pts</span>`;
-                    impactText = `<span style="color: #ef4444; font-weight: 600;">🔴 Complexité accrue</span>`;
+                    impactText = `<span style="color: #ef4444; font-weight: 600;"> Complexité accrue</span>`;
                 } else {
                     deltaBadge = `<span style="background: rgba(148, 163, 184, 0.15); color: var(--text-secondary); padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 600;">0 pt (Stable)</span>`;
-                    impactText = `<span style="color: var(--text-secondary);">⚪ Complexité stable</span>`;
+                    impactText = `<span style="color: var(--text-secondary);"> Complexité stable</span>`;
                 }
             }
 
@@ -346,16 +357,23 @@ async function loadComidComparisonTable() {
 
             html += `
                 <tr style="border-bottom: 1px solid var(--border-glass); height: 48px;">
-                    <td style="padding: 0.75rem; font-weight: 700; color: var(--accent-blue);">${item.dossier_id}</td>
+                    <td style="padding: 0.75rem;">
+                        <span class="dossier-link-btn" onclick="openDossier360('${item.dossier_id}')" title="Ouvrir la fiche 360° du dossier">${item.dossier_id}</span>
+                    </td>
                     <td style="padding: 0.75rem; font-weight: 500;">${item.senior_nom || item.dossier_id}</td>
                     <td style="padding: 0.75rem;">${entreeText}</td>
                     <td style="padding: 0.75rem;">${sortieText}</td>
                     <td style="padding: 0.75rem;">${deltaBadge}</td>
                     <td style="padding: 0.75rem;">${impactText}</td>
                     <td style="padding: 0.75rem;">
-                        <span style="font-size: 0.8rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(59, 130, 246, 0.1); color: var(--text-primary);">
+                        <span style="font-size: 0.8rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(59, 130, 246, 0.15); color: #3b82f6; font-weight: 600;">
                             ${item.statut_resolution}
                         </span>
+                    </td>
+                    <td style="padding: 0.75rem; text-align: center;">
+                        <button type="button" onclick="deleteComidDossier('${item.dossier_id}', '${(item.senior_nom || '').replace(/'/g, "\\'")}')" title="Supprimer ce dossier COMID" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; padding: 0.35rem 0.55rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                        </button>
                     </td>
                 </tr>
             `;

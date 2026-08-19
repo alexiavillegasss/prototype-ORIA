@@ -945,6 +945,13 @@
             </div>
 
             <div class="dossier-inputs-grid">
+                <div class="input-group" id="group-existing-dossier">
+                    <label for="comid-existing-dossier-select">Rattacher à un dossier ZARIT existant :</label>
+                    <select id="comid-existing-dossier-select" onchange="onSelectExistingDossier(this)" class="comid-field-select">
+                        <option value="">-- Nouveau dossier ou choisir un ZARIT --</option>
+                    </select>
+                </div>
+
                 <div class="input-group" id="group-dossier-id">
                     <label for="comid-dossier-id">N° / Identifiant du Dossier :</label>
                     <input type="text" id="comid-dossier-id" placeholder="Ex: DOS-2026-001" class="comid-field-input" value="DOS-101">
@@ -1705,6 +1712,74 @@
     // ========================================================
     let currentComidType = 'entree'; // 'entree' or 'sortie'
     let entreeDossiersList = [];
+    let zaritDossiersList = [];
+
+    async function loadZaritDossiersDropdown() {
+        try {
+            const [resZarit, resComid] = await Promise.all([
+                fetch('/api/zarit/evaluations'),
+                fetch('/api/comid/evaluations')
+            ]);
+
+            if (resZarit.ok) {
+                const evaluations = await resZarit.json();
+                zaritDossiersList = evaluations;
+                
+                let existingEntreeIds = new Set();
+                if (resComid.ok) {
+                    const comidEvals = await resComid.json();
+                    comidEvals.forEach(c => {
+                        if (c.type_eval === 'entree' && c.dossier_id) {
+                            existingEntreeIds.add(c.dossier_id);
+                        }
+                    });
+                }
+
+                const select = document.getElementById('comid-existing-dossier-select');
+                if (select) {
+                    select.innerHTML = '<option value="">-- Nouveau dossier ou choisir un ZARIT --</option>';
+                    const seen = new Set();
+                    evaluations.forEach(d => {
+                        const dId = d.dossier_id || `DOS-ZARIT-${d.id}`;
+                        // S'il existe déjà un COMID Entrée pour ce dossier_id, on masque le dossier
+                        if (existingEntreeIds.has(dId) || (d.dossier_id && existingEntreeIds.has(d.dossier_id))) {
+                            return;
+                        }
+                        if (!seen.has(dId)) {
+                            seen.add(dId);
+                            const opt = document.createElement('option');
+                            opt.value = String(d.id);
+                            const seniorText = d.senior_nom && d.senior_nom !== 'Senior non renseigné' ? d.senior_nom : 'Usager Anonyme';
+                            opt.textContent = `${dId} – ${seniorText} (Score ZARIT : ${d.score}/88)`;
+                            select.appendChild(opt);
+                        }
+                    });
+                }
+            }
+        } catch (e) {
+            console.error('Erreur chargement dossiers Zarit:', e);
+        }
+    }
+
+    function onSelectExistingDossier(selectEl) {
+        const val = selectEl.value;
+        if (!val) return;
+        const found = zaritDossiersList.find(d => String(d.id) === String(val));
+        if (found) {
+            const inputId = document.getElementById('comid-dossier-id');
+            const inputSenior = document.getElementById('comid-senior-nom');
+            
+            if (found.dossier_id) {
+                inputId.value = found.dossier_id;
+            } else {
+                inputId.value = 'DOS-ZARIT-' + found.id;
+            }
+
+            if (found.senior_nom && found.senior_nom !== 'Senior non renseigné') {
+                inputSenior.value = found.senior_nom;
+            }
+        }
+    }
 
     async function loadEntreeDossiers() {
         try {
@@ -1732,6 +1807,7 @@
         const btnEntree = document.getElementById('btn-type-entree');
         const btnSortie = document.getElementById('btn-type-sortie');
         const groupDossierId = document.getElementById('group-dossier-id');
+        const groupExistingDossier = document.getElementById('group-existing-dossier');
         const groupDossierSelect = document.getElementById('group-dossier-select');
         const entreeBadge = document.getElementById('entree-summary-badge');
 
@@ -1739,6 +1815,7 @@
             btnEntree.classList.add('active-entree');
             btnSortie.classList.remove('active-sortie');
             groupDossierId.classList.remove('hidden');
+            if (groupExistingDossier) groupExistingDossier.classList.remove('hidden');
             groupDossierSelect.classList.add('hidden');
             entreeBadge.classList.add('hidden');
             const inputId = document.getElementById('comid-dossier-id');
@@ -1749,6 +1826,7 @@
             btnSortie.classList.add('active-sortie');
             btnEntree.classList.remove('active-entree');
             groupDossierId.classList.add('hidden');
+            if (groupExistingDossier) groupExistingDossier.classList.add('hidden');
             groupDossierSelect.classList.remove('hidden');
             loadEntreeDossiers();
         }
@@ -1834,6 +1912,7 @@
     }
 
     loadEntreeDossiers();
+    loadZaritDossiersDropdown();
     </script>
 </body>
 </html>

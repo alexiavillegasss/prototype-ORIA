@@ -152,25 +152,35 @@ class DatabaseManager:
             return True
 
     def save_comid_eval(self, dossier_id: str, senior_nom: str, type_eval: str, score: int, niveau: str, criteres: list) -> int:
-        """Sauvegarde une évaluation COMID (Entrée ou Sortie) dans la base."""
+        """Sauvegarde ou met à jour une évaluation COMID (Entrée ou Sortie) pour un dossier_id."""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             date_creation = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            criteres_str = json.dumps(criteres or [], ensure_ascii=False)
+
             cursor.execute('''
-                INSERT INTO comid_evaluations (
-                    dossier_id, senior_nom, type_eval, score, niveau, criteres_json, date_creation
-                ) VALUES (?, ?, ?, ?, ?, ?, ?)
-            ''', (
-                dossier_id,
-                senior_nom or "",
-                type_eval,
-                score,
-                niveau,
-                json.dumps(criteres or [], ensure_ascii=False),
-                date_creation
-            ))
-            conn.commit()
-            return cursor.lastrowid
+                SELECT id FROM comid_evaluations
+                WHERE dossier_id = ? AND type_eval = ?
+            ''', (dossier_id, type_eval))
+            existing = cursor.fetchone()
+
+            if existing:
+                eval_id = existing[0]
+                cursor.execute('''
+                    UPDATE comid_evaluations
+                    SET senior_nom = ?, score = ?, niveau = ?, criteres_json = ?, date_creation = ?
+                    WHERE id = ?
+                ''', (senior_nom or "", score, niveau, criteres_str, date_creation, eval_id))
+                conn.commit()
+                return eval_id
+            else:
+                cursor.execute('''
+                    INSERT INTO comid_evaluations (
+                        dossier_id, senior_nom, type_eval, score, niveau, criteres_json, date_creation
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                ''', (dossier_id, senior_nom or "", type_eval, score, niveau, criteres_str, date_creation))
+                conn.commit()
+                return cursor.lastrowid
 
     def get_comid_evaluations(self):
         """Récupère toutes les évaluations COMID."""
@@ -190,15 +200,18 @@ class DatabaseManager:
             return result
 
     def get_entree_dossiers(self):
-        """Récupère la liste unique des dossiers ayant une évaluation d'entrée."""
+        """Récupère la liste unique des dossiers ayant une évaluation d'entrée sans encore avoir de sortie."""
         with sqlite3.connect(self.db_path) as conn:
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             cursor.execute('''
-                SELECT DISTINCT dossier_id, senior_nom, score, date_creation
-                FROM comid_evaluations
-                WHERE type_eval = 'entree'
-                ORDER BY date_creation DESC
+                SELECT DISTINCT e.dossier_id, e.senior_nom, e.score, e.date_creation
+                FROM comid_evaluations e
+                WHERE e.type_eval = 'entree'
+                AND e.dossier_id NOT IN (
+                    SELECT s.dossier_id FROM comid_evaluations s WHERE s.type_eval = 'sortie'
+                )
+                ORDER BY e.date_creation DESC
             ''')
             return [dict(row) for row in cursor.fetchall()]
 
@@ -214,13 +227,19 @@ class DatabaseManager:
             for row in rows:
                 item = dict(row)
                 d_id = item['dossier_id']
+                s_nom = item.get('senior_nom')
+                if not s_nom or s_nom == d_id or s_nom in ('Senior non renseigné', 'Usager'):
+                    s_nom = 'Anonyme'
                 if d_id not in dossiers_map:
                     dossiers_map[d_id] = {
                         "dossier_id": d_id,
-                        "senior_nom": item.get('senior_nom') or d_id,
+                        "senior_nom": s_nom,
                         "entree": None,
                         "sortie": None
                     }
+                elif s_nom != 'Anonyme':
+                    dossiers_map[d_id]["senior_nom"] = s_nom
+
                 if item['type_eval'] == 'entree':
                     dossiers_map[d_id]['entree'] = item
                 elif item['type_eval'] == 'sortie':
@@ -296,28 +315,28 @@ class DatabaseManager:
     def get_dossiers_for_dropdown(self) -> list:
         """Retourne uniquement les dossiers ayant une évaluation clinique COMID officielle."""
         res = []
-        comid_evals = self.get_comid_evaluations()
-        dossiers_comid_map = {}
-        for item in comid_evals:
-            d_id = item['dossier_id']
-            if d_id not in dossiers_comid_map:
-                dossiers_comid_map[d_id] = {
+        dossiers_map = {}
+
+        # Uniquement les dossiers ayant un COMID
+        for item in self.get_comid_evaluations():
+            d_id = item.get('dossier_id')
+            s_nom = item.get('senior_nom')
+            if not s_nom or s_nom == d_id or s_nom in ('Senior non renseigné', 'Usager'):
+                s_nom = "Anonyme"
+            if d_id and d_id not in dossiers_map:
+                dossiers_map[d_id] = {
                     "dossier_id": d_id,
-                    "senior_nom": item.get('senior_nom') or d_id,
-                    "score": item.get('score'),
-                    "niveau": item.get('niveau')
+                    "senior_nom": s_nom
                 }
 
-        for d_id, info in dossiers_comid_map.items():
+        # Trier par identifiant
+        for d_id in sorted(dossiers_map.keys()):
+            info = dossiers_map[d_id]
             nom = info["senior_nom"]
-            score = info["score"]
-            score_txt = f"Score COMID: {score}/30 ({info['niveau']})" if score is not None else "Évaluation COMID"
             res.append({
                 "dossier_id": d_id,
                 "senior_nom": nom,
-                "score_comid": score,
-                "niveau_comid": info["niveau"],
-                "display_label": f"Dossier {d_id} - {nom} ({score_txt})"
+                "display_label": f"{d_id} – {nom}"
             })
 
         return res

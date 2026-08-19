@@ -808,10 +808,10 @@ class PDFGenerator:
         y += 12
 
         cats = [
-            ("Score < 20 : 'fardeau' leger", "Charge faible - Tout va bien pour l'aidant.", total_score <= 20),
-            ("21 < score < 40 : 'fardeau' leger a modere", "Charge legere - Situation maitrisee a surveiller.", 21 <= total_score <= 40),
-            ("41 < score < 60 : 'fardeau' modere a severe", "Charge moderee - Fatigue presente, aides requises.", 41 <= total_score <= 60),
-            ("61 < score < 88 : 'fardeau' severe", "Charge severe - Attention a l'epuisement, relais urgent !", total_score > 60)
+            ("Score <= 20 : Charge faible", "Tout va bien pour vous.", total_score <= 20),
+            ("Score 21 a 40 : Charge legere", "Vous semblez maitriser la situation.", 21 <= total_score <= 40),
+            ("Score 41 a 60 : Charge moderee", "La fatigue peut vite survenir, aides requises.", 41 <= total_score <= 60),
+            ("Score > 60 : Charge severe", "Attention a l'epuisement, demander de l'aide.", total_score > 60)
         ]
 
         for title, desc, is_active in cats:
