@@ -276,9 +276,14 @@
             <button id="btn-reset-zarit" class="btn-primary" style="background: rgba(148, 163, 184, 0.15); color: var(--text-secondary); border: 1px solid var(--border-glass);">
                 🔄 Réinitialiser la grille
             </button>
-            <button id="btn-save-zarit" class="btn-primary" style="background: var(--accent-amber); color: #ffffff; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);">
-                💾 Sauvegarder l'évaluation
-            </button>
+            <div style="display: flex; gap: 1rem;">
+                <button id="btn-save-zarit" class="btn-primary" style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-glass);">
+                    💾 Sauvegarder
+                </button>
+                <button id="btn-download-pdf-zarit" class="btn-primary" style="background: var(--accent-amber); color: #ffffff; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);">
+                    📄 Télécharger la grille en PDF
+                </button>
+            </div>
         </div>
 
     </main>
@@ -437,6 +442,46 @@
             } catch(e) {
                 console.error(e);
                 alert("Enregistré localement.");
+            }
+        });
+
+        document.getElementById('btn-download-pdf-zarit').addEventListener('click', async () => {
+            const totalScore = answers.reduce((acc, curr) => acc + curr, 0);
+            let levelLabel = "Charge faible";
+            if (totalScore > 60) levelLabel = "Charge sévère";
+            else if (totalScore >= 41) levelLabel = "Charge modérée";
+            else if (totalScore >= 21) levelLabel = "Charge légère";
+
+            const seniorNom = document.getElementById('zarit-senior-nom').value.trim() || "Senior non renseigné";
+            const aidantNom = document.getElementById('zarit-aidant-nom').value.trim() || "Aidant";
+
+            try {
+                const response = await fetch('/api/zarit/generate_pdf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        senior_nom: seniorNom,
+                        aidant_nom: aidantNom,
+                        score: totalScore,
+                        niveau: levelLabel,
+                        date: new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                        reponses: answers
+                    })
+                });
+
+                if (!response.ok) throw new Error("Erreur génération PDF");
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Grille_Zarit_Score_${totalScore}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            } catch (err) {
+                console.error(err);
+                alert("Impossible de générer le PDF de la Grille Zarit.");
             }
         });
 

@@ -541,6 +541,14 @@ class ZaritEvalRequest(BaseModel):
     niveau: str
     reponses: list
 
+class ZaritPDFRequest(BaseModel):
+    senior_nom: Optional[str] = "Senior non renseigné"
+    aidant_nom: Optional[str] = "Aidant"
+    score: int = 0
+    niveau: str = "Charge faible"
+    date: str = ""
+    reponses: list = []
+
 @app.get("/zarit", response_class=HTMLResponse)
 def get_zarit_page():
     zarit_path = os.path.join(STATIC_DIR, "zarit.html")
@@ -561,3 +569,16 @@ def save_zarit_evaluation(req: ZaritEvalRequest):
 @app.get("/api/zarit/evaluations")
 def get_zarit_evaluations():
     return db_manager.get_zarit_evaluations()
+
+@app.post("/api/zarit/generate_pdf")
+async def generate_zarit_pdf_endpoint(request: ZaritPDFRequest):
+    try:
+        pdf_bytes = pdf_generator.generate_zarit_pdf(request.dict())
+        filename = f"Grille_Zarit_Score_{request.score}.pdf"
+        return Response(
+            content=pdf_bytes, 
+            media_type="application/pdf", 
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+    except Exception as e:
+        return {"error": f"Erreur lors de la génération du PDF Zarit : {str(e)}"}
