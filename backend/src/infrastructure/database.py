@@ -297,31 +297,36 @@ class DatabaseManager:
             return cursor.rowcount > 0
 
     def get_dossiers_for_dropdown(self) -> list:
-        """Retourne uniquement les dossiers ayant une évaluation clinique COMID officielle."""
+        """Retourne tous les dossiers enregistrés dans la base (COMID, Zarit, Fiches)."""
         res = []
-        comid_evals = self.get_comid_evaluations()
-        dossiers_comid_map = {}
-        for item in comid_evals:
-            d_id = item['dossier_id']
-            if d_id not in dossiers_comid_map:
-                dossiers_comid_map[d_id] = {
+        dossiers_map = {}
+
+        # 1. Dossiers COMID
+        for item in self.get_comid_evaluations():
+            d_id = item.get('dossier_id')
+            if d_id and d_id not in dossiers_map:
+                dossiers_map[d_id] = {
                     "dossier_id": d_id,
-                    "senior_nom": item.get('senior_nom') or d_id,
-                    "score": item.get('score'),
-                    "niveau": item.get('niveau')
+                    "senior_nom": item.get('senior_nom') or "Usager"
                 }
 
-        for d_id, info in dossiers_comid_map.items():
-            nom = info["senior_nom"]
-            score = info["score"]
-            score_txt = f"Score COMID: {score}/30 ({info['niveau']})" if score is not None else "Évaluation COMID"
-            nom_display = nom if nom and nom != d_id else "Usager"
+        # 2. Dossiers ZARIT
+        for item in self.get_zarit_evaluations():
+            d_id = item.get('dossier_id')
+            if d_id and d_id not in dossiers_map:
+                dossiers_map[d_id] = {
+                    "dossier_id": d_id,
+                    "senior_nom": item.get('senior_nom') or "Usager"
+                }
+
+        # Trier par identifiant
+        for d_id in sorted(dossiers_map.keys()):
+            info = dossiers_map[d_id]
+            nom = info["senior_nom"] if info["senior_nom"] and info["senior_nom"] != d_id else "Usager"
             res.append({
                 "dossier_id": d_id,
-                "senior_nom": nom_display,
-                "score_comid": score,
-                "niveau_comid": info["niveau"],
-                "display_label": f"{d_id} – {nom_display}"
+                "senior_nom": nom,
+                "display_label": f"{d_id} – {nom}"
             })
 
         return res
