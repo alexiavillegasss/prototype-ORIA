@@ -739,6 +739,22 @@
             renderComidRows(filtered);
         }
 
+        async function deleteZaritEval(evalId, seniorNom) {
+            const label = seniorNom && seniorNom !== 'Senior' ? `l'évaluation Zarit de "${seniorNom}"` : `cette évaluation Zarit`;
+            if (!confirm(`Confirmation de suppression :\n\nVoulez-vous vraiment supprimer ${label} ?`)) return;
+
+            try {
+                const res = await fetch(`/api/zarit/evaluations/${evalId}`, { method: 'DELETE' });
+                if (res.ok) {
+                    loadZaritTableInline();
+                } else {
+                    alert("Erreur lors de la suppression de l'évaluation Zarit.");
+                }
+            } catch (e) {
+                console.error('Erreur deleteZaritEval:', e);
+            }
+        }
+
         let zaritDataCache = [];
         function renderZaritRows(items) {
             const tbody = document.getElementById('zarit-tracking-tbody');
@@ -756,7 +772,7 @@
             }
 
             let html = '';
-            items.forEach((item, index) => {
+            items.forEach((item) => {
                 let badgeStyle = "background: rgba(34, 197, 94, 0.15); color: #22c55e;";
                 if (item.score > 60) badgeStyle = "background: rgba(239, 68, 68, 0.15); color: #ef4444; font-weight: 700;";
                 else if (item.score >= 41) badgeStyle = "background: rgba(245, 158, 11, 0.15); color: #f59e0b; font-weight: 700;";
@@ -777,10 +793,7 @@
                         </td>
                         <td style="padding: 0.75rem; color: var(--text-muted); font-size: 0.85rem;">${item.date_creation || ''}</td>
                         <td style="padding: 0.75rem; text-align: center;">
-                            <button type="button" onclick="downloadZaritPDFFromTable(zaritDataCache[${index}])" title="Télécharger le PDF Zarit" style="background: rgba(245, 158, 11, 0.12); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 6px; padding: 0.3rem 0.65rem; cursor: pointer; font-size: 0.85rem; font-weight: 600; margin-right: 0.4rem;">
-                                PDF
-                            </button>
-                            <button type="button" onclick="deleteZaritEval(${item.id})" title="Supprimer cette évaluation ZARIT" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; padding: 0.35rem 0.55rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;">
+                            <button type="button" onclick="deleteZaritEval(${item.id}, '${(item.senior_nom || '').replace(/'/g, "\\'")}')" title="Supprimer cette évaluation ZARIT" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; padding: 0.35rem 0.55rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
                             </button>
                         </td>
