@@ -179,21 +179,21 @@
         <div class="tabs-nav">
             <button class="dash-tab-btn active" onclick="switchDashboardTab('sankey')" id="tab-btn-sankey">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                <span>Flux & Orientations (Sankey)</span>
+                <span>Flux et Orientations - Diagramme de Sankey</span>
             </button>
             <button class="dash-tab-btn" onclick="switchDashboardTab('comid')" id="tab-btn-comid">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg>
-                <span>Complexité COMID</span>
+                <span>Complexité - Grilles COMID</span>
                 <span id="tab-count-comid" class="tab-badge">0</span>
             </button>
             <button class="dash-tab-btn" onclick="switchDashboardTab('zarit')" id="tab-btn-zarit">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg>
-                <span>Fardeau Aidant (ZARIT)</span>
+                <span>Fardeau Aidants - Grille ZARIT</span>
                 <span id="tab-count-zarit" class="tab-badge">0</span>
             </button>
             <button class="dash-tab-btn" onclick="switchDashboardTab('dossier360')" id="tab-btn-dossier360">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                <span>Fiche Synthèse 360° par Dossier</span>
+                <span>Synthèses par dossier</span>
             </button>
         </div>
     </div>
@@ -202,7 +202,7 @@
     <div id="panel-sankey" class="tab-panel active-panel">
         <section id="sankey-section" style="max-width: 1300px; margin: 1.5rem auto 3rem; padding: 0 1.5rem;">
             <div class="section-header">
-                <h2>Diagramme de Sankey – Parcours d'Orientation</h2>
+                <h2>Flux et Orientations - Diagramme de Sankey</h2>
                 <p>Choisissez les dimensions à afficher pour explorer les tendances du parcours Personnes Âgées.</p>
             </div>
 
@@ -266,7 +266,7 @@
         <section id="comid-comparison-section" style="max-width: 1300px; margin: 1.5rem auto 3rem; padding: 0 1.5rem;">
             <div class="section-header" style="margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                 <div>
-                    <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Suivi de la Complexité COMID (Entrée vs Sortie)</h2>
+                    <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Complexité - Grilles COMID</h2>
                     <p style="font-size: 0.9rem; color: var(--text-secondary);">Mesurez l'évolution du score de complexité clinique des seniors bilantés entre l'admission et la sortie.</p>
                 </div>
                 <button type="button" onclick="exportComidCSV()" class="btn-primary" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); padding: 0.55rem 1.1rem; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.45rem;">
@@ -312,7 +312,7 @@
         <section id="zarit-tracking-section" style="max-width: 1300px; margin: 1.5rem auto 3rem; padding: 0 1.5rem;">
             <div class="section-header" style="margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                 <div>
-                    <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Suivi du Fardeau de l'Aidant (Grille de ZARIT)</h2>
+                    <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Fardeau Aidants - Grille ZARIT</h2>
                     <p style="font-size: 0.9rem; color: var(--text-secondary);">Consultez et gérez l'épuisement des aidants rattachés aux dossiers cliniques du territoire.</p>
                 </div>
                 <button type="button" onclick="exportZaritCSV()" class="btn-primary" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 0.55rem 1.1rem; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.45rem;">
@@ -358,7 +358,7 @@
         <section id="dossier360-section" style="max-width: 1300px; margin: 1.5rem auto 3rem; padding: 0 1.5rem;">
             <div class="section-header" style="margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
                 <div>
-                    <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Fiche Synthèse 360° par Dossier</h2>
+                    <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Synthèses par dossier</h2>
                     <p style="font-size: 0.9rem; color: var(--text-secondary);">Consultez la synthèse globale d'un dossier patient : Complexité COMID et Fardeau Aidant ZARIT.</p>
                 </div>
                 <div style="min-width: 280px;">
