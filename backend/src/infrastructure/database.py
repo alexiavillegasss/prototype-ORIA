@@ -152,25 +152,35 @@ class DatabaseManager:
             return True
 
     def save_comid_eval(self, dossier_id: str, senior_nom: str, type_eval: str, score: int, niveau: str, criteres: list) -> int:
-        """Sauvegarde une évaluation COMID (Entrée ou Sortie) dans la base."""
+        """Sauvegarde ou met à jour une évaluation COMID (Entrée ou Sortie) pour un dossier_id."""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             date_creation = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            criteres_str = json.dumps(criteres or [], ensure_ascii=False)
+
             cursor.execute('''
-                INSERT INTO comid_evaluations (
-                    dossier_id, senior_nom, type_eval, score, niveau, criteres_json, date_creation
-                ) VALUES (?, ?, ?, ?, ?, ?, ?)
-            ''', (
-                dossier_id,
-                senior_nom or "",
-                type_eval,
-                score,
-                niveau,
-                json.dumps(criteres or [], ensure_ascii=False),
-                date_creation
-            ))
-            conn.commit()
-            return cursor.lastrowid
+                SELECT id FROM comid_evaluations
+                WHERE dossier_id = ? AND type_eval = ?
+            ''', (dossier_id, type_eval))
+            existing = cursor.fetchone()
+
+            if existing:
+                eval_id = existing[0]
+                cursor.execute('''
+                    UPDATE comid_evaluations
+                    SET senior_nom = ?, score = ?, niveau = ?, criteres_json = ?, date_creation = ?
+                    WHERE id = ?
+                ''', (senior_nom or "", score, niveau, criteres_str, date_creation, eval_id))
+                conn.commit()
+                return eval_id
+            else:
+                cursor.execute('''
+                    INSERT INTO comid_evaluations (
+                        dossier_id, senior_nom, type_eval, score, niveau, criteres_json, date_creation
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                ''', (dossier_id, senior_nom or "", type_eval, score, niveau, criteres_str, date_creation))
+                conn.commit()
+                return cursor.lastrowid
 
     def get_comid_evaluations(self):
         """Récupère toutes les évaluations COMID."""
