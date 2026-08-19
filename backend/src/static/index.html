@@ -25,23 +25,24 @@
 
         .tabs-nav {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.6rem;
             border-bottom: 2px solid var(--border-glass);
-            padding-bottom: 0.75rem;
+            padding: 0.6rem 0.25rem 0.75rem 0.25rem;
             flex-wrap: nowrap;
             overflow-x: auto;
+            align-items: center;
         }
 
         .dash-tab-btn {
             display: inline-flex;
             align-items: center;
-            gap: 0.45rem;
-            padding: 0.55rem 0.85rem;
+            gap: 0.5rem;
+            padding: 0.6rem 0.95rem;
             border-radius: 10px;
             background: var(--bg-card);
             border: 1px solid var(--border-glass);
             color: var(--text-secondary);
-            font-size: 0.82rem;
+            font-size: 0.88rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.25s ease;
@@ -178,7 +179,7 @@
     </section>
 
     <!-- Main Navigation Tabs -->
-    <div id="dashboard-tabs-container">
+    <div id="dashboard-tabs-container" style="max-width: 1300px; margin: 0 auto; padding: 0.5rem 1.5rem 0;">
         <div class="tabs-nav">
             <button class="dash-tab-btn active" onclick="switchDashboardTab('sankey')" id="tab-btn-sankey">
                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
