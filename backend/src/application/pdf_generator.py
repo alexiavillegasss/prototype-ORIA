@@ -649,3 +649,186 @@ class PDFGenerator:
         doc.save(out_pdf)
         doc.close()
         return out_pdf.getvalue()
+
+    def generate_zarit_pdf(self, zarit_data: dict) -> bytes:
+        def clean(t):
+            if not t: return ""
+            s = str(t)
+            s = s.replace("’", "'").replace("‘", "'").replace("«", '"').replace("»", '"').replace("–", "-").replace("—", "-")
+            return s.encode('latin-1', 'replace').decode('latin-1')
+
+        doc = fitz.open()
+        
+        blue_dark = (15/255, 23/255, 42/255)
+        text_dark = (30/255, 41/255, 59/255)
+        gray_light = (241/255, 245/255, 249/255)
+        gray_border = (203/255, 213/255, 225/255)
+        amber_color = (245/255, 158/255, 11/255)
+
+        senior_nom = clean(zarit_data.get("senior_nom", "Senior non renseigne"))
+        aidant_nom = clean(zarit_data.get("aidant_nom", "Aidant"))
+        total_score = zarit_data.get("score", 0)
+        date_str = clean(zarit_data.get("date", datetime.datetime.now().strftime("%d/%m/%Y a %H:%M")))
+        reponses = zarit_data.get("reponses", [0]*22)
+        if len(reponses) < 22:
+            reponses.extend([0]*(22 - len(reponses)))
+
+        questions = [
+            "1. Sentir que votre proche vous demande plus d'aide qu'il n'en a besoin ?",
+            "2. Sentir que le temps consacre a votre proche ne vous en laisse pas assez pour vous ?",
+            "3. Vous sentir tiraille entre ses besoins et vos autres responsabilites ?",
+            "4. Vous sentir embarrasse par le(s) comportement(s) de votre proche ?",
+            "5. Vous sentir en colere quand vous etes en presence de votre proche ?",
+            "6. Sentir que votre proche nuit a vos relations avec la famille ?",
+            "7. Avoir peur de ce que l'avenir reserve a votre proche ?",
+            "8. Sentir que votre proche est dependant de vous ?",
+            "9. Vous sentir tendu en presence de votre proche ?",
+            "10. Sentir que votre sante s'est deterioree a cause de votre implication ?",
+            "11. Sentir que vous n'avez pas autant d'intimite que vous aimeriez ?",
+            "12. Sentir que votre vie sociale s'est deterioree du fait de soin ?",
+            "13. Vous sentir mal a l meaise de recevoir des amis a cause de lui ?",
+            "14. Sentir qu'il s'attend a ce que vous soyez la seule personne disponible ?",
+            "15. Sentir que vous n'avez pas assez d'argent pour prendre soin de lui ?",
+            "16. Sentir que vous ne serez plus capable de prendre soin de lui longtemps ?",
+            "17. Sentir que vous avez perdu le controle de votre vie depuis sa maladie ?",
+            "18. Souhaiter pouvoir laisser le soin de votre proche a quelqu'un d'autre ?",
+            "19. Sentir que vous ne savez pas trop quoi faire pour votre proche ?",
+            "20. Sentir que vous devriez en faire plus pour votre proche ?",
+            "21. Sentir que vous pourriez donner de meilleurs soins a votre proche ?",
+            "22. En fin de compte, sentez-vous que les soins sont une charge, un fardeau ?"
+        ]
+
+        cols_x = [30, 315, 365, 415, 465, 515, 565]
+
+        def draw_table_header(p, y_pos):
+            p.draw_rect(fitz.Rect(30, y_pos, 565, y_pos+35), color=text_dark, fill=blue_dark)
+            p.insert_text(fitz.Point(38, y_pos+16), clean("A quelle frequence vous arrive-t-il de..."), fontsize=9, color=(1, 1, 1), fontname="helv")
+            headers = ["Jamais", "Rarement", "Quelques-", "Assez", "Presque"]
+            headers_sub = ["(0)", "(1)", "fois (2)", "souvent (3)", "toujours (4)"]
+            for idx in range(5):
+                cx1 = cols_x[idx+1]
+                cx2 = cols_x[idx+2]
+                center_x = cx1 + (cx2 - cx1)/2
+                p.insert_text(fitz.Point(center_x-15, y_pos+14), clean(headers[idx]), fontsize=7.5, color=(1, 1, 1), fontname="helv")
+                p.insert_text(fitz.Point(center_x-12, y_pos+25), clean(headers_sub[idx]), fontsize=7, color=(0.8, 0.9, 1), fontname="helv")
+                p.draw_line(fitz.Point(cx1, y_pos), fitz.Point(cx1, y_pos+35), color=(0.3, 0.4, 0.5), width=0.5)
+            return y_pos + 35
+
+        # PAGE 1 : Header + Informations + Questions 1 à 11
+        page1 = doc.new_page(width=595, height=842)
+        page1.draw_rect(fitz.Rect(30, 25, 565, 80), color=None, fill=blue_dark)
+        page1.insert_text(fitz.Point(45, 48), clean("GRILLE DE ZARIT - ECHELLE D'EVALUATION DU FARDEAU"), fontsize=12, color=(1, 1, 1), fontname="helv")
+        page1.insert_text(fitz.Point(45, 66), clean("Echelle de penibilite et d'evaluation de la charge de l'aidant principal"), fontsize=9, color=(0.8, 0.9, 1), fontname="helv")
+
+        page1.draw_rect(fitz.Rect(30, 90, 565, 130), color=gray_border, fill=gray_light, width=0.5)
+        page1.insert_text(fitz.Point(40, 107), clean(f"Senior : {senior_nom}"), fontsize=9.5, color=text_dark, fontname="helv")
+        page1.insert_text(fitz.Point(230, 107), clean(f"Aidant : {aidant_nom}"), fontsize=9.5, color=text_dark, fontname="helv")
+        page1.insert_text(fitz.Point(420, 107), clean(f"Date : {date_str}"), fontsize=9, color=text_dark, fontname="helv")
+
+        y = 145
+        y = draw_table_header(page1, y)
+
+        row_h = 28
+        for i in range(11):
+            y_end = y + row_h
+            bg_fill = gray_light if i % 2 == 1 else (1, 1, 1)
+            page1.draw_rect(fitz.Rect(30, y, 565, y_end), color=gray_border, fill=bg_fill, width=0.5)
+            for cx in cols_x[1:-1]:
+                page1.draw_line(fitz.Point(cx, y), fitz.Point(cx, y_end), color=gray_border, width=0.5)
+            
+            q_txt = clean(questions[i])
+            rect_q = fitz.Rect(34, y+2, 310, y_end-2)
+            page1.insert_textbox(rect_q, q_txt, fontsize=7.5, color=text_dark, fontname="helv")
+
+            ans_val = reponses[i]
+            if 0 <= ans_val <= 4:
+                cx1 = cols_x[ans_val+1]
+                cx2 = cols_x[ans_val+2]
+                center_x = cx1 + (cx2 - cx1)/2 - 4
+                page1.insert_text(fitz.Point(center_x, y+18), "X", fontsize=11, color=amber_color, fontname="helv")
+            
+            y = y_end
+
+        # Footer Page 1
+        page1.insert_text(fitz.Point(30, 820), clean("ORIA - Grille de Zarit (Evaluation du Fardeau) | Page 1 / 2"), fontsize=8, color=(148/255, 163/255, 184/255), fontname="helv")
+
+        # PAGE 2 : Header tableau + Questions 12 à 22 + Totaux + Résultats
+        page2 = doc.new_page(width=595, height=842)
+        y = 35
+        y = draw_table_header(page2, y)
+
+        for i in range(11, 22):
+            y_end = y + row_h
+            bg_fill = gray_light if i % 2 == 1 else (1, 1, 1)
+            page2.draw_rect(fitz.Rect(30, y, 565, y_end), color=gray_border, fill=bg_fill, width=0.5)
+            for cx in cols_x[1:-1]:
+                page2.draw_line(fitz.Point(cx, y), fitz.Point(cx, y_end), color=gray_border, width=0.5)
+
+            q_txt = clean(questions[i])
+            rect_q = fitz.Rect(34, y+2, 310, y_end-2)
+            page2.insert_textbox(rect_q, q_txt, fontsize=7.5, color=text_dark, fontname="helv")
+
+            ans_val = reponses[i]
+            if 0 <= ans_val <= 4:
+                cx1 = cols_x[ans_val+1]
+                cx2 = cols_x[ans_val+2]
+                center_x = cx1 + (cx2 - cx1)/2 - 4
+                page2.insert_text(fitz.Point(center_x, y+18), "X", fontsize=11, color=amber_color, fontname="helv")
+
+            y = y_end
+
+        # Sous-totaux Row
+        y_end = y + 22
+        page2.draw_rect(fitz.Rect(30, y, 565, y_end), color=text_dark, fill=gray_light, width=0.8)
+        page2.insert_text(fitz.Point(40, y+15), clean("Sous-totaux (points par colonne)"), fontsize=8.5, color=text_dark, fontname="helv")
+        
+        subtotals = [0]*5
+        for idx in range(22):
+            val = reponses[idx]
+            if 0 <= val <= 4:
+                subtotals[val] += val
+
+        for val_col in range(5):
+            cx1 = cols_x[val_col+1]
+            cx2 = cols_x[val_col+2]
+            center_x = cx1 + (cx2 - cx1)/2 - 6
+            page2.draw_line(fitz.Point(cx1, y), fitz.Point(cx1, y_end), color=text_dark, width=0.8)
+            page2.insert_text(fitz.Point(center_x, y+15), str(subtotals[val_col]), fontsize=9, color=text_dark, fontname="helv")
+        y = y_end + 10
+
+        # TOTAL Row
+        y_end = y + 30
+        page2.draw_rect(fitz.Rect(30, y, 565, y_end), color=blue_dark, fill=blue_dark)
+        page2.insert_text(fitz.Point(45, y+19), clean("TOTAL SCORE ZARIT (addition de tous les sous-totaux) :"), fontsize=10, color=(1, 1, 1), fontname="helv")
+        page2.insert_text(fitz.Point(450, y+20), clean(f"{total_score} / 88"), fontsize=14, color=amber_color, fontname="helv")
+        y = y_end + 20
+
+        # Resultats & Interpretation Box
+        page2.insert_text(fitz.Point(30, y), clean("RESULTATS ET INTERPRETATION DU FARDEAU :"), fontsize=10, color=text_dark, fontname="helv")
+        y += 12
+
+        cats = [
+            ("Score < 20 : 'fardeau' leger", "Charge faible - Tout va bien pour l'aidant.", total_score <= 20),
+            ("21 < score < 40 : 'fardeau' leger a modere", "Charge legere - Situation maitrisee a surveiller.", 21 <= total_score <= 40),
+            ("41 < score < 60 : 'fardeau' modere a severe", "Charge moderee - Fatigue presente, aides requises.", 41 <= total_score <= 60),
+            ("61 < score < 88 : 'fardeau' severe", "Charge severe - Attention a l'epuisement, relais urgent !", total_score > 60)
+        ]
+
+        for title, desc, is_active in cats:
+            y_end = y + 25
+            fill_c = (254/255, 243/255, 199/255) if is_active else (248/255, 250/255, 252/255)
+            border_c = amber_color if is_active else gray_border
+            page2.draw_rect(fitz.Rect(30, y, 565, y_end), color=border_c, fill=fill_c, width=1.2 if is_active else 0.5)
+            
+            mark = "[X] " if is_active else "[  ] "
+            page2.insert_text(fitz.Point(40, y+16), clean(mark + title), fontsize=9, color=text_dark if not is_active else (180/255, 83/255, 9/255), fontname="helv")
+            page2.insert_text(fitz.Point(260, y+16), clean(desc), fontsize=8.5, color=(71/255, 85/255, 105/255), fontname="helv")
+            y = y_end + 5
+
+        # Footer Page 2
+        page2.insert_text(fitz.Point(30, 820), clean("ORIA - Grille de Zarit (Evaluation du Fardeau) | Page 2 / 2"), fontsize=8, color=(148/255, 163/255, 184/255), fontname="helv")
+
+        out_pdf = io.BytesIO()
+        doc.save(out_pdf)
+        doc.close()
+        return out_pdf.getvalue()

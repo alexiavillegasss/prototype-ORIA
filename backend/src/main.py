@@ -530,3 +530,67 @@ async def generate_comid_pdf_endpoint(request: ComidPDFRequest):
         )
     except Exception as e:
         return {"error": f"Erreur lors de la génération du PDF COMID : {str(e)}"}
+
+
+# --- Page & Routes Grille ZARIT ---
+
+class ZaritEvalRequest(BaseModel):
+    dossier_id: Optional[str] = None
+    senior_nom: Optional[str] = "Senior non renseigné"
+    aidant_nom: Optional[str] = "Aidant"
+    score: int
+    niveau: str
+    reponses: list
+
+class ZaritPDFRequest(BaseModel):
+    dossier_id: Optional[str] = None
+    senior_nom: Optional[str] = "Senior non renseigné"
+    aidant_nom: Optional[str] = "Aidant"
+    score: int = 0
+    niveau: str = "Charge faible"
+    date: str = ""
+    reponses: list = []
+
+@app.get("/zarit", response_class=HTMLResponse)
+def get_zarit_page():
+    zarit_path = os.path.join(STATIC_DIR, "zarit.html")
+    with open(zarit_path, "r", encoding="utf-8") as f:
+        return HTMLResponse(content=f.read())
+
+@app.get("/api/dossiers/dropdown-list")
+def get_dossiers_dropdown_list():
+    return db_manager.get_dossiers_for_dropdown()
+
+@app.post("/api/zarit/evaluations")
+def save_zarit_evaluation(req: ZaritEvalRequest):
+    eval_id = db_manager.save_zarit_eval(
+        senior_nom=req.senior_nom,
+        aidant_nom=req.aidant_nom,
+        score=req.score,
+        niveau=req.niveau,
+        reponses=req.reponses,
+        dossier_id=req.dossier_id
+    )
+    return {"status": "ok", "id": eval_id}
+
+@app.get("/api/zarit/evaluations")
+def get_zarit_evaluations():
+    return db_manager.get_zarit_evaluations()
+
+@app.delete("/api/zarit/evaluations/{eval_id}")
+def delete_zarit_evaluation(eval_id: int):
+    success = db_manager.delete_zarit_eval(eval_id)
+    return {"status": "ok" if success else "error"}
+
+@app.post("/api/zarit/generate_pdf")
+async def generate_zarit_pdf_endpoint(request: ZaritPDFRequest):
+    try:
+        pdf_bytes = pdf_generator.generate_zarit_pdf(request.dict())
+        filename = f"Grille_Zarit_Score_{request.score}.pdf"
+        return Response(
+            content=pdf_bytes, 
+            media_type="application/pdf", 
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+    except Exception as e:
+        return {"error": f"Erreur lors de la génération du PDF Zarit : {str(e)}"}
