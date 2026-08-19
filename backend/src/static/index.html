@@ -329,7 +329,7 @@
                             <th style="padding: 0.75rem;">
                                 <select id="filter-zarit-level" onchange="filterZaritTableByLevel(this.value)" style="background: transparent; border: none; color: var(--text-secondary); font-size: 0.85rem; font-weight: 700; cursor: pointer; outline: none; padding: 0; font-family: inherit;">
                                     <option value="all" style="background: var(--bg-card); color: var(--text-primary);">Niveau de Charge ▼</option>
-                                    <option value="leger" style="background: var(--bg-card); color: var(--text-primary);">Niveau de Charge : Légère (0–20)</option>
+                                    <option value="faible" style="background: var(--bg-card); color: var(--text-primary);">Niveau de Charge : Faible (0–20)</option>
                                     <option value="modere" style="background: var(--bg-card); color: var(--text-primary);">Niveau de Charge : Modérée (21–40)</option>
                                     <option value="severe" style="background: var(--bg-card); color: var(--text-primary);">Niveau de Charge : Sévère (41–60)</option>
                                     <option value="tres_severe" style="background: var(--bg-card); color: var(--text-primary);">Niveau de Charge : Très sévère (> 60)</option>
@@ -822,7 +822,7 @@
             const filtered = zaritDataCache.filter(item => {
                 const score = item.score !== undefined ? item.score : 0;
                 const lvl = (item.niveau || '').toLowerCase();
-                if (selectedLevel === 'leger') return score <= 20 || lvl.includes('légère') || lvl.includes('nulle');
+                if (selectedLevel === 'faible' || selectedLevel === 'leger') return score <= 20 || lvl.includes('faible') || lvl.includes('légère') || lvl.includes('nulle');
                 if (selectedLevel === 'modere') return (score >= 21 && score <= 40) || lvl.includes('modérée');
                 if (selectedLevel === 'severe') return (score >= 41 && score <= 60) || (lvl.includes('sévère') && !lvl.includes('très'));
                 if (selectedLevel === 'tres_severe') return score > 60 || lvl.includes('très');

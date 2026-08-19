@@ -390,20 +390,20 @@
             let descText = "Tout va bien pour l'aidant. La situation est maîtrisée. N'hésitez pas à refaire le questionnaire si la situation évolue.";
 
             if (totalScore > 60) {
+                levelLabel = "Charge très sévère";
+                badgeClass = "badge-severe";
+                titleText = "🔴 Charge très sévère (Score > 60)";
+                descText = "Attention à l'épuisement très sévère ! Risque élevé de rupture d'aidant. N'attendez pas pour demander un relais (ex: CRT, Halte Répit, Accueil de Jour, DAC).";
+            } else if (totalScore >= 41) {
                 levelLabel = "Charge sévère";
                 badgeClass = "badge-severe";
-                titleText = "🔴 Charge sévère (Score > 60)";
-                descText = "Attention à l'épuisement sévère ! Risque élevé de rupture d'aidant. N'attendez pas pour demander un relais (ex: CRT, Halte Répit, Accueil de Jour, DAC).";
-            } else if (totalScore >= 41) {
+                titleText = "🔴 Charge sévère (Score 41 à 60)";
+                descText = "Attention à la charge sévère. Il est fortement recommandé de faire appel à des aides pour soulager l'aidant.";
+            } else if (totalScore >= 21) {
                 levelLabel = "Charge modérée";
                 badgeClass = "badge-moderee";
-                titleText = "🟠 Charge modérée (Score 41 à 60)";
-                descText = "L'aidant gère la situation mais la fatigue s'installe. Il est recommandé de faire appel à des aides ponctuelles pour le soulager.";
-            } else if (totalScore >= 21) {
-                levelLabel = "Charge légère";
-                badgeClass = "badge-legere";
-                titleText = "🔵 Charge légère (Score 21 à 40)";
-                descText = "L'aidant semble maîtriser la situation. Proposer des conseils de prévention et contrôler de temps à autre l'évolution.";
+                titleText = "🟠 Charge modérée (Score 21 à 40)";
+                descText = "L'aidant gère la situation mais la fatigue s'installe. Proposer des conseils de prévention et contrôler de temps à autre l'évolution.";
             }
 
             badgeContainer.innerHTML = `<span class="score-badge ${badgeClass}">${levelLabel}</span>`;
@@ -454,9 +454,9 @@
         document.getElementById('btn-save-zarit').addEventListener('click', async () => {
             const totalScore = answers.reduce((acc, curr) => acc + curr, 0);
             let levelLabel = "Charge faible";
-            if (totalScore > 60) levelLabel = "Charge sévère";
-            else if (totalScore >= 41) levelLabel = "Charge modérée";
-            else if (totalScore >= 21) levelLabel = "Charge légère";
+            if (totalScore > 60) levelLabel = "Charge très sévère";
+            else if (totalScore >= 41) levelLabel = "Charge sévère";
+            else if (totalScore >= 21) levelLabel = "Charge modérée";
 
             const seniorNom = document.getElementById('zarit-senior-nom').value.trim();
             const aidantNom = document.getElementById('zarit-aidant-nom').value.trim();
@@ -489,9 +489,9 @@
         document.getElementById('btn-download-pdf-zarit').addEventListener('click', async () => {
             const totalScore = answers.reduce((acc, curr) => acc + curr, 0);
             let levelLabel = "Charge faible";
-            if (totalScore > 60) levelLabel = "Charge sévère";
-            else if (totalScore >= 41) levelLabel = "Charge modérée";
-            else if (totalScore >= 21) levelLabel = "Charge légère";
+            if (totalScore > 60) levelLabel = "Charge très sévère";
+            else if (totalScore >= 41) levelLabel = "Charge sévère";
+            else if (totalScore >= 21) levelLabel = "Charge modérée";
 
             const seniorNom = document.getElementById('zarit-senior-nom').value.trim() || "Senior non renseigné";
             const aidantNom = document.getElementById('zarit-aidant-nom').value.trim() || "Aidant";
