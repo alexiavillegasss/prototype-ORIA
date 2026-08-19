@@ -1716,21 +1716,39 @@
 
     async function loadZaritDossiersDropdown() {
         try {
-            const res = await fetch('/api/zarit/evaluations');
-            if (res.ok) {
-                const evaluations = await res.json();
+            const [resZarit, resComid] = await Promise.all([
+                fetch('/api/zarit/evaluations'),
+                fetch('/api/comid/evaluations')
+            ]);
+
+            if (resZarit.ok) {
+                const evaluations = await resZarit.json();
                 zaritDossiersList = evaluations;
+                
+                let existingEntreeIds = new Set();
+                if (resComid.ok) {
+                    const comidEvals = await resComid.json();
+                    comidEvals.forEach(c => {
+                        if (c.type_eval === 'entree' && c.dossier_id) {
+                            existingEntreeIds.add(c.dossier_id);
+                        }
+                    });
+                }
+
                 const select = document.getElementById('comid-existing-dossier-select');
                 if (select) {
                     select.innerHTML = '<option value="">-- Nouveau dossier ou choisir un ZARIT --</option>';
                     const seen = new Set();
                     evaluations.forEach(d => {
-                        const key = d.dossier_id || `ZARIT-${d.id}`;
-                        if (!seen.has(key)) {
-                            seen.add(key);
+                        const dId = d.dossier_id || `DOS-ZARIT-${d.id}`;
+                        // S'il existe déjà un COMID Entrée pour ce dossier_id, on masque le dossier
+                        if (existingEntreeIds.has(dId) || (d.dossier_id && existingEntreeIds.has(d.dossier_id))) {
+                            return;
+                        }
+                        if (!seen.has(dId)) {
+                            seen.add(dId);
                             const opt = document.createElement('option');
                             opt.value = String(d.id);
-                            const dId = d.dossier_id || `DOS-ZARIT-${d.id}`;
                             const seniorText = d.senior_nom && d.senior_nom !== 'Senior non renseigné' ? d.senior_nom : 'Usager Anonyme';
                             opt.textContent = `${dId} – ${seniorText} (Score ZARIT : ${d.score}/88)`;
                             select.appendChild(opt);

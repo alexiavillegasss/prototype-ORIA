@@ -190,15 +190,18 @@ class DatabaseManager:
             return result
 
     def get_entree_dossiers(self):
-        """Récupère la liste unique des dossiers ayant une évaluation d'entrée."""
+        """Récupère la liste unique des dossiers ayant une évaluation d'entrée sans encore avoir de sortie."""
         with sqlite3.connect(self.db_path) as conn:
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             cursor.execute('''
-                SELECT DISTINCT dossier_id, senior_nom, score, date_creation
-                FROM comid_evaluations
-                WHERE type_eval = 'entree'
-                ORDER BY date_creation DESC
+                SELECT DISTINCT e.dossier_id, e.senior_nom, e.score, e.date_creation
+                FROM comid_evaluations e
+                WHERE e.type_eval = 'entree'
+                AND e.dossier_id NOT IN (
+                    SELECT s.dossier_id FROM comid_evaluations s WHERE s.type_eval = 'sortie'
+                )
+                ORDER BY e.date_creation DESC
             ''')
             return [dict(row) for row in cursor.fetchall()]
 
