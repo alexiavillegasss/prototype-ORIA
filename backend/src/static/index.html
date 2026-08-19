@@ -552,7 +552,7 @@
                                 ${z.score} <span style="font-size: 0.9rem; color: var(--text-muted);">/ 88</span>
                                 <span style="font-size: 0.8rem; padding: 0.2rem 0.6rem; border-radius: 12px; background: ${badgeColor}22; color: ${badgeColor}; font-weight: 700; margin-left: 0.5rem;">${z.niveau}</span>
                             </div>
-                            <button type="button" onclick="downloadZaritPDFFromTable(zaritDataCache[0])" class="btn-primary" style="margin-top: 0.6rem; background: var(--accent-amber); color: #ffffff; padding: 0.45rem 0.85rem; border-radius: 6px; font-size: 0.82rem; font-weight: 600; cursor: pointer; border: none;">
+                            <button type="button" onclick="downloadZaritPDFFromTable(z)" class="btn-primary" style="margin-top: 0.6rem; background: var(--accent-amber); color: #ffffff; padding: 0.45rem 0.85rem; border-radius: 6px; font-size: 0.82rem; font-weight: 600; cursor: pointer; border: none;">
                                 Télécharger le PDF Zarit
                             </button>
                         </div>
@@ -615,6 +615,98 @@
             } catch (e) {
                 console.error("Error loadDossier360View:", e);
                 container.innerHTML = `<div style="padding: 2.5rem; color: #ef4444; text-align: center;">Erreur lors de la récupération des détails du dossier.</div>`;
+            }
+        }
+
+        async function downloadComidPDFFrom360(evalData) {
+            if (!evalData) {
+                alert("Aucune donnée disponible pour ce PDF.");
+                return;
+            }
+            try {
+                let criteres = evalData.criteres || [];
+                if (typeof evalData.criteres_json === 'string') {
+                    try { criteres = JSON.parse(evalData.criteres_json); } catch(e){}
+                }
+
+                const payload = {
+                    score: evalData.score || 0,
+                    level: evalData.niveau || 'Non complexe',
+                    date: evalData.date_creation || '',
+                    checkedItems: criteres,
+                    dossier_id: evalData.dossier_id || '',
+                    senior_nom: evalData.senior_nom || ''
+                };
+
+                const res = await fetch('/api/comid/generate_pdf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    const blob = await res.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    const typeLabel = evalData.type_eval ? evalData.type_eval.toUpperCase() : 'COMID';
+                    a.download = `Synthese_COMID_${evalData.dossier_id || 'Dossier'}_${typeLabel}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                } else {
+                    alert("Erreur lors du téléchargement du PDF COMID.");
+                }
+            } catch (e) {
+                console.error("Erreur PDF COMID:", e);
+                alert("Erreur lors de la génération du PDF COMID.");
+            }
+        }
+
+        async function downloadZaritPDFFromTable(zaritEvalData) {
+            if (!zaritEvalData) {
+                alert("Aucune donnée disponible pour ce PDF Zarit.");
+                return;
+            }
+            try {
+                let reponses = zaritEvalData.reponses || [];
+                if (typeof zaritEvalData.reponses_json === 'string') {
+                    try { reponses = JSON.parse(zaritEvalData.reponses_json); } catch(e){}
+                }
+
+                const payload = {
+                    dossier_id: zaritEvalData.dossier_id || '',
+                    senior_nom: zaritEvalData.senior_nom || 'Senior non renseigné',
+                    aidant_nom: zaritEvalData.aidant_nom || 'Aidant',
+                    score: zaritEvalData.score || 0,
+                    niveau: zaritEvalData.niveau || 'Charge faible',
+                    date: zaritEvalData.date_creation || '',
+                    reponses: reponses
+                };
+
+                const res = await fetch('/api/zarit/generate_pdf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    const blob = await res.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `Grille_Zarit_${zaritEvalData.dossier_id || 'Dossier'}_Score_${zaritEvalData.score}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                } else {
+                    alert("Erreur lors du téléchargement du PDF Zarit.");
+                }
+            } catch (e) {
+                console.error("Erreur PDF Zarit:", e);
+                alert("Erreur lors du téléchargement du PDF Zarit.");
             }
         }
 
@@ -798,9 +890,14 @@
                         </td>
                         <td style="padding: 0.75rem; color: var(--text-muted); font-size: 0.85rem;">${item.date_creation || ''}</td>
                         <td style="padding: 0.75rem; text-align: center;">
-                            <button type="button" onclick="deleteZaritEval(${item.id}, '${(item.senior_nom || '').replace(/'/g, "\\'")}')" title="Supprimer cette évaluation ZARIT" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; padding: 0.35rem 0.55rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
-                            </button>
+                            <div style="display: inline-flex; gap: 0.35rem; align-items: center;">
+                                <button type="button" onclick="downloadZaritPDFFromTable(zaritDataCache.find(x => x.id === ${item.id}))" title="Télécharger le PDF ZARIT" style="background: rgba(245, 158, 11, 0.12); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 6px; padding: 0.35rem 0.55rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                </button>
+                                <button type="button" onclick="deleteZaritEval(${item.id}, '${(item.senior_nom || '').replace(/'/g, "\\'")}')" title="Supprimer cette évaluation ZARIT" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; padding: 0.35rem 0.55rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 `;
