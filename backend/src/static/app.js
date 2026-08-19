@@ -254,10 +254,12 @@ function renderSankey(sankeyData) {
                 opacity: 0.35
             },
             label: {
-                color: document.documentElement.getAttribute('data-theme') === 'light' ? '#0f172a' : '#f8fafc',
+                color: '#0f172a',
                 fontFamily: 'Inter',
                 fontSize: 12,
-                fontWeight: 500
+                fontWeight: 700,
+                textBorderColor: '#ffffff',
+                textBorderWidth: 2
             },
             itemStyle: {
                 borderWidth: 1,

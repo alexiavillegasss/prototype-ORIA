@@ -264,9 +264,14 @@
     <!-- ONGLET 2 : Suivi COMID -->
     <div id="panel-comid" class="tab-panel">
         <section id="comid-comparison-section" style="max-width: 1300px; margin: 1.5rem auto 3rem; padding: 0 1.5rem;">
-            <div class="section-header" style="margin-bottom: 1.25rem;">
-                <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Suivi de la Complexité COMID (Entrée vs Sortie)</h2>
-                <p style="font-size: 0.9rem; color: var(--text-secondary);">Mesurez l'évolution du score de complexité clinique des seniors bilantés entre l'admission et la sortie.</p>
+            <div class="section-header" style="margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Suivi de la Complexité COMID (Entrée vs Sortie)</h2>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Mesurez l'évolution du score de complexité clinique des seniors bilantés entre l'admission et la sortie.</p>
+                </div>
+                <button type="button" onclick="exportComidCSV()" class="btn-primary" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); padding: 0.55rem 1.1rem; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem;">
+                    📥 Exporter le tableau en CSV
+                </button>
             </div>
 
             <div class="table-container" style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow-card); overflow-x: auto;">
@@ -280,7 +285,6 @@
                             <th style="padding: 0.75rem;">Évolution (&Delta;)</th>
                             <th style="padding: 0.75rem;">Impact</th>
                             <th style="padding: 0.75rem;">Statut Bilan</th>
-                            <th style="padding: 0.75rem; text-align: center;">Action</th>
                         </tr>
                     </thead>
                     <tbody id="comid-comparison-tbody">
@@ -294,9 +298,14 @@
     <!-- ONGLET 3 : Suivi ZARIT -->
     <div id="panel-zarit" class="tab-panel">
         <section id="zarit-tracking-section" style="max-width: 1300px; margin: 1.5rem auto 3rem; padding: 0 1.5rem;">
-            <div class="section-header" style="margin-bottom: 1.25rem;">
-                <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Suivi du Fardeau de l'Aidant (Échelle de Zarit)</h2>
-                <p style="font-size: 0.9rem; color: var(--text-secondary);">Consultez et gérez l'épuisement des aidants rattachés aux dossiers cliniques du territoire.</p>
+            <div class="section-header" style="margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Suivi du Fardeau de l'Aidant (Échelle de Zarit)</h2>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Consultez et gérez l'épuisement des aidants rattachés aux dossiers cliniques du territoire.</p>
+                </div>
+                <button type="button" onclick="exportZaritCSV()" class="btn-primary" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 0.55rem 1.1rem; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem;">
+                    📥 Exporter le tableau en CSV
+                </button>
             </div>
 
             <div class="table-container" style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow-card); overflow-x: auto;">
@@ -607,6 +616,7 @@
             }
         }
 
+        let comidDataCache = [];
         async function loadComidComparisonTableInline() {
             const tbody = document.getElementById('comid-comparison-tbody');
             const badgeCount = document.getElementById('tab-count-comid');
@@ -616,13 +626,13 @@
                 const res = await fetch('/api/comid/comparisons');
                 if (!res.ok) return;
 
-                const data = await res.json();
-                if (badgeCount) badgeCount.textContent = data ? data.length : 0;
+                comidDataCache = await res.json();
+                if (badgeCount) badgeCount.textContent = comidDataCache ? comidDataCache.length : 0;
 
-                if (!data || data.length === 0) {
+                if (!comidDataCache || comidDataCache.length === 0) {
                     tbody.innerHTML = `
                         <tr>
-                            <td colspan="8" style="padding: 1.5rem; text-align: center; color: #94a3b8;">
+                            <td colspan="7" style="padding: 1.5rem; text-align: center; color: #94a3b8;">
                                 Aucune évaluation COMID enregistrée pour le moment. Enregistrez des COMID d'Entrée et de Sortie sur la page COMID pour voir la comparaison ici.
                             </td>
                         </tr>
@@ -631,7 +641,7 @@
                 }
 
                 let html = '';
-                data.forEach(item => {
+                comidDataCache.forEach(item => {
                     let deltaBadge = '<span style="color: #94a3b8;">–</span>';
                     let impactText = '<span style="color: #94a3b8;">En cours</span>';
 
@@ -643,7 +653,7 @@
                             deltaBadge = `<span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700;">+${Math.abs(item.delta_score)} pts</span>`;
                             impactText = `<span style="color: #ef4444; font-weight: 600;">🔴 Complexité accrue</span>`;
                         } else {
-                            deltaBadge = `<span style="background: rgba(148, 163, 184, 0.15); color: #94a3b8; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 600;">0 pt (Stable)</span>`;
+                            deltaBadge = `<span style="background: rgba(148, 163, 184, 0.15); color: #94a3b8; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700;">0 pt (Stable)</span>`;
                             impactText = `<span style="color: #94a3b8;">⚪ Complexité stable</span>`;
                         }
                     }
@@ -666,14 +676,79 @@
                                     ${item.statut_resolution}
                                 </span>
                             </td>
-                            <td style="padding: 0.75rem; text-align: center;">
-                                <button type="button" onclick="deleteComidDossier('${item.dossier_id}', '${(item.senior_nom || '').replace(/'/g, "\\'")}')" title="Supprimer ce dossier COMID" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; padding: 0.3rem 0.6rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">
-                                    🗑️
-                                </button>
-                            </td>
                         </tr>
                     `;
                 });
+                tbody.innerHTML = html;
+            } catch (e) {
+                console.error('Error loadComidComparisonTableInline:', e);
+            }
+        }
+
+        // --- EXPORT CSV COMID & ZARIT ---
+        function exportComidCSV() {
+            if (!comidDataCache || comidDataCache.length === 0) {
+                alert("Aucune donnée COMID à exporter.");
+                return;
+            }
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+            csvContent += "N° Dossier;Senior;Score Entree;Niveau Entree;Date Entree;Score Sortie;Niveau Sortie;Date Sortie;Evolution (pts);Evolution (%);Statut\n";
+
+            comidDataCache.forEach(item => {
+                const row = [
+                    `"${item.dossier_id || ''}"`,
+                    `"${(item.senior_nom || item.dossier_id || '').replace(/"/g, '""')}"`,
+                    `"${item.score_entree !== null ? item.score_entree : ''}"`,
+                    `"${item.niveau_entree || ''}"`,
+                    `"${item.date_entree || ''}"`,
+                    `"${item.score_sortie !== null ? item.score_sortie : ''}"`,
+                    `"${item.niveau_sortie || ''}"`,
+                    `"${item.date_sortie || ''}"`,
+                    `"${item.delta_score !== null ? item.delta_score : ''}"`,
+                    `"${item.evolution_pct !== null ? item.evolution_pct : ''}"`,
+                    `"${item.statut_resolution || ''}"`
+                ];
+                csvContent += row.join(";") + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Suivi_Complexite_COMID_ORIA.csv");
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        }
+
+        function exportZaritCSV() {
+            if (!zaritDataCache || zaritDataCache.length === 0) {
+                alert("Aucune donnée ZARIT à exporter.");
+                return;
+            }
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+            csvContent += "ID Evaluation;N° Dossier;Senior;Aidant;Score Zarit (sur 88);Niveau de Charge;Date Evaluation\n";
+
+            zaritDataCache.forEach(item => {
+                const row = [
+                    `"${item.id || ''}"`,
+                    `"${item.dossier_id || ''}"`,
+                    `"${(item.senior_nom || '').replace(/"/g, '""')}"`,
+                    `"${(item.aidant_nom || '').replace(/"/g, '""')}"`,
+                    `"${item.score !== undefined ? item.score : ''}"`,
+                    `"${item.niveau || ''}"`,
+                    `"${item.date_creation || ''}"`
+                ];
+                csvContent += row.join(";") + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Suivi_Fardeau_Aidant_ZARIT_ORIA.csv");
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        }            });
                 tbody.innerHTML = html;
             } catch (e) {
                 console.error('Error loadComidComparisonTableInline:', e);
