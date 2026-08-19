@@ -698,7 +698,7 @@ class PDFGenerator:
             "22. En fin de compte, sentez-vous que les soins sont une charge, un fardeau ?"
         ]
 
-        cols_x = [30, 290, 345, 400, 455, 510, 565]
+        cols_x = [30, 315, 365, 415, 465, 515, 565]
 
         def draw_table_header(p, y_pos):
             p.draw_rect(fitz.Rect(30, y_pos, 565, y_pos+35), color=text_dark, fill=blue_dark)
@@ -714,7 +714,7 @@ class PDFGenerator:
                 p.draw_line(fitz.Point(cx1, y_pos), fitz.Point(cx1, y_pos+35), color=(0.3, 0.4, 0.5), width=0.5)
             return y_pos + 35
 
-        # PAGE 1
+        # PAGE 1 : Header + Informations + Questions 1 à 11
         page1 = doc.new_page(width=595, height=842)
         page1.draw_rect(fitz.Rect(30, 25, 565, 80), color=None, fill=blue_dark)
         page1.insert_text(fitz.Point(45, 48), clean("GRILLE DE ZARIT - ECHELLE D'EVALUATION DU FARDEAU"), fontsize=12, color=(1, 1, 1), fontname="helv")
@@ -728,8 +728,8 @@ class PDFGenerator:
         y = 145
         y = draw_table_header(page1, y)
 
-        row_h = 24
-        for i in range(13):
+        row_h = 28
+        for i in range(11):
             y_end = y + row_h
             bg_fill = gray_light if i % 2 == 1 else (1, 1, 1)
             page1.draw_rect(fitz.Rect(30, y, 565, y_end), color=gray_border, fill=bg_fill, width=0.5)
@@ -737,27 +737,27 @@ class PDFGenerator:
                 page1.draw_line(fitz.Point(cx, y), fitz.Point(cx, y_end), color=gray_border, width=0.5)
             
             q_txt = clean(questions[i])
-            rect_q = fitz.Rect(35, y+5, 285, y_end-3)
-            page1.insert_textbox(rect_q, q_txt, fontsize=8, color=text_dark, fontname="helv")
+            rect_q = fitz.Rect(34, y+2, 310, y_end-2)
+            page1.insert_textbox(rect_q, q_txt, fontsize=7.5, color=text_dark, fontname="helv")
 
             ans_val = reponses[i]
             if 0 <= ans_val <= 4:
                 cx1 = cols_x[ans_val+1]
                 cx2 = cols_x[ans_val+2]
-                center_x = cx1 + (cx2 - cx1)/2 - 5
-                page1.insert_text(fitz.Point(center_x, y+16), "X", fontsize=11, color=amber_color, fontname="helv")
+                center_x = cx1 + (cx2 - cx1)/2 - 4
+                page1.insert_text(fitz.Point(center_x, y+18), "X", fontsize=11, color=amber_color, fontname="helv")
             
             y = y_end
 
         # Footer Page 1
         page1.insert_text(fitz.Point(30, 820), clean("ORIA - Grille de Zarit (Evaluation du Fardeau) | Page 1 / 2"), fontsize=8, color=(148/255, 163/255, 184/255), fontname="helv")
 
-        # PAGE 2
+        # PAGE 2 : Header tableau + Questions 12 à 22 + Totaux + Résultats
         page2 = doc.new_page(width=595, height=842)
         y = 35
         y = draw_table_header(page2, y)
 
-        for i in range(13, 22):
+        for i in range(11, 22):
             y_end = y + row_h
             bg_fill = gray_light if i % 2 == 1 else (1, 1, 1)
             page2.draw_rect(fitz.Rect(30, y, 565, y_end), color=gray_border, fill=bg_fill, width=0.5)
@@ -765,15 +765,15 @@ class PDFGenerator:
                 page2.draw_line(fitz.Point(cx, y), fitz.Point(cx, y_end), color=gray_border, width=0.5)
 
             q_txt = clean(questions[i])
-            rect_q = fitz.Rect(35, y+5, 285, y_end-3)
-            page2.insert_textbox(rect_q, q_txt, fontsize=8, color=text_dark, fontname="helv")
+            rect_q = fitz.Rect(34, y+2, 310, y_end-2)
+            page2.insert_textbox(rect_q, q_txt, fontsize=7.5, color=text_dark, fontname="helv")
 
             ans_val = reponses[i]
             if 0 <= ans_val <= 4:
                 cx1 = cols_x[ans_val+1]
                 cx2 = cols_x[ans_val+2]
-                center_x = cx1 + (cx2 - cx1)/2 - 5
-                page2.insert_text(fitz.Point(center_x, y+16), "X", fontsize=11, color=amber_color, fontname="helv")
+                center_x = cx1 + (cx2 - cx1)/2 - 4
+                page2.insert_text(fitz.Point(center_x, y+18), "X", fontsize=11, color=amber_color, fontname="helv")
 
             y = y_end
 
