@@ -440,6 +440,17 @@
             }
         }
 
+        async function downloadComid360Type(type) {
+            if (!currentDossier360Data) return;
+            const evalData = (currentDossier360Data.comid || []).find(c => c.type_eval === type);
+            if (evalData) downloadComidPDFFrom360(evalData);
+        }
+
+        async function downloadZarit360() {
+            if (!currentDossier360Data || !(currentDossier360Data.zarit || []).length) return;
+            downloadZaritPDFFromTable(currentDossier360Data.zarit[0]);
+        }
+
         async function loadDossier360View(dossierId) {
             const container = document.getElementById('dossier360-content');
             if (!dossierId) {
@@ -457,6 +468,7 @@
                 const res = await fetch(`/api/dossier-360/${encodeURIComponent(dossierId)}`);
                 if (!res.ok) throw new Error("Erreur serveur lors de la récupération du dossier");
                 const data = await res.json();
+                currentDossier360Data = data;
 
                 const orient = data.orientation;
                 const comids = data.comid || [];
@@ -495,7 +507,7 @@
                             <div style="font-size: 1.2rem; font-weight: 800; color: var(--text-primary); margin: 0.3rem 0;">
                                 ${entree.score} / 30 <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-secondary);">(${entree.niveau})</span>
                             </div>
-                            <button type="button" onclick="downloadComidPDFFrom360(comids.find(c => c.type_eval === 'entree'))" class="btn-primary" style="margin-top: 0.35rem; background: #3b82f6; color: #ffffff; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none;">
+                            <button type="button" onclick="downloadComid360Type('entree')" class="btn-primary" style="margin-top: 0.35rem; background: #3b82f6; color: #ffffff; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none;">
                                 Télécharger PDF COMID Entrée
                             </button>
                         </div>
@@ -514,7 +526,7 @@
                             <div style="font-size: 1.2rem; font-weight: 800; color: var(--text-primary); margin: 0.3rem 0;">
                                 ${sortie.score} / 30 <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-secondary);">(${sortie.niveau})</span>
                             </div>
-                            <button type="button" onclick="downloadComidPDFFrom360(comids.find(c => c.type_eval === 'sortie'))" class="btn-primary" style="margin-top: 0.35rem; background: #3b82f6; color: #ffffff; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none;">
+                            <button type="button" onclick="downloadComid360Type('sortie')" class="btn-primary" style="margin-top: 0.35rem; background: #3b82f6; color: #ffffff; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none;">
                                 Télécharger PDF COMID Sortie
                             </button>
                         </div>
@@ -552,7 +564,7 @@
                                 ${z.score} <span style="font-size: 0.9rem; color: var(--text-muted);">/ 88</span>
                                 <span style="font-size: 0.8rem; padding: 0.2rem 0.6rem; border-radius: 12px; background: ${badgeColor}22; color: ${badgeColor}; font-weight: 700; margin-left: 0.5rem;">${z.niveau}</span>
                             </div>
-                            <button type="button" onclick="downloadZaritPDFFromTable(z)" class="btn-primary" style="margin-top: 0.6rem; background: var(--accent-amber); color: #ffffff; padding: 0.45rem 0.85rem; border-radius: 6px; font-size: 0.82rem; font-weight: 600; cursor: pointer; border: none;">
+                            <button type="button" onclick="downloadZarit360()" class="btn-primary" style="margin-top: 0.6rem; background: var(--accent-amber); color: #ffffff; padding: 0.45rem 0.85rem; border-radius: 6px; font-size: 0.82rem; font-weight: 600; cursor: pointer; border: none;">
                                 Télécharger le PDF Zarit
                             </button>
                         </div>
