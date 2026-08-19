@@ -625,8 +625,8 @@
 
         // --- SUPPRESSION & CHARGEMENT DOSSIER COMID ---
         async function deleteComidDossier(dossierId, seniorNom) {
-            const label = seniorNom ? `dossier "${dossierId}" (${seniorNom})` : `dossier "${dossierId}"`;
-            if (!confirm(`Confirmation de suppression :\n\nVoulez-vous vraiment supprimer le ${label} ?\n\nToutes les évaluations COMID (Entrée et Sortie) rattachées à ce dossier seront effacées.`)) return;
+            const label = seniorNom && seniorNom !== dossierId ? `le dossier "${dossierId}" (${seniorNom})` : `le dossier "${dossierId}"`;
+            if (!confirm(`Confirmation de suppression :\n\nVoulez-vous vraiment supprimer ${label} ?\n\nToutes les évaluations COMID rattachées à ce dossier seront effacées.`)) return;
 
             try {
                 const res = await fetch(`/api/comid/evaluations/${encodeURIComponent(dossierId)}`, { method: 'DELETE' });
@@ -648,7 +648,7 @@
             if (!items || items.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="7" style="padding: 1.5rem; text-align: center; color: #94a3b8;">
+                        <td colspan="8" style="padding: 1.5rem; text-align: center; color: #94a3b8;">
                             Aucune évaluation COMID ne correspond à ce filtre.
                         </td>
                     </tr>
