@@ -577,6 +577,11 @@ def save_zarit_evaluation(req: ZaritEvalRequest):
 def get_zarit_evaluations():
     return db_manager.get_zarit_evaluations()
 
+@app.delete("/api/zarit/evaluations/{eval_id}")
+def delete_zarit_evaluation(eval_id: int):
+    success = db_manager.delete_zarit_eval(eval_id)
+    return {"status": "ok" if success else "error"}
+
 @app.post("/api/zarit/generate_pdf")
 async def generate_zarit_pdf_endpoint(request: ZaritPDFRequest):
     try:

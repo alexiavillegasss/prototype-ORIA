@@ -285,6 +285,14 @@ class DatabaseManager:
             rows = cursor.fetchall()
             return [dict(row) for row in rows]
 
+    def delete_zarit_eval(self, eval_id: int) -> bool:
+        """Supprime une évaluation de Zarit par son ID."""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('DELETE FROM zarit_evaluations WHERE id = ?', (eval_id,))
+            conn.commit()
+            return cursor.rowcount > 0
+
     def get_dossiers_for_dropdown(self) -> list:
         """Retourne uniquement les dossiers ayant une évaluation clinique COMID officielle."""
         res = []
