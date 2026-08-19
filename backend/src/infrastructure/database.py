@@ -44,6 +44,18 @@ class DatabaseManager:
                     date_creation TEXT NOT NULL
                 )
             ''')
+            # Table zarit_evaluations (Grille Zarit - Fardeau de l'aidant)
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS zarit_evaluations (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    senior_nom TEXT,
+                    aidant_nom TEXT,
+                    score INTEGER NOT NULL,
+                    niveau TEXT NOT NULL,
+                    reponses_json TEXT,
+                    date_creation TEXT NOT NULL
+                )
+            ''')
             conn.commit()
 
     def save_dossier(self, texte_original: str, donnees_extraites: dict, score_comid: int, niveau_comid: str, structures_orientations: list, details_complet: dict = None) -> Optional[int]:
@@ -245,3 +257,24 @@ class DatabaseManager:
             cursor.execute('DELETE FROM comid_evaluations WHERE dossier_id = ?', (dossier_id,))
             conn.commit()
             return cursor.rowcount > 0
+
+    def save_zarit_eval(self, senior_nom: str, aidant_nom: str, score: int, niveau: str, reponses: list) -> int:
+        """Enregistre une évaluation de la grille de Zarit (Fardeau de l'aidant)."""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            date_creation = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            cursor.execute('''
+                INSERT INTO zarit_evaluations (senior_nom, aidant_nom, score, niveau, reponses_json, date_creation)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (senior_nom, aidant_nom, score, niveau, json.dumps(reponses), date_creation))
+            conn.commit()
+            return cursor.lastrowid
+
+    def get_zarit_evaluations(self) -> list:
+        """Récupère l'historique de toutes les évaluations de Zarit."""
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute('SELECT * FROM zarit_evaluations ORDER BY date_creation DESC')
+            rows = cursor.fetchall()
+            return [dict(row) for row in rows]

@@ -530,3 +530,34 @@ async def generate_comid_pdf_endpoint(request: ComidPDFRequest):
         )
     except Exception as e:
         return {"error": f"Erreur lors de la génération du PDF COMID : {str(e)}"}
+
+
+# --- Page & Routes Grille ZARIT ---
+
+class ZaritEvalRequest(BaseModel):
+    senior_nom: Optional[str] = "Senior non renseigné"
+    aidant_nom: Optional[str] = "Aidant"
+    score: int
+    niveau: str
+    reponses: list
+
+@app.get("/zarit", response_class=HTMLResponse)
+def get_zarit_page():
+    zarit_path = os.path.join(STATIC_DIR, "zarit.html")
+    with open(zarit_path, "r", encoding="utf-8") as f:
+        return HTMLResponse(content=f.read())
+
+@app.post("/api/zarit/evaluations")
+def save_zarit_evaluation(req: ZaritEvalRequest):
+    eval_id = db_manager.save_zarit_eval(
+        senior_nom=req.senior_nom,
+        aidant_nom=req.aidant_nom,
+        score=req.score,
+        niveau=req.niveau,
+        reponses=req.reponses
+    )
+    return {"status": "ok", "id": eval_id}
+
+@app.get("/api/zarit/evaluations")
+def get_zarit_evaluations():
+    return db_manager.get_zarit_evaluations()

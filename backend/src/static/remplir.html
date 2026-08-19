@@ -39,16 +39,25 @@
             margin-top: 0.35rem;
         }
 
-        /* Grille des deux cartes principales */
+        /* Grille des cartes principales */
         .hub-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 1.5rem;
-            align-items: start;
+            align-items: stretch;
         }
 
-        @media (max-width: 720px) {
-            .hub-grid { grid-template-columns: 1fr; }
+        .hub-card-icon.fo { background: rgba(59, 130, 246, 0.12); color: var(--accent-blue); }
+        .hub-card-icon.comid { background: rgba(45, 212, 191, 0.12); color: var(--accent-teal); }
+        .hub-card-icon.zarit { background: rgba(245, 158, 11, 0.12); color: var(--accent-amber); }
+
+        .hub-card.zarit-card:hover {
+            border-color: var(--accent-amber);
+        }
+
+        .hub-card.zarit-card .hub-card-badge {
+            color: var(--accent-amber);
+            background: rgba(245, 158, 11, 0.08);
         }
 
         /* Carte principale */
@@ -334,6 +343,14 @@
                     </button>
                     <!-- Dropdown Menu -->
                     <div id="dropdown-menu" class="dropdown-menu hidden">
+                        <a href="/zarit" class="dropdown-item" title="Évaluation du fardeau de l'aidant (Grille Zarit)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                            Grille ZARIT
+                        </a>
+                        <a href="/comid" class="dropdown-item" title="Évaluation de la complexité COMID">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/></svg>
+                            Grille COMID
+                        </a>
                         <a href="/orienter" class="dropdown-item" title="Moteur d'orientation interactif">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
                             Moteur d'orientation
@@ -393,6 +410,25 @@
                 <div class="hub-card-badge">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
                     30 indicateurs · Score 0–30
+                </div>
+            </a>
+
+            <!-- Card 3 : Grille ZARIT -->
+            <a class="hub-card zarit-card" id="card-zarit" href="/zarit" style="text-decoration: none;">
+                <div class="hub-card-header">
+                    <div class="hub-card-icon zarit">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    </div>
+                    <div>
+                        <div class="hub-card-title">Grille ZARIT</div>
+                    </div>
+                </div>
+
+                <p class="hub-card-desc">Évaluez la charge et le niveau d'épuisement de l'aidant familial à travers 22 indicateurs.</p>
+
+                <div class="hub-card-badge">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    22 questions · Score 0–88
                 </div>
             </a>
 
