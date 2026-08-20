@@ -472,15 +472,53 @@
                             <div class="chk-item" id="citem-aidant"><span class="chk-dot">🔴</span> Proche Aidant Principal : <strong class="chk-val">À citer</strong></div>
                         </div>
 
-                        <!-- Groupe 5: Alertes Repérées (Cochage automatique à la voix) -->
-                        <div class="chk-group-box" style="grid-column: 1 / -1;">
-                            <div class="chk-group-title">🚨 Alertes Repérées & Cases à Cocher (Cochage Automatique à la Voix)</div>
-                            <div style="display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.3rem;" id="alertes-checkboxes-list">
-                                <div class="chk-item" id="citem-al-medecin"><span class="chk-dot">🔴</span> 🔲 Pas de médecin traitant / Rupture de soin</div>
-                                <div class="chk-item" id="citem-al-gir"><span class="chk-dot">🔴</span> 🔲 Perte d'autonomie forte (GIR 1-3)</div>
-                                <div class="chk-item" id="citem-al-aidant"><span class="chk-dot">🔴</span> 🔲 Proche aidant sollicité / Épuisement</div>
-                                <div class="chk-item" id="citem-al-seul"><span class="chk-dot">🔴</span> 🔲 Isolement social / Vit seul(e)</div>
-                                <div class="chk-item" id="citem-al-chute"><span class="chk-dot">🔴</span> 🔲 Récidive de chutes / Risque physique</div>
+                        <!-- Groupe 5: ALERTES REPÉRÉES (COCHAGE AUTOMATIQUE À LA VOIX) -->
+                        <div class="chk-group-box" style="grid-column: 1 / -1; background: var(--bg-card); border: 1px solid var(--accent-blue);">
+                            <div class="chk-group-title" style="font-size: 0.95rem; font-weight: 800; color: #3b82f6; display: flex; justify-content: space-between; align-items: center;">
+                                <span>🚨 ALERTES REPÉRÉES — Cases à cocher officielles de la fiche (Cochage automatique à la voix)</span>
+                                <span id="alertes-count-badge" style="font-size: 0.8rem; font-weight: 700; color: #10b981; background: rgba(16, 185, 129, 0.12); padding: 0.25rem 0.65rem; border-radius: 6px;">0 alerte(s) détectée(s)</span>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 0.5rem;">
+                                
+                                <!-- Sub 1: Autonomie fonctionnelle -->
+                                <div style="background: var(--bg-primary); padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-glass);">
+                                    <div style="font-size: 0.8rem; font-weight: 700; color: #38bdf8; margin-bottom: 0.4rem;">⚙️ AUTONOMIE FONCTIONNELLE</div>
+                                    <div class="chk-item" id="al-pb_actes_essentiels"><span class="chk-dot">🔴</span> 🔲 Actes essentiels (toilette, hygiène)</div>
+                                    <div class="chk-item" id="al-pb_activites_domestiques" style="margin-top: 0.35rem;"><span class="chk-dot">🔴</span> 🔲 Activités domestiques (courses, ménage, repas)</div>
+                                </div>
+
+                                <!-- Sub 2: Santé physique & psychique -->
+                                <div style="background: var(--bg-primary); padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-glass);">
+                                    <div style="font-size: 0.8rem; font-weight: 700; color: #38bdf8; margin-bottom: 0.4rem;">🩺 SANTÉ PHYSIQUE ET PSYCHIQUE</div>
+                                    <div class="chk-item" id="al-sans_medecin"><span class="chk-dot">🔴</span> 🔲 Pas de médecin traitant / Rupture de soin</div>
+                                    <div class="chk-item" id="al-pathologies_chroniques" style="margin-top: 0.35rem;"><span class="chk-dot">🔴</span> 🔲 Pathologie(s) chronique(s) ou évolutive(s)</div>
+                                    <div class="chk-item" id="al-pb_memoire_decision" style="margin-top: 0.35rem;"><span class="chk-dot">🔴</span> 🔲 Troubles mémoire / autonomie décisionnelle</div>
+                                    <div class="chk-item" id="al-troubles_cognitifs" style="margin-top: 0.35rem;"><span class="chk-dot">🔴</span> 🔲 Troubles cognitifs</div>
+                                    <div class="chk-item" id="al-troubles_comportement" style="margin-top: 0.35rem;"><span class="chk-dot">🔴</span> 🔲 Troubles du comportement</div>
+                                    <div class="chk-item" id="al-conduites_addictives" style="margin-top: 0.35rem;"><span class="chk-dot">🔴</span> 🔲 Conduites addictives</div>
+                                    <div class="chk-item" id="al-medocs_plus_de_5" style="margin-top: 0.35rem;"><span class="chk-dot">🔴</span> 🔲 Polymédication (Médicaments > 5)</div>
+                                    <div class="chk-item" id="al-troubles_psy" style="margin-top: 0.35rem;"><span class="chk-dot">🔴</span> 🔲 Troubles psychiatriques / psychiques</div>
+                                    <div class="chk-item" id="al-denutrition_perte_poids" style="margin-top: 0.35rem;"><span class="chk-dot">🔴</span> 🔲 Dénutrition, perte de poids</div>
+                                    <div class="chk-item" id="al-risque_chute" style="margin-top: 0.35rem;"><span class="chk-dot">🔴</span> 🔲 Risque de chute / Chute récente</div>
+                                    <div class="chk-item" id="al-hospit_recente" style="margin-top: 0.35rem;"><span class="chk-dot">🔴</span> 🔲 Hospitalisation récente ou urgences</div>
+                                </div>
+
+                                <!-- Sub 3: Environnement social & familial -->
+                                <div style="background: var(--bg-primary); padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-glass);">
+                                    <div style="font-size: 0.8rem; font-weight: 700; color: #38bdf8; margin-bottom: 0.4rem;">👥 SOCIAL & FAMILIAL</div>
+                                    <div class="chk-item" id="al-isolement_social"><span class="chk-dot">🔴</span> 🔲 Isolement social / Vit seul(e)</div>
+                                    <div class="chk-item" id="al-epuisement_aidant" style="margin-top: 0.35rem;"><span class="chk-dot">🔴</span> 🔲 Épuisement, absence ou indisponibilité aidant</div>
+                                </div>
+
+                                <!-- Sub 4: Economique, Admin & Habitat -->
+                                <div style="background: var(--bg-primary); padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-glass);">
+                                    <div style="font-size: 0.8rem; font-weight: 700; color: #38bdf8; margin-bottom: 0.4rem;">💶 ÉCONOMIQUE, ADMIN & HABITAT</div>
+                                    <div class="chk-item" id="al-diff_gestion_admin_fin"><span class="chk-dot">🔴</span> 🔲 Difficultés gestion admin / financière</div>
+                                    <div class="chk-item" id="al-risque_precarite" style="margin-top: 0.35rem;"><span class="chk-dot">🔴</span> 🔲 Risque de précarité / Faibles revenus</div>
+                                    <div class="chk-item" id="al-logement_inadapte" style="margin-top: 0.35rem;"><span class="chk-dot">🔴</span> 🔲 Logement inadapté, inaccessibilité</div>
+                                </div>
+
                             </div>
                         </div>
 
@@ -912,24 +950,43 @@
                 updateChkItem('citem-emetteur', emetteurNom, "Service Demandeur");
                 updateChkItem('citem-aidant', aidantNom, "Proche Aidant");
 
-                // Cochage automatique des alertes à la voix
-                const setAlertCheck = (id, isTriggered, label) => {
+                // 18 Alertes officielles scannées à la voix
+                let detectedAlertsCount = 0;
+                const setOfficialAlert = (id, condition, textLabel) => {
                     const el = document.getElementById(id);
                     if (!el) return;
-                    if (isTriggered) {
+                    if (condition) {
                         el.classList.add('valid');
-                        el.innerHTML = `<span class="chk-dot">🟢</span> ☑️ ${label} (Détecté à la voix) ✓`;
+                        el.innerHTML = `<span class="chk-dot">🟢</span> ☑️ ${textLabel} (Coché à la voix) ✓`;
+                        detectedAlertsCount++;
                     } else {
                         el.classList.remove('valid');
-                        el.innerHTML = `<span class="chk-dot">🔴</span> 🔲 ${label}`;
+                        el.innerHTML = `<span class="chk-dot">🔴</span> 🔲 ${textLabel}`;
                     }
                 };
 
-                setAlertCheck('citem-al-medecin', medecin.includes('Aucun') || /médecin/i.test(text), "Pas de médecin traitant / Rupture de soin");
-                setAlertCheck('citem-al-gir', gir.includes('1') || gir.includes('2') || gir.includes('3'), "Perte d'autonomie forte (GIR 1-3)");
-                setAlertCheck('citem-al-aidant', aidantNom.length > 0 || /fille|aidant/i.test(text), "Proche aidant sollicité / Épuisement");
-                setAlertCheck('citem-al-seul', /seul/i.test(text), "Isolement social / Vit seul(e)");
-                setAlertCheck('citem-al-chute', /chute/i.test(text), "Récidive de chutes / Risque physique");
+                const alertesData = data.alertes || {};
+
+                setOfficialAlert('al-sans_medecin', alertesData.sans_medecin || medecin.includes('Aucun') || /pas de médecin|cherche un médecin|trouver un médecin/i.test(text), "Pas de médecin traitant / Rupture de soin");
+                setOfficialAlert('al-pb_actes_essentiels', alertesData.pb_actes_essentiels || /toilette|lave|habill|se nourrir|repas/i.test(text), "Actes essentiels (toilette, hygiène)");
+                setOfficialAlert('al-pb_activites_domestiques', alertesData.pb_activites_domestiques || /ménage|courses|aide aux repas|repas/i.test(text), "Activités domestiques (courses, ménage, repas)");
+                setOfficialAlert('al-pathologies_chroniques', alertesData.pathologies_chroniques || /maladie|pathologie|diabète|cancer|hypertension|chronique/i.test(text), "Pathologie(s) chronique(s) ou évolutive(s)");
+                setOfficialAlert('al-pb_memoire_decision', alertesData.pb_memoire_decision || /mémoire|désorient|décision/i.test(text), "Troubles mémoire / autonomie décisionnelle");
+                setOfficialAlert('al-troubles_cognitifs', alertesData.troubles_cognitifs || /cognitif|alzheimer|démence/i.test(text), "Troubles cognitifs");
+                setOfficialAlert('al-troubles_comportement', alertesData.troubles_comportement || /comportement|agressif|fugue|déambule/i.test(text), "Troubles du comportement");
+                setOfficialAlert('al-conduites_addictives', alertesData.conduites_addictives || /alcool|addict|toxico/i.test(text), "Conduites addictives");
+                setOfficialAlert('al-medocs_plus_de_5', alertesData.medocs_plus_de_5 || /médicaments\s*>\s*5|polymédic/i.test(text), "Polymédication (Médicaments > 5)");
+                setOfficialAlert('al-troubles_psy', alertesData.troubles_psy || /dépression|anxié|psy/i.test(text), "Troubles psychiatriques / psychiques");
+                setOfficialAlert('al-denutrition_perte_poids', alertesData.denutrition_perte_poids || /dénutrit|perte de poids|poids/i.test(text), "Dénutrition, perte de poids");
+                setOfficialAlert('al-risque_chute', alertesData.risque_chute || /chute/i.test(text), "Risque de chute / Chute récente");
+                setOfficialAlert('al-hospit_recente', alertesData.hospit_recente || /hôpital|hospitalis|urgences/i.test(text), "Hospitalisation récente ou urgences");
+                setOfficialAlert('al-isolement_social', alertesData.isolement_social || /seul|isolement|rupture/i.test(text), "Isolement social / Vit seul(e)");
+                setOfficialAlert('al-epuisement_aidant', alertesData.epuisement_aidant || aidantNom.length > 0 || /fille|aidant/i.test(text), "Épuisement, absence ou indisponibilité aidant");
+                setOfficialAlert('al-diff_gestion_admin_fin', alertesData.diff_gestion_admin_fin || /admin|finan|dettes/i.test(text), "Difficultés gestion admin / financière");
+                setOfficialAlert('al-risque_precarite', alertesData.risque_precarite || /précarité|revenus|pauvre/i.test(text), "Risque de précarité / Faibles revenus");
+                setOfficialAlert('al-logement_inadapte', alertesData.logement_inadapte || /logement|escalier|inadapté/i.test(text), "Logement inadapté, inaccessibilité");
+
+                document.getElementById('alertes-count-badge').textContent = `${detectedAlertsCount} alerte(s) cochée(s) à la voix`;
 
                 const pct = Math.round((validItemsCount / 14) * 100);
                 document.getElementById('full-checklist-count').textContent = `${validItemsCount} / 14 champs capturés (${pct}%)`;
