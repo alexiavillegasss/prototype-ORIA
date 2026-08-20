@@ -355,23 +355,29 @@
     <div id="voice-form-modal" class="modal-voice-overlay" style="display: none;">
         <div class="modal-voice-content">
             
-            <!-- En-tête du Modal -->
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.75rem; border-bottom: 1px solid var(--border-glass); background: var(--bg-primary);">
+            <!-- En-tête du Modal (Bandeau Titre Full-Width en Haut) -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 2rem; border-bottom: 1px solid var(--border-glass); background: var(--bg-primary); width: 100%; position: sticky; top: 0; z-index: 200;">
                 <div>
-                    <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: #3b82f6;">Module de Saisie Vocale & Interactive</span>
-                    <h3 id="voice-modal-title" style="font-size: 1.35rem; font-weight: 800; color: var(--text-primary); margin-top: 0.15rem;">Fiche d'Orientation — Dictée Vocale</h3>
+                    <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: #3b82f6; letter-spacing: 0.5px;">Module de Saisie Vocale & Interactive</span>
+                    <h2 id="voice-modal-title" style="font-size: 1.35rem; font-weight: 800; color: var(--text-primary); margin-top: 0.15rem; white-space: nowrap;">Fiche d'Orientation — Dictée Vocale</h2>
                 </div>
-                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                    <div style="display: flex; align-items: center; gap: 0.4rem; background: var(--bg-card); padding: 0.25rem; border-radius: 8px; border: 1px solid var(--border-glass);">
-                        <button type="button" id="tab-btn-form" onclick="switchModalView('form')" style="background: #3b82f6; color: #ffffff; border: none; padding: 0.45rem 0.85rem; border-radius: 6px; font-weight: 600; font-size: 0.82rem; cursor: pointer;">
-                            📝 Formulaire & Checklist
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 0.4rem; background: var(--bg-card); padding: 0.3rem; border-radius: 10px; border: 1px solid var(--border-glass);">
+                        <button type="button" id="tab-btn-form" onclick="switchModalView('form')" style="background: #3b82f6; color: #ffffff; border: none; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer;">
+                            📝 Vue Dictée & Checklists
                         </button>
-                        <button type="button" id="tab-btn-pdf" onclick="switchModalView('pdf')" style="background: transparent; color: var(--text-secondary); border: none; padding: 0.45rem 0.85rem; border-radius: 6px; font-weight: 600; font-size: 0.82rem; cursor: pointer;">
+                        <button type="button" id="tab-btn-pdf" onclick="switchModalView('pdf')" style="background: transparent; color: var(--text-secondary); border: none; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer;">
                             📄 Voir Fiche PDF Vierge
                         </button>
                     </div>
-                    <button type="button" onclick="closeVoiceFormModal()" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; font-weight: 700;">✕</button>
-                    <div style="padding: 1.25rem 1.75rem; display: flex; flex-direction: column; gap: 1.25rem;">
+                    <button type="button" onclick="closeVoiceFormModal()" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 10px; padding: 0.5rem 1rem; font-size: 0.88rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.4rem;">
+                        ✕ Fermer
+                    </button>
+                </div>
+            </div>
+
+            <!-- Corps du Modal avec les 2 colonnes étalées sur la page -->
+            <div style="padding: 1.5rem 2rem; display: flex; flex-direction: column; gap: 1.5rem; width: 100%;">
                 
                 <!-- CONTENEUR VUE APERÇU PDF VIERGE (Quand onglet PDF sélectionné) -->
                 <div id="modal-pdf-container" style="display: none; background: var(--bg-primary); border: 1px solid var(--border-glass); border-radius: 12px; overflow: hidden; height: 85vh; min-height: 750px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
@@ -664,20 +670,20 @@
         }
 
         function switchModalView(mode) {
-            const formSection = document.querySelector('#voice-form-modal .modal-voice-content > div:nth-child(2) > div:nth-child(3)');
+            const workspace = document.getElementById('modal-main-workspace');
             const pdfContainer = document.getElementById('modal-pdf-container');
             const btnForm = document.getElementById('tab-btn-form');
             const btnPdf = document.getElementById('tab-btn-pdf');
 
             if (mode === 'pdf') {
-                if (formSection) formSection.style.display = 'none';
+                if (workspace) workspace.style.display = 'none';
                 pdfContainer.style.display = 'block';
                 btnPdf.style.background = '#3b82f6';
                 btnPdf.style.color = '#ffffff';
                 btnForm.style.background = 'transparent';
                 btnForm.style.color = 'var(--text-secondary)';
             } else {
-                if (formSection) formSection.style.display = 'flex';
+                if (workspace) workspace.style.display = 'grid';
                 pdfContainer.style.display = 'none';
                 btnForm.style.background = '#3b82f6';
                 btnForm.style.color = '#ffffff';
