@@ -449,6 +449,24 @@ def get_sankey_data(dim1: str = "commune", dim2: str = "complexite", dim3: str =
         }
     }
 
+class ExtractFieldsRequest(BaseModel):
+    text: str
+    structure: Optional[str] = "DAC Var Ouest"
+
+@app.post("/api/orientation/extract_fields")
+async def extract_orientation_fields(request: ExtractFieldsRequest):
+    """Extrait les champs structurés pour le pré-remplissage interactif d'une fiche d'orientation."""
+    try:
+        struct_lower = (request.structure or "").lower()
+        if "dac" in struct_lower:
+            extracted = await fiche_extractor.extract_for_dac(request.text)
+        else:
+            extracted = await fiche_extractor.extract_for_clic(request.text)
+        return {"success": True, "data": extracted}
+    except Exception as e:
+        print(f"Erreur extract_orientation_fields: {e}")
+        return {"success": False, "error": str(e), "data": {}}
+
 @app.post("/api/orientation/dac/generate_pdf")
 async def generate_dac_pdf(request: AnalyzeRequest):
     try:
