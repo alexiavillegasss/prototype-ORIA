@@ -351,9 +351,8 @@
         <p>Prototype ORIA – Sélection de Fiches d'Orientation</p>
     </footer>
 
-    <script>
     <!-- MODAL OPTION 1 : DICTÉE FLOTTANTE + FORMULAIRE COMPLET SOUS LES YEUX -->
-    <div id="voice-form-modal" class="modal-voice-overlay">
+    <div id="voice-form-modal" class="modal-voice-overlay" style="display: none;">
         <div class="modal-voice-content">
             
             <!-- En-tête du Modal -->
@@ -533,6 +532,29 @@
     </div>
 
     <style>
+        .modal-voice-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+        .modal-voice-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 1050px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            flex-direction: column;
+        }
         .vform-label {
             font-size: 0.8rem;
             font-weight: 600;
