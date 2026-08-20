@@ -165,9 +165,8 @@ Réponds UNIQUEMENT par ce JSON complet :
             match = re.search(r'\b(\d{1,3})\b', date_n)
             if match:
                 age = int(match.group(1))
-                if age < 130: # Eviter de transformer une vraie année genre "1990" en âge
-                    year = datetime.datetime.now().year - age
-                    parsed["date_naissance"] = str(year)
+                if age < 120:
+                    parsed["date_naissance"] = f"{age} ans"
                 
         nom = parsed.get("nom_usage", "")
         # Nettoyage des noms anonymes

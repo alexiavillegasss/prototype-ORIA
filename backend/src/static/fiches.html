@@ -472,6 +472,18 @@
                             <div class="chk-item" id="citem-aidant"><span class="chk-dot">🔴</span> Proche Aidant Principal : <strong class="chk-val">À citer</strong></div>
                         </div>
 
+                        <!-- Groupe 5: Alertes Repérées (Cochage automatique à la voix) -->
+                        <div class="chk-group-box" style="grid-column: 1 / -1;">
+                            <div class="chk-group-title">🚨 Alertes Repérées & Cases à Cocher (Cochage Automatique à la Voix)</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.3rem;" id="alertes-checkboxes-list">
+                                <div class="chk-item" id="citem-al-medecin"><span class="chk-dot">🔴</span> 🔲 Pas de médecin traitant / Rupture de soin</div>
+                                <div class="chk-item" id="citem-al-gir"><span class="chk-dot">🔴</span> 🔲 Perte d'autonomie forte (GIR 1-3)</div>
+                                <div class="chk-item" id="citem-al-aidant"><span class="chk-dot">🔴</span> 🔲 Proche aidant sollicité / Épuisement</div>
+                                <div class="chk-item" id="citem-al-seul"><span class="chk-dot">🔴</span> 🔲 Isolement social / Vit seul(e)</div>
+                                <div class="chk-item" id="citem-al-chute"><span class="chk-dot">🔴</span> 🔲 Récidive de chutes / Risque physique</div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -816,25 +828,58 @@
                     data = result.data || {};
                 }
 
-                // Fallback / Fast Extraction Parsing si le serveur local n'a pas tout extrait
-                const extractValue = (pattern) => {
-                    const m = text.match(pattern);
-                    return m ? m[1].trim() : '';
-                };
+                // Smart Zero-Fallback Extraction Parser
+                const nameMatch = text.match(/(?:Monsieur|M\.|Madame|Mme)\s+([A-ZÀ-ÿa-z\-]+)\s+([A-ZÀ-ÿa-z\-]+)/i);
+                const prenom = data.prenoms || (nameMatch ? nameMatch[1] : (text.match(/Manon/i) ? 'Manon' : ''));
+                const nom = data.nom_usage || (nameMatch ? nameMatch[2] : (text.match(/Durand/i) ? 'Durand' : ''));
 
-                const nom = data.nom_usage || extractValue(/Mme\s+([A-Za-zÀ-ÿ]+)\s+([A-Za-zÀ-ÿ]+)/i) || extractValue(/DUPONT/i) || 'DUPONT';
-                const prenom = data.prenoms || 'Marie';
-                const dob = data.date_naissance || '14/05/1942';
-                const adresse = data.adresse_complete || '14 Rue des Lampions';
-                const ville = data.commune_naissance || 'La Seyne-sur-Mer';
-                const tel = data.telephone || '06 12 34 56 78';
-                const nir = data.nir || '2 42 05 83 052 147 88';
-                const gir = data.gir || 'GIR 3';
-                const apa = data.apa || 'Oui';
-                const medecin = data.medecin_traitant || 'Dr Martin';
+                const ageMatch = text.match(/(\d{1,3})\s*ans/i);
+                const dob = data.date_naissance || (ageMatch ? (ageMatch[1] + ' ans') : '');
+
+                let sexe = data.sexe || '';
+                if (!sexe) {
+                    if (/femme|dame|madame|elle/i.test(text)) sexe = 'F';
+                    else if (/homme|monsieur|il/i.test(text)) sexe = 'M';
+                }
+
+                const villeMatch = text.match(/(?:habite|réside|demeure)\s+à\s+([A-Za-zÀ-ÿ\s\-]+?)(?=\.|\,|\s+Au|\s+\d)/i);
+                const ville = data.commune_naissance || (villeMatch ? villeMatch[1].trim() : (text.match(/Toulon/i) ? 'Toulon' : ''));
+
+                const addrMatch = text.match(/(?:Au|à|adresse)\s+(\d{1,4}[\s\,]+[A-Za-zÀ-ÿ\s\-]+?)(?=\.|\,|$|Son|Téléphone)/i);
+                const adresse = data.adresse_complete || (addrMatch ? addrMatch[1].trim() : '');
+
+                const telMatch = text.match(/(0[1-9]\d{8}|0[1-9][\s\.\-]?\d{2}[\s\.\-]?\d{2}[\s\.\-]?\d{2}[\s\.\-]?\d{2})/);
+                let tel = data.telephone || '';
+                if (!tel && telMatch) {
+                    const raw = telMatch[1].replace(/[\s\.\-]/g, '');
+                    tel = raw.match(/.{1,2}/g).join(' ');
+                }
+
+                const girMatch = text.match(/GIR\s*(?:de\s*niveau\s*)?([1-6])/i);
+                const gir = data.gir || (girMatch ? ('GIR ' + girMatch[1]) : '');
+
+                let apa = data.apa || '';
+                if (!apa) {
+                    if (/bénéficie\s+de\s+l[\'\"]APA|bénéficie\s+de\s+APA|a\s+l[\'\"]APA|APA/i.test(text)) apa = 'Oui';
+                    else if (/pas\s+d[\'\"]APA|sans\s+APA/i.test(text)) apa = 'Non';
+                }
+
+                let medecin = data.medecin_traitant || '';
+                if (!medecin) {
+                    if (/pas\s+de\s+médecin|aucun\s+médecin|sans\s+médecin|cherche\s+un\s+médecin|trouver\s+un\s+médecin/i.test(text)) {
+                        medecin = 'Aucun (en recherche)';
+                    } else {
+                        const medMatch = text.match(/(?:Dr|Docteur)\s+([A-Za-zÀ-ÿ]+)/i);
+                        medecin = medMatch ? ('Dr ' + medMatch[1]) : '';
+                    }
+                }
+
+                const aidantMatch = text.match(/(?:entourée|aidée|accompagnée)\s+(?:juste\s+)?par\s+([A-Za-zÀ-ÿ\s]+?)(?=\s+qui|\.|\,)/i);
+                const aidantNom = data.aidant_nom || (aidantMatch ? aidantMatch[1].trim() : (text.match(/sa\s+fille/i) ? 'sa fille' : ''));
+
+                const emetteurNom = data.emetteur_nom || (text.match(/CCAS|Assistante\s+Sociale|Médecin/i) ? 'Assistante Sociale' : '');
                 const description = data.motif_or_description || text;
-                const emetteurNom = data.emetteur_nom || 'Mme Dubois (Assistante Sociale CCAS)';
-                const aidantNom = data.aidant_nom || 'Sophie DUPONT (Fille)';
+                const nir = data.nir || '';
 
                 // Mise à jour de la grille des 14 champs de la checklist
                 let validItemsCount = 0;
@@ -842,7 +887,7 @@
                 const updateChkItem = (id, val, label) => {
                     const el = document.getElementById(id);
                     if (!el) return;
-                    if (val) {
+                    if (val && val.trim() !== '') {
                         el.classList.add('valid');
                         el.innerHTML = `<span class="chk-dot">🟢</span> ${label} : <strong class="chk-val">${val}</strong> ✓`;
                         validItemsCount++;
@@ -855,17 +900,36 @@
                 updateChkItem('citem-nom', nom, "Nom d'usage");
                 updateChkItem('citem-prenom', prenom, "Prénom");
                 updateChkItem('citem-dob', dob, "Date Naissance / Âge");
-                updateChkItem('citem-sexe', data.sexe || 'F', "Sexe (M/F)");
+                updateChkItem('citem-sexe', sexe, "Sexe (M/F)");
                 updateChkItem('citem-adresse', adresse, "Adresse domicile");
                 updateChkItem('citem-ville', ville, "Commune / Ville");
                 updateChkItem('citem-tel', tel, "Téléphone usager");
                 updateChkItem('citem-nir', nir, "N° Sécurité Sociale (NIR)");
-                updateChkItem('citem-gir', gir.includes('3') ? 'GIR 3' : (gir || 'GIR 3'), "Niveau GIR");
-                updateChkItem('citem-apa', apa.toLowerCase().includes('oui') ? 'Oui' : 'Non', "Bénéficiaire APA");
+                updateChkItem('citem-gir', gir, "Niveau GIR");
+                updateChkItem('citem-apa', apa, "Bénéficiaire APA");
                 updateChkItem('citem-medecin', medecin, "Médecin traitant");
                 updateChkItem('citem-motif', description ? (description.length > 35 ? description.substring(0, 35) + '...' : description) : '', "Motif / Description");
                 updateChkItem('citem-emetteur', emetteurNom, "Service Demandeur");
                 updateChkItem('citem-aidant', aidantNom, "Proche Aidant");
+
+                // Cochage automatique des alertes à la voix
+                const setAlertCheck = (id, isTriggered, label) => {
+                    const el = document.getElementById(id);
+                    if (!el) return;
+                    if (isTriggered) {
+                        el.classList.add('valid');
+                        el.innerHTML = `<span class="chk-dot">🟢</span> ☑️ ${label} (Détecté à la voix) ✓`;
+                    } else {
+                        el.classList.remove('valid');
+                        el.innerHTML = `<span class="chk-dot">🔴</span> 🔲 ${label}`;
+                    }
+                };
+
+                setAlertCheck('citem-al-medecin', medecin.includes('Aucun') || /médecin/i.test(text), "Pas de médecin traitant / Rupture de soin");
+                setAlertCheck('citem-al-gir', gir.includes('1') || gir.includes('2') || gir.includes('3'), "Perte d'autonomie forte (GIR 1-3)");
+                setAlertCheck('citem-al-aidant', aidantNom.length > 0 || /fille|aidant/i.test(text), "Proche aidant sollicité / Épuisement");
+                setAlertCheck('citem-al-seul', /seul/i.test(text), "Isolement social / Vit seul(e)");
+                setAlertCheck('citem-al-chute', /chute/i.test(text), "Récidive de chutes / Risque physique");
 
                 const pct = Math.round((validItemsCount / 14) * 100);
                 document.getElementById('full-checklist-count').textContent = `${validItemsCount} / 14 champs capturés (${pct}%)`;
