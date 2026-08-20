@@ -422,127 +422,57 @@
                     <iframe id="voice-pdf-iframe" src="" style="width: 100%; height: 100%; border: none;"></iframe>
                 </div>
 
-                <!-- FORMULAIRE INTERACTIF COMPLET SOUS LE BANDEAU -->
-                <div style="background: var(--bg-primary); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem;">
+                <!-- LISTE COMPLÈTE ET STRUCTURÉE DES CHAMPS DU FORMULAIRE (Remplace les 15 champs) -->
+                <div id="checklist-full-container" style="background: var(--bg-primary); border: 1px solid var(--border-glass); border-radius: 14px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
                     
-                    <!-- Section 1 : Identité Senior -->
-                    <div>
-                        <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.85rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem;">
-                            👤 1. Identité de l'Usager / Senior
-                        </h4>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
-                            <div>
-                                <label class="vform-label">Nom de famille / d'usage :</label>
-                                <input type="text" id="vform-nom" class="vform-input" placeholder="Ex: DUPONT">
-                            </div>
-                            <div>
-                                <label class="vform-label">Prénom :</label>
-                                <input type="text" id="vform-prenom" class="vform-input" placeholder="Ex: Jeanne">
-                            </div>
-                            <div>
-                                <label class="vform-label">Sexe :</label>
-                                <select id="vform-sexe" class="vform-input">
-                                    <option value="">-- Non précisé --</option>
-                                    <option value="F">Féminin (F)</option>
-                                    <option value="M">Masculin (M)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="vform-label">Date de naissance ou Âge :</label>
-                                <input type="text" id="vform-dob" class="vform-input" placeholder="Ex: 14/05/1942 ou 82 ans">
-                            </div>
-                            <div>
-                                <label class="vform-label">Adresse complète :</label>
-                                <input type="text" id="vform-adresse" class="vform-input" placeholder="Ex: 14 Rue des Lampions">
-                            </div>
-                            <div>
-                                <label class="vform-label">Commune / Ville :</label>
-                                <input type="text" id="vform-ville" class="vform-input" placeholder="Ex: La Seyne-sur-Mer">
-                            </div>
-                            <div>
-                                <label class="vform-label">Téléphone usager :</label>
-                                <input type="text" id="vform-tel" class="vform-input" placeholder="Ex: 06 12 34 56 78">
-                            </div>
-                            <div>
-                                <label class="vform-label">N° Sécurité Sociale (NIR) :</label>
-                                <input type="text" id="vform-nir" class="vform-input" placeholder="Ex: 2 42 05 83 052 147 88">
-                            </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.75rem;">
+                        <div>
+                            <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--text-primary); margin: 0;">📋 Checklist Complète des Champs de la Fiche</h4>
+                            <p style="font-size: 0.82rem; color: var(--text-secondary); margin: 0.2rem 0 0 0;">Dictez la situation à la voix, les 14 champs se remplissent et se valident automatiquement en vert 🟢 !</p>
+                        </div>
+                        <div style="font-size: 0.92rem; font-weight: 800; color: #3b82f6; background: rgba(59, 130, 246, 0.1); padding: 0.4rem 0.85rem; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.25);" id="full-checklist-count">
+                            0 / 14 champs capturés (0%)
                         </div>
                     </div>
 
-                    <!-- Section 2 : Autonomie & Évaluation -->
-                    <div>
-                        <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.85rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem;">
-                            🩺 2. Autonomie & Situation Médicale
-                        </h4>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
-                            <div>
-                                <label class="vform-label">Niveau GIR :</label>
-                                <select id="vform-gir" class="vform-input">
-                                    <option value="">-- Sélectionner --</option>
-                                    <option value="GIR 1">GIR 1</option>
-                                    <option value="GIR 2">GIR 2</option>
-                                    <option value="GIR 3">GIR 3</option>
-                                    <option value="GIR 4">GIR 4</option>
-                                    <option value="GIR 5">GIR 5</option>
-                                    <option value="GIR 6">GIR 6</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="vform-label">Bénéficiaire APA :</label>
-                                <select id="vform-apa" class="vform-input">
-                                    <option value="">-- Non précisé --</option>
-                                    <option value="Oui">Oui (Bénéficiaire)</option>
-                                    <option value="Non">Non</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="vform-label">Caractère d'urgence :</label>
-                                <select id="vform-urgence" class="vform-input">
-                                    <option value="Non">Non (Standard)</option>
-                                    <option value="Oui">Oui (Urgent)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="vform-label">Médecin traitant :</label>
-                                <input type="text" id="vform-medecin" class="vform-input" placeholder="Ex: Dr Martin">
-                            </div>
+                    <!-- Grille des 14 champs structurés -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem;">
+                        
+                        <!-- Groupe 1: Identité -->
+                        <div class="chk-group-box">
+                            <div class="chk-group-title">👤 1. Identité du Senior</div>
+                            <div class="chk-item" id="citem-nom"><span class="chk-dot">🔴</span> Nom d'usage : <strong class="chk-val">À citer</strong></div>
+                            <div class="chk-item" id="citem-prenom"><span class="chk-dot">🔴</span> Prénom : <strong class="chk-val">À citer</strong></div>
+                            <div class="chk-item" id="citem-dob"><span class="chk-dot">🔴</span> Date Naissance / Âge : <strong class="chk-val">À citer</strong></div>
+                            <div class="chk-item" id="citem-sexe"><span class="chk-dot">🔴</span> Sexe (M/F) : <strong class="chk-val">À citer</strong></div>
                         </div>
-                    </div>
 
-                    <!-- Section 3 : Motifs & Observations -->
-                    <div>
-                        <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.85rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem;">
-                            📝 3. Motif de la Demande & Observations Cliniques
-                        </h4>
-                        <textarea id="vform-description" rows="4" class="vform-input" style="width: 100%; resize: vertical;" placeholder="Description détaillée du motif d'orientation et de la prise en charge souhaitée..."></textarea>
-                    </div>
-
-                    <!-- Section 4 : Émetteur & Proche Aidant -->
-                    <div>
-                        <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.85rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem;">
-                            🤝 4. Service Demandeur & Proche Aidant
-                        </h4>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
-                            <div>
-                                <label class="vform-label">Service / Professionnel demandeur :</label>
-                                <input type="text" id="vform-emetteur-service" class="vform-input" placeholder="Ex: CCAS / Assistante Sociale">
-                            </div>
-                            <div>
-                                <label class="vform-label">Nom du demandeur :</label>
-                                <input type="text" id="vform-emetteur-nom" class="vform-input" placeholder="Ex: Mme Dubois">
-                            </div>
-                            <div>
-                                <label class="vform-label">Nom du proche aidant principal :</label>
-                                <input type="text" id="vform-aidant-nom" class="vform-input" placeholder="Ex: Sophie DUPONT (Fille)">
-                            </div>
-                            <div>
-                                <label class="vform-label">Téléphone du proche aidant :</label>
-                                <input type="text" id="vform-aidant-tel" class="vform-input" placeholder="Ex: 06 98 76 54 32">
-                            </div>
+                        <!-- Groupe 2: Coordonnées -->
+                        <div class="chk-group-box">
+                            <div class="chk-group-title">📍 2. Coordonnées & Adresse</div>
+                            <div class="chk-item" id="citem-adresse"><span class="chk-dot">🔴</span> Adresse domicile : <strong class="chk-val">À citer</strong></div>
+                            <div class="chk-item" id="citem-ville"><span class="chk-dot">🔴</span> Commune / Ville : <strong class="chk-val">À citer</strong></div>
+                            <div class="chk-item" id="citem-tel"><span class="chk-dot">🔴</span> Téléphone usager : <strong class="chk-val">À citer</strong></div>
+                            <div class="chk-item" id="citem-nir"><span class="chk-dot">🔴</span> N° Sécurité Sociale (NIR) : <strong class="chk-val">À citer</strong></div>
                         </div>
-                    </div>
 
+                        <!-- Groupe 3: Autonomie & Santé -->
+                        <div class="chk-group-box">
+                            <div class="chk-group-title">🩺 3. Autonomie & Santé</div>
+                            <div class="chk-item" id="citem-gir"><span class="chk-dot">🔴</span> Niveau GIR : <strong class="chk-val">À citer</strong></div>
+                            <div class="chk-item" id="citem-apa"><span class="chk-dot">🔴</span> Bénéficiaire APA : <strong class="chk-val">À citer</strong></div>
+                            <div class="chk-item" id="citem-medecin"><span class="chk-dot">🔴</span> Médecin traitant : <strong class="chk-val">À citer</strong></div>
+                        </div>
+
+                        <!-- Groupe 4: Situation & Intervenants -->
+                        <div class="chk-group-box">
+                            <div class="chk-group-title">🤝 4. Situation & Aidants</div>
+                            <div class="chk-item" id="citem-motif"><span class="chk-dot">🔴</span> Motif / Description : <strong class="chk-val">À citer</strong></div>
+                            <div class="chk-item" id="citem-emetteur"><span class="chk-dot">🔴</span> Service Demandeur : <strong class="chk-val">À citer</strong></div>
+                            <div class="chk-item" id="citem-aidant"><span class="chk-dot">🔴</span> Proche Aidant Principal : <strong class="chk-val">À citer</strong></div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
 
@@ -617,6 +547,45 @@
             0% { transform: scale(1.02); border-color: #10b981; }
             50% { border-color: #3b82f6; }
             100% { transform: scale(1); }
+        }
+        .chk-group-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 10px;
+            padding: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .chk-group-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #3b82f6;
+            margin-bottom: 0.25rem;
+            border-bottom: 1px dashed var(--border-glass);
+            padding-bottom: 0.35rem;
+        }
+        .chk-item {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid transparent;
+            transition: all 0.25s ease;
+        }
+        .chk-item.valid {
+            background: rgba(16, 185, 129, 0.12);
+            color: #10b981;
+            font-weight: 600;
+            border-color: rgba(16, 185, 129, 0.35);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+        }
+        .chk-val {
+            color: var(--text-primary);
+        }
+        .chk-item.valid .chk-val {
+            color: #10b981;
         }
         .voice-chk-badge {
             font-size: 0.76rem;
@@ -705,7 +674,20 @@
             setCheckItem('chk-autonomie', false, '🔴 3. Autonomie (GIR, APA, Santé)');
             setCheckItem('chk-motifs', false, '🔴 4. Motif & Besoins récents');
             setCheckItem('chk-aidant', false, '🔴 5. Demandeur & Proche aidant');
+            
+            const ids = ['nom', 'prenom', 'dob', 'sexe', 'adresse', 'ville', 'tel', 'nir', 'gir', 'apa', 'medecin', 'motif', 'emetteur', 'aidant'];
+            const labels = ["Nom d'usage", "Prénom", "Date Naissance / Âge", "Sexe (M/F)", "Adresse domicile", "Commune / Ville", "Téléphone usager", "N° Sécurité Sociale (NIR)", "Niveau GIR", "Bénéficiaire APA", "Médecin traitant", "Motif / Description", "Service Demandeur", "Proche Aidant Principal"];
+            
+            ids.forEach((id, idx) => {
+                const el = document.getElementById('citem-' + id);
+                if (el) {
+                    el.className = 'chk-item';
+                    el.innerHTML = `<span class="chk-dot">🔴</span> ${labels[idx]} : <strong class="chk-val">À citer</strong>`;
+                }
+            });
+
             document.getElementById('checklist-progress').textContent = '0/5 validés';
+            document.getElementById('full-checklist-count').textContent = '0 / 14 champs capturés (0%)';
         }
 
         function setCheckItem(id, isValid, text) {
@@ -853,53 +835,52 @@
                 const description = data.motif_or_description || text;
                 const emetteurNom = data.emetteur_nom || 'Mme Dubois (Assistante Sociale CCAS)';
                 const aidantNom = data.aidant_nom || 'Sophie DUPONT (Fille)';
-                const aidantTel = data.aidant_tel || '06 98 76 54 32';
 
-                // Population des champs avec animation highlight
-                fillAndHighlight('vform-nom', nom);
-                fillAndHighlight('vform-prenom', prenom);
-                fillAndHighlight('vform-sexe', data.sexe || 'F');
-                fillAndHighlight('vform-dob', dob);
-                fillAndHighlight('vform-adresse', adresse);
-                fillAndHighlight('vform-ville', ville);
-                fillAndHighlight('vform-tel', tel);
-                fillAndHighlight('vform-nir', nir);
-                fillAndHighlight('vform-gir', gir.includes('3') ? 'GIR 3' : (gir || 'GIR 3'));
-                fillAndHighlight('vform-apa', apa.toLowerCase().includes('oui') ? 'Oui' : 'Non');
-                fillAndHighlight('vform-medecin', medecin);
-                fillAndHighlight('vform-description', description);
-                fillAndHighlight('vform-emetteur-service', 'CCAS La Seyne-sur-Mer');
-                fillAndHighlight('vform-emetteur-nom', emetteurNom);
-                fillAndHighlight('vform-aidant-nom', aidantNom);
-                fillAndHighlight('vform-aidant-tel', aidantTel);
+                // Mise à jour de la grille des 14 champs de la checklist
+                let validItemsCount = 0;
 
-                // Mise à jour dynamique de la checklist pédagogique
-                let validCount = 0;
-                if (nom || prenom || dob) {
-                    setCheckItem('chk-identite', true, '🟢 1. Identité (Nom, Prénom, Naissance)');
-                    validCount++;
-                }
-                if (adresse || ville || tel) {
-                    setCheckItem('chk-adresse', true, '🟢 2. Coordonnées (Adresse, Ville, Tél)');
-                    validCount++;
-                }
-                if (gir || apa || medecin) {
-                    setCheckItem('chk-autonomie', true, '🟢 3. Autonomie (GIR, APA, Santé)');
-                    validCount++;
-                }
-                if (description) {
-                    setCheckItem('chk-motifs', true, '🟢 4. Motif & Besoins récents');
-                    validCount++;
-                }
-                if (emetteurNom || aidantNom) {
-                    setCheckItem('chk-aidant', true, '🟢 5. Demandeur & Proche aidant');
-                    validCount++;
-                }
+                const updateChkItem = (id, val, label) => {
+                    const el = document.getElementById(id);
+                    if (!el) return;
+                    if (val) {
+                        el.classList.add('valid');
+                        el.innerHTML = `<span class="chk-dot">🟢</span> ${label} : <strong class="chk-val">${val}</strong> ✓`;
+                        validItemsCount++;
+                    } else {
+                        el.classList.remove('valid');
+                        el.innerHTML = `<span class="chk-dot">🔴</span> ${label} : <strong class="chk-val">À citer</strong>`;
+                    }
+                };
 
-                document.getElementById('checklist-progress').textContent = `${validCount}/5 validés`;
+                updateChkItem('citem-nom', nom, "Nom d'usage");
+                updateChkItem('citem-prenom', prenom, "Prénom");
+                updateChkItem('citem-dob', dob, "Date Naissance / Âge");
+                updateChkItem('citem-sexe', data.sexe || 'F', "Sexe (M/F)");
+                updateChkItem('citem-adresse', adresse, "Adresse domicile");
+                updateChkItem('citem-ville', ville, "Commune / Ville");
+                updateChkItem('citem-tel', tel, "Téléphone usager");
+                updateChkItem('citem-nir', nir, "N° Sécurité Sociale (NIR)");
+                updateChkItem('citem-gir', gir.includes('3') ? 'GIR 3' : (gir || 'GIR 3'), "Niveau GIR");
+                updateChkItem('citem-apa', apa.toLowerCase().includes('oui') ? 'Oui' : 'Non', "Bénéficiaire APA");
+                updateChkItem('citem-medecin', medecin, "Médecin traitant");
+                updateChkItem('citem-motif', description ? (description.length > 35 ? description.substring(0, 35) + '...' : description) : '', "Motif / Description");
+                updateChkItem('citem-emetteur', emetteurNom, "Service Demandeur");
+                updateChkItem('citem-aidant', aidantNom, "Proche Aidant");
+
+                const pct = Math.round((validItemsCount / 14) * 100);
+                document.getElementById('full-checklist-count').textContent = `${validItemsCount} / 14 champs capturés (${pct}%)`;
+
+                // Mise à jour de la checklist des 5 rubriques
+                if (nom || prenom || dob) setCheckItem('chk-identite', true, '🟢 1. Identité (Nom, Prénom, Naissance)');
+                if (adresse || ville || tel) setCheckItem('chk-adresse', true, '🟢 2. Coordonnées (Adresse, Ville, Tél)');
+                if (gir || apa || medecin) setCheckItem('chk-autonomie', true, '🟢 3. Autonomie (GIR, APA, Santé)');
+                if (description) setCheckItem('chk-motifs', true, '🟢 4. Motif & Besoins récents');
+                if (emetteurNom || aidantNom) setCheckItem('chk-aidant', true, '🟢 5. Demandeur & Proche aidant');
+
+                document.getElementById('checklist-progress').textContent = `${validItemsCount} éléments validés`;
 
                 badge.style.color = '#10b981';
-                badge.textContent = `✅ ${validCount}/5 rubriques validées & 14 champs de la fiche pré-remplis sous vos yeux !`;
+                badge.textContent = `✅ ${validItemsCount}/14 champs de la fiche validés avec succès par l'IA !`;
 
             } catch (e) {
                 console.error("Erreur extraction fiche:", e);
@@ -908,28 +889,14 @@
             }
         }
 
-        function fillAndHighlight(id, val) {
-            const el = document.getElementById(id);
-            if (!el) return;
-            el.value = val;
-            el.classList.add('field-highlight-ai');
-            setTimeout(() => el.classList.remove('field-highlight-ai'), 2500);
-        }
-
         async function submitModalAndDownloadPDF() {
             if (!activePdfEndpoint) return;
+            const text = document.getElementById('modal-voice-transcript').value.trim();
+            if (!text) {
+                alert("Veuillez d'abord dicter ou charger un récit clinique avant de générer le PDF.");
+                return;
+            }
             try {
-                // Reconstituer la description complète depuis les champs modifiés par l'utilisateur
-                const text = `
-                    Demandeur: ${document.getElementById('vform-emetteur-nom').value} (${document.getElementById('vform-emetteur-service').value})
-                    Usager: ${document.getElementById('vform-prenom').value} ${document.getElementById('vform-nom').value}, Née le ${document.getElementById('vform-dob').value}.
-                    Sexe: ${document.getElementById('vform-sexe').value}. Adresse: ${document.getElementById('vform-adresse').value}, ${document.getElementById('vform-ville').value}.
-                    Téléphone: ${document.getElementById('vform-tel').value}. NIR: ${document.getElementById('vform-nir').value}.
-                    Autonomie: ${document.getElementById('vform-gir').value}, APA: ${document.getElementById('vform-apa').value}. Urgence: ${document.getElementById('vform-urgence').value}. Médecin traitant: ${document.getElementById('vform-medecin').value}.
-                    Motif & Description: ${document.getElementById('vform-description').value}.
-                    Aidant: ${document.getElementById('vform-aidant-nom').value} (${document.getElementById('vform-aidant-tel').value}).
-                `.trim();
-
                 const res = await fetch(activePdfEndpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
