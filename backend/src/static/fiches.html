@@ -621,28 +621,32 @@
             activePdfEndpoint = pdfEndpoint;
             activePdfViergeUrl = pdfViergeUrl || '';
 
-            document.getElementById('voice-modal-title').textContent = `Fiche d'Orientation ${structureName} — Dictée Vocale`;
-            document.getElementById('modal-voice-transcript').value = '';
-            document.getElementById('dictation-status-badge').style.display = 'none';
+            const titleEl = document.getElementById('voice-modal-title');
+            if (titleEl) titleEl.textContent = `Fiche d'Orientation ${structureName} — Dictée Vocale`;
+
+            const textEl = document.getElementById('modal-voice-transcript');
+            if (textEl) textEl.value = '';
+
+            const badge = document.getElementById('dictation-status-badge');
+            if (badge) badge.style.display = 'none';
 
             // Reset checklist
             resetChecklist();
 
             // Set PDF iframe URL avec zoom 100% et ajustement largeur
             if (activePdfViergeUrl) {
-                const pdfZoomUrl = activePdfViergeUrl + (activePdfViergeUrl.includes('#') ? '' : '#view=FitH&zoom=100');
-                document.getElementById('voice-pdf-iframe').src = pdfZoomUrl;
+                const iframe = document.getElementById('voice-pdf-iframe');
+                if (iframe) {
+                    const pdfZoomUrl = activePdfViergeUrl + (activePdfViergeUrl.includes('#') ? '' : '#view=FitH&zoom=100');
+                    iframe.src = pdfZoomUrl;
+                }
             }
 
             // Default to form view
             switchModalView('form');
 
-            // Reset inputs
-            const inputs = document.querySelectorAll('.vform-input');
-            inputs.forEach(i => { i.value = ''; i.classList.remove('field-highlight-ai'); });
-
             const modal = document.getElementById('voice-form-modal');
-            modal.style.display = 'flex';
+            if (modal) modal.style.display = 'flex';
         }
 
         function switchModalView(mode) {
@@ -686,8 +690,11 @@
                 }
             });
 
-            document.getElementById('checklist-progress').textContent = '0/5 validés';
-            document.getElementById('full-checklist-count').textContent = '0 / 14 champs capturés (0%)';
+            const progEl = document.getElementById('checklist-progress');
+            if (progEl) progEl.textContent = '0/5 validés';
+            
+            const countEl = document.getElementById('full-checklist-count');
+            if (countEl) countEl.textContent = '0 / 14 champs capturés (0%)';
         }
 
         function setCheckItem(id, isValid, text) {
@@ -936,26 +943,12 @@
                 setOfficialAlert('al-risque_precarite', alertesData.risque_precarite || /précarité|revenus|pauvre/i.test(text), "Risque de précarité / Faibles revenus");
                 setOfficialAlert('al-logement_inadapte', alertesData.logement_inadapte || /logement|escalier|inadapté/i.test(text), "Logement inadapté, inaccessibilité");
 
-                document.getElementById('alertes-count-badge').textContent = `${detectedAlertsCount} alerte(s) cochée(s) à la voix`;
-
-                // Remplissage des champs de la colonne DROITE avec animation visuelle
-                fillAndHighlight('vform-nom', nom);
-                fillAndHighlight('vform-prenom', prenom);
-                fillAndHighlight('vform-sexe', sexe);
-                fillAndHighlight('vform-dob', dob);
-                fillAndHighlight('vform-adresse', adresse);
-                fillAndHighlight('vform-ville', ville);
-                fillAndHighlight('vform-tel', tel);
-                fillAndHighlight('vform-nir', nir);
-                fillAndHighlight('vform-gir', gir);
-                fillAndHighlight('vform-apa', apa);
-                fillAndHighlight('vform-medecin', medecin);
-                fillAndHighlight('vform-description', description);
-                fillAndHighlight('vform-emetteur-nom', emetteurNom);
-                fillAndHighlight('vform-aidant-nom', aidantNom);
+                const alertBadge = document.getElementById('alertes-count-badge');
+                if (alertBadge) alertBadge.textContent = `${detectedAlertsCount} alerte(s) cochée(s) à la voix`;
 
                 const pct = Math.round((validItemsCount / 14) * 100);
-                document.getElementById('full-checklist-count').textContent = `${validItemsCount} / 14 champs capturés (${pct}%)`;
+                const countBadge = document.getElementById('full-checklist-count');
+                if (countBadge) countBadge.textContent = `${validItemsCount} / 14 champs capturés (${pct}%)`;
 
                 // Mise à jour de la checklist des 5 rubriques
                 if (nom || prenom || dob) setCheckItem('chk-identite', true, '🟢 1. Identité (Nom, Prénom, Naissance)');
@@ -964,7 +957,8 @@
                 if (description) setCheckItem('chk-motifs', true, '🟢 4. Motif & Besoins récents');
                 if (emetteurNom || aidantNom) setCheckItem('chk-aidant', true, '🟢 5. Demandeur & Proche aidant');
 
-                document.getElementById('checklist-progress').textContent = `${validItemsCount} éléments validés`;
+                const progBadge = document.getElementById('checklist-progress');
+                if (progBadge) progBadge.textContent = `${validItemsCount} éléments validés`;
 
                 badge.style.color = '#10b981';
                 badge.textContent = `✅ ${validItemsCount}/14 champs de la fiche validés avec succès par l'IA !`;
