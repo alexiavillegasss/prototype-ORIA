@@ -379,15 +379,10 @@
             <!-- Corps du Modal avec 2 colonnes étalées sur la page -->
             <div style="padding: 1.5rem 2rem; display: flex; flex-direction: column; gap: 1.5rem; width: 100%;">
                 
-                <!-- CONTENEUR VUE APERÇU PDF VIERGE -->
-                <div id="modal-pdf-container" style="display: none; background: var(--bg-primary); border: 1px solid var(--border-glass); border-radius: 12px; overflow: hidden; height: 85vh; min-height: 750px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
-                    <iframe id="voice-pdf-iframe" src="" style="width: 100%; height: 100%; border: none;"></iframe>
-                </div>
-
-                <!-- DISPOSITION PARFAITE 2 COLONNES -->
-                <div id="modal-main-workspace" style="display: grid; grid-template-columns: 1fr 1.1fr; gap: 1.5rem; align-items: start;">
+                <!-- DISPOSITION PARFAITE 2 COLONNES : GAUCHE = DICTÉE VOCALE / DROITE = PERMUTE CHECKLISTS <-> PDF VIERGE -->
+                <div id="modal-main-workspace" style="display: grid; grid-template-columns: 1fr 1.15fr; gap: 1.5rem; align-items: start;">
                     
-                    <!-- COLONNE GAUCHE : DICTÉE VOCALE & GÉNÉRATION -->
+                    <!-- COLONNE GAUCHE (PERMANENTE SUR TOUS LES ONGLETS) : DICTÉE VOCALE & MICRO -->
                     <div style="background: var(--bg-card); border: 2px solid var(--accent-blue); border-radius: 14px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); position: sticky; top: 0;">
                         
                         <!-- Badges -->
@@ -411,66 +406,82 @@
                             <span id="modal-mic-label">🔴 Démarrer la dictée vocale</span>
                         </button>
 
+                        <button type="button" onclick="loadDemoClinicalText()" style="width: 100%; background: rgba(59, 130, 246, 0.12); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); padding: 0.6rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
+                            ⚡ Exemple de dictée rapide (Démo)
+                        </button>
+
                         <textarea id="modal-voice-transcript" rows="6" style="width: 100%; background: var(--bg-primary); border: 1px solid var(--border-glass); border-radius: 10px; padding: 0.85rem 1rem; color: var(--text-primary); font-size: 0.9rem; font-family: inherit; resize: vertical;" placeholder="Dictez votre récit clinique..."></textarea>
                         
                         <button type="button" onclick="analyzeAndFillModalForm()" class="btn-primary" style="width: 100%; background: linear-gradient(135deg, #3b82f6, #2563eb); color: #ffffff; padding: 0.85rem 1.25rem; border-radius: 10px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
                             ✨ Analyser & Valider les Checklists
                         </button>
+
+                        <div id="dictation-status-badge" style="font-size: 0.82rem; font-weight: 600; color: #10b981; display: none;"></div>
                     </div>
 
-                    <!-- COLONNE DROITE : CHECKLISTS (14 CHAMPS & 18 ALERTES) -->
-                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <!-- COLONNE DROITE : PERMUTE ENTRE LES CHECKLISTS (ONGLET 1) ET LE PDF VIERGE (ONGLET 2) -->
+                    <div style="width: 100%;">
                         
-                        <!-- Box 1: 14 Champs clés de la Fiche -->
-                        <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1rem; display: flex; flex-direction: column; gap: 0.65rem; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
-                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border-glass); padding-bottom: 0.4rem;">
-                                <span style="font-size: 0.88rem; font-weight: 800; color: #3b82f6;">📋 14 CHAMPS DE LA FICHE (À CITER)</span>
-                                <span id="full-checklist-count" style="font-size: 0.8rem; font-weight: 700; color: #3b82f6; background: rgba(59, 130, 246, 0.12); padding: 0.2rem 0.6rem; border-radius: 6px;">0 / 14 (0%)</span>
+                        <!-- VUE 1 : CHECKLISTS DYNAMIQUES (14 CHAMPS & 18 ALERTES) -->
+                        <div id="right-view-checklists" style="display: flex; flex-direction: column; gap: 1rem;">
+                            
+                            <!-- Box 1: 14 Champs clés de la Fiche -->
+                            <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1rem; display: flex; flex-direction: column; gap: 0.65rem; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border-glass); padding-bottom: 0.4rem;">
+                                    <span style="font-size: 0.88rem; font-weight: 800; color: #3b82f6;">📋 14 CHAMPS DE LA FICHE (À CITER)</span>
+                                    <span id="full-checklist-count" style="font-size: 0.8rem; font-weight: 700; color: #3b82f6; background: rgba(59, 130, 246, 0.12); padding: 0.2rem 0.6rem; border-radius: 6px;">0 / 14 (0%)</span>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem;">
+                                    <div class="chk-item" id="citem-nom"><span class="chk-dot">🔴</span> Nom : <strong class="chk-val">À citer</strong></div>
+                                    <div class="chk-item" id="citem-prenom"><span class="chk-dot">🔴</span> Prénom : <strong class="chk-val">À citer</strong></div>
+                                    <div class="chk-item" id="citem-dob"><span class="chk-dot">🔴</span> Âge / Naissance : <strong class="chk-val">À citer</strong></div>
+                                    <div class="chk-item" id="citem-sexe"><span class="chk-dot">🔴</span> Sexe : <strong class="chk-val">À citer</strong></div>
+                                    <div class="chk-item" id="citem-adresse"><span class="chk-dot">🔴</span> Adresse : <strong class="chk-val">À citer</strong></div>
+                                    <div class="chk-item" id="citem-ville"><span class="chk-dot">🔴</span> Ville : <strong class="chk-val">À citer</strong></div>
+                                    <div class="chk-item" id="citem-tel"><span class="chk-dot">🔴</span> Tél : <strong class="chk-val">À citer</strong></div>
+                                    <div class="chk-item" id="citem-nir"><span class="chk-dot">🔴</span> NIR : <strong class="chk-val">À citer</strong></div>
+                                    <div class="chk-item" id="citem-gir"><span class="chk-dot">🔴</span> GIR : <strong class="chk-val">À citer</strong></div>
+                                    <div class="chk-item" id="citem-apa"><span class="chk-dot">🔴</span> APA : <strong class="chk-val">À citer</strong></div>
+                                    <div class="chk-item" id="citem-medecin"><span class="chk-dot">🔴</span> Médecin : <strong class="chk-val">À citer</strong></div>
+                                    <div class="chk-item" id="citem-motif"><span class="chk-dot">🔴</span> Motif / Demande : <strong class="chk-val">À citer</strong></div>
+                                    <div class="chk-item" id="citem-emetteur"><span class="chk-dot">🔴</span> Demandeur : <strong class="chk-val">À citer</strong></div>
+                                    <div class="chk-item" id="citem-aidant"><span class="chk-dot">🔴</span> Proche Aidant : <strong class="chk-val">À citer</strong></div>
+                                </div>
                             </div>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem;">
-                                <div class="chk-item" id="citem-nom"><span class="chk-dot">🔴</span> Nom : <strong class="chk-val">À citer</strong></div>
-                                <div class="chk-item" id="citem-prenom"><span class="chk-dot">🔴</span> Prénom : <strong class="chk-val">À citer</strong></div>
-                                <div class="chk-item" id="citem-dob"><span class="chk-dot">🔴</span> Âge / Naissance : <strong class="chk-val">À citer</strong></div>
-                                <div class="chk-item" id="citem-sexe"><span class="chk-dot">🔴</span> Sexe : <strong class="chk-val">À citer</strong></div>
-                                <div class="chk-item" id="citem-adresse"><span class="chk-dot">🔴</span> Adresse : <strong class="chk-val">À citer</strong></div>
-                                <div class="chk-item" id="citem-ville"><span class="chk-dot">🔴</span> Ville : <strong class="chk-val">À citer</strong></div>
-                                <div class="chk-item" id="citem-tel"><span class="chk-dot">🔴</span> Tél : <strong class="chk-val">À citer</strong></div>
-                                <div class="chk-item" id="citem-nir"><span class="chk-dot">🔴</span> NIR : <strong class="chk-val">À citer</strong></div>
-                                <div class="chk-item" id="citem-gir"><span class="chk-dot">🔴</span> GIR : <strong class="chk-val">À citer</strong></div>
-                                <div class="chk-item" id="citem-apa"><span class="chk-dot">🔴</span> APA : <strong class="chk-val">À citer</strong></div>
-                                <div class="chk-item" id="citem-medecin"><span class="chk-dot">🔴</span> Médecin : <strong class="chk-val">À citer</strong></div>
-                                <div class="chk-item" id="citem-motif"><span class="chk-dot">🔴</span> Motif / Demande : <strong class="chk-val">À citer</strong></div>
-                                <div class="chk-item" id="citem-emetteur"><span class="chk-dot">🔴</span> Demandeur : <strong class="chk-val">À citer</strong></div>
-                                <div class="chk-item" id="citem-aidant"><span class="chk-dot">🔴</span> Proche Aidant : <strong class="chk-val">À citer</strong></div>
+
+                            <!-- Box 2: 18 Cases à cocher d'alertes repérées -->
+                            <div style="background: var(--bg-card); border: 1px solid var(--accent-blue); border-radius: 12px; padding: 1rem; display: flex; flex-direction: column; gap: 0.65rem; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border-glass); padding-bottom: 0.4rem;">
+                                    <span style="font-size: 0.88rem; font-weight: 800; color: #38bdf8;">🚨 ALERTES REPÉRÉES (COCHAGE À LA VOIX)</span>
+                                    <span id="alertes-count-badge" style="font-size: 0.8rem; font-weight: 700; color: #10b981; background: rgba(16, 185, 129, 0.12); padding: 0.2rem 0.6rem; border-radius: 6px;">0 alerte(s)</span>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem;">
+                                    <div class="chk-item" id="al-sans_medecin"><span class="chk-dot">🔴</span> 🔲 Pas de médecin</div>
+                                    <div class="chk-item" id="al-pb_actes_essentiels"><span class="chk-dot">🔴</span> 🔲 Actes essentiels</div>
+                                    <div class="chk-item" id="al-pb_activites_domestiques"><span class="chk-dot">🔴</span> 🔲 Activités domestiques</div>
+                                    <div class="chk-item" id="al-pathologies_chroniques"><span class="chk-dot">🔴</span> 🔲 Pathologie chronique</div>
+                                    <div class="chk-item" id="al-pb_memoire_decision"><span class="chk-dot">🔴</span> 🔲 Troubles mémoire</div>
+                                    <div class="chk-item" id="al-troubles_cognitifs"><span class="chk-dot">🔴</span> 🔲 Troubles cognitifs</div>
+                                    <div class="chk-item" id="al-troubles_comportement"><span class="chk-dot">🔴</span> 🔲 Troubles comportement</div>
+                                    <div class="chk-item" id="al-conduites_addictives"><span class="chk-dot">🔴</span> 🔲 Conduites addictives</div>
+                                    <div class="chk-item" id="al-medocs_plus_de_5"><span class="chk-dot">🔴</span> 🔲 Médicaments > 5</div>
+                                    <div class="chk-item" id="al-troubles_psy"><span class="chk-dot">🔴</span> 🔲 Troubles psy</div>
+                                    <div class="chk-item" id="al-denutrition_perte_poids"><span class="chk-dot">🔴</span> 🔲 Dénutrition / Poids</div>
+                                    <div class="chk-item" id="al-risque_chute"><span class="chk-dot">🔴</span> 🔲 Risque de chute</div>
+                                    <div class="chk-item" id="al-hospit_recente"><span class="chk-dot">🔴</span> 🔲 Hospitalisation récente</div>
+                                    <div class="chk-item" id="al-isolement_social"><span class="chk-dot">🔴</span> 🔲 Vit seul(e) / Isolement</div>
+                                    <div class="chk-item" id="al-epuisement_aidant"><span class="chk-dot">🔴</span> 🔲 Épuisement aidant</div>
+                                    <div class="chk-item" id="al-diff_gestion_admin_fin"><span class="chk-dot">🔴</span> 🔲 Difficultés admin</div>
+                                    <div class="chk-item" id="al-risque_precarite"><span class="chk-dot">🔴</span> 🔲 Risque précarité</div>
+                                    <div class="chk-item" id="al-logement_inadapte"><span class="chk-dot">🔴</span> 🔲 Logement inadapté</div>
+                                </div>
                             </div>
+
                         </div>
 
-                        <!-- Box 2: 18 Cases à cocher d'alertes repérées -->
-                        <div style="background: var(--bg-card); border: 1px solid var(--accent-blue); border-radius: 12px; padding: 1rem; display: flex; flex-direction: column; gap: 0.65rem; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
-                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border-glass); padding-bottom: 0.4rem;">
-                                <span style="font-size: 0.88rem; font-weight: 800; color: #38bdf8;">🚨 ALERTES REPÉRÉES (COCHAGE À LA VOIX)</span>
-                                <span id="alertes-count-badge" style="font-size: 0.8rem; font-weight: 700; color: #10b981; background: rgba(16, 185, 129, 0.12); padding: 0.2rem 0.6rem; border-radius: 6px;">0 alerte(s)</span>
-                            </div>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem;">
-                                <div class="chk-item" id="al-sans_medecin"><span class="chk-dot">🔴</span> 🔲 Pas de médecin</div>
-                                <div class="chk-item" id="al-pb_actes_essentiels"><span class="chk-dot">🔴</span> 🔲 Actes essentiels</div>
-                                <div class="chk-item" id="al-pb_activites_domestiques"><span class="chk-dot">🔴</span> 🔲 Activités domestiques</div>
-                                <div class="chk-item" id="al-pathologies_chroniques"><span class="chk-dot">🔴</span> 🔲 Pathologie chronique</div>
-                                <div class="chk-item" id="al-pb_memoire_decision"><span class="chk-dot">🔴</span> 🔲 Troubles mémoire</div>
-                                <div class="chk-item" id="al-troubles_cognitifs"><span class="chk-dot">🔴</span> 🔲 Troubles cognitifs</div>
-                                <div class="chk-item" id="al-troubles_comportement"><span class="chk-dot">🔴</span> 🔲 Troubles comportement</div>
-                                <div class="chk-item" id="al-conduites_addictives"><span class="chk-dot">🔴</span> 🔲 Conduites addictives</div>
-                                <div class="chk-item" id="al-medocs_plus_de_5"><span class="chk-dot">🔴</span> 🔲 Médicaments > 5</div>
-                                <div class="chk-item" id="al-troubles_psy"><span class="chk-dot">🔴</span> 🔲 Troubles psy</div>
-                                <div class="chk-item" id="al-denutrition_perte_poids"><span class="chk-dot">🔴</span> 🔲 Dénutrition / Poids</div>
-                                <div class="chk-item" id="al-risque_chute"><span class="chk-dot">🔴</span> 🔲 Risque de chute</div>
-                                <div class="chk-item" id="al-hospit_recente"><span class="chk-dot">🔴</span> 🔲 Hospitalisation récente</div>
-                                <div class="chk-item" id="al-isolement_social"><span class="chk-dot">🔴</span> 🔲 Vit seul(e) / Isolement</div>
-                                <div class="chk-item" id="al-epuisement_aidant"><span class="chk-dot">🔴</span> 🔲 Épuisement aidant</div>
-                                <div class="chk-item" id="al-diff_gestion_admin_fin"><span class="chk-dot">🔴</span> 🔲 Difficultés admin</div>
-                                <div class="chk-item" id="al-risque_precarite"><span class="chk-dot">🔴</span> 🔲 Risque précarité</div>
-                                <div class="chk-item" id="al-logement_inadapte"><span class="chk-dot">🔴</span> 🔲 Logement inadapté</div>
-                            </div>
+                        <!-- VUE 2 : PDF VIERGE (IFRAME PLACÉE À DROITE ÉGALEMENT) -->
+                        <div id="modal-pdf-container" style="display: none; background: var(--bg-primary); border: 1px solid var(--border-glass); border-radius: 12px; overflow: hidden; height: 85vh; min-height: 750px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+                            <iframe id="voice-pdf-iframe" src="" style="width: 100%; height: 100%; border: none;"></iframe>
                         </div>
 
                     </div>
@@ -650,25 +661,33 @@
         }
 
         function switchModalView(mode) {
-            const workspace = document.getElementById('modal-main-workspace');
+            const checklistsView = document.getElementById('right-view-checklists');
             const pdfContainer = document.getElementById('modal-pdf-container');
             const btnForm = document.getElementById('tab-btn-form');
             const btnPdf = document.getElementById('tab-btn-pdf');
 
             if (mode === 'pdf') {
-                if (workspace) workspace.style.display = 'none';
-                pdfContainer.style.display = 'block';
-                btnPdf.style.background = '#3b82f6';
-                btnPdf.style.color = '#ffffff';
-                btnForm.style.background = 'transparent';
-                btnForm.style.color = 'var(--text-secondary)';
+                if (checklistsView) checklistsView.style.display = 'none';
+                if (pdfContainer) pdfContainer.style.display = 'block';
+                if (btnPdf) {
+                    btnPdf.style.background = '#3b82f6';
+                    btnPdf.style.color = '#ffffff';
+                }
+                if (btnForm) {
+                    btnForm.style.background = 'transparent';
+                    btnForm.style.color = 'var(--text-secondary)';
+                }
             } else {
-                if (workspace) workspace.style.display = 'grid';
-                pdfContainer.style.display = 'none';
-                btnForm.style.background = '#3b82f6';
-                btnForm.style.color = '#ffffff';
-                btnPdf.style.background = 'transparent';
-                btnPdf.style.color = 'var(--text-secondary)';
+                if (checklistsView) checklistsView.style.display = 'flex';
+                if (pdfContainer) pdfContainer.style.display = 'none';
+                if (btnForm) {
+                    btnForm.style.background = '#3b82f6';
+                    btnForm.style.color = '#ffffff';
+                }
+                if (btnPdf) {
+                    btnPdf.style.background = 'transparent';
+                    btnPdf.style.color = 'var(--text-secondary)';
+                }
             }
         }
 
