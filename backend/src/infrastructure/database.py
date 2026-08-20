@@ -200,12 +200,12 @@ class DatabaseManager:
             return result
 
     def get_entree_dossiers(self):
-        """Récupère la liste unique des dossiers ayant une évaluation d'entrée sans encore avoir de sortie."""
+        """Récupère les dossiers avec évaluation d'entrée pour la liaison en sortie."""
         with sqlite3.connect(self.db_path) as conn:
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             cursor.execute('''
-                SELECT DISTINCT e.dossier_id, e.senior_nom, e.score, e.date_creation
+                SELECT e.dossier_id, e.senior_nom, e.score, e.criteres_json, e.date_creation
                 FROM comid_evaluations e
                 WHERE e.type_eval = 'entree'
                 AND e.dossier_id NOT IN (
@@ -213,7 +213,16 @@ class DatabaseManager:
                 )
                 ORDER BY e.date_creation DESC
             ''')
-            return [dict(row) for row in cursor.fetchall()]
+            rows = cursor.fetchall()
+            res = []
+            for row in rows:
+                item = dict(row)
+                try:
+                    item['criteres'] = json.loads(item['criteres_json'])
+                except Exception:
+                    item['criteres'] = []
+                res.append(item)
+            return res
 
     def get_comid_comparisons(self):
         """Calcule la comparaison Entrée vs Sortie pour chaque dossier."""

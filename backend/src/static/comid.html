@@ -1837,9 +1837,18 @@
         const entreeBadge = document.getElementById('entree-summary-badge');
         const inputNom = document.getElementById('comid-senior-nom');
         
+        // Reset all answers first
+        Object.keys(state).forEach(k => { state[k] = null; });
+        document.querySelectorAll('.radio-btn').forEach(b => {
+            b.classList.remove('active-no', 'active-yes', 'active-selected');
+        });
+        document.querySelectorAll('.comid-item').forEach(el => {
+            el.classList.remove('checked-yes', 'checked-no');
+        });
+
         const found = entreeDossiersList.find(d => d.dossier_id === selectedId);
         if (found) {
-            if (found.senior_nom && !inputNom.value) {
+            if (found.senior_nom) {
                 inputNom.value = found.senior_nom;
             }
             entreeBadge.innerHTML = `
@@ -1847,9 +1856,26 @@
                 <span style="margin-left: auto; font-weight: 700; color: #2563eb;">Score d'Entrée : ${found.score}/30</span>
             `;
             entreeBadge.classList.remove('hidden');
+
+            // Pré-cocher automatiquement les critères Oui/Non du dossier d'Entrée
+            let checkedItemsList = found.criteres || [];
+            if (typeof checkedItemsList === 'string') {
+                try { checkedItemsList = JSON.parse(checkedItemsList); } catch(e){}
+            }
+
+            COMID_DOMAINS.forEach(domain => {
+                domain.items.forEach(item => {
+                    if (checkedItemsList.includes(item.code)) {
+                        setAnswer(item.code, 1);
+                    } else {
+                        setAnswer(item.code, 0);
+                    }
+                });
+            });
         } else {
             entreeBadge.classList.add('hidden');
         }
+        updateScore();
     }
 
     async function saveComidEvaluation(silent = false) {
