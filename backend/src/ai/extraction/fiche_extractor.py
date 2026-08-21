@@ -525,17 +525,15 @@ Réponds UNIQUEMENT par ce JSON complet :
             
         # Fallback Python ultra-robuste pour Aidant / Proche si l'IA l'a manqué
         if not parsed.get("aidant_nom"):
-            # Chercher "fille Sophie DUPONT" / "aidant Sophie DUPONT" / "sa fille Sophie DUPONT"
-            m2 = re.search(r'(?:sa|son|proche)\s+(fille|fils|mari|épouse|epouse|conjoint|soeur|frère|aidant|aidante)\s+(?:principal[e]?\s*:\s*)?([A-ZÀ-ÿa-z\-]+(?:\s+[A-ZÀ-ÿa-z\-]+)?)', text, re.IGNORECASE)
-            if m2:
-                parsed["aidant_lien"] = m2.group(1).strip()
-                parsed["aidant_nom"] = m2.group(2).strip()
-            else:
-                m3 = re.search(r'([A-ZÀ-ÿa-z\-]+\s+[A-ZÀ-ÿa-z\-]+)\s+(?:qui\s+est|est)\s+(?:l[\'\"])?aidant', text, re.IGNORECASE)
-                if m3:
-                    parsed["aidant_nom"] = m3.group(1).strip()
+            m_aidant = re.search(r'(?:proche\s+aidant(?:\s+principal)?\s*:\s*)?(?:sa|son)?\s*(fille|fils|mari|épouse|epouse|conjoint|soeur|frère|aidant|aidante)?\s*([A-ZÀ-ÿ][a-zÀ-ÿ\-]+(?:\s+[A-ZÀ-ÿ][a-zÀ-ÿ\-]+)?)\s*(?:au|tél|tel|\,)?\s*(0[1-9][\s\.\-]?\d{2}[\s\.\-]?\d{2}[\s\.\-]?\d{2}[\s\.\-]?\d{2})?', text, re.IGNORECASE)
+            if m_aidant and m_aidant.group(2):
+                if m_aidant.group(1):
+                    parsed["aidant_lien"] = m_aidant.group(1).strip()
+                parsed["aidant_nom"] = m_aidant.group(2).strip()
+                if m_aidant.group(3) and not parsed.get("aidant_tel"):
+                    parsed["aidant_tel"] = m_aidant.group(3).strip()
 
-        # Chercher le numéro de tel de l'aidant si présent
+        # Chercher le numéro de tel de l'aidant si présent et pas encore capturé
         if parsed.get("aidant_nom") and not parsed.get("aidant_tel"):
             tel_aid_m = re.search(re.escape(parsed["aidant_nom"]) + r'.*?(0[1-9][\s\.\-]?\d{2}[\s\.\-]?\d{2}[\s\.\-]?\d{2}[\s\.\-]?\d{2})', text, re.IGNORECASE | re.DOTALL)
             if tel_aid_m:
