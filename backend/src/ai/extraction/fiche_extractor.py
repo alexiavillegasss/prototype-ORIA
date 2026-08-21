@@ -539,6 +539,13 @@ Réponds UNIQUEMENT par ce JSON complet :
             if tel_aid_m:
                 parsed["aidant_tel"] = tel_aid_m.group(1).strip()
 
+        # Fallback pour le lien de parenté de l'aidant s'il est vide
+        if parsed.get("aidant_nom") and not parsed.get("aidant_lien"):
+            for lien_kw in ["fille", "fils", "conjoint", "épouse", "epouse", "mari", "frère", "frere", "soeur", "sœur", "neveu", "nièce", "voisin", "voisine", "ami", "amie"]:
+                if lien_kw in text_lower:
+                    parsed["aidant_lien"] = lien_kw.capitalize()
+                    break
+
         # Anti-collision Cercle de Soins vs Aidant Familial :
         # Si l'IA a mis une personne physique (ex: Sophie DUPONT ou sa fille) en SSIAD, HAD ou SAAD,
         # il s'agit d'un aidant familial et NON d'un organisme professionnel (un service SSIAD/SAAD n'est pas un prénom/nom d'une personne) !

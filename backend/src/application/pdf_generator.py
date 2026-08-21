@@ -112,7 +112,15 @@ class PDFGenerator:
         # Famille / Aidant (Ligne 1 de la table Cercle de Soins : Texte28, Texte29, Texte30)
         aidant_nom = extracted_data.get("aidant_nom", "")
         aidant_lien = extracted_data.get("aidant_lien", "")
-        aidant_display = f"{aidant_nom} ({aidant_lien})" if (aidant_nom and aidant_lien) else (aidant_nom or aidant_lien)
+        lien_clean = aidant_lien.lower().replace("sa ", "").replace("son ", "").replace("ses ", "").strip().capitalize() if aidant_lien else ""
+        
+        if aidant_nom and lien_clean:
+            aidant_display = f"{aidant_nom} ({lien_clean})"
+        elif aidant_nom:
+            aidant_display = aidant_nom
+        else:
+            aidant_display = lien_clean
+
         if aidant_display:
             field_values["Texte28"] = aidant_display
             field_values["Texte29"] = extracted_data.get("aidant_tel", "")
