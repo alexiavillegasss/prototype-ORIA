@@ -109,33 +109,36 @@ class PDFGenerator:
         if alertes.get("logement_inadapte"): checkbox_mappings.append(("Logement inadapt", True))
         if alertes.get("incurie_insalubrite"): checkbox_mappings.append(("Incurie", True))
             
-        # Famille / Aidant (Ligne 1 de la table Cercle de Soins)
+        # Famille / Aidant (Ligne 1 de la table Cercle de Soins : Texte28, Texte29, Texte30)
         aidant_nom = extracted_data.get("aidant_nom", "")
         aidant_lien = extracted_data.get("aidant_lien", "")
         aidant_display = f"{aidant_nom} ({aidant_lien})" if (aidant_nom and aidant_lien) else (aidant_nom or aidant_lien)
         if aidant_display:
-            field_values["Texte34"] = aidant_display
-            field_values["Texte35"] = extracted_data.get("aidant_tel", "")
-            field_values["Texte36"] = extracted_data.get("aidant_email", "")
+            field_values["Texte28"] = aidant_display
+            field_values["Texte29"] = extracted_data.get("aidant_tel", "")
+            field_values["Texte30"] = extracted_data.get("aidant_email", "")
 
         pro_mapping = {
-            "aidant": ("Texte34", "Texte35", "Texte36"),
-            "famille": ("Texte34", "Texte35", "Texte36"),
-            "proche": ("Texte34", "Texte35", "Texte36"),
-            "medecin_traitant": ("Texte37", "Texte38", "Texte39"),
-            "specialiste": ("Texte40", "Texte41", "Texte42"),
-            "infirmier": ("Texte43", "Texte44", "Texte45"),
-            "ssiad_had": ("Texte46", "Texte47", "Texte48"),
-            "saad": ("Texte49", "Texte50", "Texte51"),
-            "aide_a_domicile": ("Texte49", "Texte50", "Texte51"),
-            "admr": ("Texte49", "Texte50", "Texte51"),
-            "palliatifs": ("Texte52", "Texte53", "Texte54"),
-            "pharmacien": ("Texte55", "Texte56", "Texte57"),
-            "kine": ("Texte58", "Texte59", "Texte60"),
-            "repas": ("Texte61", "Texte62", "Texte63"),
-            "telealarme": ("Texte64", "Texte65", "Texte66"),
-            "social": ("Texte67", "Texte68", "Texte69"),
-            "autre": ("Texte70", "Texte71", "Texte72")
+            "aidant": ("Texte28", "Texte29", "Texte30"),
+            "famille": ("Texte28", "Texte29", "Texte30"),
+            "proche": ("Texte28", "Texte29", "Texte30"),
+            "mesure_protection": ("Texte31", "Texte32", "Texte33"),
+            "tuteur": ("Texte31", "Texte32", "Texte33"),
+            "curateur": ("Texte31", "Texte32", "Texte33"),
+            "medecin_traitant": ("Texte34", "Texte35", "Texte36"),
+            "specialiste": ("Texte37", "Texte38", "Texte39"),
+            "infirmier": ("Texte40", "Texte41", "Texte42"),
+            "ssiad_had": ("Texte43", "Texte44", "Texte45"),
+            "saad": ("Texte46", "Texte47", "Texte48"),
+            "aide_a_domicile": ("Texte46", "Texte47", "Texte48"),
+            "admr": ("Texte46", "Texte47", "Texte48"),
+            "palliatifs": ("Texte49", "Texte50", "Texte51"),
+            "pharmacien": ("Texte52", "Texte53", "Texte54"),
+            "kine": ("Texte55", "Texte56", "Texte57"),
+            "repas": ("Texte58", "Texte59", "Texte60"),
+            "telealarme": ("Texte61", "Texte62", "Texte63"),
+            "social": ("Texte64", "Texte65", "Texte66"),
+            "autre": ("Texte67", "Texte68", "Texte69")
         }
             
         cercle = extracted_data.get("cercle_de_soins", [])
@@ -159,10 +162,10 @@ class PDFGenerator:
                     is_personne = True
 
             if is_personne and pro_type in ["ssiad_had", "saad", "aide_a_domicile", "admr"]:
-                if not field_values.get("Texte34"):
-                    field_values["Texte34"] = display_nom
-                    field_values["Texte35"] = display_tel
-                    field_values["Texte36"] = display_email
+                if not field_values.get("Texte28"):
+                    field_values["Texte28"] = display_nom
+                    field_values["Texte29"] = display_tel
+                    field_values["Texte30"] = display_email
                 continue
 
             if pro_type in pro_mapping:
