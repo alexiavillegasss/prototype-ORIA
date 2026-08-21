@@ -540,19 +540,34 @@ Réponds UNIQUEMENT par ce JSON complet :
                 parsed["aidant_tel"] = tel_aid_m.group(1).strip()
 
         # Anti-collision Cercle de Soins vs Aidant Familial :
-        # Si un pro dans cercle_de_soins s'appelle comme l'aidant (ex: Sophie DUPONT),
-        # il s'agit de l'aidant familial et il NE DOIT PAS figurer dans SSIAD, HAD ou SAAD !
+        # Si l'IA a mis une personne physique (ex: Sophie DUPONT ou sa fille) en SSIAD, HAD ou SAAD,
+        # il s'agit d'un aidant familial et NON d'un organisme professionnel (un service SSIAD/SAAD n'est pas un prénom/nom d'une personne) !
         aid_nom = str(parsed.get("aidant_nom", "")).lower().strip()
-        if aid_nom:
-            cleaned_cercle = []
-            for pro in parsed.get("cercle_de_soins", []):
-                pro_nom = str(pro.get("nom", "")).strip()
-                pro_nom_lower = pro_nom.lower()
-                # Si le nom correspond à l'aidant familial, l'ignorer du tableau des pros (il va dans Famille/Aidant)
-                if pro_nom_lower and (pro_nom_lower in aid_nom or aid_nom in pro_nom_lower):
-                    continue
-                cleaned_cercle.append(pro)
-            parsed["cercle_de_soins"] = cleaned_cercle
+        cleaned_cercle = []
+        for pro in parsed.get("cercle_de_soins", []):
+            pro_nom = str(pro.get("nom", "")).strip()
+            pro_nom_lower = pro_nom.lower()
+            pro_type = str(pro.get("type", "")).lower()
+
+            is_personne_aidante = False
+            if aid_nom and pro_nom_lower and (pro_nom_lower in aid_nom or aid_nom in pro_nom_lower):
+                is_personne_aidante = True
+            elif any(k in pro_nom_lower or k in pro_type for k in ["fille", "fils", "enfant", "mari", "épouse", "epouse", "conjoint", "aidant", "famille", "proche"]):
+                is_personne_aidante = True
+            elif pro_type in ["ssiad_had", "saad", "aide_a_domicile"] and pro_nom and not any(org in pro_nom_lower for org in ["ssiad", "saad", "had", "admr", "ccas", "asso", "service", "agence", "centre", "domus", "senior", "presence", "présence"]):
+                # Si classé par erreur par le LLM en SSIAD/SAAD mais avec un nom de personne physique (ex: Sophie DUPONT)
+                is_personne_aidante = True
+
+            if is_personne_aidante:
+                if not parsed.get("aidant_nom"):
+                    parsed["aidant_nom"] = pro_nom
+                    aid_nom = pro_nom_lower
+                if not parsed.get("aidant_tel") and pro.get("tel"):
+                    parsed["aidant_tel"] = pro.get("tel")
+                # On ne l'ajoute pas aux services pros SSIAD/SAAD
+                continue
+            cleaned_cercle.append(pro)
+        parsed["cercle_de_soins"] = cleaned_cercle
                 
         # Fallback python pour les aides à domicile ratées par l'IA
         if not parsed.get("aide_1"):

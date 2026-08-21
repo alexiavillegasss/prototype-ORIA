@@ -149,10 +149,21 @@ class PDFGenerator:
             display_tel = tel if str(tel).upper() != "INCONNU" else ""
             display_email = email if str(email).upper() != "INCONNU" else ""
             
-            # Anti-collision : Ne JAMAIS mettre un aidant familial dans SSIAD, HAD ou SAAD !
-            if aidant_nom and display_nom and (display_nom.lower() in aidant_nom.lower() or aidant_nom.lower() in display_nom.lower()):
-                if pro_type in ["ssiad_had", "saad", "aide_a_domicile", "admr"]:
-                    continue
+            # Anti-collision : Ne JAMAIS mettre un aidant familial / personne physique dans SSIAD, HAD ou SAAD !
+            is_personne = False
+            if display_nom:
+                disp_lower = display_nom.lower()
+                if aidant_nom and (disp_lower in aidant_nom.lower() or aidant_nom.lower() in disp_lower):
+                    is_personne = True
+                elif pro_type in ["ssiad_had", "saad", "aide_a_domicile", "admr"] and not any(org in disp_lower for org in ["ssiad", "saad", "had", "admr", "ccas", "asso", "service", "agence", "centre", "domus", "senior", "presence", "présence"]):
+                    is_personne = True
+
+            if is_personne and pro_type in ["ssiad_had", "saad", "aide_a_domicile", "admr"]:
+                if not field_values.get("Texte34"):
+                    field_values["Texte34"] = display_nom
+                    field_values["Texte35"] = display_tel
+                    field_values["Texte36"] = display_email
+                continue
 
             if pro_type in pro_mapping:
                 nom_field, tel_field, email_field = pro_mapping[pro_type]
