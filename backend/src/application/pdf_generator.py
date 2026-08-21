@@ -149,6 +149,11 @@ class PDFGenerator:
             display_tel = tel if str(tel).upper() != "INCONNU" else ""
             display_email = email if str(email).upper() != "INCONNU" else ""
             
+            # Anti-collision : Ne JAMAIS mettre un aidant familial dans SSIAD, HAD ou SAAD !
+            if aidant_nom and display_nom and (display_nom.lower() in aidant_nom.lower() or aidant_nom.lower() in display_nom.lower()):
+                if pro_type in ["ssiad_had", "saad", "aide_a_domicile", "admr"]:
+                    continue
+
             if pro_type in pro_mapping:
                 nom_field, tel_field, email_field = pro_mapping[pro_type]
                 field_values[nom_field] = display_nom
