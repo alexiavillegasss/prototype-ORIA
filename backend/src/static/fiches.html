@@ -784,7 +784,7 @@
             const badge = document.getElementById('dictation-status-badge');
             badge.style.display = 'block';
             badge.style.color = '#3b82f6';
-            badge.textContent = "Analyse automatique en cours...";
+            badge.textContent = "Remplissage de la fiche en cours...";
 
             try {
                 let data = {};
@@ -937,7 +937,7 @@
                 if (progBadge) progBadge.textContent = `${validItemsCount} éléments validés`;
 
                 badge.style.color = '#3b82f6';
-                badge.textContent = `Génération et téléchargement de la Fiche PDF Officielle en cours...`;
+                badge.textContent = `Remplissage de la fiche en cours...`;
 
                 if (activePdfEndpoint) {
                     const resPdf = await fetch(activePdfEndpoint, {
@@ -974,10 +974,10 @@
                         }
 
                         badge.style.color = '#10b981';
-                        badge.textContent = `Fiche PDF remplie et téléchargée automatiquement avec succès !`;
+                        badge.textContent = `Fiche d'orientation remplie et téléchargée avec succès`;
                     } else {
                         badge.style.color = '#10b981';
-                        badge.textContent = `Analyse effectuée avec succès !`;
+                        badge.textContent = `Fiche d'orientation remplie et téléchargée avec succès`;
                     }
                 }
 
