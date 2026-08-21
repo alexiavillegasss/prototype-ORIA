@@ -435,6 +435,7 @@ select option {
     grid-template-columns: 1fr 1.2fr; /* Deux colonnes sur grand écran */
     gap: 2rem;
     align-items: start;
+    flex: 1;
 }
 
 .section-header {
