@@ -375,11 +375,11 @@
                     <!-- COLONNE GAUCHE : DICTÉE VOCALE & MICRO -->
                     <div style="background: var(--bg-card); border: 2px solid var(--accent-blue); border-radius: 14px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); position: sticky; top: 0;">
                         
-                        <!-- Consigne Vocale Claire & Épurée -->
-                        <div style="padding: 0.85rem 1rem; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 10px; display: flex; align-items: center; gap: 0.65rem;">
-                            <span style="font-size: 1.25rem; flex-shrink: 0;">💡</span>
-                            <span style="font-size: 0.84rem; color: var(--text-primary); font-weight: 500; line-height: 1.4;">
-                                <strong>Consigne :</strong> Dictez librement à voix haute le récit clinique. Servez-vous du document PDF à droite comme guide visuel pour citer les informations souhaitées. L'IA s'occupe de remplir automatiquement la fiche.
+                        <!-- Consigne Vocale Claire & Épurée (Sans le mot Consigne, texte plus gros) -->
+                        <div style="padding: 1rem 1.1rem; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 10px; display: flex; align-items: center; gap: 0.75rem;">
+                            <span style="font-size: 1.4rem; flex-shrink: 0;">💡</span>
+                            <span style="font-size: 0.98rem; color: var(--text-primary); font-weight: 600; line-height: 1.45;">
+                                Dictez librement à voix haute le récit clinique. Servez-vous du document PDF à droite comme guide visuel pour citer les informations souhaitées. L'IA s'occupe de remplir automatiquement la fiche.
                             </span>
                         </div>
 
@@ -393,13 +393,14 @@
                             ⚡ Exemple de dictée rapide (Démo)
                         </button>
 
-                        <textarea id="modal-voice-transcript" style="width: 100%; height: 530px; min-height: 480px; background: var(--bg-primary); border: 1px solid var(--border-glass); border-radius: 10px; padding: 1rem; color: var(--text-primary); font-size: 0.92rem; font-family: inherit; resize: vertical;" placeholder="Dictez votre récit clinique..."></textarea>
+                        <textarea id="modal-voice-transcript" style="width: 100%; height: 500px; min-height: 450px; background: var(--bg-primary); border: 1px solid var(--border-glass); border-radius: 10px; padding: 1rem; color: var(--text-primary); font-size: 0.92rem; font-family: inherit; resize: vertical;" placeholder="Dictez votre récit clinique..."></textarea>
                         
-                        <button type="button" onclick="analyzeAndFillModalForm()" class="btn-primary" style="width: 100%; background: linear-gradient(135deg, #3b82f6, #2563eb); color: #ffffff; padding: 0.85rem 1.25rem; border-radius: 10px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                            ✨ Analyser & Générer la Fiche PDF
+                        <!-- Single-click Fill & Download Button -->
+                        <button type="button" id="btn-analyze-download" onclick="analyzeAndFillModalForm()" class="btn-primary" style="width: 100%; background: linear-gradient(135deg, #10b981, #059669); color: #ffffff; padding: 0.95rem 1.25rem; border-radius: 10px; font-weight: 800; font-size: 1rem; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.6rem; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);">
+                            ✨ Remplir la fiche d'orientation avec ces informations
                         </button>
 
-                        <div id="dictation-status-badge" style="font-size: 0.82rem; font-weight: 600; color: #10b981; display: none;"></div>
+                        <div id="dictation-status-badge" style="font-size: 0.85rem; font-weight: 700; color: #10b981; display: none; text-align: center;"></div>
                     </div>
 
                     <!-- COLONNE DROITE : VRAIE FICHE PDF VIERGE AFFICHIÉE SOUS LES YEUX DE L'UTILISATEUR -->
@@ -411,14 +412,9 @@
             </div>
 
             <!-- Pied du Modal -->
-            <div style="padding: 1.25rem 1.75rem; border-top: 1px solid var(--border-glass); background: var(--bg-primary); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-                <button type="button" onclick="closeVoiceFormModal()" class="btn-primary" style="background: rgba(148, 163, 184, 0.15); color: var(--text-secondary); border: 1px solid var(--border-glass); padding: 0.65rem 1.25rem; border-radius: 8px; font-weight: 600;">
-                    Fermer
-                </button>
-                
-                <button type="button" onclick="submitModalAndDownloadPDF()" class="btn-primary" style="background: #10b981; color: #ffffff; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; border: none; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35); display: inline-flex; align-items: center; gap: 0.5rem;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    <span>Générer et Télécharger la Fiche PDF Officielle</span>
+            <div style="padding: 1.25rem 1.75rem; border-top: 1px solid var(--border-glass); background: var(--bg-primary); display: flex; justify-content: flex-end; align-items: center; gap: 1rem;">
+                <button type="button" onclick="closeVoiceFormModal()" class="btn-primary" style="background: rgba(148, 163, 184, 0.15); color: var(--text-secondary); border: 1px solid var(--border-glass); padding: 0.65rem 1.5rem; border-radius: 8px; font-weight: 600;">
+                    ✕ Fermer
                 </button>
             </div>
 
@@ -891,8 +887,41 @@
                 const progBadge = document.getElementById('checklist-progress');
                 if (progBadge) progBadge.textContent = `${validItemsCount} éléments validés`;
 
-                badge.style.color = '#10b981';
-                badge.textContent = `✅ ${validItemsCount}/14 champs de la fiche validés avec succès par l'IA !`;
+                badge.style.color = '#3b82f6';
+                badge.textContent = `⏳ Génération et téléchargement de la Fiche PDF Officielle en cours...`;
+
+                if (activePdfEndpoint) {
+                    const resPdf = await fetch(activePdfEndpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ text: text })
+                    });
+
+                    if (resPdf.ok) {
+                        const blob = await resPdf.blob();
+                        const pdfUrl = window.URL.createObjectURL(blob);
+                        
+                        // Téléchargement automatique direct du fichier PDF
+                        const a = document.createElement('a');
+                        a.href = pdfUrl;
+                        a.download = `Fiche_${activeStructureName.replace(/\s+/g, '_')}_Remplie.pdf`;
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+
+                        // Mise à jour instantanée de l'aperçu PDF sur la colonne de droite
+                        const iframe = document.getElementById('voice-pdf-iframe');
+                        if (iframe) {
+                            iframe.src = pdfUrl + '#view=FitH&zoom=100';
+                        }
+
+                        badge.style.color = '#10b981';
+                        badge.textContent = `✅ Fiche PDF remplie et téléchargée automatiquement avec succès !`;
+                    } else {
+                        badge.style.color = '#10b981';
+                        badge.textContent = `✅ Analyse effectuée avec succès !`;
+                    }
+                }
 
             } catch (e) {
                 console.error("Erreur extraction fiche:", e);
