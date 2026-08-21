@@ -543,6 +543,8 @@
         let modalRecognition = null;
         let isModalDictating = false;
 
+        let isModalStatePushed = false;
+
         function openVoiceFormModal(structureName, pdfEndpoint, pdfViergeUrl) {
             activeStructureName = structureName;
             activePdfEndpoint = pdfEndpoint;
@@ -573,6 +575,11 @@
 
             const modal = document.getElementById('voice-form-modal');
             if (modal) modal.style.display = 'flex';
+
+            if (!isModalStatePushed) {
+                history.pushState({ modalOpen: true }, '', window.location.href);
+                isModalStatePushed = true;
+            }
         }
 
         function switchModalView(mode) {
@@ -643,10 +650,23 @@
             }
         }
 
-        function closeVoiceFormModal() {
+        function closeVoiceFormModal(fromPopState = false) {
             if (isModalDictating) stopModalMic();
-            document.getElementById('voice-form-modal').style.display = 'none';
+            const modal = document.getElementById('voice-form-modal');
+            if (modal) modal.style.display = 'none';
+
+            if (isModalStatePushed && !fromPopState) {
+                isModalStatePushed = false;
+                try { history.back(); } catch(e){}
+            }
         }
+
+        window.addEventListener('popstate', function(event) {
+            const modal = document.getElementById('voice-form-modal');
+            if (modal && modal.style.display !== 'none') {
+                closeVoiceFormModal(true);
+            }
+        });
 
         function toggleModalMic() {
             if (isModalDictating) {
