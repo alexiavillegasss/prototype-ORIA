@@ -8,9 +8,28 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style_v2.css?v=21">
+    <link rel="stylesheet" href="/static/style_v2.css?v=1004">
     
     <style>
+        /* Force body flex layout & footer pinning to bottom */
+        html, body {
+            min-height: 100vh !important;
+            margin: 0;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+
+        .orientation-container {
+            flex: 1 0 auto !important;
+            width: 100%;
+        }
+
+        #dashboard-footer {
+            margin-top: auto !important;
+            width: 100%;
+            flex-shrink: 0;
+        }
+
         /* Styles Premium additionnels pour le diagnostic interactif */
         
         .feedback-pane {
