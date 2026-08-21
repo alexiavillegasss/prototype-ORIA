@@ -96,10 +96,13 @@ class PDFGenerator:
         if alertes.get("risque_chute"): checkbox_mappings.append(("chute", True))
         if alertes.get("hospit_recente"): 
             checkbox_mappings.append(("Hospitalisation", True))
-            date_h = alertes.get("hospit_date", "")
-            motif_h = alertes.get("hospit_motif", "")
+            date_h = str(alertes.get("hospit_date", ""))
+            motif_h = str(alertes.get("hospit_motif", ""))
+            if date_h.upper() == "INCONNU": date_h = ""
+            if motif_h.upper() == "INCONNU": motif_h = ""
             if date_h or motif_h:
                 field_values["Texte25"] = f"{date_h} - {motif_h}".strip(" -")
+
         if alertes.get("isolement_social"): checkbox_mappings.append(("Isolement social", True))
         if alertes.get("epuisement_aidant"): checkbox_mappings.append(("Epuisement", True))
         if alertes.get("diff_gestion_admin_fin"): checkbox_mappings.append(("administrative", True))
@@ -113,7 +116,14 @@ class PDFGenerator:
         # Top box = Nom/Prénom (Texte28), Bottom box = Lien à préciser (Texte31)
         aidant_nom = extracted_data.get("aidant_nom", "")
         aidant_lien = extracted_data.get("aidant_lien", "")
+        
+        # Filtre de sécurité : Empêcher le terme "Aide à domicile" ou "SAAD" ou "SSIAD" d'être considéré comme un nom d'aidant familial !
+        if aidant_nom and any(pro_kw in aidant_nom.lower() for pro_kw in ["aide à domicile", "aide a domicile", "saad", "ssiad", "had", "admr", "infirmier", "médecin", "medecin"]):
+            aidant_nom = ""
+
         lien_clean = aidant_lien.lower().replace("sa ", "").replace("son ", "").replace("ses ", "").strip().capitalize() if aidant_lien else ""
+        if lien_clean and any(pro_kw in lien_clean.lower() for pro_kw in ["aide à domicile", "aide a domicile", "saad", "ssiad", "had", "admr"]):
+            lien_clean = ""
         
         # Fallback ultra-robuste pour s'assurer que le lien (ex: Fille) est TOUJOURS rempli dans Texte31
         if aidant_nom and not lien_clean:

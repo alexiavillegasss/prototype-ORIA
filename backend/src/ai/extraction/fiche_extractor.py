@@ -287,11 +287,14 @@ Réponds UNIQUEMENT par ce JSON complet :
         # L'IA a tendance à halluciner des hospitalisations. On force à False si les mots clés sont absents ou si négation.
         if parsed.get("alertes"):
             text_for_hospit = text_lower
+            neg_hospit_terms = [
+                "aucune hospit", "aucune hospitalisation", "pas d'hospit", "pas d'hospitalisation",
+                "sans hospit", "sans hospitalisation", "non hospit", "non hospitalis",
+                "n'a pas été hospit", "jamais été hospit", "jamais hospit", "pas eu d'hospit", "pas eu d'hospitalisation"
+            ]
             if "hospit" not in text_for_hospit and "urgence" not in text_for_hospit and "clinique" not in text_for_hospit:
                 parsed["alertes"]["hospit_recente"] = False
-            elif "n'a pas été hospit" in text_for_hospit or "pas d'hospit" in text_for_hospit or "sans hospit" in text_for_hospit or "non hospit" in text_for_hospit:
-                parsed["alertes"]["hospit_recente"] = False
-            elif "jamais été hospit" in text_for_hospit:
+            elif any(neg in text_for_hospit for neg in neg_hospit_terms):
                 parsed["alertes"]["hospit_recente"] = False
                 
             if not parsed["alertes"].get("hospit_recente", True):
