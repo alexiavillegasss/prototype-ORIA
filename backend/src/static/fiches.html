@@ -375,9 +375,8 @@
                     <!-- COLONNE GAUCHE : DICTÉE VOCALE & MICRO -->
                     <div style="background: var(--bg-card); border: 2px solid var(--accent-blue); border-radius: 14px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); position: sticky; top: 0;">
                         
-                        <!-- Consigne Vocale Claire & Épurée (Sans le mot Consigne, texte plus gros) -->
+                        <!-- Consigne Vocale Claire & Épurée -->
                         <div style="padding: 1rem 1.1rem; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 10px; display: flex; align-items: center; gap: 0.75rem;">
-                            <span style="font-size: 1.4rem; flex-shrink: 0;">💡</span>
                             <span style="font-size: 0.98rem; color: var(--text-primary); font-weight: 600; line-height: 1.45;">
                                 Dictez librement à voix haute le récit clinique. Servez-vous de la fiche d'orientation vierge à droite comme guide visuel pour citer les informations souhaitées. La fiche sera ensuite remplie automatiquement et téléchargée.
                             </span>
@@ -386,18 +385,18 @@
                         <!-- Mic -->
                         <button type="button" id="btn-modal-mic" onclick="toggleModalMic()" class="btn-primary" style="width: 100%; background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); padding: 0.85rem 1rem; border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.6rem;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
-                            <span id="modal-mic-label">🔴 Démarrer la dictée vocale</span>
+                            <span id="modal-mic-label">Démarrer la dictée vocale</span>
                         </button>
 
                         <button type="button" onclick="loadDemoClinicalText()" style="width: 100%; background: rgba(59, 130, 246, 0.12); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); padding: 0.6rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
-                            ⚡ Exemple de dictée rapide (Démo)
+                            Exemple de dictée rapide (Démo)
                         </button>
 
                         <textarea id="modal-voice-transcript" style="width: 100%; height: 500px; min-height: 450px; background: var(--bg-primary); border: 1px solid var(--border-glass); border-radius: 10px; padding: 1rem; color: var(--text-primary); font-size: 0.92rem; font-family: inherit; resize: vertical;" placeholder="Dictez votre récit clinique..."></textarea>
                         
                         <!-- Single-click Fill & Download Button -->
                         <button type="button" id="btn-analyze-download" onclick="analyzeAndFillModalForm()" class="btn-primary" style="width: 100%; background: linear-gradient(135deg, #10b981, #059669); color: #ffffff; padding: 0.95rem 1.25rem; border-radius: 10px; font-weight: 800; font-size: 1rem; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.6rem; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);">
-                            ✨ Remplir la fiche d'orientation avec ces informations
+                            Remplir la fiche d'orientation avec ces informations
                         </button>
 
                         <div id="dictation-status-badge" style="font-size: 0.85rem; font-weight: 700; color: #10b981; display: none; text-align: center;"></div>
@@ -713,7 +712,7 @@
                 btn.style.background = "rgba(239, 68, 68, 0.15)";
                 btn.style.color = "#ef4444";
             }
-            if (label) label.textContent = "🔴 Démarrer la dictée vocale";
+            if (label) label.textContent = "Démarrer la dictée vocale";
         }
 
         function loadDemoClinicalText() {
@@ -722,7 +721,7 @@
             
             const badge = document.getElementById('dictation-status-badge');
             badge.style.display = 'block';
-            badge.textContent = "⚡ Exemple de dictée rapide chargé ! Cliquez sur '✨ Analyser & Pré-remplir' ci-dessus.";
+            badge.textContent = "Exemple de dictée rapide chargé ! Cliquez sur le bouton ci-dessous pour remplir la fiche.";
         }
 
         async function analyzeAndFillModalForm() {
@@ -735,7 +734,7 @@
             const badge = document.getElementById('dictation-status-badge');
             badge.style.display = 'block';
             badge.style.color = '#3b82f6';
-            badge.textContent = "✨ Analyse automatique en cours...";
+            badge.textContent = "Analyse automatique en cours...";
 
             try {
                 let data = {};
@@ -888,7 +887,7 @@
                 if (progBadge) progBadge.textContent = `${validItemsCount} éléments validés`;
 
                 badge.style.color = '#3b82f6';
-                badge.textContent = `⏳ Génération et téléchargement de la Fiche PDF Officielle en cours...`;
+                badge.textContent = `Génération et téléchargement de la Fiche PDF Officielle en cours...`;
 
                 if (activePdfEndpoint) {
                     const resPdf = await fetch(activePdfEndpoint, {
@@ -916,10 +915,10 @@
                         }
 
                         badge.style.color = '#10b981';
-                        badge.textContent = `✅ Fiche PDF remplie et téléchargée automatiquement avec succès !`;
+                        badge.textContent = `Fiche PDF remplie et téléchargée automatiquement avec succès !`;
                     } else {
                         badge.style.color = '#10b981';
-                        badge.textContent = `✅ Analyse effectuée avec succès !`;
+                        badge.textContent = `Analyse effectuée avec succès !`;
                     }
                 }
 
