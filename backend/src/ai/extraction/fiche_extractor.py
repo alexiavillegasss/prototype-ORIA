@@ -523,28 +523,29 @@ Réponds UNIQUEMENT par ce JSON complet :
                     year = datetime.datetime.now().year - age
                     parsed["usager_date_naissance"] = str(year)
             
-        # Fallback Python ultra-robuste pour Aidant / Proche si l'IA l'a manqué
-        if not parsed.get("aidant_nom"):
+        # Extraction / Fallback Python ultra-robuste pour Aidant / Proche
+        if not parsed.get("aidant_nom") or not parsed.get("aidant_lien"):
             m_aidant = re.search(r'(?:proche\s+aidant(?:\s+principal)?\s*:\s*)?(?:sa|son)?\s*(fille|fils|mari|épouse|epouse|conjoint|soeur|frère|aidant|aidante)?\s*([A-ZÀ-ÿ][a-zÀ-ÿ\-]+(?:\s+[A-ZÀ-ÿ][a-zÀ-ÿ\-]+)?)\s*(?:au|tél|tel|\,)?\s*(0[1-9][\s\.\-]?\d{2}[\s\.\-]?\d{2}[\s\.\-]?\d{2}[\s\.\-]?\d{2})?', text, re.IGNORECASE)
-            if m_aidant and m_aidant.group(2):
-                if m_aidant.group(1):
-                    parsed["aidant_lien"] = m_aidant.group(1).strip()
-                parsed["aidant_nom"] = m_aidant.group(2).strip()
+            if m_aidant:
+                if m_aidant.group(1) and not parsed.get("aidant_lien"):
+                    parsed["aidant_lien"] = m_aidant.group(1).strip().capitalize()
+                if m_aidant.group(2) and not parsed.get("aidant_nom"):
+                    parsed["aidant_nom"] = m_aidant.group(2).strip()
                 if m_aidant.group(3) and not parsed.get("aidant_tel"):
                     parsed["aidant_tel"] = m_aidant.group(3).strip()
+
+        # Fallback supplémentaire pour le lien de parenté s'il est toujours vide
+        if not parsed.get("aidant_lien"):
+            for lien_kw in ["fille", "fils", "conjoint", "épouse", "epouse", "mari", "frère", "frere", "soeur", "sœur", "neveu", "nièce", "voisin", "voisine", "ami", "amie"]:
+                if re.search(r'\b' + lien_kw + r'\b', text_lower):
+                    parsed["aidant_lien"] = lien_kw.capitalize()
+                    break
 
         # Chercher le numéro de tel de l'aidant si présent et pas encore capturé
         if parsed.get("aidant_nom") and not parsed.get("aidant_tel"):
             tel_aid_m = re.search(re.escape(parsed["aidant_nom"]) + r'.*?(0[1-9][\s\.\-]?\d{2}[\s\.\-]?\d{2}[\s\.\-]?\d{2}[\s\.\-]?\d{2})', text, re.IGNORECASE | re.DOTALL)
             if tel_aid_m:
                 parsed["aidant_tel"] = tel_aid_m.group(1).strip()
-
-        # Fallback pour le lien de parenté de l'aidant s'il est vide
-        if parsed.get("aidant_nom") and not parsed.get("aidant_lien"):
-            for lien_kw in ["fille", "fils", "conjoint", "épouse", "epouse", "mari", "frère", "frere", "soeur", "sœur", "neveu", "nièce", "voisin", "voisine", "ami", "amie"]:
-                if lien_kw in text_lower:
-                    parsed["aidant_lien"] = lien_kw.capitalize()
-                    break
 
         # Anti-collision Cercle de Soins vs Aidant Familial :
         # Si l'IA a mis une personne physique (ex: Sophie DUPONT ou sa fille) en SSIAD, HAD ou SAAD,
