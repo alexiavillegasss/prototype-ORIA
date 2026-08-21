@@ -115,14 +115,24 @@ class PDFGenerator:
         aidant_lien = extracted_data.get("aidant_lien", "")
         lien_clean = aidant_lien.lower().replace("sa ", "").replace("son ", "").replace("ses ", "").strip().capitalize() if aidant_lien else ""
         
+        # Fallback ultra-robuste pour s'assurer que le lien (ex: Fille) est TOUJOURS rempli dans Texte31
+        if aidant_nom and not lien_clean:
+            raw_text = str(extracted_data.get("raw_text", "")).lower()
+            for kw in ["fille", "fils", "conjoint", "épouse", "epouse", "mari", "soeur", "sœur", "frère", "frere", "neveu", "nièce", "voisin", "ami"]:
+                if kw in raw_text:
+                    lien_clean = kw.capitalize()
+                    break
+            if not lien_clean:
+                lien_clean = "Proche aidant"
+
         if aidant_nom:
             field_values["Texte28"] = aidant_nom
             field_values["Texte29"] = extracted_data.get("aidant_tel", "")
             field_values["Texte30"] = extracted_data.get("aidant_email", "")
-            if lien_clean:
-                field_values["Texte31"] = lien_clean
+            field_values["Texte31"] = lien_clean
         elif lien_clean:
             field_values["Texte28"] = lien_clean
+            field_values["Texte31"] = "Proche"
 
         pro_mapping = {
             "aidant": ("Texte28", "Texte29", "Texte30"),
