@@ -268,7 +268,7 @@
     <!-- Bandeau d'actions supprimé de cet emplacement -->
 
     <!-- Main Container -->
-    <main class="orientation-container">
+    <main class="orientation-container" style="flex: 1; width: 100%;">
         
         <!-- Colonne Gauche : Saisie -->
         <section class="input-pane">
@@ -311,20 +311,11 @@
                     <p class="section-desc">Voici l'analyse générée automatiquement par le moteur d'orientation ORIA.</p>
                 </div>
 
-                <!-- Petites cartes KPI d'analyse de situation (style tableau de bord) -->
-                <!-- Cartes Complexité et Commune supprimées -->
-
                 <!-- Structures recommandées (Unique ou Fallback) -->
                 <h3 class="subsection-title" id="structures-title">Orientation recommandée :</h3>
                 <div id="structures-list" class="structures-container">
                     <!-- Généré dynamiquement en JS -->
                 </div>
-
-                <!-- Accordéon pour voir les signaux faibles extraits -->
-                <!--<details class="raw-data-accordion" style="margin-top: 1.5rem;">
-                    <summary>🔍 Voir le schéma pivot brut (JSON)</summary>
-                    <pre><code id="raw-json-output"></code></pre>
-                </details>-->
 
             </div>
         </section>
@@ -332,7 +323,7 @@
     </main>
 
     <!-- Footer -->
-    <footer id="dashboard-footer">
+    <footer id="dashboard-footer" style="margin-top: auto; width: 100%;">
         <p>Prototype ORIA – Module d'évaluation interactif</p>
     </footer>
 
