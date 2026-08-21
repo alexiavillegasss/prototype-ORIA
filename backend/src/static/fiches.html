@@ -554,12 +554,20 @@
             const textEl = document.getElementById('modal-voice-transcript');
             if (textEl) textEl.value = '';
 
-            // Set PDF iframe URL avec zoom 100% et ajustement largeur
+            // Set PDF iframe URL avec location.replace pour ne PAS polluer l'historique de retour du navigateur
             if (activePdfViergeUrl) {
                 const iframe = document.getElementById('voice-pdf-iframe');
                 if (iframe) {
                     const pdfZoomUrl = activePdfViergeUrl + (activePdfViergeUrl.includes('#') ? '' : '#view=FitH&zoom=100');
-                    iframe.src = pdfZoomUrl;
+                    if (iframe.contentWindow) {
+                        try {
+                            iframe.contentWindow.location.replace(pdfZoomUrl);
+                        } catch(e) {
+                            iframe.src = pdfZoomUrl;
+                        }
+                    } else {
+                        iframe.src = pdfZoomUrl;
+                    }
                 }
             }
 
@@ -908,10 +916,19 @@
                         a.click();
                         a.remove();
 
-                        // Mise à jour instantanée de l'aperçu PDF sur la colonne de droite
+                        // Mise à jour instantanée de l'aperçu PDF sans polluer l'historique de retour du navigateur
                         const iframe = document.getElementById('voice-pdf-iframe');
                         if (iframe) {
-                            iframe.src = pdfUrl + '#view=FitH&zoom=100';
+                            const pdfZoomUrl = pdfUrl + '#view=FitH&zoom=100';
+                            if (iframe.contentWindow) {
+                                try {
+                                    iframe.contentWindow.location.replace(pdfZoomUrl);
+                                } catch(e) {
+                                    iframe.src = pdfZoomUrl;
+                                }
+                            } else {
+                                iframe.src = pdfZoomUrl;
+                            }
                         }
 
                         badge.style.color = '#10b981';
