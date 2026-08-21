@@ -407,7 +407,7 @@
                                 <p style="font-weight: 700; margin-bottom: 0.3rem; color: #1d4ed8;">
                                     Pour plus de précision lors de la complétude de la fiche, vous pouvez structurer votre récit en fonction des différentes rubriques dans l'ordre de la fiche d'orientation :
                                 </p>
-                                <ul style="margin: 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: 0.2rem;">
+                                <ul id="voice-consigne-list" style="margin: 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: 0.2rem;">
                                     <li>« <strong>Je suis l'adresseur</strong> <em>(les infos...)</em> »</li>
                                     <li>« <strong>La personne majeure concernée est...</strong> <em>(les infos)</em> »</li>
                                     <li>« <strong>Au niveau du détail de la demande...</strong> <em>(les infos)</em> »</li>
@@ -574,6 +574,42 @@
 
         let isModalStatePushed = false;
 
+        const structureHelpTexts = {
+            "DAC Var Ouest": [
+                "« <strong>Je suis l'adresseur</strong> <em>(les infos...)</em> »",
+                "« <strong>La personne majeure concernée est...</strong> <em>(les infos)</em> »",
+                "« <strong>Au niveau du détail de la demande...</strong> <em>(les infos)</em> »",
+                "« <strong>Pour le cercle de soins...</strong> <em>(les infos)</em> »",
+                "« Et enfin <strong>les alertes repérées pour cette personne sont...</strong> <em>(les infos)</em> »"
+            ],
+            "CLIC La Seyne": [
+                "« <strong>Je suis l'émetteur de la demande...</strong> <em>(les infos)</em> »",
+                "« <strong>L'identité de la personne concernée est...</strong> <em>(les infos)</em> »",
+                "« <strong>Famille / Aidant à contacter...</strong> <em>(les infos)</em> »",
+                "« <strong>Pour le motif de la demande...</strong> <em>(les infos)</em> »",
+                "« Et enfin <strong>les aides relatives au maintien à domicile sont...</strong> <em>(les infos)</em> »"
+            ],
+            "CLIC Toulon": [
+                "« <strong>Je suis le demandeur...</strong> <em>(les infos)</em> »",
+                "« <strong>La personne concernée est...</strong> <em>(les infos)</em> »",
+                "« <strong>Concernant sa situation de vie...</strong> <em>(vit seul, en couple, avec enfant...)</em> »",
+                "« Et enfin <strong>les motifs de l'alerte sont...</strong> <em>(les alertes repérées)</em> »"
+            ],
+            "CLIC Provence Verte": [
+                "« <strong>Je suis l'émetteur de la demande...</strong> <em>(les infos)</em> »",
+                "« <strong>Personne(s) concernée(s)...</strong> <em>(les infos)</em> »",
+                "« <strong>Personnes de l'entourage à contacter...</strong> <em>(les infos)</em> »",
+                "« Et enfin <strong>l'exposé de la situation et les aides existantes sont...</strong> <em>(les infos)</em> »"
+            ],
+            "CLIC Hadage": [
+                "« <strong>Je suis l'émetteur de la demande...</strong> <em>(les infos)</em> »",
+                "« <strong>L'identité de la personne concernée est...</strong> <em>(les infos)</em> »",
+                "« <strong>Famille / Aidant à contacter...</strong> <em>(les infos)</em> »",
+                "« <strong>Pour le motif de la demande...</strong> <em>(les infos)</em> »",
+                "« Et enfin <strong>les aides existantes sont...</strong> <em>(les infos)</em> »"
+            ]
+        };
+
         function openVoiceFormModal(structureName, pdfEndpoint, pdfViergeUrl) {
             activeStructureName = structureName;
             activePdfEndpoint = pdfEndpoint;
@@ -581,6 +617,13 @@
 
             const titleEl = document.getElementById('voice-modal-title');
             if (titleEl) titleEl.textContent = `Fiche d'Orientation ${structureName} — Dictée Vocale`;
+
+            // Mettre à jour dynamiquement la consigne selon les vraies rubriques de cette structure
+            const helpListContainer = document.getElementById('voice-consigne-list');
+            if (helpListContainer) {
+                const items = structureHelpTexts[structureName] || structureHelpTexts["DAC Var Ouest"];
+                helpListContainer.innerHTML = items.map(item => `<li>${item}</li>`).join('');
+            }
 
             const textEl = document.getElementById('modal-voice-transcript');
             if (textEl) textEl.value = '';
