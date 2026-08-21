@@ -523,52 +523,38 @@ Réponds UNIQUEMENT par ce JSON complet :
                     year = datetime.datetime.now().year - age
                     parsed["usager_date_naissance"] = str(year)
             
-        # Anti-hallucination pour l'aidant : si le nom inventé n'est pas dans le texte
-        aidant_nom = parsed.get("aidant_nom", "")
-        if aidant_nom and aidant_nom.lower() not in text_lower:
-            parsed["aidant_nom"] = ""
-            parsed["aidant_tel"] = ""
-            parsed["aidant_email"] = ""
-            
-        # Si le service est vide mais qu'on a un lien aidant, et qu'il n'y a pas d'autre émetteur, on peut le mettre
-        if not parsed.get("emetteur_service") and parsed.get("aidant_lien"):
-            parsed["emetteur_service"] = parsed.get("aidant_lien")
-            
-        # REVERSE : Si l'émetteur est un proche (fils, fille, mari, epouse, etc), copier dans la case aidant
-        em_service = parsed.get("emetteur_service", "").lower()
-        if any(proche in em_service for proche in ["fille", "fils", "enfant", "mari", "femme", "epouse", "épouse", "conjoint", "compagnon", "voisin", "neveu", "nièce"]):
-            if not parsed.get("aidant_lien"):
-                parsed["aidant_lien"] = parsed.get("emetteur_service", "")
-            if not parsed.get("aidant_nom"):
-                parsed["aidant_nom"] = parsed.get("emetteur_nom", "")
-            if not parsed.get("aidant_tel"):
-                parsed["aidant_tel"] = parsed.get("emetteur_telephone", "")
-            if not parsed.get("aidant_email"):
-                parsed["aidant_email"] = parsed.get("emetteur_email", "")
+        # Fallback Python ultra-robuste pour Aidant / Proche si l'IA l'a manqué
+        if not parsed.get("aidant_nom"):
+            # Chercher "fille Sophie DUPONT" / "aidant Sophie DUPONT" / "sa fille Sophie DUPONT"
+            m2 = re.search(r'(?:sa|son|proche)\s+(fille|fils|mari|épouse|epouse|conjoint|soeur|frère|aidant|aidante)\s+(?:principal[e]?\s*:\s*)?([A-ZÀ-ÿa-z\-]+(?:\s+[A-ZÀ-ÿa-z\-]+)?)', text, re.IGNORECASE)
+            if m2:
+                parsed["aidant_lien"] = m2.group(1).strip()
+                parsed["aidant_nom"] = m2.group(2).strip()
+            else:
+                m3 = re.search(r'([A-ZÀ-ÿa-z\-]+\s+[A-ZÀ-ÿa-z\-]+)\s+(?:qui\s+est|est)\s+(?:l[\'\"])?aidant', text, re.IGNORECASE)
+                if m3:
+                    parsed["aidant_nom"] = m3.group(1).strip()
+
+        # Chercher le numéro de tel de l'aidant si présent
+        if parsed.get("aidant_nom") and not parsed.get("aidant_tel"):
+            tel_aid_m = re.search(re.escape(parsed["aidant_nom"]) + r'.*?(0[1-9][\s\.\-]?\d{2}[\s\.\-]?\d{2}[\s\.\-]?\d{2}[\s\.\-]?\d{2})', text, re.IGNORECASE | re.DOTALL)
+            if tel_aid_m:
+                parsed["aidant_tel"] = tel_aid_m.group(1).strip()
 
         # Anti-collision Cercle de Soins vs Aidant Familial :
-        # Empêcher l'IA de classer la fille / proche aidant en SSIAD, HAD ou SAAD !
+        # Si un pro dans cercle_de_soins s'appelle comme l'aidant (ex: Sophie DUPONT),
+        # il s'agit de l'aidant familial et il NE DOIT PAS figurer dans SSIAD, HAD ou SAAD !
         aid_nom = str(parsed.get("aidant_nom", "")).lower().strip()
-        cleaned_cercle = []
-        for pro in parsed.get("cercle_de_soins", []):
-            pro_nom = str(pro.get("nom", "")).strip()
-            pro_nom_lower = pro_nom.lower()
-            pro_type = str(pro.get("type", "")).lower()
-
-            is_proche = False
-            if aid_nom and (aid_nom in pro_nom_lower or pro_nom_lower in aid_nom):
-                is_proche = True
-            if any(k in pro_nom_lower or k in pro_type for k in ["fille", "fils", "enfant", "mari", "épouse", "epouse", "conjoint", "aidant", "famille"]):
-                is_proche = True
-
-            if is_proche:
-                pro["type"] = "aidant"
-                if not parsed.get("aidant_nom"):
-                    parsed["aidant_nom"] = pro_nom
-                if not parsed.get("aidant_tel") and pro.get("tel"):
-                    parsed["aidant_tel"] = pro.get("tel")
-            cleaned_cercle.append(pro)
-        parsed["cercle_de_soins"] = cleaned_cercle
+        if aid_nom:
+            cleaned_cercle = []
+            for pro in parsed.get("cercle_de_soins", []):
+                pro_nom = str(pro.get("nom", "")).strip()
+                pro_nom_lower = pro_nom.lower()
+                # Si le nom correspond à l'aidant familial, l'ignorer du tableau des pros (il va dans Famille/Aidant)
+                if pro_nom_lower and (pro_nom_lower in aid_nom or aid_nom in pro_nom_lower):
+                    continue
+                cleaned_cercle.append(pro)
+            parsed["cercle_de_soins"] = cleaned_cercle
                 
         # Fallback python pour les aides à domicile ratées par l'IA
         if not parsed.get("aide_1"):
