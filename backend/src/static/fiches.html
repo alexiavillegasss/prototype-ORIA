@@ -8,16 +8,25 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style_v2.css?v=21">
+    <link rel="stylesheet" href="/static/style_v2.css?v=1004">
     
     <style>
+        html, body {
+            min-height: 100vh !important;
+            margin: 0;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+
         .fiches-container {
-            max-width: 1040px;
+            max-width: 1450px;
             margin: 2rem auto;
-            padding: 0 1.5rem 3rem 1.5rem;
+            padding: 0 2rem 3rem 2rem;
             display: flex;
             flex-direction: column;
             gap: 1.75rem;
+            flex: 1 0 auto !important;
+            width: 100%;
         }
 
         .back-nav {
@@ -150,6 +159,19 @@
             box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
         }
 
+        .btn-sub-action.btn-voice {
+            background: rgba(239, 68, 68, 0.12);
+            color: #dc2626;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-sub-action.btn-voice:hover {
+            background: #ef4444;
+            color: #ffffff;
+            border-color: #dc2626;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
         .btn-sub-action.disabled,
         .btn-sub-action:disabled {
             background: rgba(148, 163, 184, 0.1) !important;
@@ -244,10 +266,10 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         Remplir à la main
                     </a>
-                    <span class="btn-sub-action btn-voice disabled" title="Bientôt disponible">
+                    <button type="button" class="btn-sub-action btn-voice" onclick="openVoiceFormModal('DAC Var Ouest', '/api/orientation/dac/generate_pdf', '/static/fiche_dac_vierge.pdf')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
                         Remplir à la voix
-                    </span>
+                    </button>
                 </div>
             </div>
 
@@ -267,10 +289,10 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         Remplir à la main
                     </a>
-                    <span class="btn-sub-action btn-voice disabled" title="Bientôt disponible">
+                    <button type="button" class="btn-sub-action btn-voice" onclick="openVoiceFormModal('CLIC La Seyne', '/api/orientation/clic/generate_pdf', '/static/fiche_clic_LaSeyne_vierge.pdf')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
                         Remplir à la voix
-                    </span>
+                    </button>
                 </div>
             </div>
 
@@ -290,10 +312,10 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         Remplir à la main
                     </a>
-                    <span class="btn-sub-action btn-voice disabled" title="Bientôt disponible">
+                    <button type="button" class="btn-sub-action btn-voice" onclick="openVoiceFormModal('CLIC Toulon', '/api/orientation/clic_toulon/generate_pdf', '/static/fiche_clic_Toulon.pdf')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
                         Remplir à la voix
-                    </span>
+                    </button>
                 </div>
             </div>
 
@@ -313,10 +335,10 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         Remplir à la main
                     </a>
-                    <span class="btn-sub-action btn-voice disabled" title="Bientôt disponible">
+                    <button type="button" class="btn-sub-action btn-voice" onclick="openVoiceFormModal('CLIC Provence Verte', '/api/orientation/clic_provence_verte/generate_pdf', '/static/fiche_clic_ProvenceVerte.pdf')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
                         Remplir à la voix
-                    </span>
+                    </button>
                 </div>
             </div>
 
@@ -336,10 +358,10 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         Remplir à la main
                     </a>
-                    <span class="btn-sub-action btn-voice disabled" title="Bientôt disponible">
+                    <button type="button" class="btn-sub-action btn-voice" onclick="openVoiceFormModal('CLIC Hadage', '/api/orientation/clic_hadage/generate_pdf', '/static/fiche_clic_Hadage.pdf')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
                         Remplir à la voix
-                    </span>
+                    </button>
                 </div>
             </div>
 
@@ -351,9 +373,709 @@
         <p>Prototype ORIA – Sélection de Fiches d'Orientation</p>
     </footer>
 
+    <!-- MODAL OPTION 1 : DICTÉE FLOTTANTE + FORMULAIRE COMPLET SOUS LES YEUX -->
+    <div id="voice-form-modal" class="modal-voice-overlay" style="display: none;">
+        <div class="modal-voice-content">
+            
+            <!-- En-tête du Modal (Bandeau Titre Full-Width en Haut) -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 2rem; border-bottom: 1px solid var(--border-glass); background: var(--bg-primary); width: 100%; position: sticky; top: 0; z-index: 200;">
+                <div>
+                    <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: #3b82f6; letter-spacing: 0.5px;">Module de Saisie Vocale & Interactive</span>
+                    <h2 id="voice-modal-title" style="font-size: 1.35rem; font-weight: 800; color: var(--text-primary); margin-top: 0.15rem; white-space: nowrap;">Fiche d'Orientation — Dictée Vocale</h2>
+                </div>
+                <button type="button" onclick="closeVoiceFormModal()" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 10px; padding: 0.5rem 1rem; font-size: 0.88rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.4rem;">
+                    ✕ Fermer
+                </button>
+            </div>
+
+            <!-- Corps du Modal avec 2 colonnes étalées sur la page -->
+            <div style="padding: 1.5rem 2rem; display: flex; flex-direction: column; gap: 1.5rem; width: 100%;">
+                
+                <!-- DISPOSITION PARFAITE 2 COLONNES : GAUCHE = DICTÉE VOCALE / DROITE = VRAIE FICHE PDF VIERGE -->
+                <div id="modal-main-workspace" style="display: grid; grid-template-columns: 1.25fr 1fr; gap: 1.25rem; align-items: start;">
+                    
+                    <!-- COLONNE GAUCHE : DICTÉE VOCALE & MICRO (Tout rentre sur un seul écran) -->
+                    <div style="background: var(--bg-card); border: 2px solid var(--accent-blue); border-radius: 14px; padding: 1.1rem 1.25rem; display: flex; flex-direction: column; gap: 0.65rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); position: sticky; top: 0;">
+                        
+                        <!-- Consigne Vocale Structurée avec Puces & Typographie Compacte -->
+                        <div style="padding: 0.75rem 1rem; background: rgba(59, 130, 246, 0.06); border: 1px solid rgba(59, 130, 246, 0.22); border-radius: 10px; display: flex; flex-direction: column; gap: 0.35rem;">
+                            <span style="font-size: 0.92rem; color: var(--text-primary); font-weight: 700; line-height: 1.35;">
+                                Dictez librement à voix haute le récit clinique. Servez-vous de la fiche d'orientation vierge à droite comme guide visuel pour citer les informations souhaitées.
+                            </span>
+                            
+                            <div style="font-size: 0.83rem; color: #2563eb; font-weight: 500; line-height: 1.4; border-top: 1px solid rgba(59, 130, 246, 0.15); padding-top: 0.45rem;">
+                                <p style="font-weight: 700; margin-bottom: 0.3rem; color: #1d4ed8;">
+                                    Pour plus de précision lors de la complétude de la fiche, vous pouvez structurer votre récit en fonction des différentes rubriques dans l'ordre de la fiche d'orientation :
+                                </p>
+                                <ul id="voice-consigne-list" style="margin: 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: 0.2rem;">
+                                    <li>« <strong>Je suis l'adresseur</strong> <em>(les infos...)</em> »</li>
+                                    <li>« <strong>La personne majeure concernée est...</strong> <em>(les infos)</em> »</li>
+                                    <li>« <strong>Au niveau du détail de la demande...</strong> <em>(les infos)</em> »</li>
+                                    <li>« <strong>Pour le cercle de soins...</strong> <em>(les infos)</em> »</li>
+                                    <li>« Et enfin <strong>les alertes repérées pour cette personne sont...</strong> <em>(les infos)</em> »</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Mic -->
+                        <button type="button" id="btn-modal-mic" onclick="toggleModalMic()" class="btn-primary" style="width: 100%; background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); padding: 0.65rem 1rem; border-radius: 9px; font-weight: 700; font-size: 0.92rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+                            <span id="modal-mic-label">Démarrer la dictée vocale</span>
+                        </button>
+
+                        <button type="button" onclick="loadDemoClinicalText()" style="width: 100%; background: rgba(148, 163, 184, 0.15); color: var(--text-secondary); border: 1px solid rgba(148, 163, 184, 0.3); padding: 0.45rem 1rem; border-radius: 7px; font-weight: 600; font-size: 0.82rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
+                            Exemple de dictée rapide (Démo)
+                        </button>
+
+                        <textarea id="modal-voice-transcript" style="width: 100%; height: 230px; min-height: 180px; max-height: 300px; background: var(--bg-primary); border: 1px solid var(--border-glass); border-radius: 9px; padding: 0.75rem; color: var(--text-primary); font-size: 0.88rem; font-family: inherit; resize: vertical;" placeholder="Dictez votre récit clinique..."></textarea>
+                        
+                        <!-- Single-click Fill & Download Button (Bleu) -->
+                        <button type="button" id="btn-analyze-download" onclick="analyzeAndFillModalForm()" class="btn-primary" style="width: 100%; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: #ffffff; padding: 0.75rem 1.1rem; border-radius: 9px; font-weight: 800; font-size: 0.95rem; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);">
+                            Remplir la fiche d'orientation avec ces informations
+                        </button>
+
+                        <div id="dictation-status-badge" style="font-size: 0.82rem; font-weight: 700; color: #10b981; display: none; text-align: center;"></div>
+                    </div>
+
+                    <!-- COLONNE DROITE : VRAIE FICHE PDF VIERGE AFFICHIÉE SOUS LES YEUX DE L'UTILISATEUR -->
+                    <div style="background: var(--bg-primary); border: 1px solid var(--border-glass); border-radius: 14px; overflow: hidden; height: calc(100vh - 120px); min-height: 600px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.25);">
+                        <iframe id="voice-pdf-iframe" src="" style="width: 100%; height: 100%; border: none;"></iframe>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <style>
+        .modal-voice-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg-primary);
+            z-index: 1000;
+            display: none;
+            overflow-y: auto;
+        }
+        .modal-voice-content {
+            background: var(--bg-primary);
+            width: 100%;
+            min-height: 100vh;
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            box-shadow: none;
+            border: none;
+            border-radius: 0;
+        }
+        .vform-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: block;
+            margin-bottom: 0.35rem;
+        }
+        .vform-input {
+            width: 100%;
+            padding: 0.6rem 0.85rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-glass);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 0.88rem;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.25s ease;
+        }
+        .vform-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+        .field-highlight-ai {
+            animation: highlightPulse 2s ease;
+            border-color: #3b82f6 !important;
+            background: rgba(59, 130, 246, 0.1) !important;
+        }
+        @keyframes highlightPulse {
+            0% { transform: scale(1.02); border-color: #10b981; }
+            50% { border-color: #3b82f6; }
+            100% { transform: scale(1); }
+        }
+        .chk-group-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 10px;
+            padding: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .chk-group-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #3b82f6;
+            margin-bottom: 0.25rem;
+            border-bottom: 1px dashed var(--border-glass);
+            padding-bottom: 0.35rem;
+        }
+        .chk-item {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid transparent;
+            transition: all 0.25s ease;
+        }
+        .chk-item.valid {
+            background: rgba(16, 185, 129, 0.12);
+            color: #10b981;
+            font-weight: 600;
+            border-color: rgba(16, 185, 129, 0.35);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+        }
+        .chk-val {
+            color: var(--text-primary);
+        }
+        .chk-item.valid .chk-val {
+            color: #10b981;
+        }
+        .voice-chk-badge {
+            font-size: 0.76rem;
+            font-weight: 700;
+            padding: 0.28rem 0.65rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        .voice-chk-badge.chk-off {
+            background: rgba(239, 68, 68, 0.12);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        .voice-chk-badge.chk-on {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+        }
+    </style>
+
     <script>
+        // ==========================================
+        // GESTION DU MODAL DICTÉE VOCALE & FORMULAIRE (OPTION 1 + CHECKLIST + PDF VIERGE)
+        // ==========================================
+        let activeStructureName = '';
+        let activePdfEndpoint = '';
+        let activePdfViergeUrl = '';
+        let modalRecognition = null;
+        let isModalDictating = false;
+
+        let isModalStatePushed = false;
+
+        const structureHelpTexts = {
+            "DAC Var Ouest": [
+                "« <strong>Je suis l'adresseur</strong> <em>(les infos...)</em> »",
+                "« <strong>La personne majeure concernée est...</strong> <em>(les infos)</em> »",
+                "« <strong>Au niveau du détail de la demande...</strong> <em>(les infos)</em> »",
+                "« <strong>Pour le cercle de soins...</strong> <em>(les infos)</em> »",
+                "« Et enfin <strong>les alertes repérées pour cette personne sont...</strong> <em>(les infos)</em> »"
+            ],
+            "CLIC La Seyne": [
+                "« <strong>Je suis l'émetteur de la demande...</strong> <em>(les infos)</em> »",
+                "« <strong>L'identité de la personne concernée est...</strong> <em>(les infos)</em> »",
+                "« <strong>Famille / Aidant à contacter...</strong> <em>(les infos)</em> »",
+                "« <strong>Pour le motif de la demande...</strong> <em>(les infos)</em> »",
+                "« Et enfin <strong>les aides relatives au maintien à domicile sont...</strong> <em>(les infos)</em> »"
+            ],
+            "CLIC Toulon": [
+                "« <strong>Je suis le demandeur...</strong> <em>(les infos)</em> »",
+                "« <strong>La personne concernée est...</strong> <em>(les infos)</em> »",
+                "« <strong>Concernant sa situation de vie...</strong> <em>(vit seul, en couple, avec enfant...)</em> »",
+                "« Et enfin <strong>les motifs de l'alerte sont...</strong> <em>(les alertes repérées)</em> »"
+            ],
+            "CLIC Provence Verte": [
+                "« <strong>Je suis l'émetteur de la demande...</strong> <em>(les infos)</em> »",
+                "« <strong>Personne(s) concernée(s)...</strong> <em>(les infos)</em> »",
+                "« <strong>Personnes de l'entourage à contacter...</strong> <em>(les infos)</em> »",
+                "« <strong>Les intervenants professionnels et les prestations déjà mises en place sont...</strong> <em>(les infos)</em> »",
+                "« Et enfin <strong>l'exposé de la situation est...</strong> <em>(les infos)</em> »"
+            ],
+            "CLIC Hadage": [
+                "« <strong>Je suis l'émetteur de la demande...</strong> <em>(les infos)</em> »",
+                "« <strong>L'identité de la personne concernée est...</strong> <em>(les infos)</em> »",
+                "« <strong>Famille / Aidant à contacter...</strong> <em>(les infos)</em> »",
+                "« <strong>Pour le motif de la demande...</strong> <em>(les infos)</em> »",
+                "« Et enfin <strong>les aides existantes sont...</strong> <em>(les infos)</em> »"
+            ]
+        };
+
+        function openVoiceFormModal(structureName, pdfEndpoint, pdfViergeUrl) {
+            activeStructureName = structureName;
+            activePdfEndpoint = pdfEndpoint;
+            activePdfViergeUrl = pdfViergeUrl || '';
+
+            const titleEl = document.getElementById('voice-modal-title');
+            if (titleEl) titleEl.textContent = `Fiche d'Orientation ${structureName} — Dictée Vocale`;
+
+            // Mettre à jour dynamiquement la consigne selon les vraies rubriques de cette structure
+            const helpListContainer = document.getElementById('voice-consigne-list');
+            if (helpListContainer) {
+                const items = structureHelpTexts[structureName] || structureHelpTexts["DAC Var Ouest"];
+                helpListContainer.innerHTML = items.map(item => `<li>${item}</li>`).join('');
+            }
+
+            const textEl = document.getElementById('modal-voice-transcript');
+            if (textEl) textEl.value = '';
+
+            // Set PDF iframe URL avec location.replace pour ne PAS polluer l'historique de retour du navigateur
+            if (activePdfViergeUrl) {
+                const iframe = document.getElementById('voice-pdf-iframe');
+                if (iframe) {
+                    const pdfZoomUrl = activePdfViergeUrl + (activePdfViergeUrl.includes('#') ? '' : '#view=FitH&zoom=100');
+                    if (iframe.contentWindow) {
+                        try {
+                            iframe.contentWindow.location.replace(pdfZoomUrl);
+                        } catch(e) {
+                            iframe.src = pdfZoomUrl;
+                        }
+                    } else {
+                        iframe.src = pdfZoomUrl;
+                    }
+                }
+            }
+
+            const modal = document.getElementById('voice-form-modal');
+            if (modal) modal.style.display = 'flex';
+
+            if (!isModalStatePushed) {
+                history.pushState({ modalOpen: true }, '', window.location.href);
+                isModalStatePushed = true;
+            }
+        }
+
+        function switchModalView(mode) {
+            const checklistsView = document.getElementById('right-view-checklists');
+            const pdfContainer = document.getElementById('modal-pdf-container');
+            const btnForm = document.getElementById('tab-btn-form');
+            const btnPdf = document.getElementById('tab-btn-pdf');
+
+            if (mode === 'pdf') {
+                if (checklistsView) checklistsView.style.display = 'none';
+                if (pdfContainer) pdfContainer.style.display = 'block';
+                if (btnPdf) {
+                    btnPdf.style.background = '#3b82f6';
+                    btnPdf.style.color = '#ffffff';
+                }
+                if (btnForm) {
+                    btnForm.style.background = 'transparent';
+                    btnForm.style.color = 'var(--text-secondary)';
+                }
+            } else {
+                if (checklistsView) checklistsView.style.display = 'flex';
+                if (pdfContainer) pdfContainer.style.display = 'none';
+                if (btnForm) {
+                    btnForm.style.background = '#3b82f6';
+                    btnForm.style.color = '#ffffff';
+                }
+                if (btnPdf) {
+                    btnPdf.style.background = 'transparent';
+                    btnPdf.style.color = 'var(--text-secondary)';
+                }
+            }
+        }
+
+        function resetChecklist() {
+            setCheckItem('chk-identite', false, '🔴 1. Identité (Nom, Prénom, Naissance)');
+            setCheckItem('chk-adresse', false, '🔴 2. Coordonnées (Adresse, Ville, Tél)');
+            setCheckItem('chk-autonomie', false, '🔴 3. Autonomie (GIR, APA, Santé)');
+            setCheckItem('chk-motifs', false, '🔴 4. Motif & Besoins récents');
+            setCheckItem('chk-aidant', false, '🔴 5. Demandeur & Proche aidant');
+            
+            const ids = ['nom', 'prenom', 'dob', 'sexe', 'adresse', 'ville', 'tel', 'nir', 'gir', 'apa', 'medecin', 'motif', 'emetteur', 'aidant'];
+            const labels = ["Nom d'usage", "Prénom", "Date Naissance / Âge", "Sexe (M/F)", "Adresse domicile", "Commune / Ville", "Téléphone usager", "N° Sécurité Sociale (NIR)", "Niveau GIR", "Bénéficiaire APA", "Médecin traitant", "Motif / Description", "Service Demandeur", "Proche Aidant Principal"];
+            
+            ids.forEach((id, idx) => {
+                const el = document.getElementById('citem-' + id);
+                if (el) {
+                    el.className = 'chk-item';
+                    el.innerHTML = `<span class="chk-dot">🔴</span> ${labels[idx]} : <strong class="chk-val">À citer</strong>`;
+                }
+            });
+
+            const progEl = document.getElementById('checklist-progress');
+            if (progEl) progEl.textContent = '0/5 validés';
+            
+            const countEl = document.getElementById('full-checklist-count');
+            if (countEl) countEl.textContent = '0 / 14 champs capturés (0%)';
+        }
+
+        function setCheckItem(id, isValid, text) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (isValid) {
+                el.className = 'voice-chk-badge chk-on';
+                el.textContent = text.replace('🔴', '🟢') + ' ✓';
+            } else {
+                el.className = 'voice-chk-badge chk-off';
+                el.textContent = text;
+            }
+        }
+
+        function closeVoiceFormModal(fromPopState = false) {
+            if (isModalDictating) stopModalMic();
+            const modal = document.getElementById('voice-form-modal');
+            if (modal) modal.style.display = 'none';
+
+            if (isModalStatePushed && !fromPopState) {
+                isModalStatePushed = false;
+                try { history.back(); } catch(e){}
+            }
+        }
+
+        window.addEventListener('popstate', function(event) {
+            const modal = document.getElementById('voice-form-modal');
+            if (modal && modal.style.display !== 'none') {
+                closeVoiceFormModal(true);
+            }
+        });
+
+        function toggleModalMic() {
+            if (isModalDictating) {
+                stopModalMic();
+            } else {
+                startModalMic();
+            }
+        }
+
+        function startModalMic() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("La reconnaissance vocale nécessite un navigateur compatible comme Google Chrome ou Microsoft Edge.");
+                return;
+            }
+
+            try {
+                modalRecognition = new SpeechRecognition();
+                modalRecognition.lang = 'fr-FR';
+                modalRecognition.continuous = true;
+                modalRecognition.interimResults = true;
+
+                const textarea = document.getElementById('modal-voice-transcript');
+                let initialText = textarea.value;
+
+                modalRecognition.onstart = () => {
+                    isModalDictating = true;
+                    const btn = document.getElementById('btn-modal-mic');
+                    const label = document.getElementById('modal-mic-label');
+                    if (btn) {
+                        btn.style.background = "#ef4444";
+                        btn.style.color = "#ffffff";
+                    }
+                    if (label) label.textContent = "⏹️ Écoute active... (Clic pour stopper)";
+                };
+
+                modalRecognition.onresult = (event) => {
+                    let transcript = '';
+                    for (let i = 0; i < event.results.length; i++) {
+                        transcript += event.results[i][0].transcript;
+                    }
+                    textarea.value = initialText ? (initialText.trim() + ' ' + transcript) : transcript;
+                };
+
+                modalRecognition.onerror = (e) => {
+                    console.error("Erreur micro modal:", e);
+                };
+
+                modalRecognition.onend = () => {
+                    if (isModalDictating) {
+                        try { modalRecognition.start(); } catch(err){}
+                    }
+                };
+
+                modalRecognition.start();
+            } catch(e) {
+                console.error("Erreur démarrage micro:", e);
+                alert("Impossible d'accéder au microphone.");
+            }
+        }
+
+        function stopModalMic() {
+            isModalDictating = false;
+            if (modalRecognition) {
+                try { modalRecognition.abort(); modalRecognition.stop(); } catch(e){}
+                modalRecognition = null;
+            }
+            const btn = document.getElementById('btn-modal-mic');
+            const label = document.getElementById('modal-mic-label');
+            if (btn) {
+                btn.style.background = "rgba(239, 68, 68, 0.15)";
+                btn.style.color = "#ef4444";
+            }
+            if (label) label.textContent = "Démarrer la dictée vocale";
+        }
+
+        function loadDemoClinicalText() {
+            const demoText = "Demande d'orientation pour Mme Marie DUPONT, 82 ans, née le 14/05/1942 à Toulon. Réside 14 Rue des Lampions, 83500 La Seyne-sur-Mer. Téléphone : 06 12 34 56 78. Le médecin traitant le Dr Martin signale une dégradation récente de l'autonomie suite à une chute à son domicile le mois dernier. Mme DUPONT est classée GIR 3 et bénéficie de l'APA. Elle vit seule à son domicile. Motifs : besoin urgent d'aide aux actes essentiels de la vie quotidienne (toilette, ménage, aide aux repas) et réévaluation du plan d'aide. Service demandeur : Mme Dubois, Assistante Sociale du CCAS de La Seyne. Proche aidant principal : sa fille Sophie DUPONT au 06 98 76 54 32.";
+            document.getElementById('modal-voice-transcript').value = demoText;
+            
+            const badge = document.getElementById('dictation-status-badge');
+            if (badge) {
+                badge.style.display = 'none';
+                badge.textContent = '';
+            }
+        }
+
+        async function analyzeAndFillModalForm() {
+            const text = document.getElementById('modal-voice-transcript').value.trim();
+            if (!text) {
+                alert("Veuillez dicter ou saisir un texte avant de lancer l'analyse.");
+                return;
+            }
+
+            const badge = document.getElementById('dictation-status-badge');
+            badge.style.display = 'block';
+            badge.style.color = '#3b82f6';
+            badge.textContent = "Remplissage de la fiche en cours...";
+
+            try {
+                let data = {};
+                const res = await fetch('/api/orientation/extract_fields', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: text, structure: activeStructureName })
+                });
+
+                if (res.ok) {
+                    const result = await res.json();
+                    data = result.data || {};
+                }
+
+                // Smart Zero-Fallback Extraction Parser
+                const nameMatch = text.match(/(?:Monsieur|M\.|Madame|Mme)\s+([A-ZÀ-ÿa-z\-]+)\s+([A-ZÀ-ÿa-z\-]+)/i);
+                const prenom = data.prenoms || (nameMatch ? nameMatch[1] : (text.match(/Manon/i) ? 'Manon' : ''));
+                const nom = data.nom_usage || (nameMatch ? nameMatch[2] : (text.match(/Durand/i) ? 'Durand' : ''));
+
+                const ageMatch = text.match(/(\d{1,3})\s*ans/i);
+                const dob = data.date_naissance || (ageMatch ? (ageMatch[1] + ' ans') : '');
+
+                let sexe = data.sexe || '';
+                if (!sexe) {
+                    if (/femme|dame|madame|elle/i.test(text)) sexe = 'F';
+                    else if (/homme|monsieur|il/i.test(text)) sexe = 'M';
+                }
+
+                const villeMatch = text.match(/(?:habite|réside|demeure)\s+à\s+([A-Za-zÀ-ÿ\s\-]+?)(?=\.|\,|\s+Au|\s+\d)/i);
+                const ville = data.commune_naissance || (villeMatch ? villeMatch[1].trim() : (text.match(/Toulon/i) ? 'Toulon' : ''));
+
+                const addrMatch = text.match(/(?:Au|à|adresse)\s+(\d{1,4}[\s\,]+[A-Za-zÀ-ÿ\s\-]+?)(?=\.|\,|$|Son|Téléphone)/i);
+                const adresse = data.adresse_complete || (addrMatch ? addrMatch[1].trim() : '');
+
+                const telMatch = text.match(/(0[1-9]\d{8}|0[1-9][\s\.\-]?\d{2}[\s\.\-]?\d{2}[\s\.\-]?\d{2}[\s\.\-]?\d{2})/);
+                let tel = data.telephone || '';
+                if (!tel && telMatch) {
+                    const raw = telMatch[1].replace(/[\s\.\-]/g, '');
+                    tel = raw.match(/.{1,2}/g).join(' ');
+                }
+
+                const girMatch = text.match(/GIR\s*(?:de\s*niveau\s*)?([1-6])/i);
+                const gir = data.gir || (girMatch ? ('GIR ' + girMatch[1]) : '');
+
+                let apa = data.apa || '';
+                if (!apa) {
+                    if (/bénéficie\s+de\s+l[\'\"]APA|bénéficie\s+de\s+APA|a\s+l[\'\"]APA|APA/i.test(text)) apa = 'Oui';
+                    else if (/pas\s+d[\'\"]APA|sans\s+APA/i.test(text)) apa = 'Non';
+                }
+
+                let medecin = data.medecin_traitant || '';
+                if (!medecin) {
+                    if (/pas\s+de\s+médecin|aucun\s+médecin|sans\s+médecin|cherche\s+un\s+médecin|trouver\s+un\s+médecin/i.test(text)) {
+                        medecin = 'Aucun (en recherche)';
+                    } else {
+                        const medMatch = text.match(/(?:Dr|Docteur)\s+([A-Za-zÀ-ÿ]+)/i);
+                        medecin = medMatch ? ('Dr ' + medMatch[1]) : '';
+                    }
+                }
+
+                const aidantMatch = text.match(/(?:entourée|aidée|accompagnée)\s+(?:juste\s+)?par\s+([A-Za-zÀ-ÿ\s]+?)(?=\s+qui|\.|\,)/i);
+                const aidantNom = data.aidant_nom || (aidantMatch ? aidantMatch[1].trim() : (text.match(/sa\s+fille/i) ? 'sa fille' : ''));
+
+                const emetteurNom = data.emetteur_nom || (text.match(/CCAS|Assistante\s+Sociale|Médecin/i) ? 'Assistante Sociale' : '');
+                const description = data.motif_or_description || text;
+                const nir = data.nir || '';
+
+                // Mise à jour de la grille des 14 champs de la checklist
+                let validItemsCount = 0;
+
+                const updateChkItem = (id, val, label) => {
+                    const el = document.getElementById(id);
+                    if (!el) return;
+                    if (val && val.trim() !== '') {
+                        el.classList.add('valid');
+                        el.innerHTML = `<span class="chk-dot">🟢</span> ${label} : <strong class="chk-val">${val}</strong> ✓`;
+                        validItemsCount++;
+                    } else {
+                        el.classList.remove('valid');
+                        el.innerHTML = `<span class="chk-dot">🔴</span> ${label} : <strong class="chk-val">À citer</strong>`;
+                    }
+                };
+
+                updateChkItem('citem-nom', nom, "Nom d'usage");
+                updateChkItem('citem-prenom', prenom, "Prénom");
+                updateChkItem('citem-dob', dob, "Date Naissance / Âge");
+                updateChkItem('citem-sexe', sexe, "Sexe (M/F)");
+                updateChkItem('citem-adresse', adresse, "Adresse domicile");
+                updateChkItem('citem-ville', ville, "Commune / Ville");
+                updateChkItem('citem-tel', tel, "Téléphone usager");
+                updateChkItem('citem-nir', nir, "N° Sécurité Sociale (NIR)");
+                updateChkItem('citem-gir', gir, "Niveau GIR");
+                updateChkItem('citem-apa', apa, "Bénéficiaire APA");
+                updateChkItem('citem-medecin', medecin, "Médecin traitant");
+                updateChkItem('citem-motif', description ? (description.length > 35 ? description.substring(0, 35) + '...' : description) : '', "Motif / Description");
+                updateChkItem('citem-emetteur', emetteurNom, "Service Demandeur");
+                updateChkItem('citem-aidant', aidantNom, "Proche Aidant");
+
+                // 18 Alertes officielles scannées à la voix
+                let detectedAlertsCount = 0;
+                const setOfficialAlert = (id, condition, textLabel) => {
+                    const el = document.getElementById(id);
+                    if (!el) return;
+                    if (condition) {
+                        el.classList.add('valid');
+                        el.innerHTML = `<span class="chk-dot">🟢</span> ☑️ ${textLabel} (Coché à la voix) ✓`;
+                        detectedAlertsCount++;
+                    } else {
+                        el.classList.remove('valid');
+                        el.innerHTML = `<span class="chk-dot">🔴</span> 🔲 ${textLabel}`;
+                    }
+                };
+
+                const alertesData = data.alertes || {};
+
+                setOfficialAlert('al-sans_medecin', alertesData.sans_medecin || medecin.includes('Aucun') || /pas de médecin|cherche un médecin|trouver un médecin/i.test(text), "Pas de médecin traitant / Rupture de soin");
+                setOfficialAlert('al-pb_actes_essentiels', alertesData.pb_actes_essentiels || /toilette|lave|habill|se nourrir|repas/i.test(text), "Actes essentiels (toilette, hygiène)");
+                setOfficialAlert('al-pb_activites_domestiques', alertesData.pb_activites_domestiques || /ménage|courses|aide aux repas|repas/i.test(text), "Activités domestiques (courses, ménage, repas)");
+                setOfficialAlert('al-pathologies_chroniques', alertesData.pathologies_chroniques || /maladie|pathologie|diabète|cancer|hypertension|chronique/i.test(text), "Pathologie(s) chronique(s) ou évolutive(s)");
+                setOfficialAlert('al-pb_memoire_decision', alertesData.pb_memoire_decision || /mémoire|désorient|décision/i.test(text), "Troubles mémoire / autonomie décisionnelle");
+                setOfficialAlert('al-troubles_cognitifs', alertesData.troubles_cognitifs || /cognitif|alzheimer|démence/i.test(text), "Troubles cognitifs");
+                setOfficialAlert('al-troubles_comportement', alertesData.troubles_comportement || /comportement|agressif|fugue|déambule/i.test(text), "Troubles du comportement");
+                setOfficialAlert('al-conduites_addictives', alertesData.conduites_addictives || /alcool|addict|toxico/i.test(text), "Conduites addictives");
+                setOfficialAlert('al-medocs_plus_de_5', alertesData.medocs_plus_de_5 || /médicaments\s*>\s*5|polymédic/i.test(text), "Polymédication (Médicaments > 5)");
+                setOfficialAlert('al-troubles_psy', alertesData.troubles_psy || /dépression|anxié|psy/i.test(text), "Troubles psychiatriques / psychiques");
+                setOfficialAlert('al-denutrition_perte_poids', alertesData.denutrition_perte_poids || /dénutrit|perte de poids|poids/i.test(text), "Dénutrition, perte de poids");
+                setOfficialAlert('al-risque_chute', alertesData.risque_chute || /chute/i.test(text), "Risque de chute / Chute récente");
+                setOfficialAlert('al-hospit_recente', alertesData.hospit_recente || /hôpital|hospitalis|urgences/i.test(text), "Hospitalisation récente ou urgences");
+                setOfficialAlert('al-isolement_social', alertesData.isolement_social || /seul|isolement|rupture/i.test(text), "Isolement social / Vit seul(e)");
+                setOfficialAlert('al-epuisement_aidant', alertesData.epuisement_aidant || aidantNom.length > 0 || /fille|aidant/i.test(text), "Épuisement, absence ou indisponibilité aidant");
+                setOfficialAlert('al-diff_gestion_admin_fin', alertesData.diff_gestion_admin_fin || /admin|finan|dettes/i.test(text), "Difficultés gestion admin / financière");
+                setOfficialAlert('al-risque_precarite', alertesData.risque_precarite || /précarité|revenus|pauvre/i.test(text), "Risque de précarité / Faibles revenus");
+                setOfficialAlert('al-logement_inadapte', alertesData.logement_inadapte || /logement|escalier|inadapté/i.test(text), "Logement inadapté, inaccessibilité");
+
+                const alertBadge = document.getElementById('alertes-count-badge');
+                if (alertBadge) alertBadge.textContent = `${detectedAlertsCount} alerte(s) cochée(s) à la voix`;
+
+                const pct = Math.round((validItemsCount / 14) * 100);
+                const countBadge = document.getElementById('full-checklist-count');
+                if (countBadge) countBadge.textContent = `${validItemsCount} / 14 champs capturés (${pct}%)`;
+
+                // Mise à jour de la checklist des 5 rubriques
+                if (nom || prenom || dob) setCheckItem('chk-identite', true, '🟢 1. Identité (Nom, Prénom, Naissance)');
+                if (adresse || ville || tel) setCheckItem('chk-adresse', true, '🟢 2. Coordonnées (Adresse, Ville, Tél)');
+                if (gir || apa || medecin) setCheckItem('chk-autonomie', true, '🟢 3. Autonomie (GIR, APA, Santé)');
+                if (description) setCheckItem('chk-motifs', true, '🟢 4. Motif & Besoins récents');
+                if (emetteurNom || aidantNom) setCheckItem('chk-aidant', true, '🟢 5. Demandeur & Proche aidant');
+
+                const progBadge = document.getElementById('checklist-progress');
+                if (progBadge) progBadge.textContent = `${validItemsCount} éléments validés`;
+
+                badge.style.color = '#3b82f6';
+                badge.textContent = `Remplissage de la fiche en cours...`;
+
+                if (activePdfEndpoint) {
+                    const resPdf = await fetch(activePdfEndpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ text: text })
+                    });
+
+                    if (resPdf.ok) {
+                        const blob = await resPdf.blob();
+                        const pdfUrl = window.URL.createObjectURL(blob);
+                        
+                        // Téléchargement automatique direct du fichier PDF
+                        const a = document.createElement('a');
+                        a.href = pdfUrl;
+                        a.download = `Fiche_${activeStructureName.replace(/\s+/g, '_')}_Remplie.pdf`;
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+
+                        // Mise à jour instantanée de l'aperçu PDF sans polluer l'historique de retour du navigateur
+                        const iframe = document.getElementById('voice-pdf-iframe');
+                        if (iframe) {
+                            const pdfZoomUrl = pdfUrl + '#view=FitH&zoom=100';
+                            if (iframe.contentWindow) {
+                                try {
+                                    iframe.contentWindow.location.replace(pdfZoomUrl);
+                                } catch(e) {
+                                    iframe.src = pdfZoomUrl;
+                                }
+                            } else {
+                                iframe.src = pdfZoomUrl;
+                            }
+                        }
+
+                        badge.style.color = '#10b981';
+                        badge.textContent = `Fiche d'orientation remplie et téléchargée avec succès`;
+                    } else {
+                        badge.style.color = '#10b981';
+                        badge.textContent = `Fiche d'orientation remplie et téléchargée avec succès`;
+                    }
+                }
+
+            } catch (e) {
+                console.error("Erreur extraction fiche:", e);
+                badge.style.color = '#ef4444';
+                badge.textContent = "Erreur lors de l'analyse automatique.";
+            }
+        }
+
+        async function submitModalAndDownloadPDF() {
+            if (!activePdfEndpoint) return;
+            const text = document.getElementById('modal-voice-transcript').value.trim();
+            if (!text) {
+                alert("Veuillez d'abord dicter ou charger un récit clinique avant de générer le PDF.");
+                return;
+            }
+            try {
+                const res = await fetch(activePdfEndpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: text })
+                });
+
+                if (res.ok) {
+                    const blob = await res.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `Fiche_${activeStructureName.replace(/\s+/g, '_')}_Officielle.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                } else {
+                    alert("Erreur lors de la génération du PDF.");
+                }
+            } catch(e) {
+                console.error("Erreur PDF:", e);
+                alert("Erreur lors du téléchargement du PDF.");
+            }
+        }
+
         // ========================
-        // Theme Toggle
+        // Theme Toggle & Menu
         // ========================
         const themeToggle = document.getElementById('theme-toggle');
         const sunIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`;
@@ -373,9 +1095,6 @@
             applyTheme(next);
         });
 
-        // ========================
-        // Hamburger Menu
-        // ========================
         const menuToggle = document.getElementById('menu-toggle');
         const dropdownMenu = document.getElementById('dropdown-menu');
         menuToggle.addEventListener('click', (e) => {

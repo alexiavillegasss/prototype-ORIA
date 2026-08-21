@@ -13,38 +13,66 @@
     <style>
         /* ---- Page-specific: Hub de sélection FO / Grille ---- */
 
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
         .hub-container {
-            max-width: 960px;
-            margin: 3.5rem auto 4rem;
+            max-width: 1450px;
+            margin: 3rem auto 3rem;
             padding: 0 2rem;
             display: flex;
             flex-direction: column;
-            gap: 2rem;
+            gap: 2.5rem;
+            flex: 1;
+        }
+
+        #dashboard-footer {
+            margin-top: auto;
+            width: 100%;
         }
 
         .hub-intro {
             text-align: center;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
         }
 
         .hub-intro h2 {
-            font-size: 1.25rem;
-            font-weight: 600;
+            font-size: 1.6rem;
+            font-weight: 700;
             color: var(--text-primary);
         }
 
         .hub-intro p {
-            font-size: 0.88rem;
+            font-size: 0.98rem;
             color: var(--text-secondary);
-            margin-top: 0.35rem;
+            margin-top: 0.45rem;
         }
 
-        /* Grille des cartes principales */
+        /* Grille des cartes principales : 1 Carte centrée en haut + 2 Cartes en bas */
         .hub-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.75rem;
+            align-items: center;
+            width: 100%;
+        }
+
+        .hub-grid-top {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            max-width: 680px;
+        }
+
+        .hub-grid-bottom {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 1.5rem;
-            align-items: stretch;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 1.75rem;
+            width: 100%;
+            max-width: 1150px;
         }
 
         .hub-card-icon.fo { background: rgba(59, 130, 246, 0.12); color: var(--accent-blue); }
@@ -66,18 +94,18 @@
             border: 1px solid var(--border-glass);
             backdrop-filter: blur(12px);
             border-radius: var(--radius);
-            padding: 2rem 1.75rem;
+            padding: 2.5rem 2.25rem;
             box-shadow: var(--shadow-card);
             cursor: pointer;
             transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 1.25rem;
             position: relative;
         }
 
         .hub-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-6px);
             box-shadow: var(--shadow-card), var(--shadow-glow);
             border-color: var(--accent-blue);
         }
@@ -85,16 +113,16 @@
         .hub-card-header {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.25rem;
         }
 
         .hub-card-icon {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 52px;
-            height: 52px;
-            border-radius: 14px;
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
             flex-shrink: 0;
         }
 
@@ -102,21 +130,21 @@
         .hub-card-icon.comid { background: rgba(45, 212, 191, 0.12); color: var(--accent-teal); }
 
         .hub-card-icon svg {
-            width: 26px;
-            height: 26px;
+            width: 32px;
+            height: 32px;
         }
 
         .hub-card-title {
-            font-size: 1.15rem;
+            font-size: 1.35rem;
             font-weight: 700;
             color: var(--text-primary);
             letter-spacing: -0.01em;
         }
 
         .hub-card-desc {
-            font-size: 0.88rem;
+            font-size: 0.96rem;
             color: var(--text-secondary);
-            line-height: 1.55;
+            line-height: 1.6;
         }
 
         /* Chevron expand indicator */
@@ -371,62 +399,67 @@
 
         <div class="hub-grid">
 
-            <!-- Card 1 : Fiche d'Orientation -->
-            <a class="hub-card" id="card-fo" href="/fiches" style="text-decoration: none;">
-                <div class="hub-card-header">
-                    <div class="hub-card-icon fo">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+            <!-- Ligne 1 (Haut, Centré) : Fiche d'Orientation -->
+            <div class="hub-grid-top">
+                <a class="hub-card" id="card-fo" href="/fiches" style="text-decoration: none; width: 100%;">
+                    <div class="hub-card-header">
+                        <div class="hub-card-icon fo">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+                        </div>
+                        <div>
+                            <div class="hub-card-title">Fiche d'Orientation</div>
+                        </div>
                     </div>
-                    <div>
-                        <div class="hub-card-title">Fiche d'Orientation</div>
+
+                    <p class="hub-card-desc">Remplissez la fiche d'orientation de la structure de votre choix, à la main ou à la voix.</p>
+
+                    <div class="hub-card-badge">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        5 structures disponibles
                     </div>
-                </div>
+                </a>
+            </div>
 
-                <p class="hub-card-desc">Remplissez la fiche d'orientation de la structure de votre choix, à la main ou à la voix.</p>
-
-                <div class="hub-card-badge">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    5 structures disponibles
-                </div>
-            </a>
-
-            <!-- Card 2 : Grille COMID -->
-            <a class="hub-card comid-card" id="card-comid" href="/comid" style="text-decoration: none;">
-                <div class="hub-card-header">
-                    <div class="hub-card-icon comid">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            <!-- Ligne 2 (Bas, 2 colonnes) : Grille COMID & Grille ZARIT -->
+            <div class="hub-grid-bottom">
+                <!-- Card 2 : Grille COMID -->
+                <a class="hub-card comid-card" id="card-comid" href="/comid" style="text-decoration: none;">
+                    <div class="hub-card-header">
+                        <div class="hub-card-icon comid">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                        </div>
+                        <div>
+                            <div class="hub-card-title">Grille COMID</div>
+                        </div>
                     </div>
-                    <div>
-                        <div class="hub-card-title">Grille COMID</div>
+
+                    <p class="hub-card-desc">Évaluez la complexité multidimensionnelle à domicile en remplissant les 30 indicateurs de vulnérabilité.</p>
+
+                    <div class="hub-card-badge">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                        30 indicateurs · Score 0–30
                     </div>
-                </div>
+                </a>
 
-                <p class="hub-card-desc">Évaluez la complexité multidimensionnelle à domicile en remplissant les 30 indicateurs de vulnérabilité.</p>
-
-                <div class="hub-card-badge">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                    30 indicateurs · Score 0–30
-                </div>
-            </a>
-
-            <!-- Card 3 : Grille ZARIT -->
-            <a class="hub-card zarit-card" id="card-zarit" href="/zarit" style="text-decoration: none;">
-                <div class="hub-card-header">
-                    <div class="hub-card-icon zarit">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                <!-- Card 3 : Grille ZARIT -->
+                <a class="hub-card zarit-card" id="card-zarit" href="/zarit" style="text-decoration: none;">
+                    <div class="hub-card-header">
+                        <div class="hub-card-icon zarit">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                        </div>
+                        <div>
+                            <div class="hub-card-title">Grille ZARIT</div>
+                        </div>
                     </div>
-                    <div>
-                        <div class="hub-card-title">Grille ZARIT</div>
+
+                    <p class="hub-card-desc">Évaluez la charge et le niveau d'épuisement de l'aidant familial à travers 22 indicateurs.</p>
+
+                    <div class="hub-card-badge">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                        22 questions · Score 0–88
                     </div>
-                </div>
-
-                <p class="hub-card-desc">Évaluez la charge et le niveau d'épuisement de l'aidant familial à travers 22 indicateurs.</p>
-
-                <div class="hub-card-badge">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                    22 questions · Score 0–88
-                </div>
-            </a>
+                </a>
+            </div>
 
         </div>
     </main>

@@ -165,9 +165,8 @@ Réponds UNIQUEMENT par ce JSON complet :
             match = re.search(r'\b(\d{1,3})\b', date_n)
             if match:
                 age = int(match.group(1))
-                if age < 130: # Eviter de transformer une vraie année genre "1990" en âge
-                    year = datetime.datetime.now().year - age
-                    parsed["date_naissance"] = str(year)
+                if age < 120:
+                    parsed["date_naissance"] = f"{age} ans"
                 
         nom = parsed.get("nom_usage", "")
         # Nettoyage des noms anonymes
@@ -288,11 +287,14 @@ Réponds UNIQUEMENT par ce JSON complet :
         # L'IA a tendance à halluciner des hospitalisations. On force à False si les mots clés sont absents ou si négation.
         if parsed.get("alertes"):
             text_for_hospit = text_lower
+            neg_hospit_terms = [
+                "aucune hospit", "aucune hospitalisation", "pas d'hospit", "pas d'hospitalisation",
+                "sans hospit", "sans hospitalisation", "non hospit", "non hospitalis",
+                "n'a pas été hospit", "jamais été hospit", "jamais hospit", "pas eu d'hospit", "pas eu d'hospitalisation"
+            ]
             if "hospit" not in text_for_hospit and "urgence" not in text_for_hospit and "clinique" not in text_for_hospit:
                 parsed["alertes"]["hospit_recente"] = False
-            elif "n'a pas été hospit" in text_for_hospit or "pas d'hospit" in text_for_hospit or "sans hospit" in text_for_hospit or "non hospit" in text_for_hospit:
-                parsed["alertes"]["hospit_recente"] = False
-            elif "jamais été hospit" in text_for_hospit:
+            elif any(neg in text_for_hospit for neg in neg_hospit_terms):
                 parsed["alertes"]["hospit_recente"] = False
                 
             if not parsed["alertes"].get("hospit_recente", True):
@@ -524,28 +526,59 @@ Réponds UNIQUEMENT par ce JSON complet :
                     year = datetime.datetime.now().year - age
                     parsed["usager_date_naissance"] = str(year)
             
-        # Anti-hallucination pour l'aidant : si le nom inventé n'est pas dans le texte
-        aidant_nom = parsed.get("aidant_nom", "")
-        if aidant_nom and aidant_nom.lower() not in text_lower:
-            parsed["aidant_nom"] = ""
-            parsed["aidant_tel"] = ""
-            parsed["aidant_email"] = ""
-            
-        # Si le service est vide mais qu'on a un lien aidant, et qu'il n'y a pas d'autre émetteur, on peut le mettre
-        if not parsed.get("emetteur_service") and parsed.get("aidant_lien"):
-            parsed["emetteur_service"] = parsed.get("aidant_lien")
-            
-        # REVERSE : Si l'émetteur est un proche (fils, fille, mari, epouse, etc), copier dans la case aidant
-        em_service = parsed.get("emetteur_service", "").lower()
-        if any(proche in em_service for proche in ["fille", "fils", "enfant", "mari", "femme", "epouse", "épouse", "conjoint", "compagnon", "voisin", "neveu", "nièce"]):
-            if not parsed.get("aidant_lien"):
-                parsed["aidant_lien"] = parsed.get("emetteur_service", "")
-            if not parsed.get("aidant_nom"):
-                parsed["aidant_nom"] = parsed.get("emetteur_nom", "")
-            if not parsed.get("aidant_tel"):
-                parsed["aidant_tel"] = parsed.get("emetteur_telephone", "")
-            if not parsed.get("aidant_email"):
-                parsed["aidant_email"] = parsed.get("emetteur_email", "")
+        # Extraction / Fallback Python ultra-robuste pour Aidant / Proche
+        if not parsed.get("aidant_nom") or not parsed.get("aidant_lien"):
+            m_aidant = re.search(r'(?:proche\s+aidant(?:\s+principal)?\s*:\s*)?(?:sa|son)?\s*(fille|fils|mari|épouse|epouse|conjoint|soeur|frère|aidant|aidante)?\s*([A-ZÀ-ÿ][a-zÀ-ÿ\-]+(?:\s+[A-ZÀ-ÿ][a-zÀ-ÿ\-]+)?)\s*(?:au|tél|tel|\,)?\s*(0[1-9][\s\.\-]?\d{2}[\s\.\-]?\d{2}[\s\.\-]?\d{2}[\s\.\-]?\d{2})?', text, re.IGNORECASE)
+            if m_aidant:
+                if m_aidant.group(1) and not parsed.get("aidant_lien"):
+                    parsed["aidant_lien"] = m_aidant.group(1).strip().capitalize()
+                if m_aidant.group(2) and not parsed.get("aidant_nom"):
+                    parsed["aidant_nom"] = m_aidant.group(2).strip()
+                if m_aidant.group(3) and not parsed.get("aidant_tel"):
+                    parsed["aidant_tel"] = m_aidant.group(3).strip()
+
+        # Fallback supplémentaire pour le lien de parenté s'il est toujours vide
+        if not parsed.get("aidant_lien"):
+            for lien_kw in ["fille", "fils", "conjoint", "épouse", "epouse", "mari", "frère", "frere", "soeur", "sœur", "neveu", "nièce", "voisin", "voisine", "ami", "amie"]:
+                if re.search(r'\b' + lien_kw + r'\b', text_lower):
+                    parsed["aidant_lien"] = lien_kw.capitalize()
+                    break
+
+        # Chercher le numéro de tel de l'aidant si présent et pas encore capturé
+        if parsed.get("aidant_nom") and not parsed.get("aidant_tel"):
+            tel_aid_m = re.search(re.escape(parsed["aidant_nom"]) + r'.*?(0[1-9][\s\.\-]?\d{2}[\s\.\-]?\d{2}[\s\.\-]?\d{2}[\s\.\-]?\d{2})', text, re.IGNORECASE | re.DOTALL)
+            if tel_aid_m:
+                parsed["aidant_tel"] = tel_aid_m.group(1).strip()
+
+        # Anti-collision Cercle de Soins vs Aidant Familial :
+        # Si l'IA a mis une personne physique (ex: Sophie DUPONT ou sa fille) en SSIAD, HAD ou SAAD,
+        # il s'agit d'un aidant familial et NON d'un organisme professionnel (un service SSIAD/SAAD n'est pas un prénom/nom d'une personne) !
+        aid_nom = str(parsed.get("aidant_nom", "")).lower().strip()
+        cleaned_cercle = []
+        for pro in parsed.get("cercle_de_soins", []):
+            pro_nom = str(pro.get("nom", "")).strip()
+            pro_nom_lower = pro_nom.lower()
+            pro_type = str(pro.get("type", "")).lower()
+
+            is_personne_aidante = False
+            if aid_nom and pro_nom_lower and (pro_nom_lower in aid_nom or aid_nom in pro_nom_lower):
+                is_personne_aidante = True
+            elif any(k in pro_nom_lower or k in pro_type for k in ["fille", "fils", "enfant", "mari", "épouse", "epouse", "conjoint", "aidant", "famille", "proche"]):
+                is_personne_aidante = True
+            elif pro_type in ["ssiad_had", "saad", "aide_a_domicile"] and pro_nom and not any(org in pro_nom_lower for org in ["ssiad", "saad", "had", "admr", "ccas", "asso", "service", "agence", "centre", "domus", "senior", "presence", "présence"]):
+                # Si classé par erreur par le LLM en SSIAD/SAAD mais avec un nom de personne physique (ex: Sophie DUPONT)
+                is_personne_aidante = True
+
+            if is_personne_aidante:
+                if not parsed.get("aidant_nom"):
+                    parsed["aidant_nom"] = pro_nom
+                    aid_nom = pro_nom_lower
+                if not parsed.get("aidant_tel") and pro.get("tel"):
+                    parsed["aidant_tel"] = pro.get("tel")
+                # On ne l'ajoute pas aux services pros SSIAD/SAAD
+                continue
+            cleaned_cercle.append(pro)
+        parsed["cercle_de_soins"] = cleaned_cercle
                 
         # Fallback python pour les aides à domicile ratées par l'IA
         if not parsed.get("aide_1"):

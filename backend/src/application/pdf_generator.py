@@ -96,10 +96,13 @@ class PDFGenerator:
         if alertes.get("risque_chute"): checkbox_mappings.append(("chute", True))
         if alertes.get("hospit_recente"): 
             checkbox_mappings.append(("Hospitalisation", True))
-            date_h = alertes.get("hospit_date", "")
-            motif_h = alertes.get("hospit_motif", "")
+            date_h = str(alertes.get("hospit_date", ""))
+            motif_h = str(alertes.get("hospit_motif", ""))
+            if date_h.upper() == "INCONNU": date_h = ""
+            if motif_h.upper() == "INCONNU": motif_h = ""
             if date_h or motif_h:
                 field_values["Texte25"] = f"{date_h} - {motif_h}".strip(" -")
+
         if alertes.get("isolement_social"): checkbox_mappings.append(("Isolement social", True))
         if alertes.get("epuisement_aidant"): checkbox_mappings.append(("Epuisement", True))
         if alertes.get("diff_gestion_admin_fin"): checkbox_mappings.append(("administrative", True))
@@ -109,7 +112,45 @@ class PDFGenerator:
         if alertes.get("logement_inadapte"): checkbox_mappings.append(("Logement inadapt", True))
         if alertes.get("incurie_insalubrite"): checkbox_mappings.append(("Incurie", True))
             
+        # Famille / Aidant (Ligne 1 de la table Cercle de Soins)
+        # Top box = Nom/Prénom (Texte28), Bottom box = Lien à préciser (Texte31)
+        aidant_nom = extracted_data.get("aidant_nom", "")
+        aidant_lien = extracted_data.get("aidant_lien", "")
+        
+        # Filtre de sécurité : Empêcher le terme "Aide à domicile" ou "SAAD" ou "SSIAD" d'être considéré comme un nom d'aidant familial !
+        if aidant_nom and any(pro_kw in aidant_nom.lower() for pro_kw in ["aide à domicile", "aide a domicile", "saad", "ssiad", "had", "admr", "infirmier", "médecin", "medecin"]):
+            aidant_nom = ""
+
+        lien_clean = aidant_lien.lower().replace("sa ", "").replace("son ", "").replace("ses ", "").strip().capitalize() if aidant_lien else ""
+        if lien_clean and any(pro_kw in lien_clean.lower() for pro_kw in ["aide à domicile", "aide a domicile", "saad", "ssiad", "had", "admr"]):
+            lien_clean = ""
+        
+        # Fallback ultra-robuste pour s'assurer que le lien (ex: Fille) est TOUJOURS rempli dans Texte31
+        if aidant_nom and not lien_clean:
+            raw_text = str(extracted_data.get("raw_text", "")).lower()
+            for kw in ["fille", "fils", "conjoint", "épouse", "epouse", "mari", "soeur", "sœur", "frère", "frere", "neveu", "nièce", "voisin", "ami"]:
+                if kw in raw_text:
+                    lien_clean = kw.capitalize()
+                    break
+            if not lien_clean:
+                lien_clean = "Proche aidant"
+
+        if aidant_nom:
+            field_values["Texte28"] = aidant_nom
+            field_values["Texte29"] = extracted_data.get("aidant_tel", "")
+            field_values["Texte30"] = extracted_data.get("aidant_email", "")
+            field_values["Texte31"] = lien_clean
+        elif lien_clean:
+            field_values["Texte28"] = lien_clean
+            field_values["Texte31"] = "Proche"
+
         pro_mapping = {
+            "aidant": ("Texte28", "Texte29", "Texte30"),
+            "famille": ("Texte28", "Texte29", "Texte30"),
+            "proche": ("Texte28", "Texte29", "Texte30"),
+            "mesure_protection": ("Texte34", "Texte35", "Texte36"),
+            "tuteur": ("Texte34", "Texte35", "Texte36"),
+            "curateur": ("Texte34", "Texte35", "Texte36"),
             "medecin_traitant": ("Texte37", "Texte38", "Texte39"),
             "specialiste": ("Texte40", "Texte41", "Texte42"),
             "infirmier": ("Texte43", "Texte44", "Texte45"),
@@ -137,6 +178,24 @@ class PDFGenerator:
             display_tel = tel if str(tel).upper() != "INCONNU" else ""
             display_email = email if str(email).upper() != "INCONNU" else ""
             
+            # Anti-collision : Ne JAMAIS mettre un aidant familial / personne physique dans SSIAD, HAD ou SAAD !
+            is_personne = False
+            if display_nom:
+                disp_lower = display_nom.lower()
+                if aidant_nom and (disp_lower in aidant_nom.lower() or aidant_nom.lower() in disp_lower):
+                    is_personne = True
+                elif pro_type in ["ssiad_had", "saad", "aide_a_domicile", "admr"] and not any(org in disp_lower for org in ["ssiad", "saad", "had", "admr", "ccas", "asso", "service", "agence", "centre", "domus", "senior", "presence", "présence"]):
+                    is_personne = True
+
+            if is_personne and pro_type in ["ssiad_had", "saad", "aide_a_domicile", "admr"]:
+                if not field_values.get("Texte28"):
+                    field_values["Texte28"] = display_nom
+                    field_values["Texte29"] = display_tel
+                    field_values["Texte30"] = display_email
+                    if lien_clean:
+                        field_values["Texte31"] = lien_clean
+                continue
+
             if pro_type in pro_mapping:
                 nom_field, tel_field, email_field = pro_mapping[pro_type]
                 field_values[nom_field] = display_nom

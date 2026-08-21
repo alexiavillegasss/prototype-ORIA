@@ -8,9 +8,28 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style_v2.css?v=21">
+    <link rel="stylesheet" href="/static/style_v2.css?v=1004">
     
     <style>
+        /* Force body flex layout & footer pinning to bottom */
+        html, body {
+            min-height: 100vh !important;
+            margin: 0;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+
+        .orientation-container {
+            flex: 1 0 auto !important;
+            width: 100%;
+        }
+
+        #dashboard-footer {
+            margin-top: auto !important;
+            width: 100%;
+            flex-shrink: 0;
+        }
+
         /* Styles Premium additionnels pour le diagnostic interactif */
         
         .feedback-pane {
@@ -268,7 +287,7 @@
     <!-- Bandeau d'actions supprimé de cet emplacement -->
 
     <!-- Main Container -->
-    <main class="orientation-container">
+    <main class="orientation-container" style="flex: 1; width: 100%;">
         
         <!-- Colonne Gauche : Saisie -->
         <section class="input-pane">
@@ -311,20 +330,11 @@
                     <p class="section-desc">Voici l'analyse générée automatiquement par le moteur d'orientation ORIA.</p>
                 </div>
 
-                <!-- Petites cartes KPI d'analyse de situation (style tableau de bord) -->
-                <!-- Cartes Complexité et Commune supprimées -->
-
                 <!-- Structures recommandées (Unique ou Fallback) -->
                 <h3 class="subsection-title" id="structures-title">Orientation recommandée :</h3>
                 <div id="structures-list" class="structures-container">
                     <!-- Généré dynamiquement en JS -->
                 </div>
-
-                <!-- Accordéon pour voir les signaux faibles extraits -->
-                <!--<details class="raw-data-accordion" style="margin-top: 1.5rem;">
-                    <summary>🔍 Voir le schéma pivot brut (JSON)</summary>
-                    <pre><code id="raw-json-output"></code></pre>
-                </details>-->
 
             </div>
         </section>
@@ -332,7 +342,7 @@
     </main>
 
     <!-- Footer -->
-    <footer id="dashboard-footer">
+    <footer id="dashboard-footer" style="margin-top: auto; width: 100%;">
         <p>Prototype ORIA – Module d'évaluation interactif</p>
     </footer>
 
