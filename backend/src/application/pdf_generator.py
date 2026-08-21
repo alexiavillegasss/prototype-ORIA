@@ -109,7 +109,19 @@ class PDFGenerator:
         if alertes.get("logement_inadapte"): checkbox_mappings.append(("Logement inadapt", True))
         if alertes.get("incurie_insalubrite"): checkbox_mappings.append(("Incurie", True))
             
+        # Famille / Aidant (Ligne 1 de la table Cercle de Soins)
+        aidant_nom = extracted_data.get("aidant_nom", "")
+        aidant_lien = extracted_data.get("aidant_lien", "")
+        aidant_display = f"{aidant_nom} ({aidant_lien})" if (aidant_nom and aidant_lien) else (aidant_nom or aidant_lien)
+        if aidant_display:
+            field_values["Texte34"] = aidant_display
+            field_values["Texte35"] = extracted_data.get("aidant_tel", "")
+            field_values["Texte36"] = extracted_data.get("aidant_email", "")
+
         pro_mapping = {
+            "aidant": ("Texte34", "Texte35", "Texte36"),
+            "famille": ("Texte34", "Texte35", "Texte36"),
+            "proche": ("Texte34", "Texte35", "Texte36"),
             "medecin_traitant": ("Texte37", "Texte38", "Texte39"),
             "specialiste": ("Texte40", "Texte41", "Texte42"),
             "infirmier": ("Texte43", "Texte44", "Texte45"),

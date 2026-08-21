@@ -545,6 +545,30 @@ Réponds UNIQUEMENT par ce JSON complet :
                 parsed["aidant_tel"] = parsed.get("emetteur_telephone", "")
             if not parsed.get("aidant_email"):
                 parsed["aidant_email"] = parsed.get("emetteur_email", "")
+
+        # Anti-collision Cercle de Soins vs Aidant Familial :
+        # Empêcher l'IA de classer la fille / proche aidant en SSIAD, HAD ou SAAD !
+        aid_nom = str(parsed.get("aidant_nom", "")).lower().strip()
+        cleaned_cercle = []
+        for pro in parsed.get("cercle_de_soins", []):
+            pro_nom = str(pro.get("nom", "")).strip()
+            pro_nom_lower = pro_nom.lower()
+            pro_type = str(pro.get("type", "")).lower()
+
+            is_proche = False
+            if aid_nom and (aid_nom in pro_nom_lower or pro_nom_lower in aid_nom):
+                is_proche = True
+            if any(k in pro_nom_lower or k in pro_type for k in ["fille", "fils", "enfant", "mari", "épouse", "epouse", "conjoint", "aidant", "famille"]):
+                is_proche = True
+
+            if is_proche:
+                pro["type"] = "aidant"
+                if not parsed.get("aidant_nom"):
+                    parsed["aidant_nom"] = pro_nom
+                if not parsed.get("aidant_tel") and pro.get("tel"):
+                    parsed["aidant_tel"] = pro.get("tel")
+            cleaned_cercle.append(pro)
+        parsed["cercle_de_soins"] = cleaned_cercle
                 
         # Fallback python pour les aides à domicile ratées par l'IA
         if not parsed.get("aide_1"):
