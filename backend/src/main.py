@@ -533,6 +533,53 @@ async def generate_clic_hadage_pdf(request: AnalyzeRequest):
     except Exception as e:
         return {"error": f"Erreur lors de la génération du PDF : {str(e)}"}
 
+@app.get("/api/dossiers/{dossier_id}/pdf/{structure_type}")
+async def generate_dossier_orientation_pdf(dossier_id: int, structure_type: str):
+    """
+    Génère la fiche d'orientation PDF pour un dossier existant.
+    Récupère le texte original depuis la BDD, lance l'extraction IA spécifique 
+    puis remplit le template PDF correspondant.
+    """
+    try:
+        # 1. Récupération des données du dossier
+        dossier_setails = db_manager.get_dossier_360_details(str(dossier_id))
+        if not dossier_details or not dossier_details.get("orientation"):
+            return{"error": "Dossier introuvable"}
+        texte_original = dossier_details["orientation"]["texte_original"]
+
+        # 2. Extraction des champs et génération selon la structure demandée
+        struct_lower = structure_type.lower()
+        if "dac" in struct_lower:
+            extracted = await fiche_extractor.extract_for_dac(texte_original)
+            pdf_bytes = pdf_generator.generate_dac_pdf(extracted)
+            filename = f"fiche_orientation_dac_dossier_{dossier_id}.pdf"
+        elif "laseyne" in struct_lower:
+            extracted = await fiche_extractor.extract_for_clic(texte_original)
+            pdf_bytes = pdf_generator.generate_clic_pdf(extracted)
+            filename = f"fiche_orientation_clic_laseyne_dossier_{dossier_id}.pdf"
+        elif "toulon" in struct_lower:
+            extracted = await fiche_extractor.extract_for_clic(texte_original)
+            pdf_bytes = pdf_generator.generate_clic_toulon_pdf(extracted)
+            filename = f"fiche_orientation_clic_toulon_dossier_{dossier_id}.pdf"
+        elif "provence_verte" in struct_lower:
+            extracted = await fiche_extractor.extract_for_clic(texte_original)
+            pdf_bytes = pdf_generator._fill_clic_provence_verte(extracted)
+            filename = f"fiche_orientation_clic_provence_verte_dossier_{dossier_id}.pdf"
+        elif "hadage" in struct_lower:
+            extracted = await fiche_extractor.extract_for_clic(texte_original)
+            pdf_bytes = pdf_generator._fill_clic_hadage(extracted)
+            filename = f"fiche_orientation_clic_hadage_dossier_{dossier_id}.pdf"
+        else:
+            return {"error": f"Type de structure inconnu: {structure_type}"}
+            
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+    except Exception as e:
+        return {"error": f"Erreur lors de la génération du PDF : {str(e)}"}
+
 class ComidPDFRequest(BaseModel):
     email: str = ""
     score: int = 0
