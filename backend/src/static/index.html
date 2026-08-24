@@ -195,9 +195,9 @@
                 <span>Fardeau Aidants - Grille ZARIT</span>
                 <span id="tab-count-zarit" class="tab-badge">0</span>
             </button>
-            <button class="dash-tab-btn" onclick="switchDashboardTab('dossier360')" id="tab-btn-dossier360">
-                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                <span>Synthèses par dossier</span>
+            <button class="dash-tab-btn" onclick="switchDashboardTab('profil')" id="tab-btn-profil">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span>Mon Profil</span>
             </button>
         </div>
     </div>
@@ -358,28 +358,60 @@
     </div>
 
     <!-- ONGLET 4 : Fiche Synthèse Dossier 360° -->
-    <div id="panel-dossier360" class="tab-panel">
-        <section id="dossier360-section" style="max-width: 1600px; margin: 1.5rem auto 3rem; padding: 0 1.5rem;">
-            <div class="section-header" style="margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-                <div>
-                    <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">Synthèses par dossier</h2>
-                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Consultez la synthèse globale d'un dossier patient : Complexité COMID et Fardeau Aidant ZARIT.</p>
+        <!-- ONGLET 4 : Espace Mon Profil & Synthèse des Dossiers -->
+    <div id="panel-profil" class="tab-panel">
+        <section id="profil-section" style="max-width: 1600px; margin: 1.5rem auto 3rem; padding: 0 1.5rem; display: flex; flex-direction: column; gap: 1.5rem;">
+            
+            <!-- Carte d'identité de l'utilisateur connecté -->
+            <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow-card); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+                <div style="display: flex; align-items: center; gap: 1.25rem;">
+                    <!-- Avatar avec initiales -->
+                    <div id="user-avatar" style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 700; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
+                        --
+                    </div>
+                    <div>
+                        <h3 id="user-display-name" style="font-size: 1.3rem; font-weight: 700; color: var(--text-primary); margin: 0;">Chargement...</h3>
+                        <div style="display: flex; align-items: center; gap: 0.6rem; margin-top: 0.25rem;">
+                            <span id="user-role-badge" style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; padding: 0.15rem 0.55rem; border-radius: 12px; background: rgba(59, 130, 246, 0.15); color: var(--accent-blue);">
+                                --
+                            </span>
+                            <span id="user-display-email" style="font-size: 0.85rem; color: var(--text-muted);">
+                                --
+                            </span>
+                        </div>
+                    </div>
                 </div>
-                <div style="min-width: 280px;">
-                    <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">SÉLECTIONNER UN DOSSIER :</label>
-                    <select id="dossier360-select" onchange="loadDossier360View(this.value)" class="comid-field-select" style="width: 100%; padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-glass); background: var(--bg-card); color: var(--text-primary); font-size: 0.9rem; font-weight: 600;">
-                        <option value="">-- Choisir un dossier --</option>
-                    </select>
+                <button type="button" onclick="logout()" class="btn-primary" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 0.55rem 1.1rem; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.45rem; box-shadow: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    <span>Déconnexion / Changer de rôle</span>
+                </button>
+            </div>
+
+            <!-- Espace Dossier(s) accessible(s) -->
+            <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow-card); backdrop-filter: blur(12px);">
+                <div style="margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;">Accès aux dossiers patients</h2>
+                        <p style="font-size: 0.88rem; color: var(--text-secondary);">Consultez les synthèses 360°, grilles et fiches d'orientation complétées.</p>
+                    </div>
+                    <!-- Sélecteur de dossier (affiché/masqué dynamiquement par le JS) -->
+                    <div id="dossier-selector-wrapper" style="min-width: 320px;">
+                        <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">SÉLECTIONNER UN DOSSIER :</label>
+                        <select id="dossier360-select" onchange="loadDossier360View(this.value)" class="comid-field-select" style="width: 100%; padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-glass); background: var(--bg-card); color: var(--text-primary); font-size: 0.9rem; font-weight: 600;">
+                            <option value="">-- Choisir un dossier --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Conteneur d'affichage de la fiche 360° -->
+                <div id="dossier360-content">
+                    <div style="padding: 3.5rem 1.5rem; text-align: center; color: var(--text-muted); background: var(--bg-primary); border: 1px dashed var(--border-glass); border-radius: var(--radius-sm);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.5; margin-bottom: 1rem;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                        <p style="font-size: 1.05rem; font-weight: 500;">Veuillez sélectionner un dossier patient ci-dessus.</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- Main 360 Content Container -->
-            <div id="dossier360-content">
-                <div style="padding: 3.5rem 1.5rem; text-align: center; color: var(--text-muted); background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius);">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.5; margin-bottom: 1rem;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                    <p style="font-size: 1.05rem; font-weight: 500;">Veuillez sélectionner un dossier ci-dessus pour afficher sa fiche synthétique à 360°.</p>
-                </div>
-            </div>
         </section>
     </div>
 
@@ -1017,5 +1049,71 @@
         });
     </script>
     <script src="/static/app.js?v=6"></script>
+
+        <!-- ÉCRAN PORTAIL DE CONNEXION (MOCK AUTH) -->
+    <div id="auth-portal-overlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at top right, rgba(15, 23, 42, 0.95), #020617); z-index: 10000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(12px); padding: 1.5rem;">
+        <div style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 24px; padding: 2.5rem; max-width: 680px; width: 100%; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); text-align: center; display: flex; flex-direction: column; gap: 1.8rem; animation: fadeInUp 0.4s ease;">
+            
+            <div>
+                <img src="/static/logo.png" alt="Logo ORIA" style="height: 90px; width: auto; margin-bottom: 0.8rem; object-fit: contain;">
+                <h2 style="font-size: 1.8rem; font-weight: 800; color: #ffffff; letter-spacing: -0.02em;">Portail de Connexion Interne</h2>
+                <p style="color: var(--text-secondary); font-size: 0.95rem; margin-top: 0.35rem;">Bienvenue sur ORIA. Veuillez choisir un profil utilisateur simulé pour tester le prototype.</p>
+            </div>
+
+            <!-- Liste des profils cliquables -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: left;">
+                
+                <!-- Membre du DAC -->
+                <div onclick="loginAs('dac')" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.25rem; cursor: pointer; transition: all 0.25s ease;" class="fo-option-card">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div style="background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700;">MD</div>
+                        <div>
+                            <strong style="display: block; font-size: 0.95rem; color: #ffffff;">Marie Durand</strong>
+                            <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Membre du DAC</span>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 0.6rem; line-height: 1.3;">Accès administrateur complet. Peut voir tous les dossiers et les comparer.</p>
+                </div>
+
+                <!-- Pro de santé -->
+                <div onclick="loginAs('pro')" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.25rem; cursor: pointer; transition: all 0.25s ease;" class="fo-option-card">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div style="background: rgba(45, 212, 191, 0.15); color: var(--accent-teal); width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700;">JD</div>
+                        <div>
+                            <strong style="display: block; font-size: 0.95rem; color: #ffffff;">Dr. Jean Dupont</strong>
+                            <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Professionnel de santé</span>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 0.6rem; line-height: 1.3;">Médecin traitant. Accède à tous les dossiers médicaux de la plateforme.</p>
+                </div>
+
+                <!-- Aidant -->
+                <div onclick="loginAs('aidant')" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.25rem; cursor: pointer; transition: all 0.25s ease;" class="fo-option-card">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div style="background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700;">SM</div>
+                        <div>
+                            <strong style="display: block; font-size: 0.95rem; color: #ffffff;">Sophie Martin</strong>
+                            <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Aidant Familial</span>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 0.6rem; line-height: 1.3;">Aidante de Robert Bernard. Accède uniquement au dossier de son proche.</p>
+                </div>
+
+                <!-- Personne lambda -->
+                <div onclick="loginAs('lambda')" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.25rem; cursor: pointer; transition: all 0.25s ease;" class="fo-option-card">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div style="background: rgba(244, 63, 94, 0.15); color: var(--accent-rose); width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700;">RB</div>
+                        <div>
+                            <strong style="display: block; font-size: 0.95rem; color: #ffffff;">Robert Bernard</strong>
+                            <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Personne lambda / Usager</span>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 0.6rem; line-height: 1.3;">Le senior lui-même. Accède uniquement à son dossier d'orientation personnel.</p>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
 </body>
 </html>
