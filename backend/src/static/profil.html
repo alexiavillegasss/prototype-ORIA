@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ORIA – Espace Profil Utilisateur & Gestion des Dossiers">
+    <title>ORIA – Mon Profil</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style_v2.css?v=1004">
+    
+    <style>
+        html, body {
+            min-height: 100vh !important;
+            margin: 0;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+
+        .profil-container {
+            max-width: 1450px;
+            margin: 2rem auto;
+            padding: 0 2rem 3rem 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.75rem;
+            flex: 1 0 auto !important;
+            width: 100%;
+        }
+
+        /* Lien de retour au tableau de bord */
+        .back-nav {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            width: fit-content;
+        }
+
+        .back-nav:hover {
+            color: var(--accent-blue);
+            transform: translateX(-3px);
+        }
+
+        /* Dossier Link Button style */
+        .dossier-link-btn {
+            color: #3b82f6;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: underline;
+            transition: color 0.2s ease;
+        }
+        .dossier-link-btn:hover {
+            color: #2563eb;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header id="dashboard-header">
+        <div class="header-content">
+            <div class="logo-group">
+                <img src="/static/logo.png" alt="Logo ORIA" class="logo-img">
+            </div>
+            <div class="header-title-center">
+                <h2 class="subtitle">Mon Profil</h2>
+            </div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <button id="theme-toggle" class="btn-primary" style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-glass); padding: 0.5rem; box-shadow: none; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer;">
+                    <!-- L'icône sera injectée par JS -->
+                </button>
+                <!-- Menu Hamburger -->
+                <div style="position: relative;">
+                    <button id="menu-toggle" class="btn-primary" style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-glass); padding: 0.5rem; box-shadow: none; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <div id="dropdown-menu" class="dropdown-menu hidden">
+                        <a href="/dashboard" class="dropdown-item" title="Accéder au tableau de bord">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                            Tableau de bord
+                        </a>
+                        <a href="/orienter" class="dropdown-item" title="Moteur d'orientation interactif">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+                            Moteur d'orientation
+                        </a>
+                        <a href="/remplir" class="dropdown-item" title="Accéder au choix des fiches et grilles">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+                            Remplir ma fiche d'orientation / grille
+                        </a>
+                        <a href="/profil" class="dropdown-item" title="Accéder à mon profil">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            Mon Profil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="profil-container">
+        
+        <a href="/dashboard" class="back-nav">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            Retour au tableau de bord
+        </a>
+
+        <!-- Carte d'identité de l'utilisateur -->
+        <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.75rem; box-shadow: var(--shadow-card); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem; animation: fadeInUp 0.4s ease;">
+            <div style="display: flex; align-items: center; gap: 1.25rem;">
+                <div id="user-avatar" style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);">
+                    --
+                </div>
+                <div>
+                    <h3 id="user-display-name" style="font-size: 1.4rem; font-weight: 800; color: var(--text-primary); margin: 0;">Chargement...</h3>
+                    <div style="display: flex; align-items: center; gap: 0.65rem; margin-top: 0.3rem;">
+                        <span id="user-role-badge" style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; padding: 0.18rem 0.6rem; border-radius: 12px; background: rgba(59, 130, 246, 0.15); color: var(--accent-blue);">
+                            --
+                        </span>
+                        <span id="user-display-email" style="font-size: 0.88rem; color: var(--text-muted);">
+                            --
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <button type="button" onclick="logout()" class="btn-primary" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 0.6rem 1.25rem; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.45rem; box-shadow: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                <span>Déconnexion / Changer de rôle</span>
+            </button>
+        </div>
+
+        <!-- Espace Dossier(s) accessible(s) -->
+        <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.75rem; box-shadow: var(--shadow-card); backdrop-filter: blur(12px); animation: fadeInUp 0.5s ease;">
+            <div style="margin-bottom: 1.75rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h2 style="font-size: 1.35rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;">Suivi des dossiers patients</h2>
+                    <p style="font-size: 0.88rem; color: var(--text-secondary);">Sélectionnez un dossier patient pour afficher sa synthèse 360° complète, ses grilles et télécharger ses fiches.</p>
+                </div>
+                <div id="dossier-selector-wrapper" style="min-width: 320px;">
+                    <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.4rem;">SÉLECTIONNER UN DOSSIER :</label>
+                    <select id="dossier-select" onchange="loadDossierView(this.value)" class="comid-field-select" style="width: 100%; padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-glass); background: var(--bg-card); color: var(--text-primary); font-size: 0.9rem; font-weight: 600;">
+                        <option value="">-- Choisir un dossier --</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Affichage de la fiche du dossier -->
+            <div id="dossier-view-content">
+                <div style="padding: 4rem 1.5rem; text-align: center; color: var(--text-muted); background: var(--bg-primary); border: 1px dashed var(--border-glass); border-radius: var(--radius-sm);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.5; margin-bottom: 1rem;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    <p style="font-size: 1.05rem; font-weight: 500;">Veuillez sélectionner un dossier patient ci-dessus.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ÉCRAN PORTAIL DE CONNEXION (MOCK AUTH) -->
+    <div id="auth-portal-overlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at top right, rgba(15, 23, 42, 0.96), #020617); z-index: 10000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(12px); padding: 1.5rem;">
+        <div style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(148, 163, 184, 0.25); border-radius: 24px; padding: 2.5rem; max-width: 680px; width: 100%; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); text-align: center; display: flex; flex-direction: column; gap: 1.8rem; animation: fadeInUp 0.4s ease;">
+            
+            <div>
+                <img src="/static/logo.png" alt="Logo ORIA" style="height: 90px; width: auto; margin-bottom: 0.8rem; object-fit: contain;">
+                <h2 style="font-size: 1.8rem; font-weight: 800; color: #ffffff; letter-spacing: -0.02em;">Portail de Connexion Interne</h2>
+                <p style="color: var(--text-secondary); font-size: 0.95rem; margin-top: 0.35rem;">Bienvenue sur ORIA. Veuillez choisir un profil utilisateur simulé pour tester le prototype.</p>
+            </div>
+
+            <!-- Liste des profils cliquables -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: left;">
+                
+                <!-- Membre du DAC -->
+                <div onclick="loginAs('dac')" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.25rem; cursor: pointer; transition: all 0.25s ease;" class="fo-option-card">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div style="background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700;">MD</div>
+                        <div>
+                            <strong style="display: block; font-size: 0.95rem; color: #ffffff;">Marie Durand</strong>
+                            <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Membre du DAC</span>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 0.6rem; line-height: 1.3;">Accès administrateur complet. Peut voir tous les dossiers et les comparer.</p>
+                </div>
+
+                <!-- Pro de santé -->
+                <div onclick="loginAs('pro')" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.25rem; cursor: pointer; transition: all 0.25s ease;" class="fo-option-card">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div style="background: rgba(45, 212, 191, 0.15); color: var(--accent-teal); width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700;">JD</div>
+                        <div>
+                            <strong style="display: block; font-size: 0.95rem; color: #ffffff;">Dr. Jean Dupont</strong>
+                            <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Professionnel de santé</span>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 0.6rem; line-height: 1.3;">Médecin traitant. Accède à tous les dossiers médicaux de la plateforme.</p>
+                </div>
+
+                <!-- Aidant -->
+                <div onclick="loginAs('aidant')" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.25rem; cursor: pointer; transition: all 0.25s ease;" class="fo-option-card">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div style="background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700;">SM</div>
+                        <div>
+                            <strong style="display: block; font-size: 0.95rem; color: #ffffff;">Sophie Martin</strong>
+                            <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Aidant Familial</span>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 0.6rem; line-height: 1.3;">Aidante de Robert Bernard. Accède uniquement au dossier de son proche.</p>
+                </div>
+
+                <!-- Personne lambda -->
+                <div onclick="loginAs('lambda')" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.25rem; cursor: pointer; transition: all 0.25s ease;" class="fo-option-card">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div style="background: rgba(244, 63, 94, 0.15); color: var(--accent-rose); width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700;">RB</div>
+                        <div>
+                            <strong style="display: block; font-size: 0.95rem; color: #ffffff;">Robert Bernard</strong>
+                            <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Personne lambda / Usager</span>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 0.6rem; line-height: 1.3;">Le senior lui-même. Accède uniquement à son dossier d'orientation personnel.</p>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="dashboard-footer">
+        <p>Prototype ORIA – Parcours Personnes Âgées – Espace Mon Profil & Dossiers</p>
+    </footer>
+
+    <script>
+        // --- DATA CACHE ---
+        let currentDossierData = null;
+
+        // --- SIMULATION DE SESSION & RÔLES ---
+        const MOCK_USERS = {
+            dac: {
+                name: "Marie Durand",
+                role: "Membre du DAC",
+                email: "m.durand@dac-varouest.fr",
+                avatar: "MD",
+                access: "all"
+            },
+            pro: {
+                name: "Dr. Jean Dupont",
+                role: "Professionnel de santé",
+                email: "dr.dupont@sante-var.fr",
+                avatar: "JD",
+                access: "all"
+            },
+            aidant: {
+                name: "Sophie Martin",
+                role: "Aidant Familial",
+                email: "sophie.martin@gmail.com",
+                avatar: "SM",
+                access: "restricted",
+                patientName: "Robert Bernard"
+            },
+            lambda: {
+                name: "Robert Bernard",
+                role: "Patient / Usager",
+                email: "robert.bernard@gmail.com",
+                avatar: "RB",
+                access: "restricted",
+                patientName: "Robert Bernard"
+            }
+        };
+
+        function checkAuth() {
+            const activeUserJson = localStorage.getItem('active_user');
+            const portal = document.getElementById('auth-portal-overlay');
+            
+            if (!activeUserJson) {
+                if (portal) portal.style.display = 'flex';
+                return false;
+            }
+            
+            if (portal) portal.style.display = 'none';
+            const user = JSON.parse(activeUserJson);
+            
+            const nameEl = document.getElementById('user-display-name');
+            const emailEl = document.getElementById('user-display-email');
+            const badgeEl = document.getElementById('user-role-badge');
+            const avatarEl = document.getElementById('user-avatar');
+            
+            if (nameEl) nameEl.textContent = user.name;
+            if (emailEl) emailEl.textContent = user.email;
+            if (badgeEl) {
+                badgeEl.textContent = user.role;
+                if (user.role.includes("DAC")) badgeEl.style.background = "rgba(59, 130, 246, 0.15)";
+                else if (user.role.includes("santé")) badgeEl.style.background = "rgba(45, 212, 191, 0.15)";
+                else if (user.role.includes("Aidant")) badgeEl.style.background = "rgba(245, 158, 11, 0.15)";
+                else badgeEl.style.background = "rgba(244, 63, 94, 0.15)";
+            }
+            if (avatarEl) avatarEl.textContent = user.avatar;
+            
+            return true;
+        }
+
+        function loginAs(roleKey) {
+            const user = MOCK_USERS[roleKey];
+            if (user) {
+                localStorage.setItem('active_user', JSON.stringify(user));
+                checkAuth();
+                loadDossiersDropdown();
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('active_user');
+            window.location.reload();
+        }
+
+        // --- CHARGEMENT DU SÉLECTEUR DE DOSSIERS ---
+        async function loadDossiersDropdown() {
+            try {
+                const res = await fetch('/api/dossiers/dropdown-list');
+                if (res.ok) {
+                    let list = await res.json();
+                    const select = document.getElementById('dossier-select');
+                    if (select) {
+                        const activeUserJson = localStorage.getItem('active_user');
+                        if (activeUserJson) {
+                            const user = JSON.parse(activeUserJson);
+                            if (user.access === 'restricted') {
+                                // Filtrer pour n'afficher que le dossier correspondant à Robert Bernard
+                                list = list.filter(d => d.senior_nom.toLowerCase().includes('bernard') || d.senior_nom.toLowerCase().includes('robert'));
+                                const wrapper = document.getElementById('dossier-selector-wrapper');
+                                if (wrapper) wrapper.style.display = 'none';
+                            } else {
+                                const wrapper = document.getElementById('dossier-selector-wrapper');
+                                if (wrapper) wrapper.style.display = 'block';
+                            }
+                        }
+
+                        select.innerHTML = '<option value="">-- Choisir un dossier patient --</option>';
+                        list.forEach(d => {
+                            const opt = document.createElement('option');
+                            opt.value = d.dossier_id;
+                            opt.textContent = d.display_label;
+                            select.appendChild(opt);
+                        });
+
+                        // Charger automatiquement le dossier si c'est le seul de la liste
+                        if (list.length > 0) {
+                            select.value = list[0].dossier_id;
+                            loadDossierView(list[0].dossier_id);
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error("Erreur dropdown", e);
+            }
+        }
+
+        // --- CHARGEMENT D'UN DOSSIER A 360° ---
+        async function loadDossierView(dossierId) {
+            const container = document.getElementById('dossier-view-content');
+            if (!dossierId) {
+                container.innerHTML = `
+                    <div style="padding: 4rem 1.5rem; text-align: center; color: var(--text-muted); background: var(--bg-primary); border: 1px dashed var(--border-glass); border-radius: var(--radius-sm);">
+                        <p style="font-size: 1.05rem; font-weight: 500;">Veuillez sélectionner un dossier patient ci-dessus.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `<div style="padding: 3rem; text-align: center; color: var(--text-muted); font-size: 1rem;">Chargement des données cliniques du dossier #${dossierId}...</div>`;
+
+            try {
+                const res = await fetch(`/api/dossier-360/${encodeURIComponent(dossierId)}`);
+                if (!res.ok) throw new Error("Erreur serveur");
+                const data = await res.json();
+                currentDossierData = data;
+
+                const orient = data.orientation;
+                const comids = data.comid || [];
+                const zarits = data.zarit || [];
+
+                let seniorNom = `Senior (Dossier #${dossierId})`;
+                if (comids.length > 0 && comids[0].senior_nom) seniorNom = comids[0].senior_nom;
+                else if (zarits.length > 0 && zarits[0].senior_nom) seniorNom = zarits[0].senior_nom;
+                else if (orient && orient.donnees_extraites) {
+                    const dEx = orient.donnees_extraites;
+                    const nom_u = dEx["usager.identite.nom"] || dEx["usager_nom_usage"] || "";
+                    const prenom_u = dEx["usager.identite.prenom"] || dEx["usager_prenoms"] || "";
+                    if (nom_u || prenom_u) seniorNom = `${prenom_u} ${nom_u}`.trim();
+                }
+
+                // --- COMID HTML ---
+                let comidHtml = '<div style="color: var(--text-muted); font-size: 0.88rem; font-style: italic; padding: 0.5rem 0;">Aucune évaluation COMID enregistrée.</div>';
+                if (comids.length > 0) {
+                    const entree = comids.find(c => c.type_eval === 'entree');
+                    const sortie = comids.find(c => c.type_eval === 'sortie');
+                    let scoreDelta = '';
+
+                    if (entree && sortie) {
+                        const diff = entree.score - sortie.score;
+                        if (diff > 0) scoreDelta = `<div style="margin-top: 0.6rem; font-weight: 700; color: #10b981; font-size: 0.85rem;">Baisse de complexité : -${diff} pts (${Math.round((diff/entree.score)*100)}%)</div>`;
+                        else if (diff < 0) scoreDelta = `<div style="margin-top: 0.6rem; font-weight: 700; color: #ef4444; font-size: 0.85rem;">Augmentation de complexité : +${Math.abs(diff)} pts</div>`;
+                        else scoreDelta = `<div style="margin-top: 0.6rem; color: #94a3b8; font-size: 0.85rem;">Complexité stable</div>`;
+                    }
+
+                    const entreeBox = entree ? `
+                        <div style="background: rgba(59, 130, 246, 0.06); padding: 0.85rem; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.2);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; font-weight: 700; color: #3b82f6;">
+                                <span>COMID ADMISSION (ENTRÉE)</span>
+                                <span style="color: var(--text-muted); font-weight: 500;">${entree.date_creation || ''}</span>
+                            </div>
+                            <div style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin: 0.35rem 0;">
+                                ${entree.score} / 30 <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-secondary);">(${entree.niveau})</span>
+                            </div>
+                            <button type="button" onclick="downloadComidPDF('entree')" class="btn-primary" style="margin-top: 0.35rem; background: #3b82f6; color: #ffffff; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.82rem; font-weight: 600; cursor: pointer; border: none; box-shadow: none;">
+                                Télécharger PDF COMID Entrée
+                            </button>
+                        </div>
+                    ` : '';
+
+                    const sortieBox = sortie ? `
+                        <div style="background: rgba(59, 130, 246, 0.06); padding: 0.85rem; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.2);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; font-weight: 700; color: #3b82f6;">
+                                <span>COMID SORTIE (ÉVALUATION)</span>
+                                <span style="color: var(--text-muted); font-weight: 500;">${sortie.date_creation || ''}</span>
+                            </div>
+                            <div style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin: 0.35rem 0;">
+                                ${sortie.score} / 30 <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-secondary);">(${sortie.niveau})</span>
+                            </div>
+                            <button type="button" onclick="downloadComidPDF('sortie')" class="btn-primary" style="margin-top: 0.35rem; background: #3b82f6; color: #ffffff; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.82rem; font-weight: 600; cursor: pointer; border: none; box-shadow: none;">
+                                Télécharger PDF COMID Sortie
+                            </button>
+                        </div>
+                    ` : '';
+
+                    comidHtml = `
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            ${entreeBox}
+                            ${sortieBox || '<div style="background: rgba(148, 163, 184, 0.05); padding: 0.85rem; border-radius: 8px; border: 1px dashed rgba(148, 163, 184, 0.2); color: var(--text-muted); font-size: 0.82rem; text-align: center;">En attente de sortie...</div>'}
+                            ${scoreDelta}
+                        </div>
+                    `;
+                }
+
+                // --- ZARIT HTML ---
+                let zaritHtml = '<div style="color: var(--text-muted); font-size: 0.88rem; font-style: italic; padding: 0.5rem 0;">Aucune grille ZARIT rattachée.</div>';
+                if (zarits.length > 0) {
+                    const z = zarits[0];
+                    let badgeColor = "#22c55e";
+                    if (z.score > 60) badgeColor = "#ef4444";
+                    else if (z.score >= 41) badgeColor = "#f59e0b";
+                    else if (z.score >= 21) badgeColor = "#3b82f6";
+
+                    zaritHtml = `
+                        <div style="background: rgba(245, 158, 11, 0.06); padding: 1rem; border-radius: 8px; border: 1px solid rgba(245, 158, 11, 0.2);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; font-weight: 700; color: #f59e0b;">
+                                <span>AIDANT : ${z.aidant_nom || 'Aidant familial'}</span>
+                                <span style="color: var(--text-muted); font-weight: 500;">${z.date_creation || ''}</span>
+                            </div>
+                            <div style="font-size: 1.35rem; font-weight: 800; color: var(--text-primary); margin: 0.4rem 0;">
+                                ${z.score} <span style="font-size: 0.85rem; color: var(--text-muted);">/ 88</span>
+                                <span style="font-size: 0.78rem; padding: 0.2rem 0.6rem; border-radius: 12px; background: ${badgeColor}22; color: ${badgeColor}; font-weight: 700; margin-left: 0.5rem;">${z.niveau}</span>
+                            </div>
+                            <button type="button" onclick="downloadZaritPDF()" class="btn-primary" style="margin-top: 0.6rem; background: var(--accent-amber); color: #ffffff; padding: 0.45rem 0.85rem; border-radius: 6px; font-size: 0.82rem; font-weight: 600; cursor: pointer; border: none; box-shadow: none;">
+                                Télécharger le PDF Zarit
+                            </button>
+                        </div>
+                    `;
+                }
+
+                // --- ORIENTATION & FICHES PDF ---
+                let orientCardHtml = '';
+                if (orient) {
+                    const structs = orient.structures_orientations || [];
+                    let structsList = structs.map(s => `<span style="display: inline-block; background: rgba(59, 130, 246, 0.15); color: #3b82f6; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 600; font-size: 0.82rem; margin: 0.2rem;">${s.type || s.nom}</span>`).join(' ');
+
+                    // Boutons de fiches d'orientation dynamiques
+                    let pdfButtonsHtml = '';
+                    if (structs.length > 0) {
+                        pdfButtonsHtml = '<div style="margin-top: 0.8rem; display: flex; flex-direction: column; gap: 0.5rem;">';
+                        structs.forEach(s => {
+                            const rawName = s.nom || s.type || '';
+                            const nameLower = rawName.toLowerCase();
+                            let endpointType = '';
+                            let btnLabel = '';
+
+                            if (nameLower.includes('dac')) {
+                                endpointType = 'dac';
+                                btnLabel = "Télécharger Fiche DAC";
+                            } else if (nameLower.includes('seyne')) {
+                                endpointType = 'laseyne';
+                                btnLabel = "Télécharger Fiche CLIC La Seyne";
+                            } else if (nameLower.includes('toulon')) {
+                                endpointType = 'toulon';
+                                btnLabel = "Télécharger Fiche CLIC Toulon";
+                            } else if (nameLower.includes('provence')) {
+                                endpointType = 'provence_verte';
+                                btnLabel = "Télécharger Fiche CLIC Provence Verte";
+                            } else if (nameLower.includes('hadage')) {
+                                endpointType = 'hadage';
+                                btnLabel = "Télécharger Fiche CLIC Hadage";
+                            }
+
+                            if (endpointType) {
+                                pdfButtonsHtml += `
+                                    <a href="/api/dossiers/${dossierId}/pdf/${endpointType}" target="_blank" class="btn-primary" style="padding: 0.5rem 0.85rem; border-radius: 6px; font-size: 0.82rem; font-weight: 600; text-decoration: none; text-align: center; background: rgba(59, 130, 246, 0.1); color: var(--accent-blue); border: 1px solid rgba(59, 130, 246, 0.25); box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 0.4rem; transition: all 0.2s;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                        <span>${btnLabel}</span>
+                                    </a>
+                                `;
+                            }
+                        });
+                        pdfButtonsHtml += '</div>';
+                    }
+
+                    const orientBody = `
+                        <div style="display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.88rem;">
+                            <div><strong>Date d'orientation :</strong> ${orient.date_creation || ''}</div>
+                            <div><strong>Structures préconisées :</strong><div style="margin-top: 0.3rem;">${structsList || 'Aucune'}</div></div>
+                            ${orient.texte_original ? `<div style="margin-top: 0.45rem; padding: 0.65rem; background: var(--bg-primary); border-radius: 6px; font-style: italic; color: var(--text-secondary); max-height: 100px; overflow-y: auto;">"${orient.texte_original}"</div>` : ''}
+                            <div style="margin-top: 0.8rem; border-top: 1px dashed var(--border-glass); padding-top: 0.8rem;">
+                                <strong style="color: var(--text-primary); display: block; margin-bottom: 0.4rem;">Fiches d'Orientation pré-remplies :</strong>
+                                ${pdfButtonsHtml || '<div style="font-size:0.8rem; color:var(--text-muted); font-style:italic;">Aucune fiche PDF de structure disponible.</div>'}
+                            </div>
+                        </div>
+                    `;
+
+                    orientCardHtml = `
+                        <div style="background: var(--bg-primary); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1.25rem;">
+                            <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
+                                Orientation Initiale
+                            </h4>
+                            ${orientBody}
+                        </div>
+                    `;
+                }
+
+                // --- RENDU FINAL DE LA FICHE ---
+                container.innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1.5rem; animation: fadeInUp 0.3s ease;">
+                        
+                        <!-- Carte d'Orientation -->
+                        ${orientCardHtml}
+
+                        <!-- Carte COMID -->
+                        <div style="background: var(--bg-primary); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1.25rem;">
+                            <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.85rem;">
+                                Bilan Clinique COMID
+                            </h4>
+                            ${comidHtml}
+                        </div>
+
+                        <!-- Carte ZARIT -->
+                        <div style="background: var(--bg-primary); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1.25rem;">
+                            <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.85rem;">
+                                Épuisement Aidant ZARIT
+                            </h4>
+                            ${zaritHtml}
+                        </div>
+
+                    </div>
+                `;
+
+            } catch (e) {
+                console.error("Erreur", e);
+                container.innerHTML = `<div style="padding: 2.5rem; color: #ef4444; text-align: center;">Erreur lors du chargement des détails du dossier.</div>`;
+            }
+        }
+
+        // --- TÉLÉCHARGEMENT PDF COMID & ZARIT ---
+        async function downloadComidPDF(type) {
+            if (!currentDossierData) return;
+            const evalData = (currentDossierData.comid || []).find(c => c.type_eval === type);
+            if (!evalData) return;
+
+            try {
+                let criteres = evalData.criteres || [];
+                if (typeof evalData.criteres_json === 'string') {
+                    try { criteres = JSON.parse(evalData.criteres_json); } catch(e){}
+                }
+
+                const payload = {
+                    score: evalData.score || 0,
+                    level: evalData.niveau || 'Non complexe',
+                    date: evalData.date_creation || '',
+                    checkedItems: criteres,
+                    dossier_id: evalData.dossier_id || '',
+                    senior_nom: evalData.senior_nom || ''
+                };
+
+                const res = await fetch('/api/comid/generate_pdf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    const blob = await res.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `Synthese_COMID_${evalData.dossier_id}_${type.toUpperCase()}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                }
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        async function downloadZaritPDF() {
+            if (!currentDossierData || !(currentDossierData.zarit || []).length) return;
+            const zData = currentDossierData.zarit[0];
+
+            try {
+                let reponses = zData.reponses || [];
+                if (typeof zData.reponses_json === 'string') {
+                    try { reponses = JSON.parse(zData.reponses_json); } catch(e){}
+                }
+
+                const payload = {
+                    dossier_id: zData.dossier_id || '',
+                    senior_nom: zData.senior_nom || 'Senior non renseigné',
+                    aidant_nom: zData.aidant_nom || 'Aidant',
+                    score: zData.score || 0,
+                    niveau: zData.niveau || 'Charge faible',
+                    date: zData.date_creation || '',
+                    reponses: reponses
+                };
+
+                const res = await fetch('/api/zarit/generate_pdf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    const blob = await res.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `Grille_Zarit_${zData.dossier_id}_Score_${zData.score}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                }
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        // --- INITIALISATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('theme-toggle');
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+            
+            const iconMoon = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`;
+            const iconSun = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`;
+            
+            if (currentTheme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                themeToggle.innerHTML = iconMoon;
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                themeToggle.innerHTML = iconSun;
+            }
+
+            themeToggle.addEventListener('click', () => {
+                if (document.documentElement.hasAttribute('data-theme')) {
+                    document.documentElement.removeAttribute('data-theme');
+                    localStorage.setItem('theme', 'dark');
+                    themeToggle.innerHTML = iconSun;
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    localStorage.setItem('theme', 'light');
+                    themeToggle.innerHTML = iconMoon;
+                }
+            });
+
+            // Hamburger menu
+            const menuToggle = document.getElementById('menu-toggle');
+            const dropdownMenu = document.getElementById('dropdown-menu');
+            if (menuToggle && dropdownMenu) {
+                menuToggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdownMenu.classList.toggle('hidden');
+                });
+                document.addEventListener('click', () => dropdownMenu.classList.add('hidden'));
+            }
+
+            // Gestion de l'authentification et du chargement
+            checkAuth();
+            loadDossiersDropdown();
+        });
+    </script>
+</body>
+</html>

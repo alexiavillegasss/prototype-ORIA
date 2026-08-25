@@ -178,6 +178,13 @@ def comid():
     with open(html_path, "r", encoding="utf-8") as f:
         return f.read()
 
+@app.get("/profil", response_class=HTMLResponse)
+def profil():
+    """Sert la page du profil utilisateur"""
+    html_path = os.path.join(STATIC_DIR, "profil.html")
+    with open(html_path, "r", encoding="utf-8") as f:
+        return f.read()
+
 class ComidEvalRequest(BaseModel):
     dossier_id: str
     senior_nom: Optional[str] = ""
@@ -542,7 +549,7 @@ async def generate_dossier_orientation_pdf(dossier_id: int, structure_type: str)
     """
     try:
         # 1. Récupération des données du dossier
-        dossier_setails = db_manager.get_dossier_360_details(str(dossier_id))
+        dossier_details = db_manager.get_dossier_360_details(str(dossier_id))
         if not dossier_details or not dossier_details.get("orientation"):
             return{"error": "Dossier introuvable"}
         texte_original = dossier_details["orientation"]["texte_original"]

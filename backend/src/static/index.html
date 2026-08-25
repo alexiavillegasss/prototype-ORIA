@@ -128,6 +128,10 @@
                     </button>
                     <!-- Dropdown Menu -->
                     <div id="dropdown-menu" class="dropdown-menu hidden">
+                        <a href="/profil" class="dropdown-item" title="Accéder à mon profil">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            Mon profil
+                        </a>
                         <a href="/dashboard" class="dropdown-item" title="Accéder au tableau de bord">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                             Tableau de bord
@@ -195,10 +199,10 @@
                 <span>Fardeau Aidants - Grille ZARIT</span>
                 <span id="tab-count-zarit" class="tab-badge">0</span>
             </button>
-            <button class="dash-tab-btn" onclick="switchDashboardTab('profil')" id="tab-btn-profil">
+            <!--<button class="dash-tab-btn" onclick="switchDashboardTab('profil')" id="tab-btn-profil">
                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 <span>Mon Profil</span>
-            </button>
+            </button>-->
         </div>
     </div>
 
@@ -423,6 +427,90 @@
     <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 
     <script>
+                // --- SIMULATION DE SESSION & RÔLES (MOCK AUTH) ---
+        const MOCK_USERS = {
+            dac: {
+                name: "Marie Durand",
+                role: "Membre du DAC",
+                email: "m.durand@dac-varouest.fr",
+                avatar: "MD",
+                access: "all"
+            },
+            pro: {
+                name: "Dr. Jean Dupont",
+                role: "Professionnel de santé",
+                email: "dr.dupont@sante-var.fr",
+                avatar: "JD",
+                access: "all"
+            },
+            aidant: {
+                name: "Sophie Martin",
+                role: "Aidant Familial",
+                email: "sophie.martin@gmail.com",
+                avatar: "SM",
+                access: "restricted",
+                patientName: "Robert Bernard"
+            },
+            lambda: {
+                name: "Robert Bernard",
+                role: "Patient / Usager",
+                email: "robert.bernard@gmail.com",
+                avatar: "RB",
+                access: "restricted",
+                patientName: "Robert Bernard"
+            }
+        };
+
+        function checkAuth() {
+            const activeUserJson = localStorage.getItem('active_user');
+            const portal = document.getElementById('auth-portal-overlay');
+            
+            if (!activeUserJson) {
+                // Pas connecté -> Afficher le portail de connexion
+                if (portal) portal.style.display = 'flex';
+                return false;
+            }
+            
+            // Connecté -> Mettre à jour l'interface profil
+            if (portal) portal.style.display = 'none';
+            const user = JSON.parse(activeUserJson);
+            
+            // Injection des infos dans l'en-tête du profil
+            const nameEl = document.getElementById('user-display-name');
+            const emailEl = document.getElementById('user-display-email');
+            const badgeEl = document.getElementById('user-role-badge');
+            const avatarEl = document.getElementById('user-avatar');
+            
+            if (nameEl) nameEl.textContent = user.name;
+            if (emailEl) emailEl.textContent = user.email;
+            if (badgeEl) {
+                badgeEl.textContent = user.role;
+                // Ajuster la couleur du badge selon le rôle
+                if (user.role.includes("DAC")) badgeEl.style.background = "rgba(59, 130, 246, 0.15)";
+                else if (user.role.includes("santé")) badgeEl.style.background = "rgba(45, 212, 191, 0.15)";
+                else if (user.role.includes("Aidant")) badgeEl.style.background = "rgba(245, 158, 11, 0.15)";
+                else badgeEl.style.background = "rgba(244, 63, 94, 0.15)";
+            }
+            if (avatarEl) avatarEl.textContent = user.avatar;
+            
+            return true;
+        }
+
+        function loginAs(roleKey) {
+            const user = MOCK_USERS[roleKey];
+            if (user) {
+                localStorage.setItem('active_user', JSON.stringify(user));
+                checkAuth();
+                // Recharger la liste déroulante et la vue
+                loadDossiersDropdown360();
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('active_user');
+            // Recharger la page pour réinitialiser tous les états proprement
+            window.location.reload();
+        }
         // --- GESTION DES ONGLETS DU TABLEAU DE BORD ---
         function switchDashboardTab(tabName) {
             const panels = document.querySelectorAll('.tab-panel');
@@ -455,13 +543,30 @@
         }
 
         // --- CHARGEMENT DU DOSSIER 360° ---
-        async function loadDossiersDropdown360() {
+                async function loadDossiersDropdown360() {
             try {
                 const res = await fetch('/api/dossiers/dropdown-list');
                 if (res.ok) {
-                    const list = await res.json();
+                    let list = await res.json();
                     const select = document.getElementById('dossier360-select');
                     if (select) {
+                        // Récupérer l'utilisateur connecté
+                        const activeUserJson = localStorage.getItem('active_user');
+                        if (activeUserJson) {
+                            const user = JSON.parse(activeUserJson);
+                            if (user.access === 'restricted') {
+                                // Rôle restreint : On filtre pour ne garder que le dossier de Robert Bernard
+                                list = list.filter(d => d.senior_nom.toLowerCase().includes('bernard') || d.senior_nom.toLowerCase().includes('robert'));
+                                // Cacher le sélecteur puisqu'il n'y a qu'un seul dossier
+                                const wrapper = document.getElementById('dossier-selector-wrapper');
+                                if (wrapper) wrapper.style.display = 'none';
+                            } else {
+                                // Rôle admin : Afficher le sélecteur
+                                const wrapper = document.getElementById('dossier-selector-wrapper');
+                                if (wrapper) wrapper.style.display = 'block';
+                            }
+                        }
+
                         select.innerHTML = '<option value="">-- Choisir un dossier patient --</option>';
                         list.forEach(d => {
                             const opt = document.createElement('option');
@@ -469,6 +574,12 @@
                             opt.textContent = d.display_label;
                             select.appendChild(opt);
                         });
+
+                        // Charger automatiquement le premier dossier disponible
+                        if (list.length > 0) {
+                            select.value = list[0].dossier_id;
+                            loadDossier360View(list[0].dossier_id);
+                        }
                     }
                 }
             } catch (e) {
@@ -612,11 +723,54 @@
                     const structs = orient.structures_orientations || [];
                     let structsList = structs.map(s => `<span style="display: inline-block; background: rgba(59, 130, 246, 0.15); color: #3b82f6; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 600; font-size: 0.82rem; margin: 0.2rem;">${s.type || s.nom}</span>`).join(' ');
 
+                    // Calcul dynamique des boutons de téléchargement de fiches PDF d'orientation
+                    let pdfButtonsHtml = '';
+                    if (structs.length > 0) {
+                        pdfButtonsHtml = '<div style="margin-top: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem;">';
+                        structs.forEach(s => {
+                            const rawName = s.nom || s.type || '';
+                            const nameLower = rawName.toLowerCase();
+                            let endpointType = '';
+                            let btnLabel = '';
+
+                            if (nameLower.includes('dac')) {
+                                endpointType = 'dac';
+                                btnLabel = "Télécharger Fiche DAC";
+                            } else if (nameLower.includes('seyne')) {
+                                endpointType = 'laseyne';
+                                btnLabel = "Télécharger Fiche CLIC La Seyne";
+                            } else if (nameLower.includes('toulon')) {
+                                endpointType = 'toulon';
+                                btnLabel = "Télécharger Fiche CLIC Toulon";
+                            } else if (nameLower.includes('provence')) {
+                                endpointType = 'provence_verte';
+                                btnLabel = "Télécharger Fiche CLIC Provence Verte";
+                            } else if (nameLower.includes('hadage')) {
+                                endpointType = 'hadage';
+                                btnLabel = "Télécharger Fiche CLIC Hadage";
+                            }
+
+                            if (endpointType) {
+                                pdfButtonsHtml += `
+                                    <a href="/api/dossiers/${dossierId}/pdf/${endpointType}" target="_blank" class="btn-primary" style="padding: 0.5rem 0.85rem; border-radius: 6px; font-size: 0.82rem; font-weight: 600; text-decoration: none; text-align: center; background: rgba(59, 130, 246, 0.1); color: var(--accent-blue); border: 1px solid rgba(59, 130, 246, 0.25); box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 0.4rem; transition: all 0.2s;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                        <span>${btnLabel}</span>
+                                    </a>
+                                `;
+                            }
+                        });
+                        pdfButtonsHtml += '</div>';
+                    }
+
                     const orientBody = `
                         <div style="display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.88rem;">
                             <div><strong>Date d'orientation :</strong> ${orient.date_creation || ''}</div>
                             <div><strong>Structures préconisées :</strong><div style="margin-top: 0.3rem;">${structsList || 'Aucune'}</div></div>
                             ${orient.texte_original ? `<div style="margin-top: 0.4rem; padding: 0.65rem; background: var(--bg-primary); border-radius: 6px; font-style: italic; color: var(--text-secondary); max-height: 90px; overflow-y: auto;">"${orient.texte_original}"</div>` : ''}
+                            <div style="margin-top: 0.8rem; border-top: 1px dashed var(--border-glass); padding-top: 0.8rem;">
+                                <strong style="color: var(--text-primary); display: block; margin-bottom: 0.4rem;">Fiches d'Orientation pré-remplies :</strong>
+                                ${pdfButtonsHtml || '<div style="font-size:0.8rem; color:var(--text-muted); font-style:italic;">Aucune fiche PDF de structure disponible.</div>'}
+                            </div>
                         </div>
                     `;
 
@@ -1041,7 +1195,7 @@
 
             // Vérification de l'onglet actif dans l'URL (#comid, #zarit, #sankey, #dossier360)
             const initialTab = window.location.hash.replace('#', '');
-            if (['sankey', 'comid', 'zarit', 'dossier360'].includes(initialTab)) {
+            if (['sankey', 'comid', 'zarit', 'profil'].includes(initialTab)) {
                 switchDashboardTab(initialTab);
             } else {
                 switchDashboardTab('sankey');
