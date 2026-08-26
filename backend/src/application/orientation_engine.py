@@ -428,7 +428,8 @@ class OrientationEngine:
                     "pertinence": "faible",
                     "objectif": "Aucun besoin spécifique identifié. Orientation vers le CLIC sénior par défaut.",
                     "score_confiance": 50,
-                    "explication_confiance": "Orientation par défaut pour senior."
+                    "explication_confiance": "Orientation par défaut pour senior.",
+                    "conseils": identified_conseils
                 })
             else:
                 final_structures.append({
@@ -438,7 +439,8 @@ class OrientationEngine:
                     "pertinence": "faible",
                     "objectif": "Aucun besoin spécifique identifié. Orientation vers le DAC par défaut.",
                     "score_confiance": 50,
-                    "explication_confiance": "Orientation par défaut."
+                    "explication_confiance": "Orientation par défaut.",
+                    "conseils": identified_conseils
                 })
             
         # Stocke les métriques d'explicabilité pour le front

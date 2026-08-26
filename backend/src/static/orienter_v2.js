@@ -209,13 +209,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const card = document.createElement('div');
         card.className = 'struct-card fadeInUp';
         const color = STRUCTURE_COLORS[struct.structure_type] || '#64748b';
+        const formatConseilLink = (text) => {
+            if (!text) return '';
+            let formatted = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: #2563eb; text-decoration: underline; font-weight: 600;">$1</a>');
+            return formatted;
+        };
+
         const conseilsHtml = (struct.conseils && struct.conseils.length > 0) ? `
             <div class="conseils-box" style="margin: 1.25rem 0; padding: 1rem 1.15rem; background: rgba(59, 130, 246, 0.07); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 12px;">
                 <div style="font-size: 0.88rem; font-weight: 700; color: #1d4ed8; display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.5rem;">
                     💡 Conseils & Actions complémentaires :
                 </div>
                 <ul style="margin: 0; padding-left: 1.1rem; color: var(--text-primary); font-size: 0.86rem; line-height: 1.45; display: flex; flex-direction: column; gap: 0.35rem;">
-                    ${struct.conseils.map(c => `<li>${c}</li>`).join('')}
+                    ${struct.conseils.map(c => `<li>${formatConseilLink(c)}</li>`).join('')}
                 </ul>
             </div>
         ` : '';
