@@ -251,6 +251,9 @@ class OrientationEngine:
             logement_inadapte_ok = eval_context.get("evaluation.comid.logement_inadapte") is True
             if not insalubre_ok and not logement_inadapte_ok:
                 excluded_structures.append("COMPAGNONS_BATISSEURS")
+            else:
+                # Si Diogène / Insalubrité détecté ➡️ Boost pour placer Les Compagnons Bâtisseurs en choix N°1
+                scores["COMPAGNONS_BATISSEURS"] += 100
                 
         # Remise à zéro/pénalisation extrême pour les structures exclues
         for s in excluded_structures:
@@ -592,7 +595,14 @@ class OrientationEngine:
 
         # Protection Juridique / Tutelle / Curatelle
         if "protection" in detail_lower or "tutelle" in detail_lower or "curatelle" in detail_lower:
-            protection_kws = ["tutelle", "curatelle", "protection juridique", "sauvegarde de justice", "mandataire", "inapte", "ne peut plus décider", "ne peut plus decider", "juges des contentieux", "tribunal de proximité"]
+            protection_kws = [
+                "tutelle", "curatelle", "protection juridique", "sauvegarde de justice", 
+                "mandataire", "mandataire judiciaire", "mjpm", "inapte", "incapable",
+                "ne peut plus décider", "ne peut plus decider", "ne peut plus gérer", "ne peut plus gerer",
+                "juges des contentieux", "juge des tutelles", "tribunal de proximité", "tribunal de proximite",
+                "habilitation familiale", "mise sous tutelle", "mise sous curatelle", "sous tutelle", "sous curatelle",
+                "autonomie décisionnelle", "autonomie decisionnelle", "gestion des comptes"
+            ]
             if any(kw in text for kw in protection_kws):
                 return True
 
