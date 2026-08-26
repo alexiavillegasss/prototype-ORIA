@@ -137,12 +137,14 @@ class OrientationEngine:
                 if pd.notna(val) and str(val).strip() in ['✓', 'x']:
                     struct_cochees.append(s)
                     
+            conseil_val = row.get("Conseils")
             self.needs_mapping.append({
                 "categorie": str(categorie).strip() if pd.notna(categorie) else "",
                 "detaille": str(detail).strip(),
                 "moteur_criteria": str(kw).strip() if pd.notna(kw) else "",
                 "struct_proposee": str(struct_proposee).strip() if pd.notna(struct_proposee) else "",
-                "structures_cochees": struct_cochees
+                "structures_cochees": struct_cochees,
+                "conseil": str(conseil_val).strip() if pd.notna(conseil_val) else ""
             })
 
     def evaluate_orientation(self, extracted_data: dict, comid_results: dict, original_text: str = ""):
@@ -205,6 +207,7 @@ class OrientationEngine:
             "privation de droits", "privation de droit"
         ]
         
+        identified_conseils = []
         for need in self.needs_mapping:
             if self._is_need_identified(need, eval_context, text_lower):
                 if len(need["structures_cochees"]) > 0:
@@ -217,6 +220,9 @@ class OrientationEngine:
                                 scores[s] += 100
                             else:
                                 scores[s] += 1
+                c_text = need.get("conseil")
+                if c_text and c_text.strip() and c_text not in identified_conseils:
+                    identified_conseils.append(c_text.strip())
                         
         # Étape 3 : Application des exclusions
         excluded_structures = []
@@ -400,7 +406,8 @@ class OrientationEngine:
                 "pertinence": pertinence,
                 "objectif": objectif,
                 "score_confiance": 100,
-                "explication_confiance": f"Calculé par points. Score : {score} point(s)."
+                "explication_confiance": f"Calculé par points. Score : {score} point(s).",
+                "conseils": identified_conseils
             })
             
         # Fallback par défaut si rien n'est éligible
@@ -567,6 +574,18 @@ class OrientationEngine:
         has_maintien = "maintien" in text and "domicile" in text
         has_refus = "refus" in text or "refusé" in text or "refuse" in text or "ne veut pas" in text or "ne veut plus" in text or "opposition" in text
         
+        # Addictions / Alcool / Drogues
+        if "addiction" in detail_lower or "addictions" in detail_lower or "alcool" in detail_lower or "drogue" in detail_lower:
+            addiction_kws = ["addiction", "addictions", "alcool", "alcoolisme", "drogue", "drogues", "substance", "toxico", "addictologie", "arcasud", "dépendance", "dependance", "boit", "boit trop", "bouteille"]
+            if any(kw in text for kw in addiction_kws):
+                return True
+
+        # Protection Juridique / Tutelle / Curatelle
+        if "protection" in detail_lower or "tutelle" in detail_lower or "curatelle" in detail_lower:
+            protection_kws = ["tutelle", "curatelle", "protection juridique", "sauvegarde de justice", "mandataire", "inapte", "ne peut plus décider", "ne peut plus decider", "juges des contentieux", "tribunal de proximité"]
+            if any(kw in text for kw in protection_kws):
+                return True
+
         # 1. Urgent / Danger
         if "danger vital" in detail_lower or "secours d’urgence" in detail_lower or "secours d'urgence" in detail_lower:
             if "secours" in text or "urgence" in text or "danger" in text or "agression" in text:
