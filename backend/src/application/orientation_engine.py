@@ -237,9 +237,17 @@ class OrientationEngine:
                 except Exception as e:
                     print(f"Error checking exclusion rule {detail}: {e}")
                     
-        # Exclure aussi Compagnons Bâtisseurs si pas de Diogène ou incurie
+        # Exclure aussi Compagnons Bâtisseurs si pas de Diogène ou incurie ou insalubrité
         if "COMPAGNONS_BATISSEURS" not in excluded_structures:
-            insalubre_ok = eval_context.get("usager.cadre_de_vie.etat_logement") in ["insalubre", "diogene", "incurie"]
+            insalubre_ok = (
+                eval_context.get("usager.cadre_de_vie.etat_logement") in ["insalubre", "diogene", "incurie"] or
+                "diogène" in text_lower or
+                "diogene" in text_lower or
+                "incurie" in text_lower or
+                "insalubre" in text_lower or
+                "nettoyage" in text_lower or
+                "auto-réhabilitation" in text_lower
+            )
             logement_inadapte_ok = eval_context.get("evaluation.comid.logement_inadapte") is True
             if not insalubre_ok and not logement_inadapte_ok:
                 excluded_structures.append("COMPAGNONS_BATISSEURS")
