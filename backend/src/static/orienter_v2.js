@@ -1170,6 +1170,22 @@ function cleanFrenchVoiceTranscript(text) {
     cleaned = cleaned.replace(/\b([2-9])0([1-9])\b/g, '$1$2');
     cleaned = cleaned.replace(/\b([2-9])0\s+([1-9])\b/g, '$1$2');
 
+    // 4. Corriger les erreurs phonétiques de dictée vocale sur les noms de villes du Var
+    cleaned = cleaned.replace(/\bla saine en l'air\b/gi, 'La Seyne-sur-Mer');
+    cleaned = cleaned.replace(/\bla saine en lair\b/gi, 'La Seyne-sur-Mer');
+    cleaned = cleaned.replace(/\bla saine en l air\b/gi, 'La Seyne-sur-Mer');
+    cleaned = cleaned.replace(/\bla saine sur mer\b/gi, 'La Seyne-sur-Mer');
+    cleaned = cleaned.replace(/\bla saine\b/gi, 'La Seyne-sur-Mer');
+    cleaned = cleaned.replace(/\bla scène sur mer\b/gi, 'La Seyne-sur-Mer');
+    cleaned = cleaned.replace(/\bla scene sur mer\b/gi, 'La Seyne-sur-Mer');
+    cleaned = cleaned.replace(/\bla seine sur mer\b/gi, 'La Seyne-sur-Mer');
+    cleaned = cleaned.replace(/\bla seine\b/gi, 'La Seyne-sur-Mer');
+    cleaned = cleaned.replace(/\b6 fours les plages\b/gi, 'Six-Fours-les-Plages');
+    cleaned = cleaned.replace(/\b6 fours\b/gi, 'Six-Fours-les-Plages');
+    cleaned = cleaned.replace(/\bsi fours\b/gi, 'Six-Fours-les-Plages');
+    cleaned = cleaned.replace(/\bolioules?\b/gi, 'Ollioules');
+    cleaned = cleaned.replace(/\bolioules?\b/gi, 'Ollioules');
+
     return cleaned;
 }
 
