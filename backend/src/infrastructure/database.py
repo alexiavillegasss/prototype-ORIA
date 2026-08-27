@@ -2,7 +2,7 @@ import sqlite3
 import json
 from datetime import datetime
 import os
-from typing import Optional
+from typing import Optional, Union
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEFAULT_DB_PATH = os.path.join(BASE_DIR, "oria_database.db")
@@ -188,13 +188,17 @@ class DatabaseManager:
                 
             return result
 
-    def update_dossier_validation(self, dossier_id: int, status: str, structure_choisie: str) -> bool:
+    def update_dossier_validation(self, dossier_id: Union[int, str], status: str, structure_choisie: str) -> bool:
         """Met à jour le statut du dossier et la structure finale choisie par l'utilisateur."""
+        clean_id = clean_id_str(str(dossier_id))
+        try:
+            d_id_int = int(clean_id)
+        except (ValueError, TypeError):
+            d_id_int = None
+
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
-            
-            # On vérifie si le dossier existe
-            cursor.execute('SELECT details_complet FROM dossiers_patients WHERE id = ?', (dossier_id,))
+            cursor.execute('SELECT details_complet FROM dossiers_patients WHERE id = ? OR id = ?', (d_id_int, clean_id))
             row = cursor.fetchone()
             if not row:
                 return False
@@ -213,14 +217,57 @@ class DatabaseManager:
             if "historique_orientations" in details and isinstance(details["historique_orientations"], list) and len(details["historique_orientations"]) > 0:
                 details["historique_orientations"][-1]["validation_utilisateur"] = val_data
             
-            # On met à jour details_complet et le statut (niveau_comid)
             cursor.execute('''
                 UPDATE dossiers_patients 
                 SET details_complet = ?, niveau_comid = ?
-                WHERE id = ?
-            ''', (json.dumps(details, ensure_ascii=False), status, dossier_id))
+                WHERE id = ? OR id = ?
+            ''', (json.dumps(details, ensure_ascii=False), status, d_id_int, clean_id))
             conn.commit()
             return True
+
+    def update_history_item_validation(self, dossier_id: Union[int, str], history_index: int, status: str, structure_choisie: str) -> bool:
+        """Met à jour le statut de validation d'un élément spécifique de l'historique d'orientations."""
+        clean_id = clean_id_str(str(dossier_id))
+        try:
+            d_id_int = int(clean_id)
+        except (ValueError, TypeError):
+            d_id_int = None
+
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('SELECT details_complet FROM dossiers_patients WHERE id = ? OR id = ?', (d_id_int, clean_id))
+            row = cursor.fetchone()
+            if not row:
+                return False
+
+            try:
+                details = json.loads(row[0]) if row[0] else {}
+            except Exception:
+                details = {}
+
+            val_data = {
+                "status": status,
+                "structure_choisie": structure_choisie,
+                "date_validation": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            }
+
+            historique = details.get("historique_orientations", [])
+            if isinstance(historique, list) and 0 <= history_index < len(historique):
+                historique[history_index]["validation_utilisateur"] = val_data
+                if history_index == len(historique) - 1:
+                    details["validation_utilisateur"] = val_data
+                    status_col = status
+                else:
+                    status_col = details.get("validation_utilisateur", {}).get("status", status)
+
+                cursor.execute('''
+                    UPDATE dossiers_patients 
+                    SET details_complet = ?, niveau_comid = ?
+                    WHERE id = ? OR id = ?
+                ''', (json.dumps(details, ensure_ascii=False), status_col, d_id_int, clean_id))
+                conn.commit()
+                return True
+            return False
 
     def save_comid_eval(self, dossier_id: str, senior_nom: str, type_eval: str, score: int, niveau: str, criteres: list, createur: str = "Anonyme") -> int:
         """Sauvegarde ou met à jour une évaluation COMID (Entrée ou Sortie) pour un dossier_id."""
@@ -393,44 +440,106 @@ class DatabaseManager:
             return cursor.rowcount > 0
 
     def get_dossiers_for_dropdown(self) -> list:
-        """Retourne uniquement les dossiers ayant une évaluation clinique COMID officielle."""
+        """Retourne la liste complète de tous les dossiers patients (dossiers, COMID, Zarit)."""
         res = []
         dossiers_map = {}
 
-        # Uniquement les dossiers ayant un COMID
+        # 1. Dossiers patients principaux
+        for d in self.get_all_dossiers():
+            d_id = str(d["id"])
+            details_complet = d.get("details_complet") or {}
+            if isinstance(details_complet, str):
+                try: details_complet = json.loads(details_complet)
+                except: details_complet = {}
+            
+            s_nom = "Anonyme"
+            if isinstance(details_complet, dict):
+                prenom = details_complet.get("senior_prenom", "")
+                nom = details_complet.get("senior_nom", "")
+                if prenom or nom:
+                    s_nom = f"{prenom} {nom}".strip()
+            
+            if s_nom == "Anonyme":
+                dEx = d.get("donnees_extraites") or {}
+                if isinstance(dEx, str):
+                    try: dEx = json.loads(dEx)
+                    except: dEx = {}
+                nom_u = dEx.get("usager.identite.nom") or dEx.get("usager_nom_usage") or ""
+                prenom_u = dEx.get("usager.identite.prenom") or dEx.get("usager_prenoms") or ""
+                if nom_u or prenom_u:
+                    s_nom = f"{prenom_u} {nom_u}".strip()
+
+            dossiers_map[d_id] = {
+                "dossier_id": d_id,
+                "senior_nom": s_nom
+            }
+
+        # 2. Dossiers COMID
         for item in self.get_comid_evaluations():
-            d_id = item.get('dossier_id')
+            c_d_id = str(item.get('dossier_id'))
+            cleaned_c_d_id = clean_id_str(c_d_id)
+            d_id = str(cleaned_c_d_id) if cleaned_c_d_id is not None else c_d_id
             s_nom = item.get('senior_nom')
             if not s_nom or s_nom == d_id or s_nom in ('Senior non renseigné', 'Usager'):
                 s_nom = "Anonyme"
-            if d_id and d_id not in dossiers_map:
+                
+            if d_id not in dossiers_map:
                 dossiers_map[d_id] = {
                     "dossier_id": d_id,
                     "senior_nom": s_nom
                 }
+            elif s_nom != "Anonyme" and dossiers_map[d_id]["senior_nom"] == "Anonyme":
+                dossiers_map[d_id]["senior_nom"] = s_nom
 
-        # Trier par identifiant
-        for d_id in sorted(dossiers_map.keys()):
+        # 3. Dossiers ZARIT
+        for item in self.get_zarit_evaluations():
+            z_d_id = str(item.get('dossier_id'))
+            cleaned_z_d_id = clean_id_str(z_d_id)
+            d_id = str(cleaned_z_d_id) if cleaned_z_d_id is not None else z_d_id
+            s_nom = item.get('senior_nom')
+            if not s_nom or s_nom == d_id or s_nom in ('Senior non renseigné', 'Usager'):
+                s_nom = "Anonyme"
+                
+            if d_id not in dossiers_map:
+                dossiers_map[d_id] = {
+                    "dossier_id": d_id,
+                    "senior_nom": s_nom
+                }
+            elif s_nom != "Anonyme" and dossiers_map[d_id]["senior_nom"] == "Anonyme":
+                dossiers_map[d_id]["senior_nom"] = s_nom
+
+        def sort_key(k):
+            try:
+                return (0, int(clean_id_str(k)))
+            except:
+                return (1, str(k))
+
+        for d_id in sorted(dossiers_map.keys(), key=sort_key):
             info = dossiers_map[d_id]
             nom = info["senior_nom"]
             res.append({
                 "dossier_id": d_id,
                 "senior_nom": nom,
-                "display_label": f"{d_id} – {nom}"
+                "display_label": f"Dossier #{d_id} – {nom}" if nom != "Anonyme" else f"Dossier #{d_id}"
             })
 
         return res
 
     def get_dossier_360_details(self, dossier_id: str) -> dict:
         """Récupère l'ensemble synthétique à 360° d'un dossier (Orientation, COMID, Zarit)."""
-        d_id_str = str(dossier_id)
+        clean_id = clean_id_str(str(dossier_id))
+        try:
+            d_id_int = int(clean_id)
+        except (ValueError, TypeError):
+            d_id_int = None
+        d_id_str = str(clean_id)
 
         # 1. Orientation dossier info (dossiers_patients)
         orientation_info = None
         with sqlite3.connect(self.db_path) as conn:
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
-            cursor.execute('SELECT * FROM dossiers_patients WHERE id = ?', (d_id_str,))
+            cursor.execute('SELECT * FROM dossiers_patients WHERE id = ? OR id = ?', (d_id_int, d_id_str))
             row = cursor.fetchone()
             if row:
                 d = dict(row)
@@ -502,3 +611,37 @@ class DatabaseManager:
             "comid": comid_evals,
             "zarit": zarit_evals
         }
+
+    def update_dossier_patient_info(self, dossier_id: int, senior_nom: str = None, senior_prenom: str = None, age: str = None, description: str = None) -> bool:
+        """Met à jour les informations du profil usager (Nom, Prénom, Âge, Description)."""
+        d_id_str = str(dossier_id)
+        full_name = f"{senior_prenom or ''} {senior_nom or ''}".strip()
+        if not full_name:
+            full_name = senior_nom or ""
+
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('SELECT details_complet FROM dossiers_patients WHERE id = ?', (dossier_id,))
+            row = cursor.fetchone()
+            if row:
+                try:
+                    details = json.loads(row[0]) if row[0] else {}
+                except Exception:
+                    details = {}
+                
+                details["senior_nom"] = senior_nom or details.get("senior_nom")
+                details["senior_prenom"] = senior_prenom or details.get("senior_prenom")
+                details["age"] = age or details.get("age")
+                details["description_usager"] = description or details.get("description_usager")
+                
+                cursor.execute('UPDATE dossiers_patients SET details_complet = ? WHERE id = ?', (
+                    json.dumps(details, ensure_ascii=False),
+                    dossier_id
+                ))
+            
+            if full_name:
+                cursor.execute('UPDATE comid_evaluations SET senior_nom = ? WHERE dossier_id = ? OR dossier_id = ? OR dossier_id = ?', (
+                    full_name, d_id_str, f"DOS-{d_id_str}", f"DOS-ZARIT-{d_id_str}"
+                ))
+            conn.commit()
+            return True

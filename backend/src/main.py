@@ -3,6 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, FileResponse, Response
 from pydantic import BaseModel
 from typing import Optional
+from datetime import datetime
 from collections import Counter
 
 import os
@@ -135,6 +136,7 @@ async def analyze(request: AnalyzeRequest):
         
         # Gérer l'historique des orientations
         historique = []
+        existing_details = {}
         if d_id_int is not None:
             dossier_360 = db_manager.get_dossier_360_details(str(d_id_int))
             if dossier_360 and dossier_360.get("orientation"):
@@ -162,10 +164,9 @@ async def analyze(request: AnalyzeRequest):
         }
         historique.append(new_entry)
         
-        details = {
-            "createur": request.createur,
-            "historique_orientations": historique
-        }
+        details = existing_details.copy() if isinstance(existing_details, dict) else {}
+        details["createur"] = request.createur or details.get("createur", "Anonyme")
+        details["historique_orientations"] = historique
         
         # Si un ID de dossier existant est passé, on met à jour
         if d_id_int is not None:
@@ -285,16 +286,42 @@ class ComidEvalRequest(BaseModel):
     createur: Optional[str] = "Anonyme"
 
 @app.post("/api/dossiers/{dossier_id}/validate")
-def validate_dossier(dossier_id: int, request: ValidateRequest):
+def validate_dossier(dossier_id: str, request: ValidateRequest):
     """Valide l'orientation d'un dossier par le professionnel."""
+    cleaned_id = clean_dossier_id(dossier_id)
+    if cleaned_id is None:
+        return {"error": "Dossier introuvable."}
+
     success = db_manager.update_dossier_validation(
-        dossier_id=dossier_id,
+        dossier_id=cleaned_id,
         status=request.status,
         structure_choisie=request.structure_choisie
     )
     if not success:
         return {"error": "Dossier introuvable."}
     return {"message": "Orientation enregistrée avec succès en base de données !"}
+
+class ValidateHistoryItemRequest(BaseModel):
+    history_index: int
+    status: str
+    structure_choisie: str
+
+@app.post("/api/dossiers/{dossier_id}/validate-history-item")
+def validate_history_item_endpoint(dossier_id: str, req: ValidateHistoryItemRequest):
+    """Valide une orientation spécifique de l'historique d'un dossier."""
+    cleaned_id = clean_dossier_id(dossier_id)
+    if cleaned_id is None:
+        return {"error": "Dossier introuvable."}
+
+    success = db_manager.update_history_item_validation(
+        dossier_id=cleaned_id,
+        history_index=req.history_index,
+        status=req.status,
+        structure_choisie=req.structure_choisie
+    )
+    if not success:
+        return {"error": "Mise à jour de la validation échouée."}
+    return {"success": True, "message": "Statut de l'orientation mis à jour avec succès !"}
 
 # -----------------------------
 # API COMID EVALUATIONS (ENTREE / SORTIE)
@@ -783,25 +810,32 @@ def get_all_dossiers_summary(createur: Optional[str] = None):
             if isinstance(details_complet, str):
                 try: details_complet = json.loads(details_complet)
                 except: details_complet = {}
-            d_createur = details_complet.get("createur")
+            d_createur = details_complet.get("createur") if isinstance(details_complet, dict) else None
             
-            # Filtre par créateur
-            if createur and d_createur and d_createur != createur:
+            # Filtre par créateur (les dossiers anonymes ou du créateur courant restent visibles)
+            if createur and d_createur and str(d_createur).lower() != "anonyme" and d_createur != createur:
                 continue
                 
             d_id = str(d["id"])
             senior_nom = "Anonyme"
-            dEx = d.get("donnees_extraites") or {}
-            if isinstance(dEx, str):
-                try: dEx = json.loads(dEx)
-                except: dEx = {}
-            nom_u = dEx.get("usager.identite.nom") or dEx.get("usager_nom_usage") or ""
-            prenom_u = dEx.get("usager.identite.prenom") or dEx.get("usager_prenoms") or ""
-            if nom_u or prenom_u:
-                senior_nom = f"{prenom_u} {nom_u}".strip()
+            if isinstance(details_complet, dict):
+                prenom = details_complet.get("senior_prenom", "")
+                nom = details_complet.get("senior_nom", "")
+                if prenom or nom:
+                    senior_nom = f"{prenom} {nom}".strip()
+
+            if senior_nom == "Anonyme":
+                dEx = d.get("donnees_extraites") or {}
+                if isinstance(dEx, str):
+                    try: dEx = json.loads(dEx)
+                    except: dEx = {}
+                nom_u = dEx.get("usager.identite.nom") or dEx.get("usager_nom_usage") or ""
+                prenom_u = dEx.get("usager.identite.prenom") or dEx.get("usager_prenoms") or ""
+                if nom_u or prenom_u:
+                    senior_nom = f"{prenom_u} {nom_u}".strip()
                 
             validation_status = "En attente"
-            val_user = details_complet.get("validation_utilisateur")
+            val_user = details_complet.get("validation_utilisateur") if isinstance(details_complet, dict) else None
             if val_user:
                 val_status = val_user.get("status", "")
                 if "valid" in val_status.lower() or "accept" in val_status.lower():
@@ -828,7 +862,7 @@ def get_all_dossiers_summary(createur: Optional[str] = None):
             d_id = str(cleaned_c_d_id) if cleaned_c_d_id is not None else c_d_id
             d_createur = c.get("createur")
             
-            if createur and d_createur and d_createur != createur:
+            if createur and d_createur and str(d_createur).lower() != "anonyme" and d_createur != createur:
                 continue
                 
             if d_id not in dossier_map:
@@ -860,7 +894,7 @@ def get_all_dossiers_summary(createur: Optional[str] = None):
             d_id = str(cleaned_z_d_id) if cleaned_z_d_id is not None else z_d_id
             d_createur = z.get("createur")
             
-            if createur and d_createur and d_createur != createur:
+            if createur and d_createur and str(d_createur).lower() != "anonyme" and d_createur != createur:
                 continue
                 
             if d_id not in dossier_map:
@@ -1043,3 +1077,24 @@ def download_saved_pdf(dossier_id: str, filename: str):
     if not os.path.exists(file_path):
         return Response(content="Fichier introuvable.", status_code=404)
     return FileResponse(file_path, media_type="application/pdf", filename=filename)
+
+class PatientInfoUpdateRequest(BaseModel):
+    senior_nom: Optional[str] = None
+    senior_prenom: Optional[str] = None
+    age: Optional[str] = None
+    description: Optional[str] = None
+
+@app.post("/api/dossiers/{dossier_id}/update-info")
+def update_patient_info_endpoint(dossier_id: str, req: PatientInfoUpdateRequest):
+    cleaned_id = clean_dossier_id(dossier_id)
+    if cleaned_id is None:
+        return {"error": "Dossier introuvable"}
+    
+    db_manager.update_dossier_patient_info(
+        dossier_id=cleaned_id,
+        senior_nom=req.senior_nom,
+        senior_prenom=req.senior_prenom,
+        age=req.age,
+        description=req.description
+    )
+    return {"success": True, "message": "Informations usager mises à jour avec succès"}

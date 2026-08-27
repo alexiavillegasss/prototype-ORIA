@@ -59,6 +59,21 @@ let schemaPivot = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     // Charger les dossiers dans le select
+    function updateOrienterGoToDossierButton(dId) {
+        let container = document.getElementById('orienter-goto-dossier-container');
+        if (!container) return;
+        if (dId && dId !== 'new') {
+            container.innerHTML = `
+                <a href="/dossier/${encodeURIComponent(dId)}" class="btn-primary" style="margin-top: 0.5rem; background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); border: 1px solid rgba(59, 130, 246, 0.3); text-decoration: none; padding: 0.45rem 0.85rem; border-radius: 6px; font-size: 0.82rem; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; box-shadow: none;">
+                    📂 Accéder au dossier patient (#${dId})
+                </a>
+            `;
+            container.style.display = 'block';
+        } else {
+            container.style.display = 'none';
+        }
+    }
+
     async function loadDossiersSelect() {
         try {
             const activeUserJson = localStorage.getItem('active_user');
@@ -76,6 +91,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         opt.textContent = d.display_label;
                         select.appendChild(opt);
                     });
+
+                    select.addEventListener('change', () => {
+                        updateOrienterGoToDossierButton(select.value);
+                    });
+
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const dParam = urlParams.get('dossier_id');
+                    if (dParam) {
+                        select.value = dParam;
+                        updateOrienterGoToDossierButton(dParam);
+                    }
                 }
             }
         } catch (e) {
@@ -579,6 +605,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             Traiter un nouveau cas
                         </button>
                         ${pdfButtonHtml}
+                        ${dossierId ? `
+                            <a href="/dossier/${encodeURIComponent(dossierId)}" class="btn-primary" style="background: rgba(59, 130, 246, 0.2); color: var(--accent-blue); border: 1px solid rgba(59, 130, 246, 0.4); text-decoration: none; margin-top: 1rem; padding: 0.65rem 1.2rem; border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; box-shadow: none;">
+                                📂 Retourner au dossier patient (#${dossierId})
+                            </a>
+                        ` : ''}
                     </div>
                 </div>
             `;

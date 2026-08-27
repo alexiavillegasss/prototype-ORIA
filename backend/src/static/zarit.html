@@ -242,6 +242,7 @@
                     <select id="zarit-dossier-select" onchange="onSelectZaritDossier(this)" style="width: 100%; padding: 0.6rem 0.75rem; border-radius: 8px; border: 1px solid var(--border-glass); background: var(--bg-main); color: var(--text-primary); font-size: 0.84rem; font-family: inherit; outline: none; cursor: pointer;">
                         <option value="" style="background: var(--bg-card); color: var(--text-primary);">-- Choisir un dossier existant --</option>
                     </select>
+                    <div id="zarit-goto-dossier-container" style="display: none;"></div>
                 </div>
                 <div>
                     <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Nom / Prénom du Senior :</label>
@@ -466,6 +467,22 @@
             if (found) {
                 document.getElementById('zarit-senior-nom').value = found.senior_nom || "";
             }
+            updateGoToDossierButton(selectedDossierId);
+        }
+
+        function updateGoToDossierButton(dId) {
+            let container = document.getElementById('zarit-goto-dossier-container');
+            if (!container) return;
+            if (dId) {
+                container.innerHTML = `
+                    <a href="/dossier/${encodeURIComponent(dId)}" class="btn-primary" style="margin-top: 0.5rem; background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); border: 1px solid rgba(59, 130, 246, 0.3); text-decoration: none; padding: 0.45rem 0.85rem; border-radius: 6px; font-size: 0.82rem; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; box-shadow: none;">
+                        📂 Accéder au dossier patient (#${dId})
+                    </a>
+                `;
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+            }
         }
 
         document.getElementById('btn-reset-zarit').addEventListener('click', () => {
@@ -474,6 +491,7 @@
             document.getElementById('zarit-aidant-nom').value = '';
             document.getElementById('zarit-dossier-select').value = '';
             selectedDossierId = null;
+            updateGoToDossierButton(null);
             updateScore();
             renderQuestions();
         });
@@ -491,6 +509,19 @@
             const activeUserJson = localStorage.getItem('active_user');
             const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
             const creatorName = activeUser ? activeUser.name : 'Anonyme';
+
+            if (selectedDossierId) {
+                try {
+                    const checkRes = await fetch(`/api/dossier-360/${encodeURIComponent(selectedDossierId)}`);
+                    if (checkRes.ok) {
+                        const checkData = await checkRes.json();
+                        if (checkData.zarit && checkData.zarit.length > 0) {
+                            const confirmSave = confirm(`Un bilan ZARIT existe déjà pour le dossier #${selectedDossierId}.\n\nVoulez-vous vraiment enregistrer cette nouvelle grille ZARIT ? La grille précédente sera conservée dans l'archive du dossier.`);
+                            if (!confirmSave) return;
+                        }
+                    }
+                } catch(e){}
+            }
 
             try {
                 const response = await fetch('/api/zarit/evaluations', {
@@ -510,12 +541,16 @@
                 if (response.ok) {
                     const data = await response.json();
                     const actualDossierId = data.dossier_id;
-                    alert(`Évaluation Zarit enregistrée avec succès !\nN° Dossier : ${actualDossierId}\nScore : ${totalScore}/88 (${levelLabel})`);
+                    const goDossier = confirm(`✅ Évaluation Zarit enregistrée avec succès !\n\nN° Dossier : ${actualDossierId}\nScore : ${totalScore}/88 (${levelLabel})\n\nVoulez-vous ouvrir la fiche du dossier patient maintenant ?`);
                     
                     await loadDossiersDropdown();
                     if (actualDossierId) {
                         selectedDossierId = actualDossierId;
                         document.getElementById('zarit-dossier-select').value = actualDossierId;
+                        updateGoToDossierButton(actualDossierId);
+                    }
+                    if (goDossier && actualDossierId) {
+                        window.location.href = `/dossier/${encodeURIComponent(actualDossierId)}`;
                     }
                 } else {
                     alert("Erreur lors de l'enregistrement de l'évaluation.");

@@ -961,6 +961,7 @@
                     <select id="comid-global-dossier-select" onchange="onSelectGlobalDossier(this)" class="comid-field-select">
                         <option value="">-- Créer un nouveau dossier --</option>
                     </select>
+                    <div id="comid-goto-dossier-container" style="display: none;"></div>
                 </div>
 
                 <div class="input-group" id="group-dossier-id">
@@ -1736,6 +1737,13 @@
                         opt.textContent = `${d.dossier_id} - ${d.senior_nom || 'Senior'}`;
                         select.appendChild(opt);
                     });
+
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const dParam = urlParams.get('dossier_id');
+                    if (dParam) {
+                        select.value = dParam;
+                        onSelectGlobalDossier(select);
+                    }
                 }
             }
         } catch (e) {
@@ -1743,10 +1751,26 @@
         }
     }
 
+    function updateComidGoToDossierButton(dId) {
+        let container = document.getElementById('comid-goto-dossier-container');
+        if (!container) return;
+        if (dId) {
+            container.innerHTML = `
+                <a href="/dossier/${encodeURIComponent(dId)}" class="btn-primary" style="margin-top: 0.5rem; background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); border: 1px solid rgba(59, 130, 246, 0.3); text-decoration: none; padding: 0.45rem 0.85rem; border-radius: 6px; font-size: 0.82rem; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; box-shadow: none;">
+                    📂 Accéder au dossier patient (#${dId})
+                </a>
+            `;
+            container.style.display = 'block';
+        } else {
+            container.style.display = 'none';
+        }
+    }
+
     window.onSelectGlobalDossier = function(selectEl) {
         const val = selectEl.value;
         const inputId = document.getElementById('comid-dossier-id');
         const inputSenior = document.getElementById('comid-senior-nom');
+        updateComidGoToDossierButton(val);
         
         if (!val) {
             inputId.value = 'DOS-' + Math.floor(100 + Math.random() * 900);
@@ -1868,10 +1892,26 @@
 
     async function saveComidEvaluation(silent = false) {
         let dossierId = document.getElementById('comid-dossier-id').value.trim();
+        let selectedGlobalDossierId = document.getElementById('comid-global-dossier-select')?.value;
 
         if (!dossierId) {
             if (!silent) alert('Veuillez spécifier ou sélectionner un Identifiant de Dossier.');
             return;
+        }
+
+        if (!silent && selectedGlobalDossierId) {
+            try {
+                const checkRes = await fetch(`/api/dossier-360/${encodeURIComponent(selectedGlobalDossierId)}`);
+                if (checkRes.ok) {
+                    const checkData = await checkRes.json();
+                    const existingTypeEvals = (checkData.comid || []).filter(c => c.type_eval === currentComidType);
+                    if (existingTypeEvals.length > 0) {
+                        const typeLabel = currentComidType === 'entree' ? "d'entrée (admission)" : "de sortie (évaluation)";
+                        const confirmSave = confirm(`Un COMID ${typeLabel} a déjà été réalisé pour le dossier #${selectedGlobalDossierId}.\n\nVoulez-vous vraiment enregistrer cette nouvelle évaluation ? L'évaluation précédente sera conservée dans l'archive du dossier.`);
+                        if (!confirmSave) return;
+                    }
+                }
+            } catch(e){}
         }
 
         // Calculate score from state (v === 1)
@@ -1920,11 +1960,16 @@
                     inputId.value = actualDossierId;
                 }
                 
+                await loadGlobalDossiersDropdown();
+                updateComidGoToDossierButton(actualDossierId);
+
                 if (!silent) {
-                    alert(`✅ Évaluation COMID d'${currentComidType === 'entree' ? 'Entrée' : 'Sortie'} enregistrée avec succès !\n\nN° Dossier : ${actualDossierId}\nScore : ${score}/30 (${niveau})`);
+                    const goDossier = confirm(`✅ Évaluation COMID d'${currentComidType === 'entree' ? 'Entrée' : 'Sortie'} enregistrée avec succès !\n\nN° Dossier : ${actualDossierId}\nScore : ${score}/30 (${niveau})\n\nVoulez-vous ouvrir la fiche du dossier patient maintenant ?`);
+                    if (goDossier && actualDossierId) {
+                        window.location.href = `/dossier/${encodeURIComponent(actualDossierId)}`;
+                        return;
+                    }
                 }
-                
-                loadGlobalDossiersDropdown();
             }
         } catch (e) {
             console.error('Erreur save comid:', e);
