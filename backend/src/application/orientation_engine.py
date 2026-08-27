@@ -625,6 +625,24 @@ class OrientationEngine:
             if any(kw in text for kw in aidant_kws):
                 return True
 
+        # Choix d'un prestataire d'aide à domicile / SAAD / SSIAD
+        if "prestataire" in detail_lower or "aide à domicile" in detail_lower or "aides à domicile" in detail_lower or "saad" in detail_lower or "ssiad" in detail_lower:
+            aide_dom_kws = ["aide à domicile", "aide a domicile", "aides à domicile", "aides a domicile", "service d'aide", "services d'aide", "saad", "ssiad", "prestataire", "auxiliaire de vie"]
+            if any(kw in text for kw in aide_dom_kws):
+                return True
+
+        # Kinésithérapeute / Kiné
+        if "kiné" in detail_lower or "kine" in detail_lower or "kinésithérapeute" in detail_lower or "kinesitherapeute" in detail_lower:
+            kine_kws = ["kiné", "kine", "kinésithérapeute", "kinesitherapeute", "masso-kinésithérapie"]
+            if any(kw in text for kw in kine_kws):
+                return True
+
+        # Infirmier / IDEL
+        if "infirmier" in detail_lower or "infirmière" in detail_lower or "infirmiere" in detail_lower or "idel" in detail_lower:
+            idel_kws = ["infirmier", "infirmière", "infirmiere", "idel", "soins infirmiers"]
+            if any(kw in text for kw in idel_kws):
+                return True
+
         # 1. Urgent / Danger
         if "danger vital" in detail_lower or "secours d’urgence" in detail_lower or "secours d'urgence" in detail_lower:
             if "secours" in text or "urgence" in text or "danger" in text or "agression" in text:
