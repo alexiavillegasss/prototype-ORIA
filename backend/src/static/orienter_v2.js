@@ -254,54 +254,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="icon">🔍</span> Pourquoi cette orientation ?
             </button>
 
-            <!-- Volet des explications cliniques (masqué par défaut) -->
-            <div id="explanation-pane" class="explanation-pane" style="display: none;">
-                
-                <!-- Section Signaux du Schéma Pivot -->
-                <div class="explain-section">
-                    <span class="explain-subtitle">Variables clés extraites</span>
-                    <div class="signals-grid">
-                        <div class="signal-item">
-                            <span class="signal-title">Besoin principal</span>
-                            <span>${formatBesoinPrincipal(schemaPivot["demande.besoin_principal"])}</span>
-                        </div>
-                        <div class="signal-item">
-                            <span class="signal-title">Médecin traitant</span>
-                            <span>${formatMedecin(schemaPivot["vulnerabilites.sante.suivi_medical.medecin_traitant"])}</span>
-                        </div>
-                        <div class="signal-item">
-                            <span class="signal-title">Malveillance</span>
-                            <span>${formatMalveillance(schemaPivot["usager.situation_actuelle.suspicion_malveillance"])}</span>
-                        </div>
-                        <div class="signal-item">
-                            <span class="signal-title">Hospitalisation</span>
-                            <span>${formatHospitalisation(schemaPivot["vulnerabilites.sante.hospitalisation.statut"])}</span>
-                        </div>
+            <!-- Volet d'explication simple (masqué par défaut) -->
+            <div id="explanation-pane" class="explanation-pane" style="display: none; margin-top: 1.1rem; padding: 1.15rem; background: #ffffff; border: 1px solid rgba(226, 232, 240, 0.9); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                <!-- 1. Ce que fait la structure -->
+                <div style="margin-bottom: 0.95rem; padding-bottom: 0.85rem; border-bottom: 1px solid #f1f5f9;">
+                    <div style="font-size: 0.78rem; font-weight: 800; color: #2563eb; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.45rem;">
+                        <span>🏛️</span> Rôle de la structure :
                     </div>
+                    <p style="margin: 0; font-size: 0.91rem; color: #334155; line-height: 1.5; font-weight: 500;">
+                        ${struct.mission_structure || 'Structure d\'accompagnement et d\'orientation.'}
+                    </p>
                 </div>
 
-                <!-- Section Critères COMID Justifiés -->
-                <div class="explain-section">
-                    <span class="explain-subtitle">Preuves COMID avérées (Justifications textuelles)</span>
-                    <div class="comid-proof-list" id="comid-proof-list">
-                        <!-- Rempli dynamiquement -->
+                <!-- 2. Éléments du récit retenus -->
+                <div>
+                    <div style="font-size: 0.78rem; font-weight: 800; color: #059669; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.5rem;">
+                        <span>💬</span> Éléments identifiés dans votre récit :
                     </div>
-                </div>
-
-                <!-- Section Attribution des Points & Phrases -->
-                <div class="explain-section" style="border-top: 1px solid var(--border-glass); padding-top: 1rem;">
-                    <span class="explain-subtitle">Attribution des points (Besoins & Phrases identifiés)</span>
-                    <div id="points-needs-list" style="display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.5rem;">
-                        <!-- Rempli dynamiquement -->
-                    </div>
-                </div>
-
-                <!-- Section Scores des structures -->
-                <div class="explain-section" style="border-top: 1px solid var(--border-glass); padding-top: 1rem;">
-                    <span class="explain-subtitle">Scores et exclusions des structures</span>
-                    <div id="points-scores-grid" class="signals-grid" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
-                        <!-- Rempli dynamiquement -->
-                    </div>
+                    <ul style="margin: 0; padding: 0; list-style: none; font-size: 0.89rem; color: #1e293b; line-height: 1.5; display: flex; flex-direction: column; gap: 0.4rem;">
+                        ${(struct.elements_recit && struct.elements_recit.length > 0) ? 
+                            struct.elements_recit.map(el => `<li style="display: flex; align-items: flex-start; gap: 0.5rem;"><span style="color: #059669; font-weight: 800;">✓</span> <span><strong>${el}</strong></span></li>`).join('') : 
+                            `<li style="display: flex; align-items: flex-start; gap: 0.5rem;"><span style="color: #059669; font-weight: 800;">✓</span> <span><strong>Éléments cliniques généraux rapportés dans votre saisie.</strong></span></li>`
+                        }
+                    </ul>
                 </div>
             </div>
             
@@ -346,10 +321,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const explainPane = card.querySelector('#explanation-pane');
         btnWhy.addEventListener('click', () => {
             if (explainPane.style.display === 'none') {
-                renderComidJustifications(card.querySelector('#comid-proof-list'));
-                renderPointsExplanation(card);
-                explainPane.style.display = 'flex';
-                btnWhy.innerHTML = '<span class="icon">✕</span> Masquer les détails';
+                explainPane.style.display = 'block';
+                btnWhy.innerHTML = '<span class="icon">✕</span> Masquer l\'explication';
             } else {
                 explainPane.style.display = 'none';
                 btnWhy.innerHTML = '<span class="icon">🔍</span> Pourquoi cette orientation ?';

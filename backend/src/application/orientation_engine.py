@@ -29,6 +29,24 @@ class OrientationEngine:
             "MISAS": "MISAS",
             "CCAS": "CCAS"
         }
+
+        self.structure_missions = {
+            "CLIC": "Le CLIC (Centre Local d'Information et de Coordination) est un service public de proximité qui informe, évalue et coordonne gratuitement l'ensemble des aides pour le maintien à domicile des personnes âgées de 60 ans et plus.",
+            "DAC": "Le DAC (Dispositif d'Appui à la Coordination) vient en appui aux professionnels pour coordonner l'accompagnement des personnes en situation clinique complexe ou avec cumuls de vulnérabilités.",
+            "CCAS": "Le CCAS (Centre Communal d'Action Sociale) est le service municipal de proximité qui attribue les aides sociales d'urgence, alimentaires et d'accompagnement du quotidien.",
+            "UTS": "L'UTS (Unité Territoriale Sociale du Conseil Départemental) assure l'accompagnement social global des usagers et des familles en situation de précarité ou de vulnérabilité.",
+            "CRT": "Le CRT (Centre de Ressources Territorial) offre un accompagnement renforcé et coordonné à domicile comme alternative directe à l'entrée en EHPAD.",
+            "MISAS": "La MISAS (Mission d'Appui en Santé Mentale) apporte un soutien spécialisé pour l'orientation et la prise en charge des besoins en santé mentale et psychiatrie.",
+            "POLICE": "La Police et la Gendarmerie interviennent en urgence absolue pour assurer la protection des personnes, faire cesser les violences et prévenir les détresses vitales.",
+            "CEV": "La CEV (Cellule Écoute et Vigilance) enregistre et traite les signalements de maltraitance, de danger ou de spoliation d'adultes vulnérables.",
+            "COMPAGNONS_BATISSEURS": "Les Compagnons Bâtisseurs interviennent directement à domicile pour l’insalubrité, la réhabilitation et la désinfection du logement (syndrome de Diogène, incurie).",
+            "CPTS": "La CPTS (Communauté Professionnelle Territoriale de Santé) facilite l'accès aux soins de premier recours en coordonnant les médecins traitants, infirmiers et kinésithérapeutes du secteur.",
+            "SERVICE_SOCIAL_HOPITAL": "Le Service Social Hospitalier prépare et organise le plan d'aides et de soins à domicile en amont de la sortie d'établissement d'hospitalisation.",
+            "PSCG_SS_APA": "Ce service départemental évalue le niveau de perte d'autonomie (GIR) et attribue l'APA (Allocation Personnalisée d'Autonomie) pour financer les aides à domicile.",
+            "PRADO": "Le programme PRADO de l'Assurance Maladie anticipe et sécurise le retour à domicile du patient après une hospitalisation.",
+            "fil d'argent": "Le Fil d'Argent est une plateforme téléphonique dédiée au soutien psychologique, au répit et à l'écoute des aidants familiaux.",
+            "CONSULTATION MÉMOIRE": "La Consultation Mémoire réalise le bilan et le suivi médical spécialisé des troubles de la mémoire et des fonctions cognitives."
+        }
         
         # Mappings des critères de la feuille 1 vers les conditions techniques
         self.condition_map = {
@@ -209,7 +227,9 @@ class OrientationEngine:
                 "objectif": winner["objectif"],
                 "score_confiance": 100,
                 "explication_confiance": "Priorisation absolue par garde-fou prioritaire.",
-                "conseils": identified_conseils
+                "conseils": identified_conseils,
+                "mission_structure": self.structure_missions.get(struct_type, "Structure d'accompagnement et d'orientation d'urgence."),
+                "elements_recit": [winner.get("detail", "Signalement d'urgence ou de situation critique identifié dans la saisie.")]
             }
             
             # Enrichit extracted_data pour la traçabilité dans l'interface
@@ -434,6 +454,14 @@ class OrientationEngine:
                 
             label = self._get_structure_label(struct_type)
             
+            struct_elements = [n["detaille"] for n in identified_needs if struct_type in n.get("structures_cochees", [])]
+            if not struct_elements:
+                besoin_p = eval_context.get("demande.besoin_principal")
+                if besoin_p and besoin_p != "indetermine":
+                    struct_elements = [f"Demande en lien avec : {besoin_p}"]
+                else:
+                    struct_elements = ["Éléments cliniques généraux rapportés dans votre saisie."]
+
             final_structures.append({
                 "structure_type": struct_type,
                 "label": label,
@@ -442,7 +470,9 @@ class OrientationEngine:
                 "objectif": objectif,
                 "score_confiance": 100,
                 "explication_confiance": f"Calculé par points. Score : {score} point(s).",
-                "conseils": identified_conseils
+                "conseils": identified_conseils,
+                "mission_structure": self.structure_missions.get(struct_type, "Structure d'accompagnement et d'orientation."),
+                "elements_recit": struct_elements
             })
             
         # Fallback par défaut si rien n'est éligible
@@ -464,7 +494,9 @@ class OrientationEngine:
                     "objectif": "Aucun besoin spécifique identifié. Orientation vers le CLIC sénior par défaut.",
                     "score_confiance": 50,
                     "explication_confiance": "Orientation par défaut pour senior.",
-                    "conseils": identified_conseils
+                    "conseils": identified_conseils,
+                    "mission_structure": self.structure_missions.get("CLIC"),
+                    "elements_recit": ["Demande d'information et d'orientation globale pour personne âgée de 60 ans ou plus."]
                 })
             else:
                 final_structures.append({
@@ -475,7 +507,9 @@ class OrientationEngine:
                     "objectif": "Aucun besoin spécifique identifié. Orientation vers le DAC par défaut.",
                     "score_confiance": 50,
                     "explication_confiance": "Orientation par défaut.",
-                    "conseils": identified_conseils
+                    "conseils": identified_conseils,
+                    "mission_structure": self.structure_missions.get("DAC"),
+                    "elements_recit": ["Demande d'orientation et de coordination globale."]
                 })
             
         # Stocke les métriques d'explicabilité pour le front
