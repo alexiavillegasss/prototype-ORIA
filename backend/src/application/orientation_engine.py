@@ -190,6 +190,17 @@ class OrientationEngine:
             struct_type = winner["structure"]
             label = self._get_structure_label(struct_type)
             
+            identified_conseils = []
+            for gf in triggered_garde_fous:
+                c = gf.get("conseil")
+                if c and str(c).strip() and str(c).strip() != "nan" and str(c).strip() not in identified_conseils:
+                    identified_conseils.append(str(c).strip())
+            for need in self.needs_mapping:
+                if self._is_need_identified(need, eval_context, text_lower):
+                    c = need.get("conseil")
+                    if c and str(c).strip() and str(c).strip() != "nan" and str(c).strip() not in identified_conseils:
+                        identified_conseils.append(str(c).strip())
+
             orientation_result = {
                 "structure_type": struct_type,
                 "label": label,
@@ -197,7 +208,8 @@ class OrientationEngine:
                 "pertinence": "eleve",
                 "objectif": winner["objectif"],
                 "score_confiance": 100,
-                "explication_confiance": "Priorisation absolue par garde-fou prioritaire."
+                "explication_confiance": "Priorisation absolue par garde-fou prioritaire.",
+                "conseils": identified_conseils
             }
             
             # Enrichit extracted_data pour la traçabilité dans l'interface
