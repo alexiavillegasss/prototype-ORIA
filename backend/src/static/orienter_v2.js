@@ -211,18 +211,29 @@ document.addEventListener('DOMContentLoaded', () => {
         const color = STRUCTURE_COLORS[struct.structure_type] || '#64748b';
         const formatConseilLink = (text) => {
             if (!text) return '';
-            let formatted = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: #2563eb; text-decoration: underline; font-weight: 600;">$1</a>');
+            let formatted = text.replace(
+                /\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, 
+                '<a href="$2" target="_blank" rel="noopener noreferrer" class="conseil-link-badge" style="display: inline-flex; align-items: center; gap: 0.3rem; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; border-radius: 6px; padding: 3px 9px; font-weight: 600; font-size: 0.84rem; text-decoration: none; margin: 2px 0; transition: all 0.2s ease;"><span style="font-size: 0.8rem;">🔗</span> $1</a>'
+            );
             return formatted;
         };
 
         const conseilsHtml = (struct.conseils && struct.conseils.length > 0) ? `
-            <div class="conseils-box" style="margin: 1.25rem 0; padding: 1rem 1.15rem; background: rgba(59, 130, 246, 0.07); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 12px;">
-                <div style="font-size: 0.88rem; font-weight: 700; color: #1d4ed8; display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.5rem;">
-                    💡 Conseils & Actions complémentaires :
+            <div class="conseils-container" style="margin: 1.25rem 0; padding: 1.1rem; background: linear-gradient(135deg, rgba(239, 246, 255, 0.95) 0%, rgba(240, 249, 255, 0.85) 100%); border: 1px solid rgba(191, 219, 254, 0.9); border-left: 4px solid #2563eb; border-radius: 12px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.05);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem;">
+                    <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;">
+                        <span>💡</span> Preconisations & Conseils
+                    </div>
+                    <span style="font-size: 0.76rem; color: #64748b; font-weight: 500;">Actions complémentaires</span>
                 </div>
-                <ul style="margin: 0; padding-left: 1.1rem; color: var(--text-primary); font-size: 0.86rem; line-height: 1.45; display: flex; flex-direction: column; gap: 0.35rem;">
-                    ${struct.conseils.map(c => `<li>${formatConseilLink(c)}</li>`).join('')}
-                </ul>
+                <div style="display: flex; flex-direction: column; gap: 0.55rem;">
+                    ${struct.conseils.map(c => `
+                        <div class="conseil-item" style="background: #ffffff; border: 1px solid rgba(226, 232, 240, 0.95); border-radius: 8px; padding: 0.75rem 0.95rem; font-size: 0.88rem; line-height: 1.45; color: #1e293b; display: flex; align-items: flex-start; gap: 0.6rem; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+                            <span style="color: #2563eb; font-weight: 900; font-size: 1.1rem; line-height: 1.2; flex-shrink: 0;">•</span>
+                            <div style="flex: 1;">${formatConseilLink(c)}</div>
+                        </div>
+                    `).join('')}
+                </div>
             </div>
         ` : '';
 
