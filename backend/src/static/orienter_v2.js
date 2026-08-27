@@ -1154,13 +1154,36 @@ window.toggleVoiceDictation = function() {
             if (label) label.textContent = "🔴 Écoute en direct... (Clic pour stopper)";
         };
 
+function cleanFrenchVoiceTranscript(text) {
+    if (!text) return '';
+    let cleaned = text;
+
+    // 1. Corrige la concaténation "A605" -> "a 65", "A65" -> "a 65"
+    cleaned = cleaned.replace(/\b([Aa])([0-9]{2,3})\b/g, '$1 $2');
+
+    // 2. Corrige les artéfacts vocaux Web Speech API français : 605 ans -> 65 ans, 808 ans -> 88 ans, 705 ans -> 75 ans...
+    cleaned = cleaned.replace(/\b([6789])0([1-9])\s*(ans?|d'âge|d'age)?\b/gi, (match, p1, p2, p3) => {
+        const fixedAge = p1 + p2;
+        return p3 ? `${fixedAge} ${p3}` : fixedAge;
+    });
+
+    // 3. Corrige les séparations vocales : "60 5 ans" -> "65 ans", "80 8 ans" -> "88 ans"
+    cleaned = cleaned.replace(/\b([6789])0\s+([1-9])\s*(ans?|d'âge|d'age)?\b/gi, (match, p1, p2, p3) => {
+        const fixedAge = p1 + p2;
+        return p3 ? `${fixedAge} ${p3}` : fixedAge;
+    });
+
+    return cleaned;
+}
+
         activeRecognition.onresult = (event) => {
             let currentTranscript = '';
             for (let i = 0; i < event.results.length; i++) {
                 currentTranscript += event.results[i][0].transcript;
             }
+            const cleanedTranscript = cleanFrenchVoiceTranscript(currentTranscript);
             if (textarea) {
-                textarea.value = initialText ? (initialText.trim() + ' ' + currentTranscript) : currentTranscript;
+                textarea.value = initialText ? (initialText.trim() + ' ' + cleanedTranscript) : cleanedTranscript;
             }
         };
 

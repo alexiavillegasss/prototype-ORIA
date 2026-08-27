@@ -188,6 +188,22 @@ class OrientationEngine:
         eval_context["complexite.score_total"] = comid_results.get("score_total")
         
         text_lower = original_text.lower() if original_text else ""
+        if text_lower:
+            import re
+            text_lower = re.sub(r'\b([Aa])([0-9]{2,3})\b', r'\1 \2', text_lower)
+            text_lower = re.sub(r'\b([6789])0([1-9])\s*(ans?|d\'âge|d\'age)?\b', lambda m: f"{m.group(1)}{m.group(2)} {m.group(3) or ''}".strip(), text_lower, flags=re.IGNORECASE)
+
+        # Nettoyage des artéfacts d'âge issus de la reconnaissance vocale (ex: 605 -> 65, 808 -> 88, 705 -> 75)
+        raw_age = eval_context.get("usager.identite.age_estime")
+        if raw_age is not None:
+            try:
+                age_val = float(raw_age)
+                if age_val > 120 and str(int(age_val)).endswith("5") or str(int(age_val)).endswith("8") or str(int(age_val)).endswith("2"):
+                    str_age = str(int(age_val))
+                    if len(str_age) == 3 and str_age[1] == '0':
+                        eval_context["usager.identite.age_estime"] = int(str_age[0] + str_age[2])
+            except:
+                pass
         
         # Étape 1 : Garde-fous prioritaires
         triggered_garde_fous = []
