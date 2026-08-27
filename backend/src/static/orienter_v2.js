@@ -1158,20 +1158,17 @@ function cleanFrenchVoiceTranscript(text) {
     if (!text) return '';
     let cleaned = text;
 
-    // 1. Corrige la concaténation "A605" -> "a 65", "A65" -> "a 65"
-    cleaned = cleaned.replace(/\b([Aa])([0-9]{2,3})\b/g, '$1 $2');
+    // 1. Séparer la lettre A/a collée aux chiffres: "A6017" -> "A 6017", "A87" -> "A 87", "A507" -> "A 507"
+    cleaned = cleaned.replace(/\b([Aa])([0-9]{2,4})\b/g, '$1 $2');
 
-    // 2. Corrige les artéfacts vocaux Web Speech API français : 605 ans -> 65 ans, 808 ans -> 88 ans, 705 ans -> 75 ans...
-    cleaned = cleaned.replace(/\b([6789])0([1-9])\s*(ans?|d'âge|d'age)?\b/gi, (match, p1, p2, p3) => {
-        const fixedAge = p1 + p2;
-        return p3 ? `${fixedAge} ${p3}` : fixedAge;
-    });
+    // 2. Corriger les nombres à 4 chiffres Web Speech API : 601X (soixante-dix-X -> 71..79) et 801X (quatre-vingt-dix-X -> 91..99)
+    // ex: 6017 -> 77, 8017 -> 97, 6015 -> 75, 8015 -> 95
+    cleaned = cleaned.replace(/\b(6|8)01([1-9])\b/g, (m, p1, p2) => (p1 === '6' ? '7' : '9') + p2);
+    cleaned = cleaned.replace(/\b(6|8)0\s+1([1-9])\b/g, (m, p1, p2) => (p1 === '6' ? '7' : '9') + p2);
 
-    // 3. Corrige les séparations vocales : "60 5 ans" -> "65 ans", "80 8 ans" -> "88 ans"
-    cleaned = cleaned.replace(/\b([6789])0\s+([1-9])\s*(ans?|d'âge|d'age)?\b/gi, (match, p1, p2, p3) => {
-        const fixedAge = p1 + p2;
-        return p3 ? `${fixedAge} ${p3}` : fixedAge;
-    });
+    // 3. Corriger les nombres à 3 chiffres Web Speech API : X0Y (ex: 507 -> 57, 607 -> 67, 808 -> 88, 407 -> 47, 705 -> 75)
+    cleaned = cleaned.replace(/\b([2-9])0([1-9])\b/g, '$1$2');
+    cleaned = cleaned.replace(/\b([2-9])0\s+([1-9])\b/g, '$1$2');
 
     return cleaned;
 }
