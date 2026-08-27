@@ -84,6 +84,9 @@ class OrientationEngine:
         self._load_excel_rules()
 
     def _load_excel_rules(self):
+        if not os.path.exists(self.excel_path):
+            return
+        self.last_excel_mtime = os.path.getmtime(self.excel_path)
         # Charge Feuille 1: Exclusions et Garde-fous
         df1 = pd.read_excel(self.excel_path, sheet_name="01_Critère_prio_exclu")
         
@@ -147,10 +150,20 @@ class OrientationEngine:
                 "conseil": str(conseil_val).strip() if pd.notna(conseil_val) else ""
             })
 
+    def _reload_excel_if_modified(self):
+        try:
+            if os.path.exists(self.excel_path):
+                current_mtime = os.path.getmtime(self.excel_path)
+                if getattr(self, 'last_excel_mtime', 0) != current_mtime:
+                    self._load_excel_rules()
+        except Exception as e:
+            print(f"Warning: could not reload excel rules: {e}")
+
     def evaluate_orientation(self, extracted_data: dict, comid_results: dict, original_text: str = ""):
         """
         Calcule l'orientation recommandée à l'aide d'un algorithme par points.
         """
+        self._reload_excel_if_modified()
         # Prépare le contexte d'évaluation complet
         eval_context = {**extracted_data}
         eval_context["complexite.niveau"] = comid_results.get("niveau")
@@ -550,7 +563,7 @@ class OrientationEngine:
                         comid_matched = True
                         
         if has_comid_in_criteria and not comid_matched:
-            return False
+            return self._is_need_identified_textual(need, text)
             
         # Si un des critères techniques correspond (relation OR), le besoin est identifié
         tech_matched = False
@@ -604,6 +617,12 @@ class OrientationEngine:
                 "autonomie décisionnelle", "autonomie decisionnelle", "gestion des comptes"
             ]
             if any(kw in text for kw in protection_kws):
+                return True
+
+        # Relais de l'aidant / Épuisement aidant
+        if "aidant" in detail_lower or "aidants" in detail_lower or "répit" in detail_lower or "repit" in detail_lower:
+            aidant_kws = ["aidant", "aidante", "aidants", "fatigue", "fatigué", "fatiguee", "épuisé", "épuisée", "epuise", "epuisee", "épuisement", "epuisement", "répit", "repit", "charge mentale", "l'aider", "aider"]
+            if any(kw in text for kw in aidant_kws):
                 return True
 
         # 1. Urgent / Danger
