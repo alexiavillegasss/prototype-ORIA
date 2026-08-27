@@ -2,6 +2,12 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <script>
+        // Redirection immédiate si l'utilisateur n'est pas connecté
+        if (!localStorage.getItem('active_user')) {
+            window.location.href = '/profil';
+        }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="ORIA – Grille COMID : évaluation de la complexité multidimensionnelle à domicile">
     <title>ORIA – Grille COMID</title>
@@ -950,27 +956,20 @@
             </div>
 
             <div class="dossier-inputs-grid">
-                <div class="input-group" id="group-existing-dossier">
-                    <label for="comid-existing-dossier-select">Rattacher à un dossier ZARIT existant :</label>
-                    <select id="comid-existing-dossier-select" onchange="onSelectExistingDossier(this)" class="comid-field-select">
-                        <option value="">-- Nouveau dossier ou choisir un ZARIT --</option>
+                <div class="input-group" id="group-global-dossier">
+                    <label for="comid-global-dossier-select">Numéro de dossier existant (Optionnel) :</label>
+                    <select id="comid-global-dossier-select" onchange="onSelectGlobalDossier(this)" class="comid-field-select">
+                        <option value="">-- Créer un nouveau dossier --</option>
                     </select>
                 </div>
 
                 <div class="input-group" id="group-dossier-id">
                     <label for="comid-dossier-id">N° / Identifiant du Dossier :</label>
-                    <input type="text" id="comid-dossier-id" placeholder="Ex: DOS-2026-001" class="comid-field-input" value="DOS-101">
-                </div>
-
-                <div class="input-group hidden" id="group-dossier-select">
-                    <label for="comid-dossier-select">Rattacher au dossier d'entrée existant :</label>
-                    <select id="comid-dossier-select" onchange="onSelectEntreeDossier(this)" class="comid-field-select">
-                        <option value="">-- Sélectionner un dossier d'entrée --</option>
-                    </select>
+                    <input type="text" id="comid-dossier-id" placeholder="Généré automatiquement" class="comid-field-input" readonly style="background: var(--bg-card); opacity: 0.8; cursor: not-allowed;" value="">
                 </div>
 
                 <div class="input-group">
-                    <label for="comid-senior-nom">Nom / Prénom du Senior (Optionnel) :</label>
+                    <label for="comid-senior-nom">Nom / Prénom du Senior :</label>
                     <input type="text" id="comid-senior-nom" placeholder="Ex: Jean Dupont" class="comid-field-input">
                 </div>
             </div>
@@ -1719,126 +1718,74 @@
     let entreeDossiersList = [];
     let zaritDossiersList = [];
 
-    async function loadZaritDossiersDropdown() {
+    let globalDossiersList = [];
+    window.loadGlobalDossiersDropdown = async function() {
         try {
-            const [resZarit, resComid] = await Promise.all([
-                fetch('/api/zarit/evaluations'),
-                fetch('/api/comid/evaluations')
-            ]);
-
-            if (resZarit.ok) {
-                const evaluations = await resZarit.json();
-                zaritDossiersList = evaluations;
-                
-                let existingEntreeIds = new Set();
-                if (resComid.ok) {
-                    const comidEvals = await resComid.json();
-                    comidEvals.forEach(c => {
-                        if (c.type_eval === 'entree' && c.dossier_id) {
-                            existingEntreeIds.add(c.dossier_id);
-                        }
-                    });
-                }
-
-                const select = document.getElementById('comid-existing-dossier-select');
-                if (select) {
-                    select.innerHTML = '<option value="">-- Nouveau dossier ou choisir un ZARIT --</option>';
-                    const seen = new Set();
-                    evaluations.forEach(d => {
-                        const dId = d.dossier_id || `DOS-ZARIT-${d.id}`;
-                        // S'il existe déjà un COMID Entrée pour ce dossier_id, on masque le dossier
-                        if (existingEntreeIds.has(dId) || (d.dossier_id && existingEntreeIds.has(d.dossier_id))) {
-                            return;
-                        }
-                        if (!seen.has(dId)) {
-                            seen.add(dId);
-                            const opt = document.createElement('option');
-                            opt.value = String(d.id);
-                            const seniorText = d.senior_nom && d.senior_nom !== 'Senior non renseigné' ? d.senior_nom : 'Usager Anonyme';
-                            opt.textContent = `${dId} – ${seniorText} (Score ZARIT : ${d.score}/88)`;
-                            select.appendChild(opt);
-                        }
-                    });
-                }
-            }
-        } catch (e) {
-            console.error('Erreur chargement dossiers Zarit:', e);
-        }
-    }
-
-    function onSelectExistingDossier(selectEl) {
-        const val = selectEl.value;
-        if (!val) return;
-        const found = zaritDossiersList.find(d => String(d.id) === String(val));
-        if (found) {
-            const inputId = document.getElementById('comid-dossier-id');
-            const inputSenior = document.getElementById('comid-senior-nom');
-            
-            if (found.dossier_id) {
-                inputId.value = found.dossier_id;
-            } else {
-                inputId.value = 'DOS-ZARIT-' + found.id;
-            }
-
-            if (found.senior_nom && found.senior_nom !== 'Senior non renseigné') {
-                inputSenior.value = found.senior_nom;
-            }
-        }
-    }
-
-    async function loadEntreeDossiers() {
-        try {
-            const res = await fetch('/api/comid/dossiers-entree');
+            const activeUserJson = localStorage.getItem('active_user');
+            const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
+            const creatorParam = activeUser ? `?createur=${encodeURIComponent(activeUser.name)}` : '';
+            const res = await fetch(`/api/dossiers/dropdown-list${creatorParam}`);
             if (res.ok) {
-                entreeDossiersList = await res.json();
-                const select = document.getElementById('comid-dossier-select');
+                globalDossiersList = await res.json();
+                const select = document.getElementById('comid-global-dossier-select');
                 if (select) {
-                    select.innerHTML = '<option value="">-- Sélectionner un dossier d\'entrée --</option>';
-                    entreeDossiersList.forEach(d => {
+                    select.innerHTML = '<option value="">-- Créer un nouveau dossier --</option>';
+                    globalDossiersList.forEach(d => {
                         const opt = document.createElement('option');
                         opt.value = d.dossier_id;
-                        opt.textContent = `${d.dossier_id} - ${d.senior_nom || 'Senior'} (Score Entrée: ${d.score}/30)`;
+                        opt.textContent = `${d.dossier_id} - ${d.senior_nom || 'Senior'}`;
                         select.appendChild(opt);
                     });
                 }
             }
         } catch (e) {
-            console.error('Erreur chargement dossiers d\'entrée:', e);
+            console.error("Erreur chargement dossiers globaux", e);
         }
     }
 
-    function setComidEvalType(type) {
-        currentComidType = type;
-        const btnEntree = document.getElementById('btn-type-entree');
-        const btnSortie = document.getElementById('btn-type-sortie');
-        const groupDossierId = document.getElementById('group-dossier-id');
-        const groupExistingDossier = document.getElementById('group-existing-dossier');
-        const groupDossierSelect = document.getElementById('group-dossier-select');
-        const entreeBadge = document.getElementById('entree-summary-badge');
-
-        if (type === 'entree') {
-            btnEntree.classList.add('active-entree');
-            btnSortie.classList.remove('active-sortie');
-            groupDossierId.classList.remove('hidden');
-            if (groupExistingDossier) groupExistingDossier.classList.remove('hidden');
-            groupDossierSelect.classList.add('hidden');
-            entreeBadge.classList.add('hidden');
-            const inputId = document.getElementById('comid-dossier-id');
-            if (!inputId.value) {
-                inputId.value = 'DOS-' + Math.floor(100 + Math.random() * 900);
+    window.onSelectGlobalDossier = function(selectEl) {
+        const val = selectEl.value;
+        const inputId = document.getElementById('comid-dossier-id');
+        const inputSenior = document.getElementById('comid-senior-nom');
+        
+        if (!val) {
+            inputId.value = 'DOS-' + Math.floor(100 + Math.random() * 900);
+            inputSenior.value = '';
+            // Si sortie, désélectionner le dossier d'entrée
+            const selectEntree = document.getElementById('comid-dossier-select');
+            if (selectEntree) {
+                selectEntree.value = '';
+                const entreeBadge = document.getElementById('entree-summary-badge');
+                if (entreeBadge) entreeBadge.classList.add('hidden');
             }
-        } else {
-            btnSortie.classList.add('active-sortie');
-            btnEntree.classList.remove('active-entree');
-            groupDossierId.classList.add('hidden');
-            if (groupExistingDossier) groupExistingDossier.classList.add('hidden');
-            groupDossierSelect.classList.remove('hidden');
-            loadEntreeDossiers();
+            return;
+        }
+
+        const found = globalDossiersList.find(d => String(d.dossier_id) === String(val));
+        if (found) {
+            if (inputId) inputId.value = found.dossier_id;
+            if (inputSenior) inputSenior.value = found.senior_nom || "";
+
+            // Si c'est une évaluation de Sortie, tenter de lier au dossier d'Entrée correspondant
+            if (currentComidType === 'sortie') {
+                const selectEntree = document.getElementById('comid-dossier-select');
+                if (selectEntree) {
+                    // Vérifier si ce dossier existe dans la liste des dossiers d'entrée
+                    const hasEntree = entreeDossiersList.some(d => String(d.dossier_id) === String(val));
+                    if (hasEntree) {
+                        // Tenter de lier
+                        fetchAndPreFillEntreeScore(val);
+                    } else {
+                        const entreeBadge = document.getElementById('entree-summary-badge');
+                        if (entreeBadge) entreeBadge.classList.add('hidden');
+                    }
+                }
+            }
         }
     }
 
-    function onSelectEntreeDossier(selectEl) {
-        const selectedId = selectEl.value;
+    async function fetchAndPreFillEntreeScore(dossierId) {
+        if (!dossierId) return;
         const entreeBadge = document.getElementById('entree-summary-badge');
         const inputNom = document.getElementById('comid-senior-nom');
         
@@ -1851,45 +1798,76 @@
             el.classList.remove('checked-yes', 'checked-no');
         });
 
-        const found = entreeDossiersList.find(d => d.dossier_id === selectedId);
-        if (found) {
-            if (found.senior_nom) {
-                inputNom.value = found.senior_nom;
-            }
-            entreeBadge.innerHTML = `
-                <span>📥 <strong>Dossier d'Entrée lié :</strong> ${found.dossier_id} (${found.senior_nom || 'Senior'})</span>
-                <span style="margin-left: auto; font-weight: 700; color: #2563eb;">Score d'Entrée : ${found.score}/30</span>
-            `;
-            entreeBadge.classList.remove('hidden');
-
-            // Pré-cocher automatiquement les critères Oui/Non du dossier d'Entrée
-            let checkedItemsList = found.criteres || [];
-            if (typeof checkedItemsList === 'string') {
-                try { checkedItemsList = JSON.parse(checkedItemsList); } catch(e){}
-            }
-
-            COMID_DOMAINS.forEach(domain => {
-                domain.items.forEach(item => {
-                    if (checkedItemsList.includes(item.code)) {
-                        setAnswer(item.code, 1);
-                    } else {
-                        setAnswer(item.code, 0);
+        try {
+            const res = await fetch('/api/comid/evaluations');
+            if (res.ok) {
+                const comidEvals = await res.json();
+                const found = comidEvals.find(c => String(c.dossier_id) === String(dossierId) && c.type_eval === 'entree');
+                if (found) {
+                    if (found.senior_nom && inputNom) {
+                        inputNom.value = found.senior_nom;
                     }
-                });
-            });
-        } else {
-            entreeBadge.classList.add('hidden');
+                    if (entreeBadge) {
+                        entreeBadge.innerHTML = `
+                            <span>📥 <strong>Dossier d'Entrée lié :</strong> ${found.dossier_id} (${found.senior_nom || 'Senior'})</span>
+                            <span style="margin-left: auto; font-weight: 700; color: #2563eb;">Score d'Entrée : ${found.score}/30</span>
+                        `;
+                        entreeBadge.classList.remove('hidden');
+                    }
+
+                    // Pré-cocher automatiquement les critères Oui/Non du dossier d'Entrée
+                    let checkedItemsList = found.criteres || [];
+                    if (typeof checkedItemsList === 'string') {
+                        try { checkedItemsList = JSON.parse(checkedItemsList); } catch(e){}
+                    }
+
+                    COMID_DOMAINS.forEach(domain => {
+                        domain.items.forEach(item => {
+                            if (checkedItemsList.includes(item.code)) {
+                                setAnswer(item.code, 1);
+                            } else {
+                                setAnswer(item.code, 0);
+                            }
+                        });
+                    });
+                } else {
+                    if (entreeBadge) entreeBadge.classList.add('hidden');
+                }
+            }
+        } catch (e) {
+            console.error('Erreur chargement score entrée:', e);
         }
         updateScore();
     }
 
-    async function saveComidEvaluation(silent = false) {
-        let dossierId = '';
-        if (currentComidType === 'entree') {
-            dossierId = document.getElementById('comid-dossier-id').value.trim();
+    function setComidEvalType(type) {
+        currentComidType = type;
+        const btnEntree = document.getElementById('btn-type-entree');
+        const btnSortie = document.getElementById('btn-type-sortie');
+        const entreeBadge = document.getElementById('entree-summary-badge');
+        const selectGlobal = document.getElementById('comid-global-dossier-select');
+
+        if (type === 'entree') {
+            btnEntree.classList.add('active-entree');
+            btnSortie.classList.remove('active-sortie');
+            if (entreeBadge) entreeBadge.classList.add('hidden');
+            const inputId = document.getElementById('comid-dossier-id');
+            if (inputId && !inputId.value) {
+                inputId.value = 'DOS-' + Math.floor(100 + Math.random() * 900);
+            }
         } else {
-            dossierId = document.getElementById('comid-dossier-select').value.trim();
+            btnSortie.classList.add('active-sortie');
+            btnEntree.classList.remove('active-entree');
+            if (selectGlobal && selectGlobal.value) {
+                fetchAndPreFillEntreeScore(selectGlobal.value);
+            } else {
+                if (entreeBadge) entreeBadge.classList.add('hidden');
+            }
         }
+    }
+
+    async function saveComidEvaluation(silent = false) {
+        let dossierId = document.getElementById('comid-dossier-id').value.trim();
 
         if (!dossierId) {
             if (!silent) alert('Veuillez spécifier ou sélectionner un Identifiant de Dossier.');
@@ -1912,13 +1890,18 @@
 
         const seniorNom = document.getElementById('comid-senior-nom').value.trim();
 
+        const activeUserJson = localStorage.getItem('active_user');
+        const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
+        const creatorName = activeUser ? activeUser.name : 'Anonyme';
+
         const payload = {
             dossier_id: dossierId,
             senior_nom: seniorNom,
             type_eval: currentComidType,
             score: score,
             niveau: niveau,
-            criteres: checkedCriterias
+            criteres: checkedCriterias,
+            createur: creatorName
         };
 
         try {
@@ -1930,20 +1913,25 @@
 
             if (res.ok) {
                 const data = await res.json();
+                const actualDossierId = data.dossier_id || dossierId;
+                
+                const inputId = document.getElementById('comid-dossier-id');
+                if (inputId) {
+                    inputId.value = actualDossierId;
+                }
+                
                 if (!silent) {
-                    alert(`✅ Évaluation COMID d'${currentComidType === 'entree' ? 'Entrée' : 'Sortie'} enregistrée avec succès !\n\nN° Dossier : ${dossierId}\nScore : ${score}/30 (${niveau})`);
+                    alert(`✅ Évaluation COMID d'${currentComidType === 'entree' ? 'Entrée' : 'Sortie'} enregistrée avec succès !\n\nN° Dossier : ${actualDossierId}\nScore : ${score}/30 (${niveau})`);
                 }
-                if (currentComidType === 'entree') {
-                    loadEntreeDossiers();
-                }
+                
+                loadGlobalDossiersDropdown();
             }
         } catch (e) {
             console.error('Erreur save comid:', e);
         }
     }
 
-    loadEntreeDossiers();
-    loadZaritDossiersDropdown();
+    loadGlobalDossiersDropdown();
     </script>
 </body>
 </html>

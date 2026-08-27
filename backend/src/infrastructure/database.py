@@ -7,6 +7,16 @@ from typing import Optional
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEFAULT_DB_PATH = os.path.join(BASE_DIR, "oria_database.db")
 
+def clean_id_str(d_id) -> str:
+    if not d_id:
+        return ""
+    import re
+    d_str = str(d_id).strip()
+    digits = re.findall(r'\d+', d_str)
+    if digits:
+        return digits[0]
+    return d_str
+
 class DatabaseManager:
     def __init__(self, db_path=None):
         """Initialise la connexion à la base de données SQLite en garantissant un chemin absolu unique."""
@@ -28,7 +38,8 @@ class DatabaseManager:
                     donnees_extraites TEXT NOT NULL,
                     score_comid INTEGER,
                     niveau_comid TEXT,
-                    structures_orientations TEXT
+                    structures_orientations TEXT,
+                    details_complet TEXT
                 )
             ''')
             # Table comid_evaluations (Entrée / Sortie)
@@ -57,14 +68,28 @@ class DatabaseManager:
                     date_creation TEXT NOT NULL
                 )
             ''')
+            # Migration si la colonne details_complet manque dans dossiers_patients
+            try:
+                cursor.execute('ALTER TABLE dossiers_patients ADD COLUMN details_complet TEXT')
+            except Exception:
+                pass
             # Migration si la colonne dossier_id manque
             try:
                 cursor.execute('ALTER TABLE zarit_evaluations ADD COLUMN dossier_id TEXT')
             except Exception:
                 pass
+            # Migration pour ajouter createur à comid_evaluations et zarit_evaluations
+            try:
+                cursor.execute('ALTER TABLE comid_evaluations ADD COLUMN createur TEXT')
+            except Exception:
+                pass
+            try:
+                cursor.execute('ALTER TABLE zarit_evaluations ADD COLUMN createur TEXT')
+            except Exception:
+                pass
             conn.commit()
 
-    def save_dossier(self, texte_original: str, donnees_extraites: dict, score_comid: int, niveau_comid: str, structures_orientations: list, details_complet: dict = None) -> Optional[int]:
+    def save_dossier(self, texte_original: str, donnees_extraites: dict, score_comid: int, niveau_comid: str, structures_orientations: list, details_complet: dict = None, dossier_id: Optional[int] = None) -> Optional[int]:
         """Sauvegarde une nouvelle analyse dans la base et retourne son numéro de dossier (ID).
         Le paramètre ``details_complet`` contient toutes les informations additionnelles d'orientation
         sous forme de dictionnaire qui sera sérialisé en JSON.
@@ -75,27 +100,70 @@ class DatabaseManager:
             
             # SQLite ne stocke que du texte ou des nombres. 
             # On convertit donc nos dictionnaires Python en chaînes de texte JSON.
-            cursor.execute('''
-                INSERT INTO dossiers_patients (
+            if dossier_id is not None:
+                cursor.execute('''
+                    INSERT INTO dossiers_patients (
+                        id,
+                        date_creation,
+                        texte_original,
+                        donnees_extraites,
+                        score_comid,
+                        niveau_comid,
+                        structures_orientations,
+                        details_complet
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (
+                    dossier_id,
                     date_creation,
                     texte_original,
-                    donnees_extraites,
+                    json.dumps(donnees_extraites, ensure_ascii=False),
                     score_comid,
                     niveau_comid,
-                    structures_orientations,
-                    details_complet
-                ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                    json.dumps(structures_orientations, ensure_ascii=False),
+                    json.dumps(details_complet or {}, ensure_ascii=False)
+                ))
+            else:
+                cursor.execute('''
+                    INSERT INTO dossiers_patients (
+                        date_creation,
+                        texte_original,
+                        donnees_extraites,
+                        score_comid,
+                        niveau_comid,
+                        structures_orientations,
+                        details_complet
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                ''', (
+                    date_creation,
+                    texte_original,
+                    json.dumps(donnees_extraites, ensure_ascii=False),
+                    score_comid,
+                    niveau_comid,
+                    json.dumps(structures_orientations, ensure_ascii=False),
+                    json.dumps(details_complet or {}, ensure_ascii=False)
+                ))
+            conn.commit()
+            return dossier_id if dossier_id is not None else cursor.lastrowid  # Retourne l'ID qui vient d'être créé
+
+    def update_dossier(self, dossier_id: int, texte_original: str, donnees_extraites: dict, score_comid: int, niveau_comid: str, structures_orientations: list, details_complet: dict = None) -> bool:
+        """Met à jour un dossier existant avec les nouvelles données d'orientation."""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                UPDATE dossiers_patients
+                SET texte_original = ?, donnees_extraites = ?, score_comid = ?, niveau_comid = ?, structures_orientations = ?, details_complet = ?
+                WHERE id = ?
             ''', (
-                date_creation,
                 texte_original,
                 json.dumps(donnees_extraites, ensure_ascii=False),
                 score_comid,
                 niveau_comid,
                 json.dumps(structures_orientations, ensure_ascii=False),
-                json.dumps(details_complet or {}, ensure_ascii=False)
+                json.dumps(details_complet or {}, ensure_ascii=False),
+                dossier_id
             ))
             conn.commit()
-            return cursor.lastrowid  # Retourne l'ID qui vient d'être créé
+            return cursor.rowcount > 0
 
     def get_all_dossiers(self):
         """Récupère tout l'historique des dossiers patients."""
@@ -136,11 +204,14 @@ class DatabaseManager:
             except Exception:
                 details = {}
                 
-            details["validation_utilisateur"] = {
+            val_data = {
                 "status": status,
                 "structure_choisie": structure_choisie,
                 "date_validation": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             }
+            details["validation_utilisateur"] = val_data
+            if "historique_orientations" in details and isinstance(details["historique_orientations"], list) and len(details["historique_orientations"]) > 0:
+                details["historique_orientations"][-1]["validation_utilisateur"] = val_data
             
             # On met à jour details_complet et le statut (niveau_comid)
             cursor.execute('''
@@ -151,7 +222,7 @@ class DatabaseManager:
             conn.commit()
             return True
 
-    def save_comid_eval(self, dossier_id: str, senior_nom: str, type_eval: str, score: int, niveau: str, criteres: list) -> int:
+    def save_comid_eval(self, dossier_id: str, senior_nom: str, type_eval: str, score: int, niveau: str, criteres: list, createur: str = "Anonyme") -> int:
         """Sauvegarde ou met à jour une évaluation COMID (Entrée ou Sortie) pour un dossier_id."""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
@@ -168,17 +239,17 @@ class DatabaseManager:
                 eval_id = existing[0]
                 cursor.execute('''
                     UPDATE comid_evaluations
-                    SET senior_nom = ?, score = ?, niveau = ?, criteres_json = ?, date_creation = ?
+                    SET senior_nom = ?, score = ?, niveau = ?, criteres_json = ?, date_creation = ?, createur = ?
                     WHERE id = ?
-                ''', (senior_nom or "", score, niveau, criteres_str, date_creation, eval_id))
+                ''', (senior_nom or "", score, niveau, criteres_str, date_creation, createur, eval_id))
                 conn.commit()
                 return eval_id
             else:
                 cursor.execute('''
                     INSERT INTO comid_evaluations (
-                        dossier_id, senior_nom, type_eval, score, niveau, criteres_json, date_creation
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?)
-                ''', (dossier_id, senior_nom or "", type_eval, score, niveau, criteres_str, date_creation))
+                        dossier_id, senior_nom, type_eval, score, niveau, criteres_json, date_creation, createur
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (dossier_id, senior_nom or "", type_eval, score, niveau, criteres_str, date_creation, createur))
                 conn.commit()
                 return cursor.lastrowid
 
@@ -235,7 +306,7 @@ class DatabaseManager:
             dossiers_map = {}
             for row in rows:
                 item = dict(row)
-                d_id = item['dossier_id']
+                d_id = clean_id_str(item['dossier_id'])
                 s_nom = item.get('senior_nom')
                 if not s_nom or s_nom == d_id or s_nom in ('Senior non renseigné', 'Usager'):
                     s_nom = 'Anonyme'
@@ -292,15 +363,15 @@ class DatabaseManager:
             conn.commit()
             return cursor.rowcount > 0
 
-    def save_zarit_eval(self, senior_nom: str, aidant_nom: str, score: int, niveau: str, reponses: list, dossier_id: str = None) -> int:
+    def save_zarit_eval(self, senior_nom: str, aidant_nom: str, score: int, niveau: str, reponses: list, dossier_id: str = None, createur: str = "Anonyme") -> int:
         """Enregistre une évaluation de la grille de Zarit (Fardeau de l'aidant)."""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             date_creation = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             cursor.execute('''
-                INSERT INTO zarit_evaluations (dossier_id, senior_nom, aidant_nom, score, niveau, reponses_json, date_creation)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            ''', (dossier_id, senior_nom, aidant_nom, score, niveau, json.dumps(reponses), date_creation))
+                INSERT INTO zarit_evaluations (dossier_id, senior_nom, aidant_nom, score, niveau, reponses_json, date_creation, createur)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (dossier_id, senior_nom, aidant_nom, score, niveau, json.dumps(reponses), date_creation, createur))
             conn.commit()
             return cursor.lastrowid
 
@@ -367,6 +438,28 @@ class DatabaseManager:
                 except Exception: pass
                 try: d['structures_orientations'] = json.loads(d['structures_orientations'])
                 except Exception: pass
+                try: d['details_complet'] = json.loads(d['details_complet'])
+                except Exception: d['details_complet'] = {}
+                
+                details_complet = d['details_complet']
+                if not isinstance(details_complet, dict):
+                    details_complet = {}
+                
+                if "historique_orientations" not in details_complet:
+                    if d.get("texte_original") or d.get("structures_orientations"):
+                        details_complet["historique_orientations"] = [
+                            {
+                                "date": d.get("date_creation") or datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                                "texte_original": d.get("texte_original"),
+                                "donnees_extraites": d.get("donnees_extraites"),
+                                "structures_orientations": d.get("structures_orientations"),
+                                "validation_utilisateur": details_complet.get("validation_utilisateur")
+                            }
+                        ]
+                    else:
+                        details_complet["historique_orientations"] = []
+                
+                d['details_complet'] = details_complet
                 orientation_info = d
 
         # 2. COMID evaluations (entree & sortie)
@@ -374,7 +467,11 @@ class DatabaseManager:
         with sqlite3.connect(self.db_path) as conn:
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
-            cursor.execute('SELECT * FROM comid_evaluations WHERE dossier_id = ? ORDER BY date_creation ASC', (d_id_str,))
+            cursor.execute('''
+                SELECT * FROM comid_evaluations 
+                WHERE dossier_id = ? OR dossier_id = ? OR dossier_id = ? 
+                ORDER BY date_creation ASC
+            ''', (d_id_str, f"DOS-{d_id_str}", f"DOS-ZARIT-{d_id_str}"))
             rows = cursor.fetchall()
             for r in rows:
                 item = dict(r)
@@ -387,7 +484,11 @@ class DatabaseManager:
         with sqlite3.connect(self.db_path) as conn:
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
-            cursor.execute('SELECT * FROM zarit_evaluations WHERE dossier_id = ? ORDER BY date_creation DESC', (d_id_str,))
+            cursor.execute('''
+                SELECT * FROM zarit_evaluations 
+                WHERE dossier_id = ? OR dossier_id = ? OR dossier_id = ? 
+                ORDER BY date_creation DESC
+            ''', (d_id_str, f"DOS-{d_id_str}", f"DOS-ZARIT-{d_id_str}"))
             rows = cursor.fetchall()
             for r in rows:
                 item = dict(r)

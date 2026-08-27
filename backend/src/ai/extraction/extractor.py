@@ -70,10 +70,12 @@ SITUATION : "{safe_text}"
         - "evaluation_globale" : pour le besoin 'Évaluation globale / Évaluation médico-sociale' (difficultés cliniques/de vie sans demande précise).
         - "recherche_logement" : pour le besoin 'rechercher un logement'.
         - "indetermine" : si la situation est stable/suivi de routine (aucun besoin marquant), OU si au moins 2 besoins de même importance se chevauchent de manière complexe (la barrière étant trop fine ou trop complexe pour trancher).
- 11. "professionnels_domicile" : Choisir "oui" si des professionnels (infirmiers, kinés, aides) passent régulièrement, ou "non" sinon.
- 12. "aidant_regulier" : Choisir "oui" si présence régulière et stable d'un aidant familial, ou "non" sinon.
- 13. "etat_logement" : Choisir "diogene" si syndrome de Diogène, "incurie" si logement très sale, "insalubre" si pas d'eau ou plafond menace de s'effondrer, "propre" si propre, ou "non_renseigne" sinon.
- 14. "proposition_mail" : Rédiger un court brouillon d'e-mail professionnel (3-4 phrases maximum), écrit à la 3ème personne, prêt à être envoyé par le professionnel à la structure d'orientation pour résumer la situation et la demande. NE PAS INCLURE de formules de politesse ("Bonjour", "Cordialement"), générer uniquement le corps du texte.
+  11. "professionnels_domicile" : Choisir "oui" si des professionnels (infirmiers, kinés, aides) passent régulièrement, ou "non" sinon.
+  12. "aidant_regulier" : Choisir "oui" si présence régulière et stable d'un aidant familial, ou "non" sinon.
+  13. "etat_logement" : Choisir "diogene" si syndrome de Diogène, "incurie" si logement très sale, "insalubre" si pas d'eau ou plafond menace de s'effondrer, "propre" si propre, ou "non_renseigne" sinon.
+  14. "proposition_mail" : Rédiger un court brouillon d'e-mail professionnel (3-4 phrases maximum), écrit à la 3ème personne, prêt à être envoyé par le professionnel à la structure d'orientation pour résumer la situation et la demande. NE PAS INCLURE de formules de politesse ("Bonjour", "Cordialement"), générer uniquement le corps du texte.
+  15. "nom_usager" : Nom de famille de l'usager/patient (ex: "Durand", "Martin". Laisse null si non mentionné dans le texte).
+  16. "prenom_usager" : Prénom de l'usager/patient (ex: "Marie", "Jean". Laisse null si non mentionné dans le texte).
 
 ### EXEMPLES DE CLASSIFICATION DU BESOIN PRINCIPAL :
 - Exemple 1 : "M. Raymond, 82 ans, vit dans un grand dénuement. Son frigo est vide. Il refuse l'aide à domicile et refuse de prendre ses médicaments." 
@@ -92,6 +94,8 @@ Pour chaque variable extraite ci-dessus, attribue un score de confiance (nombre 
 
 Format JSON attendu :
 {{
+  "nom_usager": "Nom de famille de l'usager (ou null)",
+  "prenom_usager": "Prénom de l'usager (ou null)",
   "age": "Âge de l'usager (chiffre entier ou null)",
   "ville": "Nom de la ville de résidence (ou null)",
   "apa": "oui / non / en_cours / inconnu",
@@ -309,7 +313,20 @@ JSON attendu :
         
         motif_principal = besoin_to_motif.get(besoin_principal, "indetermine")
 
+        nom_usager = raw_data.get("nom_usager") or ""
+        prenom_usager = raw_data.get("prenom_usager") or ""
+
+        # Nettoyage simple
+        if nom_usager and any(x in nom_usager.lower() for x in ["ans", "monsieur", "dame", "patient", "usager", "homme", "femme", "oria"]):
+            nom_usager = ""
+        if prenom_usager and any(x in prenom_usager.lower() for x in ["ans", "monsieur", "dame", "patient", "usager", "homme", "femme", "oria"]):
+            prenom_usager = ""
+
         mapped = {
+            "usager.identite.nom": nom_usager,
+            "usager.identite.prenom": prenom_usager,
+            "usager_nom_usage": nom_usager,
+            "usager_prenoms": prenom_usager,
             "usager.identite.age_estime": age,
             "usager.localisation.commune_residence": ville,
             "usager.situation_actuelle.APA": str(raw_data.get("apa", "non")).lower(),

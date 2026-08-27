@@ -47,6 +47,32 @@
             transform: translateX(-3px);
         }
 
+                /* Styles Premium pour les cartes de dossiers */
+        .dossier-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .dossier-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.04);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        }
+        .dossier-card.active-card {
+            border-color: var(--accent-blue);
+            border-width: 2px;
+            background: rgba(59, 130, 246, 0.06);
+            box-shadow: var(--shadow-glow);
+        }
+
         /* Dossier Link Button style */
         .dossier-link-btn {
             color: #3b82f6;
@@ -87,21 +113,21 @@
                     </button>
                     <!-- Dropdown Menu -->
                     <div id="dropdown-menu" class="dropdown-menu hidden">
-                        <a href="/dashboard" class="dropdown-item" title="Accéder au tableau de bord">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                            Tableau de bord
+                        <a href="/profil" class="dropdown-item" title="Accéder à mon profil">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            Mon profil
                         </a>
-                        <a href="/orienter" class="dropdown-item" title="Moteur d'orientation interactif">
+                        <a href="/orienter" class="dropdown-item">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
                             Moteur d'orientation
                         </a>
-                        <a href="/remplir" class="dropdown-item" title="Accéder au choix des fiches et grilles">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+                        <a href="/remplir" class="dropdown-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
                             Remplir ma fiche d'orientation / grille
                         </a>
-                        <a href="/profil" class="dropdown-item" title="Accéder à mon profil">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                            Mon Profil
+                        <a href="/dashboard" class="dropdown-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                            Tableau de bord
                         </a>
                     </div>
                 </div>
@@ -143,25 +169,14 @@
 
         <!-- Espace Dossier(s) accessible(s) -->
         <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 1.75rem; box-shadow: var(--shadow-card); backdrop-filter: blur(12px); animation: fadeInUp 0.5s ease;">
-            <div style="margin-bottom: 1.75rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-                <div>
-                    <h2 style="font-size: 1.35rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;">Suivi des dossiers patients</h2>
-                    <p style="font-size: 0.88rem; color: var(--text-secondary);">Sélectionnez un dossier patient pour afficher sa synthèse 360° complète, ses grilles et télécharger ses fiches.</p>
-                </div>
-                <div id="dossier-selector-wrapper" style="min-width: 320px;">
-                    <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.4rem;">SÉLECTIONNER UN DOSSIER :</label>
-                    <select id="dossier-select" onchange="loadDossierView(this.value)" class="comid-field-select" style="width: 100%; padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-glass); background: var(--bg-card); color: var(--text-primary); font-size: 0.9rem; font-weight: 600;">
-                        <option value="">-- Choisir un dossier --</option>
-                    </select>
-                </div>
+            <div style="margin-bottom: 1.5rem;">
+                <h2 style="font-size: 1.35rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;">Suivi des dossiers patients</h2>
+                <p style="font-size: 0.88rem; color: var(--text-secondary);">Cliquez sur un dossier patient pour consulter ses informations, ses grilles de bilans et télécharger ses fiches d'orientation.</p>
             </div>
 
-            <!-- Affichage de la fiche du dossier -->
-            <div id="dossier-view-content">
-                <div style="padding: 4rem 1.5rem; text-align: center; color: var(--text-muted); background: var(--bg-primary); border: 1px dashed var(--border-glass); border-radius: var(--radius-sm);">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.5; margin-bottom: 1rem;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                    <p style="font-size: 1.05rem; font-weight: 500;">Veuillez sélectionner un dossier patient ci-dessus.</p>
-                </div>
+            <!-- Grille de cartes de dossiers -->
+            <div id="dossiers-cards-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1.25rem;">
+                <!-- Les cartes de dossiers seront injectées dynamiquement par JS -->
             </div>
         </div>
 
@@ -312,7 +327,7 @@
             if (user) {
                 localStorage.setItem('active_user', JSON.stringify(user));
                 checkAuth();
-                loadDossiersDropdown();
+                loadDossiersCards();
             }
         }
 
@@ -321,50 +336,88 @@
             window.location.reload();
         }
 
-        // --- CHARGEMENT DU SÉLECTEUR DE DOSSIERS ---
-        async function loadDossiersDropdown() {
+                // --- CHARGEMENT DES DOSSIERS SOUS FORME DE CARTES ---
+        async function loadDossiersCards() {
             try {
-                const res = await fetch('/api/dossiers/dropdown-list');
+                const activeUserJson = localStorage.getItem('active_user');
+                const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
+                const creatorParam = activeUser ? `?createur=${encodeURIComponent(activeUser.name)}` : '';
+                    
+                const res = await fetch(`/api/dossiers${creatorParam}`);
                 if (res.ok) {
                     let list = await res.json();
-                    const select = document.getElementById('dossier-select');
-                    if (select) {
+                    const container = document.getElementById('dossiers-cards-container');
+                    if (container) {
                         const activeUserJson = localStorage.getItem('active_user');
                         if (activeUserJson) {
                             const user = JSON.parse(activeUserJson);
                             if (user.access === 'restricted') {
-                                // Filtrer pour n'afficher que le dossier correspondant à Robert Bernard
+                                // Filtrer pour n'afficher que le dossier de Robert Bernard
                                 list = list.filter(d => d.senior_nom.toLowerCase().includes('bernard') || d.senior_nom.toLowerCase().includes('robert'));
-                                const wrapper = document.getElementById('dossier-selector-wrapper');
-                                if (wrapper) wrapper.style.display = 'none';
-                            } else {
-                                const wrapper = document.getElementById('dossier-selector-wrapper');
-                                if (wrapper) wrapper.style.display = 'block';
                             }
                         }
 
-                        select.innerHTML = '<option value="">-- Choisir un dossier patient --</option>';
-                        list.forEach(d => {
-                            const opt = document.createElement('option');
-                            opt.value = d.dossier_id;
-                            opt.textContent = d.display_label;
-                            select.appendChild(opt);
-                        });
-
-                        // Charger automatiquement le dossier si c'est le seul de la liste
-                        if (list.length > 0) {
-                            select.value = list[0].dossier_id;
-                            loadDossierView(list[0].dossier_id);
+                        if (list.length === 0) {
+                            container.innerHTML = `<div style="grid-column: 1/-1; padding: 2.5rem; text-align: center; color: var(--text-muted); background: var(--bg-primary); border: 1px dashed var(--border-glass); border-radius: 8px;">Aucun dossier patient à afficher.</div>`;
+                            return;
                         }
+
+                        let html = '';
+                        list.forEach(d => {
+                            // Badge Fiches d'Orientation
+                            const fichesBadge = d.has_fiches 
+                                ? `<span style="font-size: 0.75rem; font-weight: 700; color: #3b82f6; background: rgba(59, 130, 246, 0.15); padding: 0.2rem 0.55rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 0.25rem;">🟢 Fiches</span>`
+                                : `<span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); background: rgba(148, 163, 184, 0.1); padding: 0.2rem 0.55rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 0.25rem;">🔴 Pas de fiches</span>`;
+                            
+                            // Badge COMID
+                            const comidBadge = d.has_comid
+                                ? `<span style="font-size: 0.75rem; font-weight: 700; color: #10b981; background: rgba(16, 185, 129, 0.15); padding: 0.2rem 0.5rem; border-radius: 6px;">COMID: ${d.score_comid}/30</span>`
+                                : `<span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); background: rgba(148, 163, 184, 0.1); padding: 0.2rem 0.5rem; border-radius: 6px;">COMID: Non</span>`;
+
+                            // Badge ZARIT
+                            const zaritBadge = d.has_zarit
+                                ? `<span style="font-size: 0.75rem; font-weight: 700; color: #f59e0b; background: rgba(245, 158, 11, 0.15); padding: 0.2rem 0.5rem; border-radius: 6px;">ZARIT: Rempli</span>`
+                                : `<span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); background: rgba(148, 163, 184, 0.1); padding: 0.2rem 0.5rem; border-radius: 6px;">ZARIT: Non</span>`;
+
+                            // Badge Statut de validation
+                            const status = d.validation_status || "En attente";
+                            const valColor = status === "Accepté" ? "#10b981" : (status === "Refusé" ? "#ef4444" : "#64748b");
+                            const valBadge = `<span style="font-size: 0.72rem; font-weight: 700; color: ${valColor}; background: ${valColor}15; border: 1px solid ${valColor}30; padding: 0.15rem 0.45rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 0.2rem;">${status}</span>`;
+
+                            html += `
+                                <div class="dossier-card" id="card-${d.dossier_id}" onclick="window.location.href='/dossier/${d.dossier_id}'">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted);">DOSSIER #${d.dossier_id}</span>
+                                        <div style="display: flex; gap: 0.35rem; align-items: center;">
+                                            ${valBadge}
+                                            ${fichesBadge}
+                                        </div>
+                                    </div>
+                                    <strong style="font-size: 1.15rem; color: var(--text-primary); margin: 0.2rem 0; display: block;">${d.senior_nom}</strong>
+                                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.25rem;">
+                                        ${comidBadge}
+                                        ${zaritBadge}
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        container.innerHTML = html;
                     }
                 }
             } catch (e) {
-                console.error("Erreur dropdown", e);
+                console.error("Erreur lors du chargement des cartes de dossiers", e);
             }
         }
+        
 
         // --- CHARGEMENT D'UN DOSSIER A 360° ---
         async function loadDossierView(dossierId) {
+                        // Retirer la surbrillance active de toutes les cartes
+            document.querySelectorAll('.dossier-card').forEach(c => c.classList.remove('active-card'));
+            
+            // Mettre en surbrillance la carte sélectionnée
+            const selectedCard = document.getElementById(`card-${dossierId}`);
+            if (selectedCard) selectedCard.classList.add('active-card');
             const container = document.getElementById('dossier-view-content');
             if (!dossierId) {
                 container.innerHTML = `
@@ -701,7 +754,7 @@
 
             // Gestion de l'authentification et du chargement
             checkAuth();
-            loadDossiersDropdown();
+            loadDossiersCards();
         });
     </script>
 </body>

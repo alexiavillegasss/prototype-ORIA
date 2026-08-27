@@ -58,6 +58,32 @@ let dossierId = null;
 let schemaPivot = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Charger les dossiers dans le select
+    async function loadDossiersSelect() {
+        try {
+            const activeUserJson = localStorage.getItem('active_user');
+            const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
+            const creatorParam = activeUser ? `?createur=${encodeURIComponent(activeUser.name)}` : '';
+            const res = await fetch(`/api/dossiers/dropdown-list${creatorParam}`);
+            if (res.ok) {
+                const list = await res.json();
+                const select = document.getElementById('orienter-dossier-select');
+                if (select) {
+                    select.innerHTML = '<option value="new">-- Créer un nouveau dossier patient --</option>';
+                    list.forEach(d => {
+                        const opt = document.createElement('option');
+                        opt.value = d.dossier_id;
+                        opt.textContent = d.display_label;
+                        select.appendChild(opt);
+                    });
+                }
+            }
+        } catch (e) {
+            console.error("Erreur chargement dossiers select", e);
+        }
+    }
+    loadDossiersSelect();
+
     // Gestion du thème clair/sombre
     const themeToggle = document.getElementById('theme-toggle');
     const currentTheme = localStorage.getItem('theme') || 'dark';
@@ -131,13 +157,19 @@ document.addEventListener('DOMContentLoaded', () => {
         btnSubmit.querySelector('.btn-text').textContent = 'Analyse IA en cours (Ollama)...';
 
         try {
-            // 2. Appel à l'API /analyze de FastAPI
+            // 2. Appel à l'API /analyze de FastAPI et transmettre créateur et dossier_id
+            const activeUserJson = localStorage.getItem('active_user');
+            const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
+            const creatorName = activeUser ? activeUser.name : 'Anonyme';
+            const selectEl = document.getElementById('orienter-dossier-select');
+            const selectedDossierId = selectEl ? selectEl.value : 'new';
+
             const response = await fetch('/analyze', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ text: text })
+                body: JSON.stringify({ text: text, createur: creatorName, dossier_id: selectedDossierId })
             });
 
             if (!response.ok) {
@@ -151,10 +183,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            // Mettre à jour la liste des dossiers uniquement si c'était un nouveau dossier
+            const selectElement = document.getElementById('orienter-dossier-select');
+            if (selectElement) {
+                const selectedValBefore = selectElement.value;
+                if (selectedValBefore === 'new') {
+                    const activeUserJson = localStorage.getItem('active_user');
+                    const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
+                    const creatorParam = activeUser ? `?createur=${encodeURIComponent(activeUser.name)}` : '';
+                    const res = await fetch(`/api/dossiers/dropdown-list${creatorParam}`);
+                    if (res.ok) {
+                        const list = await res.json();
+                        selectElement.innerHTML = '<option value="new">-- Créer un nouveau dossier patient --</option>';
+                        list.forEach(d => {
+                            const opt = document.createElement('option');
+                            opt.value = String(d.dossier_id);
+                            opt.textContent = d.display_label;
+                            selectElement.appendChild(opt);
+                        });
+                        if (data.id_dossier) {
+                            selectElement.value = String(data.id_dossier);
+                        }
+                    }
+                } else {
+                    if (data.id_dossier) {
+                        selectElement.value = String(data.id_dossier);
+                    }
+                }
+            }
+
             // 3. Initialisation de l'état local
             orientations = data.orientation_suggeree || [];
             currentIndex = 0;
-            dossierId = data.id_dossier;
+            dossierId = data.id_dossier ? String(data.id_dossier) : null;
             schemaPivot = data.schema_pivot;
 
             // Remplissage des KPIs globaux
@@ -816,12 +877,16 @@ Cordialement,`;
         }
 
         try {
+            const activeUserJson = localStorage.getItem('active_user');
+            const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
+            const creatorName = activeUser ? activeUser.name : 'Anonyme';
+
             const response = await fetch('/api/orientation/dac/generate_pdf', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ text: text })
+                body: JSON.stringify({ text: text, createur: creatorName, dossier_id: dossierId ? String(dossierId) : null })
             });
 
             if (!response.ok) {
@@ -832,7 +897,7 @@ Cordialement,`;
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'fiche_orientation_dac.pdf';
+            a.download = `fiche_orientation_dac_dossier_${dossierId || 'nouveau'}.pdf`;
             document.body.appendChild(a);
             a.click();
             a.remove();
@@ -864,12 +929,16 @@ Cordialement,`;
         }
 
         try {
+            const activeUserJson = localStorage.getItem('active_user');
+            const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
+            const creatorName = activeUser ? activeUser.name : 'Anonyme';
+
             const response = await fetch('/api/orientation/clic/generate_pdf', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ text: text })
+                body: JSON.stringify({ text: text, createur: creatorName, dossier_id: dossierId ? String(dossierId) : null })
             });
 
             if (!response.ok) {
@@ -880,7 +949,7 @@ Cordialement,`;
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'fiche_orientation_clic_laseyne.pdf';
+            a.download = `fiche_orientation_clic_laseyne_dossier_${dossierId || 'nouveau'}.pdf`;
             document.body.appendChild(a);
             a.click();
             a.remove();
@@ -912,12 +981,16 @@ Cordialement,`;
         }
 
         try {
+            const activeUserJson = localStorage.getItem('active_user');
+            const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
+            const creatorName = activeUser ? activeUser.name : 'Anonyme';
+
             const response = await fetch('/api/orientation/clic_toulon/generate_pdf', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ text: text })
+                body: JSON.stringify({ text: text, createur: creatorName, dossier_id: dossierId ? String(dossierId) : null })
             });
 
             if (!response.ok) {
@@ -928,7 +1001,7 @@ Cordialement,`;
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'fiche_orientation_clic_toulon.pdf';
+            a.download = `fiche_orientation_clic_toulon_dossier_${dossierId || 'nouveau'}.pdf`;
             document.body.appendChild(a);
             a.click();
             a.remove();
@@ -986,12 +1059,16 @@ Cordialement,`;
         btn.disabled = true;
 
         try {
+            const activeUserJson = localStorage.getItem('active_user');
+            const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
+            const creatorName = activeUser ? activeUser.name : 'Anonyme';
+
             const response = await fetch('/api/orientation/clic_provence_verte/generate_pdf', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ text: text })
+                body: JSON.stringify({ text: text, createur: creatorName, dossier_id: dossierId ? String(dossierId) : null })
             });
 
             if (!response.ok) {
@@ -1002,7 +1079,7 @@ Cordialement,`;
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'fiche_orientation_clic_provence_verte.pdf';
+            a.download = `fiche_orientation_clic_provence_verte_dossier_${dossierId || 'nouveau'}.pdf`;
             document.body.appendChild(a);
             a.click();
             a.remove();
@@ -1029,12 +1106,16 @@ Cordialement,`;
         btn.disabled = true;
 
         try {
+            const activeUserJson = localStorage.getItem('active_user');
+            const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
+            const creatorName = activeUser ? activeUser.name : 'Anonyme';
+
             const response = await fetch('/api/orientation/clic_hadage/generate_pdf', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ text: text })
+                body: JSON.stringify({ text: text, createur: creatorName, dossier_id: dossierId ? String(dossierId) : null })
             });
 
             if (!response.ok) {
@@ -1045,7 +1126,7 @@ Cordialement,`;
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'fiche_orientation_clic_hadage.pdf';
+            a.download = `fiche_orientation_clic_hadage_dossier_${dossierId || 'nouveau'}.pdf`;
             document.body.appendChild(a);
             a.click();
             a.remove();

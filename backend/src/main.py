@@ -23,6 +23,8 @@ app = FastAPI()
 STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
+STORAGE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "storage", "dossiers")
+
 # Initialisation des moteurs
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SCHEMA_PATH = os.path.join(BASE_DIR, 'config', 'schemas', 'schema_definition.json')
@@ -62,6 +64,8 @@ pdf_generator = PDFGenerator(
 # -----------------------------
 class AnalyzeRequest(BaseModel):
     text: str
+    createur: Optional[str] = "Anonyme"
+    dossier_id: Optional[str] = None
 
 
 class ValidateRequest(BaseModel):
@@ -72,9 +76,30 @@ class ValidateRequest(BaseModel):
 # -----------------------------
 # ROOT ENDPOINT
 # -----------------------------
+from fastapi.responses import RedirectResponse
+
 @app.get("/")
 def root():
-    return {"message": "ORIA API is running with AI Extraction"}
+    return RedirectResponse(url="/profil")
+
+def clean_dossier_id(d_id: Optional[str]) -> Optional[int]:
+    if not d_id or str(d_id).lower() in ("new", "undefined", "null", ""):
+        return None
+    d_id_str = str(d_id).strip()
+    try:
+        return int(d_id_str)
+    except ValueError:
+        pass
+    import re
+    digits = re.findall(r'\d+', d_id_str)
+    if digits:
+        try:
+            return int(digits[0])
+        except ValueError:
+            pass
+    return None
+
+
 
 
 # -----------------------------
@@ -105,19 +130,77 @@ async def analyze(request: AnalyzeRequest):
     try:
         # On pseudonymise le texte d'entrée en clair (ex: Mme Antoinette Durand -> Mme A. D.)
         safe_text = extractor.anonymizer.pseudonymize(request.text)
-        # Assemble all orientation details to store in a single JSON column
-        details = {
-            "orientation_results": orientation_results,
-            "orientation_with_contacts": orientation_with_contacts
+        
+        d_id_int = clean_dossier_id(request.dossier_id)
+        
+        # Gérer l'historique des orientations
+        historique = []
+        if d_id_int is not None:
+            dossier_360 = db_manager.get_dossier_360_details(str(d_id_int))
+            if dossier_360 and dossier_360.get("orientation"):
+                existing_details = dossier_360["orientation"].get("details_complet") or {}
+                if isinstance(existing_details, dict):
+                    historique = list(existing_details.get("historique_orientations", []))
+                    if not historique:
+                        first_entry = {
+                            "date": dossier_360["orientation"].get("date_creation") or datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                            "texte_original": dossier_360["orientation"].get("texte_original"),
+                            "donnees_extraites": dossier_360["orientation"].get("donnees_extraites"),
+                            "structures_orientations": dossier_360["orientation"].get("structures_orientations"),
+                            "validation_utilisateur": existing_details.get("validation_utilisateur")
+                        }
+                        if first_entry["texte_original"]:
+                            historique.append(first_entry)
+                            
+        # Ajouter la nouvelle orientation
+        new_entry = {
+            "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "texte_original": safe_text,
+            "donnees_extraites": extracted_data,
+            "structures_orientations": orientation_with_contacts,
+            "validation_utilisateur": None
         }
-        dossier_id = db_manager.save_dossier(
-            texte_original=safe_text,
-            donnees_extraites=extracted_data,
-            score_comid=comid_results["score_total"],
-            niveau_comid=comid_results["label"],
-            structures_orientations=orientation_with_contacts,
-            details_complet=details
-        )
+        historique.append(new_entry)
+        
+        details = {
+            "createur": request.createur,
+            "historique_orientations": historique
+        }
+        
+        # Si un ID de dossier existant est passé, on met à jour
+        if d_id_int is not None:
+            success = db_manager.update_dossier(
+                dossier_id=d_id_int,
+                texte_original=safe_text,
+                donnees_extraites=extracted_data,
+                score_comid=comid_results["score_total"],
+                niveau_comid=comid_results["label"],
+                structures_orientations=orientation_with_contacts,
+                details_complet=details
+            )
+            if success:
+                dossier_id = d_id_int
+            else:
+                # Si non trouvé pour x raison (ex: dossier créé via COMID/ZARIT mais pas encore d'orientation), 
+                # on crée la ligne dans dossiers_patients en forçant l'ID pour conserver la liaison.
+                dossier_id = db_manager.save_dossier(
+                    texte_original=safe_text,
+                    donnees_extraites=extracted_data,
+                    score_comid=comid_results["score_total"],
+                    niveau_comid=comid_results["label"],
+                    structures_orientations=orientation_with_contacts,
+                    details_complet=details,
+                    dossier_id=d_id_int
+                )
+        else:
+            dossier_id = db_manager.save_dossier(
+                texte_original=safe_text,
+                donnees_extraites=extracted_data,
+                score_comid=comid_results["score_total"],
+                niveau_comid=comid_results["label"],
+                structures_orientations=orientation_with_contacts,
+                details_complet=details
+            )
     except Exception as e:
         print(f"Erreur de sauvegarde en base de données : {e}")
 
@@ -185,6 +268,13 @@ def profil():
     with open(html_path, "r", encoding="utf-8") as f:
         return f.read()
 
+@app.get("/dossier/{dossier_id}", response_class=HTMLResponse)
+def dossier_details_page(dossier_id: str):
+    """Sert la page HTML des détails du dossier patient."""
+    html_path = os.path.join(STATIC_DIR, "dossier_details.html")
+    with open(html_path, "r", encoding="utf-8") as f:
+        return f.read()
+
 class ComidEvalRequest(BaseModel):
     dossier_id: str
     senior_nom: Optional[str] = ""
@@ -192,6 +282,7 @@ class ComidEvalRequest(BaseModel):
     score: int
     niveau: str
     criteres: Optional[list] = []
+    createur: Optional[str] = "Anonyme"
 
 @app.post("/api/dossiers/{dossier_id}/validate")
 def validate_dossier(dossier_id: int, request: ValidateRequest):
@@ -211,15 +302,53 @@ def validate_dossier(dossier_id: int, request: ValidateRequest):
 @app.post("/api/comid/evaluations")
 def save_comid_evaluation(request: ComidEvalRequest):
     """Sauvegarde une évaluation COMID (Entrée ou Sortie)."""
+    cleaned_id = clean_dossier_id(request.dossier_id)
+    if cleaned_id is None:
+        # Nouveau dossier
+        d_id_int = db_manager.save_dossier(
+            texte_original=f"Dossier créé via l'évaluation COMID de {request.senior_nom}",
+            donnees_extraites={
+                "usager.identite.nom": request.senior_nom.split()[-1] if request.senior_nom else "",
+                "usager.identite.prenom": " ".join(request.senior_nom.split()[:-1]) if request.senior_nom and len(request.senior_nom.split()) > 1 else (request.senior_nom or ""),
+                "usager_nom_usage": request.senior_nom.split()[-1] if request.senior_nom else "",
+                "usager_prenoms": " ".join(request.senior_nom.split()[:-1]) if request.senior_nom and len(request.senior_nom.split()) > 1 else (request.senior_nom or "")
+            },
+            score_comid=request.score if request.type_eval == "entree" else 0,
+            niveau_comid=request.niveau if request.type_eval == "entree" else "",
+            structures_orientations=[],
+            details_complet={"createur": request.createur or "Anonyme"}
+        )
+        d_id = str(d_id_int)
+    else:
+        d_id = str(cleaned_id)
+        # S'assurer que le dossier existe aussi dans dossiers_patients pour éviter les désynchronisations
+        dossier_360 = db_manager.get_dossier_360_details(d_id)
+        if not dossier_360 or not dossier_360.get("orientation"):
+            db_manager.save_dossier(
+                texte_original=f"Dossier créé via l'évaluation COMID de {request.senior_nom}",
+                donnees_extraites={
+                    "usager.identite.nom": request.senior_nom.split()[-1] if request.senior_nom else "",
+                    "usager.identite.prenom": " ".join(request.senior_nom.split()[:-1]) if request.senior_nom and len(request.senior_nom.split()) > 1 else (request.senior_nom or ""),
+                    "usager_nom_usage": request.senior_nom.split()[-1] if request.senior_nom else "",
+                    "usager_prenoms": " ".join(request.senior_nom.split()[:-1]) if request.senior_nom and len(request.senior_nom.split()) > 1 else (request.senior_nom or "")
+                },
+                score_comid=request.score if request.type_eval == "entree" else 0,
+                niveau_comid=request.niveau if request.type_eval == "entree" else "",
+                structures_orientations=[],
+                details_complet={"createur": request.createur or "Anonyme"},
+                dossier_id=cleaned_id
+            )
+
     eval_id = db_manager.save_comid_eval(
-        dossier_id=request.dossier_id,
+        dossier_id=d_id,
         senior_nom=request.senior_nom,
         type_eval=request.type_eval,
         score=request.score,
         niveau=request.niveau,
-        criteres=request.criteres
+        criteres=request.criteres,
+        createur=request.createur
     )
-    return {"message": "Évaluation COMID enregistrée avec succès !", "id": eval_id}
+    return {"message": "Évaluation COMID enregistrée avec succès !", "id": eval_id, "dossier_id": d_id}
 
 @app.get("/api/comid/evaluations")
 def get_comid_evaluations():
@@ -474,42 +603,97 @@ async def extract_orientation_fields(request: ExtractFieldsRequest):
         print(f"Erreur extract_orientation_fields: {e}")
         return {"success": False, "error": str(e), "data": {}}
 
+def save_pdf_to_dossier(dossier_id: str, filename: str, pdf_bytes: bytes):
+    """Enregistre le fichier PDF physique dans le répertoire du dossier patient."""
+    dossier_dir = os.path.join(STORAGE_DIR, str(dossier_id))
+    os.makedirs(dossier_dir, exist_ok=True)
+    file_path = os.path.join(dossier_dir, filename)
+    with open(file_path, "wb") as f:
+        f.write(pdf_bytes)
+
+async def get_or_create_dossier_for_fiche(dossier_id: Optional[str], text: str, createur: str, structure_type: str) -> str:
+    """Assure qu'un dossier patient existe en BDD et retourne son ID."""
+    cleaned_id = clean_dossier_id(dossier_id)
+    if cleaned_id is None:
+        # Extraction des données via l'IA
+        if "dac" in structure_type.lower():
+            extracted_data = await fiche_extractor.extract_for_dac(text)
+        else:
+            extracted_data = await fiche_extractor.extract_for_clic(text)
+        
+        # Créer un dossier dans dossiers_patients
+        details = {
+            "createur": createur,
+            "orientation_results": [],
+            "orientation_with_contacts": []
+        }
+        # On pseudonymise le texte
+        safe_text = extractor.anonymizer.pseudonymize(text)
+        
+        # Déterminer les structures
+        structures_orientations = [{"type": structure_type}]
+        
+        new_id = db_manager.save_dossier(
+            texte_original=safe_text,
+            donnees_extraites=extracted_data,
+            score_comid=0,
+            niveau_comid="Non évalué",
+            structures_orientations=structures_orientations,
+            details_complet=details
+        )
+        return str(new_id)
+    return str(cleaned_id)
+
+async def process_and_save_fiche_pdf(request: AnalyzeRequest, structure_type: str, pdf_generator_func, filename_prefix: str):
+    """
+    Helper pour extraire les données, générer le PDF, l'enregistrer dans le dossier
+    patient (créé automatiquement si c'est un nouveau dossier) et renvoyer le PDF.
+    """
+    # 1. Obtenir ou créer le dossier patient
+    dossier_id = await get_or_create_dossier_for_fiche(request.dossier_id, request.text, request.createur, structure_type)
+    
+    # 2. Extraire les données selon le type
+    if "dac" in structure_type.lower():
+        extracted_data = await fiche_extractor.extract_for_dac(request.text)
+    else:
+        extracted_data = await fiche_extractor.extract_for_clic(request.text)
+        
+    # 3. Générer les bytes du PDF
+    pdf_bytes = pdf_generator_func(extracted_data)
+    
+    # 4. Enregistrer physiquement le PDF dans le dossier
+    filename = f"fiche_orientation_{filename_prefix}_dossier_{dossier_id}.pdf"
+    save_pdf_to_dossier(dossier_id, filename, pdf_bytes)
+    
+    # 5. Renvoyer la réponse avec l'ID du dossier dans les headers
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f"attachment; filename={filename}",
+            "X-Dossier-ID": str(dossier_id),
+            "Access-Control-Expose-Headers": "X-Dossier-ID"
+        }
+    )
+
 @app.post("/api/orientation/dac/generate_pdf")
 async def generate_dac_pdf(request: AnalyzeRequest):
     try:
-        extracted_data = await fiche_extractor.extract_for_dac(request.text)
-        pdf_bytes = pdf_generator.generate_dac_pdf(extracted_data)
-        return Response(
-            content=pdf_bytes, 
-            media_type="application/pdf", 
-            headers={"Content-Disposition": "attachment; filename=fiche_orientation_dac.pdf"}
-        )
+        return await process_and_save_fiche_pdf(request, "DAC Var Ouest", pdf_generator.generate_dac_pdf, "dac")
     except Exception as e:
         return {"error": f"Erreur lors de la génération du PDF : {str(e)}"}
 
 @app.post("/api/orientation/clic/generate_pdf")
 async def generate_clic_pdf(request: AnalyzeRequest):
     try:
-        extracted_data = await fiche_extractor.extract_for_clic(request.text)
-        pdf_bytes = pdf_generator.generate_clic_pdf(extracted_data)
-        return Response(
-            content=pdf_bytes, 
-            media_type="application/pdf", 
-            headers={"Content-Disposition": "attachment; filename=fiche_orientation_clic_laseyne.pdf"}
-        )
+        return await process_and_save_fiche_pdf(request, "CLIC La Seyne", pdf_generator.generate_clic_pdf, "clic_laseyne")
     except Exception as e:
         return {"error": f"Erreur lors de la génération du PDF : {str(e)}"}
 
 @app.post("/api/orientation/clic_toulon/generate_pdf")
 async def generate_clic_toulon_pdf(request: AnalyzeRequest):
     try:
-        extracted_data = await fiche_extractor.extract_for_clic(request.text)
-        pdf_bytes = pdf_generator.generate_clic_toulon_pdf(extracted_data)
-        return Response(
-            content=pdf_bytes, 
-            media_type="application/pdf", 
-            headers={"Content-Disposition": "attachment; filename=fiche_orientation_clic_toulon.pdf"}
-        )
+        return await process_and_save_fiche_pdf(request, "CLIC Toulon", pdf_generator.generate_clic_toulon_pdf, "clic_toulon")
     except Exception as e:
         return {"error": f"Erreur lors de la génération du PDF : {str(e)}"}
 
@@ -517,26 +701,14 @@ async def generate_clic_toulon_pdf(request: AnalyzeRequest):
 @app.post("/api/orientation/clic_provence_verte/generate_pdf")
 async def generate_clic_provence_verte_pdf(request: AnalyzeRequest):
     try:
-        extracted_data = await fiche_extractor.extract_for_clic(request.text)
-        pdf_bytes = pdf_generator._fill_clic_provence_verte(extracted_data)
-        return Response(
-            content=pdf_bytes, 
-            media_type="application/pdf", 
-            headers={"Content-Disposition": "attachment; filename=fiche_orientation_clic_provence_verte.pdf"}
-        )
+        return await process_and_save_fiche_pdf(request, "CLIC Provence Verte", pdf_generator._fill_clic_provence_verte, "clic_provence_verte")
     except Exception as e:
         return {"error": f"Erreur lors de la génération du PDF : {str(e)}"}
 
 @app.post("/api/orientation/clic_hadage/generate_pdf")
 async def generate_clic_hadage_pdf(request: AnalyzeRequest):
     try:
-        extracted_data = await fiche_extractor.extract_for_clic(request.text)
-        pdf_bytes = pdf_generator._fill_clic_hadage(extracted_data)
-        return Response(
-            content=pdf_bytes, 
-            media_type="application/pdf", 
-            headers={"Content-Disposition": "attachment; filename=fiche_orientation_clic_hadage.pdf"}
-        )
+        return await process_and_save_fiche_pdf(request, "CLIC Hadage", pdf_generator._fill_clic_hadage, "clic_hadage")
     except Exception as e:
         return {"error": f"Erreur lors de la génération du PDF : {str(e)}"}
 
@@ -578,7 +750,10 @@ async def generate_dossier_orientation_pdf(dossier_id: int, structure_type: str)
             filename = f"fiche_orientation_clic_hadage_dossier_{dossier_id}.pdf"
         else:
             return {"error": f"Type de structure inconnu: {structure_type}"}
+
             
+        save_pdf_to_dossier(dossier_id, filename, pdf_bytes)
+
         return Response(
             content=pdf_bytes,
             media_type="application/pdf",
@@ -586,6 +761,128 @@ async def generate_dossier_orientation_pdf(dossier_id: int, structure_type: str)
         )
     except Exception as e:
         return {"error": f"Erreur lors de la génération du PDF : {str(e)}"}
+
+@app.get("/api/dossiers")
+def get_all_dossiers_summary(createur: Optional[str] = None):
+    """
+    Récupère la liste résumée de tous les dossiers patients avec indicateurs de grilles 
+    et fiches d'orientation, en fusionnant les tables dossiers, comid et zarit, 
+    et en filtrant selon le créateur.
+    """
+    try:
+        # 1. Charger les données de toutes les tables
+        dossiers = db_manager.get_all_dossiers()
+        comids = db_manager.get_comid_evaluations()
+        zarits = db_manager.get_zarit_evaluations()
+        
+        dossier_map = {}
+        
+        # 2. Insérer d'abord les dossiers d'orientations patients
+        for d in dossiers:
+            details_complet = d.get("details_complet") or {}
+            if isinstance(details_complet, str):
+                try: details_complet = json.loads(details_complet)
+                except: details_complet = {}
+            d_createur = details_complet.get("createur")
+            
+            # Filtre par créateur
+            if createur and d_createur and d_createur != createur:
+                continue
+                
+            d_id = str(d["id"])
+            senior_nom = "Anonyme"
+            dEx = d.get("donnees_extraites") or {}
+            if isinstance(dEx, str):
+                try: dEx = json.loads(dEx)
+                except: dEx = {}
+            nom_u = dEx.get("usager.identite.nom") or dEx.get("usager_nom_usage") or ""
+            prenom_u = dEx.get("usager.identite.prenom") or dEx.get("usager_prenoms") or ""
+            if nom_u or prenom_u:
+                senior_nom = f"{prenom_u} {nom_u}".strip()
+                
+            validation_status = "En attente"
+            val_user = details_complet.get("validation_utilisateur")
+            if val_user:
+                val_status = val_user.get("status", "")
+                if "valid" in val_status.lower() or "accept" in val_status.lower():
+                    validation_status = "Accepté"
+                else:
+                    validation_status = "Refusé"
+
+            dossier_map[d_id] = {
+                "dossier_id": d_id,
+                "senior_nom": senior_nom,
+                "has_comid": False,
+                "has_zarit": False,
+                "has_fiches": len(d.get("structures_orientations", [])) > 0,
+                "score_comid": d.get("score_comid"),
+                "niveau_comid": d.get("niveau_comid"),
+                "structures": [s.get("type") or s.get("nom") for s in d.get("structures_orientations", []) if isinstance(s, dict)],
+                "validation_status": validation_status
+            }
+            
+        # 3. Insérer/Fusionner les dossiers créés depuis les évaluations COMID
+        for c in comids:
+            c_d_id = str(c["dossier_id"])
+            cleaned_c_d_id = clean_dossier_id(c_d_id)
+            d_id = str(cleaned_c_d_id) if cleaned_c_d_id is not None else c_d_id
+            d_createur = c.get("createur")
+            
+            if createur and d_createur and d_createur != createur:
+                continue
+                
+            if d_id not in dossier_map:
+                dossier_map[d_id] = {
+                    "dossier_id": d_id,
+                    "senior_nom": c.get("senior_nom") or "Anonyme",
+                    "has_comid": True,
+                    "has_zarit": False,
+                    "has_fiches": False,
+                    "score_comid": c.get("score"),
+                    "niveau_comid": c.get("niveau"),
+                    "structures": [],
+                    "validation_status": "En attente"
+                }
+            else:
+                dossier_map[d_id]["has_comid"] = True
+                if c.get("score") is not None:
+                    dossier_map[d_id]["score_comid"] = c.get("score")
+                    dossier_map[d_id]["niveau_comid"] = c.get("niveau")
+                if c.get("senior_nom") and dossier_map[d_id]["senior_nom"] == "Anonyme":
+                    dossier_map[d_id]["senior_nom"] = c.get("senior_nom")
+                    
+        # 4. Insérer/Fusionner les dossiers créés depuis les évaluations ZARIT
+        for z in zarits:
+            z_d_id = str(z["dossier_id"]) if z.get("dossier_id") else ""
+            if not z_d_id:
+                continue
+            cleaned_z_d_id = clean_dossier_id(z_d_id)
+            d_id = str(cleaned_z_d_id) if cleaned_z_d_id is not None else z_d_id
+            d_createur = z.get("createur")
+            
+            if createur and d_createur and d_createur != createur:
+                continue
+                
+            if d_id not in dossier_map:
+                dossier_map[d_id] = {
+                    "dossier_id": d_id,
+                    "senior_nom": z.get("senior_nom") or "Anonyme",
+                    "has_comid": False,
+                    "has_zarit": True,
+                    "has_fiches": False,
+                    "score_comid": None,
+                    "niveau_comid": None,
+                    "structures": [],
+                    "validation_status": "En attente"
+                }
+            else:
+                dossier_map[d_id]["has_zarit"] = True
+                if z.get("senior_nom") and dossier_map[d_id]["senior_nom"] == "Anonyme":
+                    dossier_map[d_id]["senior_nom"] = z.get("senior_nom")
+                    
+        return list(dossier_map.values())
+    except Exception as e:
+        return {"error": f"Erreur de fusion : {str(e)}"}
 
 class ComidPDFRequest(BaseModel):
     email: str = ""
@@ -618,6 +915,7 @@ class ZaritEvalRequest(BaseModel):
     score: int
     niveau: str
     reponses: list
+    createur: Optional[str] = "Anonyme"
 
 class ZaritPDFRequest(BaseModel):
     dossier_id: Optional[str] = None
@@ -635,20 +933,70 @@ def get_zarit_page():
         return HTMLResponse(content=f.read())
 
 @app.get("/api/dossiers/dropdown-list")
-def get_dossiers_dropdown_list():
-    return db_manager.get_dossiers_for_dropdown()
+def get_dossiers_dropdown_list(createur: Optional[str] = None):
+    """Retourne la liste des dossiers pour les menus déroulants, filtrés par créateur."""
+    try:
+        summary = get_all_dossiers_summary(createur=createur)
+        if isinstance(summary, dict) and "error" in summary:
+            return []
+        res = []
+        for d in summary:
+            res.append({
+                "dossier_id": d["dossier_id"],
+                "senior_nom": d["senior_nom"],
+                "display_label": f"{d['dossier_id']} – {d['senior_nom']}"
+            })
+        return res
+    except Exception:
+        return []
 
 @app.post("/api/zarit/evaluations")
 def save_zarit_evaluation(req: ZaritEvalRequest):
+    cleaned_id = clean_dossier_id(req.dossier_id)
+    if cleaned_id is None:
+        d_id_int = db_manager.save_dossier(
+            texte_original=f"Dossier créé via l'évaluation ZARIT de {req.senior_nom}",
+            donnees_extraites={
+                "usager.identite.nom": req.senior_nom.split()[-1] if req.senior_nom else "",
+                "usager.identite.prenom": " ".join(req.senior_nom.split()[:-1]) if req.senior_nom and len(req.senior_nom.split()) > 1 else (req.senior_nom or ""),
+                "usager_nom_usage": req.senior_nom.split()[-1] if req.senior_nom else "",
+                "usager_prenoms": " ".join(req.senior_nom.split()[:-1]) if req.senior_nom and len(req.senior_nom.split()) > 1 else (req.senior_nom or "")
+            },
+            score_comid=0,
+            niveau_comid="",
+            structures_orientations=[],
+            details_complet={"createur": req.createur or "Anonyme"}
+        )
+        d_id = str(d_id_int)
+    else:
+        d_id = str(cleaned_id)
+        dossier_360 = db_manager.get_dossier_360_details(d_id)
+        if not dossier_360 or not dossier_360.get("orientation"):
+            db_manager.save_dossier(
+                texte_original=f"Dossier créé via l'évaluation ZARIT de {req.senior_nom}",
+                donnees_extraites={
+                    "usager.identite.nom": req.senior_nom.split()[-1] if req.senior_nom else "",
+                    "usager.identite.prenom": " ".join(req.senior_nom.split()[:-1]) if req.senior_nom and len(req.senior_nom.split()) > 1 else (req.senior_nom or ""),
+                    "usager_nom_usage": req.senior_nom.split()[-1] if req.senior_nom else "",
+                    "usager_prenoms": " ".join(req.senior_nom.split()[:-1]) if req.senior_nom and len(req.senior_nom.split()) > 1 else (req.senior_nom or "")
+                },
+                score_comid=0,
+                niveau_comid="",
+                structures_orientations=[],
+                details_complet={"createur": req.createur or "Anonyme"},
+                dossier_id=cleaned_id
+            )
+
     eval_id = db_manager.save_zarit_eval(
         senior_nom=req.senior_nom,
         aidant_nom=req.aidant_nom,
         score=req.score,
         niveau=req.niveau,
         reponses=req.reponses,
-        dossier_id=req.dossier_id
+        dossier_id=d_id,
+        createur=req.createur
     )
-    return {"status": "ok", "id": eval_id}
+    return {"status": "ok", "id": eval_id, "dossier_id": d_id}
 
 @app.get("/api/zarit/evaluations")
 def get_zarit_evaluations():
@@ -674,4 +1022,24 @@ async def generate_zarit_pdf_endpoint(request: ZaritPDFRequest):
 
 @app.get("/api/dossier-360/{dossier_id}")
 def get_dossier_360_endpoint(dossier_id: str):
-    return db_manager.get_dossier_360_details(dossier_id)
+    cleaned_id = clean_dossier_id(dossier_id)
+    if cleaned_id is None:
+        return {"error": "Dossier introuvable"}
+    
+    details = db_manager.get_dossier_360_details(str(cleaned_id))
+    # Lister les PDFs enregistrés physiquement sur le disque
+    saved_pdfs = []
+    dossier_dir = os.path.join(STORAGE_DIR, str(cleaned_id))
+    if os.path.exists(dossier_dir):
+        for f in os.listdir(dossier_dir):
+            if f.lower().endswith(".pdf"):
+                saved_pdfs.append(f)
+    details["saved_pdfs"] = saved_pdfs
+    return details
+
+@app.get("/api/dossiers/{dossier_id}/saved-pdf/{filename}")
+def download_saved_pdf(dossier_id: str, filename: str):
+    file_path = os.path.join(STORAGE_DIR, str(dossier_id), filename)
+    if not os.path.exists(file_path):
+        return Response(content="Fichier introuvable.", status_code=404)
+    return FileResponse(file_path, media_type="application/pdf", filename=filename)
