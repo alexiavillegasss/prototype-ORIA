@@ -642,6 +642,12 @@ class OrientationEngine:
             if any(kw in text for kw in idel_kws):
                 return True
 
+        # Nettoyage extrême / Diogène / Incurie / Insalubrité (Sociétés de nettoyage)
+        if "diogène" in detail_lower or "diogene" in detail_lower or "incurie" in detail_lower:
+            diogene_kws = ["diogène", "diogene", "incurie", "insalubre", "insalubrité", "nettoyage extrême", "nettoyage extreme", "très sale", "tres sale", "désinfection", "desinfection", "désencombrement", "desencombrement", "auto-réhabilitation", "auto-rehabilitation"]
+            if any(kw in text for kw in diogene_kws):
+                return True
+
         # 1. Urgent / Danger
         if "danger vital" in detail_lower or "secours d’urgence" in detail_lower or "secours d'urgence" in detail_lower:
             if "secours" in text or "urgence" in text or "danger" in text or "agression" in text:
@@ -711,7 +717,7 @@ class OrientationEngine:
         if "évaluation globale" in detail_lower or "evaluation globale" in detail_lower or "médico-sociale" in detail_lower or "medico-sociale" in detail_lower:
             if "point global" in text or "évaluation" in text or "evaluation" in text or "médico-sociale" in text or "medico-sociale" in text:
                 return True
-        if "aménagement" in detail_lower or "amenagement" in detail_lower or "adaptation" in detail_lower:
+        if ("aménagement" in detail_lower or "amenagement" in detail_lower or "adaptation" in detail_lower) and "diogène" not in detail_lower and "diogene" not in detail_lower:
             if "aménagement" in text or "amenagement" in text or "aménager" in text or "amenager" in text or "adapter" in text or "adaptation" in text or "barre" in text or "douche" in text or "chute" in text or "chutes" in text:
                 return True
         if "maintien renforcé" in detail_lower or "maintien renforce" in detail_lower or "maintien intensif" in detail_lower:
