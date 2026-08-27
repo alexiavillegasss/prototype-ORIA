@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!text) return '';
             let formatted = text.replace(
                 /\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, 
-                '<a href="$2" target="_blank" rel="noopener noreferrer" class="conseil-link-badge" style="display: inline-flex; align-items: center; gap: 0.3rem; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; border-radius: 6px; padding: 3px 9px; font-weight: 600; font-size: 0.84rem; text-decoration: none; margin: 2px 0; transition: all 0.2s ease;"><span style="font-size: 0.8rem;">🔗</span> $1</a>'
+                '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: #2563eb; text-decoration: underline; font-weight: 600;">$1</a>'
             );
             return formatted;
         };
