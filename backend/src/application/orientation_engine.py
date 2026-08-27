@@ -653,23 +653,13 @@ class OrientationEngine:
             if "secours" in text or "urgence" in text or "danger" in text or "agression" in text:
                 return True
         if "violence conjugale" in detail_lower:
-            if "violence" in text and ("conjugale" in text or "conjoint" in text or "mari" in text or "épouse" in text or "epouse" in text):
+            if ("violence" in text or "frappe" in text or "frapper" in text or "battu" in text or "battre" in text or "coups" in text) and ("conjugale" in text or "conjoint" in text or "mari" in text or "épouse" in text or "epouse" in text or "femme" in text or "voisin" in text):
                 return True
-        if "violence" in detail_lower and ("violence" in text or "agression" in text or "coups" in text or "ecchymoses" in text):
-            return True
-        if "spoliation" in detail_lower and ("spoliation" in text or "vol" in text or "vole" in text or "voler" in text or "chantage" in text or "petit-fils" in text or "prenne de l'argent" in text or "prend de l'argent" in text or "prend l'argent" in text or "prenne l'argent" in text):
-            return True
-        if "négligence" in detail_lower or "negligence" in detail_lower:
-            if "négligence" in text or "negligence" in text or "privation" in text:
+        if "violence" in detail_lower or "violences" in detail_lower:
+            if any(kw in text for kw in ["violence", "violences", "agression", "coups", "coup", "ecchymoses", "bleus", "bleu", "frappe", "frapper", "battu", "battre"]):
                 return True
-        if "abus de confiance" in detail_lower or "abus de faiblesse" in detail_lower:
-            if "abus de confiance" in text or "abus de faiblesse" in text or ("abus" in text and ("confiance" in text or "faiblesse" in text)):
-                return True
-        if "privation de droits" in detail_lower:
-            if "privation de droits" in text or "privation de droit" in text or ("privation" in text and "droits" in text):
-                return True
-        if "maltraitance" in detail_lower:
-            if "maltraitance" in text or "maltraitant" in text:
+        if "maltraitance" in detail_lower or "négligence" in detail_lower:
+            if any(kw in text for kw in ["maltraitance", "maltraitant", "maltraiter", "maltraité", "maltraitée", "négligence", "negligence", "suspecte", "suspicion"]):
                 return True
         if "sécurité du domicile" in detail_lower or "securite du domicile" in detail_lower:
             if "sécurité" in text or "securite" in text or "danger" in text or "effondre" in text or "délabré" in text:
