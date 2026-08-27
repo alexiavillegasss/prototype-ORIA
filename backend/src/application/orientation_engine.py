@@ -258,11 +258,10 @@ class OrientationEngine:
                 "diogene" in text_lower or
                 "incurie" in text_lower or
                 "insalubre" in text_lower or
-                "nettoyage" in text_lower or
-                "auto-réhabilitation" in text_lower
+                "auto-réhabilitation" in text_lower or
+                "auto-rehabilitation" in text_lower
             )
-            logement_inadapte_ok = eval_context.get("evaluation.comid.logement_inadapte") is True
-            if not insalubre_ok and not logement_inadapte_ok:
+            if not insalubre_ok:
                 excluded_structures.append("COMPAGNONS_BATISSEURS")
             else:
                 # Si Diogène / Insalubrité détecté ➡️ Boost pour placer Les Compagnons Bâtisseurs en choix N°1
@@ -321,7 +320,7 @@ class OrientationEngine:
                 "moyen" in text_lower
             )
             has_geriatric_need = False
-            geriatric_keywords = ["troubles cognitifs", "troubles cognitifs", "autonomie", "médico-sociale", "medico-sociale", "ehpad", "gir", "apa"]
+            geriatric_keywords = ["troubles cognitifs", "troubles cognitifs", "autonomie", "médico-sociale", "medico-sociale", "ehpad", "gir", "apa", "aménagement", "amenagement", "mobilité", "mobilite", "kiné", "kine", "maintien"]
             for need in identified_needs:
                 if any(kw in need["detaille"].lower() for kw in geriatric_keywords):
                     has_geriatric_need = True
@@ -675,7 +674,7 @@ class OrientationEngine:
             if ("cherche" in text or "recherche" in text or "trouver" in text or "besoin" in text or "n'a plus" in text or "n’a plus" in text or "pas de" in text or "sans" in text or "plus de" in text) and ("médecin" in text or "medecin" in text or "traitant" in text):
                 return True
         if "visite à domicile" in detail_lower or "visite a domicile" in detail_lower or "vad" in detail_lower:
-            if "visite" in text or "déplace" in text or "deplace" in text or "vad" in text.split():
+            if ("médecin" in text or "medecin" in text or "docteur" in text) and ("visite" in text or "déplace" in text or "deplace" in text or "vad" in text.split()):
                 return True
         if "kinésithérapeute" in detail_lower or "kinesitherapeute" in detail_lower:
             if ("cherche" in text or "recherche" in text or "besoin" in text or "trouver" in text or "demande" in text) and ("kiné" in text or "kine" in text or "kinésithérapeute" in text or "kinesitherapeute" in text):
@@ -684,7 +683,7 @@ class OrientationEngine:
             if ("cherche" in text or "recherche" in text or "besoin" in text or "trouver" in text or "demande" in text) and ("infirmier" in text or "infirmière" in text or "infirmiere" in text or "idel" in text):
                 return True
         if "recherche de professionnels" in detail_lower:
-            if "cherche" in text or "recherche" in text:
+            if ("cherche" in text or "recherche" in text) and ("santé mentale" in text or "sante mentale" in text or "psychiatre" in text or "psychologue" in text):
                 return True
         if "accès aux soins" in detail_lower or "acces aux soins" in detail_lower:
             if "accès" in text or "acces" in text or "soins" in text or "médical" in text or "medical" in text:
@@ -712,8 +711,8 @@ class OrientationEngine:
         if "évaluation globale" in detail_lower or "evaluation globale" in detail_lower or "médico-sociale" in detail_lower or "medico-sociale" in detail_lower:
             if "point global" in text or "évaluation" in text or "evaluation" in text or "médico-sociale" in text or "medico-sociale" in text:
                 return True
-        if "aménagement" in detail_lower or "amenagement" in detail_lower:
-            if "aménagement" in text or "amenagement" in text or "adapter" in text or "adaptation" in text or "barre" in text or "douche" in text or "chute" in text or "chutes" in text:
+        if "aménagement" in detail_lower or "amenagement" in detail_lower or "adaptation" in detail_lower:
+            if "aménagement" in text or "amenagement" in text or "aménager" in text or "amenager" in text or "adapter" in text or "adaptation" in text or "barre" in text or "douche" in text or "chute" in text or "chutes" in text:
                 return True
         if "maintien renforcé" in detail_lower or "maintien renforce" in detail_lower or "maintien intensif" in detail_lower:
             if "renforc" in text or "intensif" in text or ("refus" in text and "soin" in text) or "hospitalisation" in text or "chute" in text or "dégrade" in text or "degrade" in text:
