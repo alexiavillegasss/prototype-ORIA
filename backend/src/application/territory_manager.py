@@ -11,9 +11,12 @@ class TerritoryManager:
         Gère les relais territoriaux (ex: CLIC absent -> UTS).
         """
         if not city:
-            return eligible_structures
+            city = "La Garde"
 
         area_data = self._find_area(city)
+        if not area_data:
+            area_data = self._find_area("La Garde")
+
         if not area_data:
             return eligible_structures
 

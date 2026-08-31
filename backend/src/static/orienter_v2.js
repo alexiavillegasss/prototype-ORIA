@@ -319,7 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div style="display: flex; align-items: center; gap: 0.4rem; flex: 1; min-width: 220px;">
                     <span style="font-weight: 700; color: #2563eb; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.04em; white-space: nowrap;">Adresse :</span>
-                    <span style="color: #1e293b; font-weight: 500;">${struct.adresse || 'Aucune adresse enregistrée pour cette commune'}</span>
+                    <span style="color: #1e293b; font-weight: 500;">${struct.adresse || 'Non enregistrée'}</span>
                 </div>
             </div>
 
