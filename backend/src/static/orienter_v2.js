@@ -311,23 +311,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 </ul>
             </div>
 
-            <!-- 4. Ressources complémentaires -->
-            ${ressourcesHtml}
-            
-            <!-- Coordonnées territoriales -->
-            <div class="struct-contact" style="margin-top: 1.35rem; margin-bottom: 1.35rem;">
-                <div class="contact-item">
-                    <span style="font-weight: 600; color: #64748b;">Tél :</span>
-                    <span>${struct.telephone || 'Aucun numéro territorial répertorié'}</span>
+            <!-- 4. Coordonnées territoriales (placées au-dessus des Ressources complémentaires) -->
+            <div class="struct-contact" style="margin-top: 1.1rem; margin-bottom: 1.1rem; padding: 0.75rem 0.95rem; background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 8px; display: flex; flex-wrap: wrap; gap: 1.2rem; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 0.45rem; font-size: 0.88rem; color: #334155;">
+                    <span style="font-size: 0.76rem; font-weight: 700; color: #2563eb; text-transform: uppercase; letter-spacing: 0.04em;">Tél :</span>
+                    <a href="tel:${struct.telephone}" style="color: #1e293b; font-weight: 600; text-decoration: none;">${struct.telephone || 'Non répertorié'}</a>
                 </div>
-                <div class="contact-item">
-                    <span style="font-weight: 600; color: #64748b;">Adresse :</span>
-                    <span>${struct.adresse || 'Aucune adresse enregistrée pour cette commune'}</span>
+                <div style="display: flex; align-items: center; gap: 0.45rem; font-size: 0.88rem; color: #334155;">
+                    <span style="font-size: 0.76rem; font-weight: 700; color: #2563eb; text-transform: uppercase; letter-spacing: 0.04em;">Adresse :</span>
+                    <span style="color: #1e293b; font-weight: 500;">${struct.adresse || 'Non enregistrée'}</span>
                 </div>
             </div>
 
+            <!-- 5. Ressources complémentaires -->
+            ${ressourcesHtml}
+            
             <!-- Boucle de feedback d'orientation -->
-            <div class="feedback-pane">
+            <div class="feedback-pane" style="margin-top: 1.35rem;">
                 <span class="feedback-title">Cette orientation convient-elle à la situation de l'usager ?</span>
                 <div class="feedback-buttons">
                     <button id="btn-validate-yes" class="btn-success">
