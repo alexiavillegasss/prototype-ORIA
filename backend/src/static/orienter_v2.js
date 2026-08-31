@@ -224,23 +224,23 @@ document.addEventListener('DOMContentLoaded', () => {
             : (struct.conseils || []).map(c => ({ text: c, verbatim: '' }));
 
         const ressourcesHtml = (ressourcesList && ressourcesList.length > 0) ? `
-            <div class="ressources-container" style="margin: 1.15rem 0; padding: 0.95rem 1.1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #2563eb; border-radius: 8px;">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.45rem;">
-                    <div style="display: inline-flex; align-items: center; gap: 0.4rem; color: #1e40af; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;">
-                        <span>💡</span> Ressources complémentaires
-                    </div>
+            <div class="ressources-container" style="margin: 1.1rem 0; padding: 0.95rem 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-left: 3px solid #2563eb; border-radius: 8px;">
+                <div style="margin-bottom: 0.35rem;">
+                    <span style="color: #1e40af; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;">
+                        Ressources complémentaires
+                    </span>
                 </div>
-                <p style="font-size: 0.86rem; color: #475569; margin-bottom: 0.55rem; font-weight: 500;">Vous pouvez aussi vous rapprocher de :</p>
+                <p style="font-size: 0.86rem; color: #475569; margin-bottom: 0.5rem; font-weight: 500;">Vous pouvez aussi vous rapprocher de :</p>
                 <div style="display: flex; flex-direction: column; gap: 0.45rem;">
                     ${ressourcesList.map(r => `
-                        <div class="ressource-item" style="font-size: 0.88rem; line-height: 1.45; color: #1e293b; display: flex; flex-direction: column; gap: 0.2rem; margin-bottom: 0.35rem;">
+                        <div class="ressource-item" style="font-size: 0.88rem; line-height: 1.45; color: #1e293b; display: flex; flex-direction: column; gap: 0.15rem; margin-bottom: 0.25rem;">
                             <div style="display: flex; align-items: flex-start; gap: 0.45rem;">
                                 <span style="color: #2563eb; font-weight: 900; line-height: 1.2; flex-shrink: 0;">•</span>
                                 <div style="flex: 1;">${formatConseilLink(r.text)}</div>
                             </div>
                             ${r.verbatim ? `
-                                <div style="margin-left: 1.25rem; font-size: 0.82rem; color: #475569; font-style: italic;">
-                                    💬 « ${r.verbatim} »
+                                <div style="margin-left: 1rem; font-size: 0.82rem; color: #64748b; font-style: italic;">
+                                    « ${r.verbatim} »
                                 </div>
                             ` : ''}
                         </div>
@@ -265,14 +265,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const elementsHtml = elementsList.map(item => `
-            <li style="margin-bottom: 0.55rem; line-height: 1.45;">
-                <div style="display: flex; align-items: flex-start; gap: 0.45rem; font-weight: 600; color: #1e293b; font-size: 0.9rem;">
-                    <span style="color: #059669; font-weight: 900; line-height: 1.2;">✓</span>
+            <li style="margin-bottom: 0.5rem; line-height: 1.45;">
+                <div style="display: flex; align-items: flex-start; gap: 0.45rem; font-weight: 600; color: #1e293b; font-size: 0.89rem;">
+                    <span style="color: #059669; font-weight: 900; line-height: 1.2;">•</span>
                     <span>${item.titre}</span>
                 </div>
                 ${item.verbatim ? `
-                    <div style="margin-left: 1.35rem; margin-top: 0.15rem; font-size: 0.83rem; color: #475569; font-style: italic;">
-                        💬 « ${item.verbatim} »
+                    <div style="margin-left: 1rem; margin-top: 0.15rem; font-size: 0.83rem; color: #64748b; font-style: italic;">
+                        « ${item.verbatim} »
                     </div>
                 ` : ''}
             </li>
@@ -287,26 +287,26 @@ document.addEventListener('DOMContentLoaded', () => {
             <h4 class="struct-name" style="margin-bottom: 0.75rem;">${struct.label}</h4>
 
             <!-- 2. Rôle de la structure directement sous le titre -->
-            <div class="role-structure-box" style="margin-bottom: 1.1rem; padding: 0.95rem 1.1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #3b82f6; border-radius: 8px;">
-                <div style="font-size: 0.78rem; font-weight: 800; color: #2563eb; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.35rem;">
-                    <span>🏛️</span> Rôle de la structure :
+            <div class="role-structure-box" style="margin-bottom: 1.1rem; padding: 0.85rem 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-left: 3px solid #3b82f6; border-radius: 6px;">
+                <div style="font-size: 0.78rem; font-weight: 700; color: #2563eb; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem;">
+                    Rôle de la structure :
                 </div>
-                <p style="margin: 0; font-size: 0.91rem; color: #334155; line-height: 1.5; font-weight: 500;">
+                <p style="margin: 0; font-size: 0.9rem; color: #334155; line-height: 1.5; font-weight: 450;">
                     ${struct.mission_structure || 'Structure d\'accompagnement et d\'orientation.'}
                 </p>
             </div>
 
             <!-- 3. Bouton & Volet "Pourquoi cette orientation ?" -->
             <button id="btn-why" class="btn-explain" style="margin-bottom: 0.85rem;">
-                <span class="icon">🔍</span> Pourquoi cette orientation ?
+                Pourquoi cette orientation ?
             </button>
 
-            <!-- Volet d'explication avec verbatims (masqué par défaut) -->
-            <div id="explanation-pane" class="explanation-pane" style="display: none; margin-bottom: 1.25rem; padding: 1.15rem; background: #ffffff; border: 1px solid rgba(226, 232, 240, 0.9); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-                <div style="font-size: 0.78rem; font-weight: 800; color: #059669; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.75rem;">
-                    <span>💬</span> Éléments identifiés dans votre récit :
+            <!-- Volet d'explication épuré (masqué par défaut) -->
+            <div id="explanation-pane" class="explanation-pane" style="display: none; margin-bottom: 1.1rem; padding: 1rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px;">
+                <div style="font-size: 0.78rem; font-weight: 700; color: #059669; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.65rem;">
+                    Éléments identifiés dans votre récit :
                 </div>
-                <ul style="margin: 0; padding: 0; list-style: none; font-size: 0.89rem; color: #1e293b; line-height: 1.5; display: flex; flex-direction: column;">
+                <ul style="margin: 0; padding: 0; list-style: none; font-size: 0.88rem; color: #1e293b; line-height: 1.5; display: flex; flex-direction: column;">
                     ${elementsHtml}
                 </ul>
             </div>
@@ -315,13 +315,13 @@ document.addEventListener('DOMContentLoaded', () => {
             ${ressourcesHtml}
             
             <!-- Coordonnées territoriales -->
-            <div class="struct-contact" style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+            <div class="struct-contact" style="margin-top: 1.35rem; margin-bottom: 1.35rem;">
                 <div class="contact-item">
-                    <span class="icon">📞</span>
+                    <span style="font-weight: 600; color: #64748b;">Tél :</span>
                     <span>${struct.telephone || 'Aucun numéro territorial répertorié'}</span>
                 </div>
                 <div class="contact-item">
-                    <span class="icon">📍</span>
+                    <span style="font-weight: 600; color: #64748b;">Adresse :</span>
                     <span>${struct.adresse || 'Aucune adresse enregistrée pour cette commune'}</span>
                 </div>
             </div>
@@ -331,10 +331,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="feedback-title">Cette orientation convient-elle à la situation de l'usager ?</span>
                 <div class="feedback-buttons">
                     <button id="btn-validate-yes" class="btn-success">
-                        <span>✅ Oui, elle convient</span>
+                        <span>Oui, elle convient</span>
                     </button>
                     <button onclick="proposeNextOrientation()" class="btn-warning-action">
-                        <span>❌ Non, autre solution</span>
+                        <span>Non, autre solution</span>
                     </button>
                 </div>
             </div>
@@ -342,7 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         structuresList.appendChild(card);
 
-        // Liaison programmatic event for Yes validation button (avoids quote escaping issues with labels like d'Appui)
+        // Liaison programmatic event for Yes validation button
         const btnYes = card.querySelector('#btn-validate-yes');
         if (btnYes) {
             btnYes.addEventListener('click', () => {
@@ -356,10 +356,10 @@ document.addEventListener('DOMContentLoaded', () => {
         btnWhy.addEventListener('click', () => {
             if (explainPane.style.display === 'none') {
                 explainPane.style.display = 'block';
-                btnWhy.innerHTML = '<span class="icon">✕</span> Masquer l\'explication';
+                btnWhy.textContent = 'Masquer l\'explication';
             } else {
                 explainPane.style.display = 'none';
-                btnWhy.innerHTML = '<span class="icon">🔍</span> Pourquoi cette orientation ?';
+                btnWhy.textContent = 'Pourquoi cette orientation ?';
             }
         });
     };
