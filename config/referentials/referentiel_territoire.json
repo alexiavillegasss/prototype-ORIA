@@ -19,8 +19,7 @@
         "present": true,
         "nom": "CLIC de Toulon",
         "telephone": "04 94 24 65 25",
-        "email": "clic@ccas-toulon.fr",
-        "adresse": "1 Rue Dumerbion 83000 Toulon"
+        "email": "clic@ccas-toulon.fr"
       },
       "CRT": {
         "present": true,
@@ -39,21 +38,18 @@
         "present": true,
         "nom": "DAC Var Ouest",
         "telephone": "04 94 35 32 01",
-        "email": "contact@dac-varouest.fr",
-        "adresse": "235 Avenue du Colonel Picot 83100 Toulon"
+        "email": "contact@dac-varouest.fr"
       },
       "CEV": {
         "present": true,
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
-        "email": "gro-cev@var.fr",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "email": "gro-cev@var.fr"
       },
       "PSCG_SS_APA": {
         "present": true,
         "nom": "PSCG SS APA - Secrétariat Toulon",
-        "telephone": "04 83 95 79 51",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "telephone": "04 83 95 79 51"
       },
       "SERVICE_SOCIAL_HOPITAL": {
         "present": true,
@@ -70,8 +66,7 @@
             "nom": "Service social de l'hôpital Saint Anne",
             "telephone": "04 83 16 22 82"
           }
-        },
-        "adresse": "Centre Hospitalier Intercommunal Toulon La Seyne-sur-Mer"
+        }
       }
     }
   },
@@ -95,8 +90,7 @@
         "present": true,
         "nom": "CLIC de Toulon",
         "telephone": "04 94 24 65 25",
-        "email": "clic@ccas-toulon.fr",
-        "adresse": "1 Rue Dumerbion 83000 Toulon"
+        "email": "clic@ccas-toulon.fr"
       },
       "CRT": {
         "present": true,
@@ -116,21 +110,18 @@
         "present": true,
         "nom": "DAC Var Ouest",
         "telephone": "04 94 35 32 01",
-        "email": "contact@dac-varouest.fr",
-        "adresse": "235 Avenue du Colonel Picot 83100 Toulon"
+        "email": "contact@dac-varouest.fr"
       },
       "CEV": {
         "present": true,
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
-        "email": "gro-cev@var.fr",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "email": "gro-cev@var.fr"
       },
       "PSCG_SS_APA": {
         "present": true,
         "nom": "PSCG SS APA - Secrétariat Toulon",
-        "telephone": "04 83 95 79 51",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "telephone": "04 83 95 79 51"
       },
       "SERVICE_SOCIAL_HOPITAL": {
         "present": true,
@@ -147,8 +138,7 @@
             "nom": "Service social de l'hôpital Saint Anne",
             "telephone": "04 83 16 22 82"
           }
-        },
-        "adresse": "Centre Hospitalier Intercommunal Toulon La Seyne-sur-Mer"
+        }
       }
     }
   },
@@ -189,21 +179,18 @@
         "present": true,
         "nom": "DAC Var Ouest",
         "telephone": "04 94 35 32 01",
-        "email": "contact@dac-varouest.fr",
-        "adresse": "235 Avenue du Colonel Picot 83100 Toulon"
+        "email": "contact@dac-varouest.fr"
       },
       "CEV": {
         "present": true,
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
-        "email": "gro-cev@var.fr",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "email": "gro-cev@var.fr"
       },
       "PSCG_SS_APA": {
         "present": true,
         "nom": "PSCG SS APA - Secrétariat Toulon",
-        "telephone": "04 83 95 79 51",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "telephone": "04 83 95 79 51"
       },
       "SERVICE_SOCIAL_HOPITAL": {
         "present": true,
@@ -220,8 +207,7 @@
             "nom": "Service social de l'hôpital Saint Anne",
             "telephone": "04 83 16 22 82"
           }
-        },
-        "adresse": "Centre Hospitalier Intercommunal Toulon La Seyne-sur-Mer"
+        }
       }
     }
   },
@@ -266,21 +252,18 @@
         "present": true,
         "nom": "DAC Var Ouest",
         "telephone": "04 94 35 32 01",
-        "email": "contact@dac-varouest.fr",
-        "adresse": "235 Avenue du Colonel Picot 83100 Toulon"
+        "email": "contact@dac-varouest.fr"
       },
       "CEV": {
         "present": true,
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
-        "email": "gro-cev@var.fr",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "email": "gro-cev@var.fr"
       },
       "PSCG_SS_APA": {
         "present": true,
         "nom": "PSCG SS APA - Secrétariat Toulon",
-        "telephone": "04 83 95 79 51",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "telephone": "04 83 95 79 51"
       },
       "SERVICE_SOCIAL_HOPITAL": {
         "present": true,
@@ -297,8 +280,7 @@
             "nom": "Service social de l'hôpital Saint Anne",
             "telephone": "04 83 16 22 82"
           }
-        },
-        "adresse": "Centre Hospitalier Intercommunal Toulon La Seyne-sur-Mer"
+        }
       }
     }
   },
@@ -339,21 +321,18 @@
         "present": true,
         "nom": "DAC Var Ouest",
         "telephone": "04 94 35 32 01",
-        "email": "contact@dac-varouest.fr",
-        "adresse": "235 Avenue du Colonel Picot 83100 Toulon"
+        "email": "contact@dac-varouest.fr"
       },
       "CEV": {
         "present": true,
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
-        "email": "gro-cev@var.fr",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "email": "gro-cev@var.fr"
       },
       "PSCG_SS_APA": {
         "present": true,
         "nom": "PSCG SS APA - Secrétariat Toulon",
-        "telephone": "04 83 95 79 51",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "telephone": "04 83 95 79 51"
       },
       "SERVICE_SOCIAL_HOPITAL": {
         "present": true,
@@ -370,8 +349,7 @@
             "nom": "Service social de l'hôpital Saint Anne",
             "telephone": "04 83 16 22 82"
           }
-        },
-        "adresse": "Centre Hospitalier Intercommunal Toulon La Seyne-sur-Mer"
+        }
       }
     }
   },
@@ -395,8 +373,7 @@
         "present": true,
         "nom": "CLIC la Vallée du Gapeau",
         "telephone": "04 94 33 10 62",
-        "email": "social@ccvg.fr",
-        "adresse": "33 Avenue Frédéric Mistral 83210 Solliès-Pont"
+        "email": "social@ccvg.fr"
       },
       "CRT": {
         "present": false
@@ -412,21 +389,18 @@
         "present": true,
         "nom": "DAC Var Ouest",
         "telephone": "04 94 35 32 01",
-        "email": "contact@dac-varouest.fr",
-        "adresse": "235 Avenue du Colonel Picot 83100 Toulon"
+        "email": "contact@dac-varouest.fr"
       },
       "CEV": {
         "present": true,
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
-        "email": "gro-cev@var.fr",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "email": "gro-cev@var.fr"
       },
       "PSCG_SS_APA": {
         "present": true,
         "nom": "PSCG SS APA - Secrétariat Toulon",
-        "telephone": "04 83 95 79 51",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "telephone": "04 83 95 79 51"
       },
       "SERVICE_SOCIAL_HOPITAL": {
         "present": true,
@@ -443,8 +417,7 @@
             "nom": "Service social de l'hôpital Saint Anne",
             "telephone": "04 83 16 22 82"
           }
-        },
-        "adresse": "Centre Hospitalier Intercommunal Toulon La Seyne-sur-Mer"
+        }
       }
     }
   },
@@ -483,21 +456,18 @@
         "present": true,
         "nom": "DAC Var Ouest",
         "telephone": "04 94 35 32 01",
-        "email": "contact@dac-varouest.fr",
-        "adresse": "235 Avenue du Colonel Picot 83100 Toulon"
+        "email": "contact@dac-varouest.fr"
       },
       "CEV": {
         "present": true,
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
-        "email": "gro-cev@var.fr",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "email": "gro-cev@var.fr"
       },
       "PSCG_SS_APA": {
         "present": true,
         "nom": "PSCG SS APA - Secrétariat Toulon",
-        "telephone": "04 83 95 79 51",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "telephone": "04 83 95 79 51"
       },
       "SERVICE_SOCIAL_HOPITAL": {
         "present": true,
@@ -514,8 +484,7 @@
             "nom": "Service social de l'hôpital Saint Anne",
             "telephone": "04 83 16 22 82"
           }
-        },
-        "adresse": "Centre Hospitalier Intercommunal Toulon La Seyne-sur-Mer"
+        }
       }
     }
   },
@@ -539,8 +508,7 @@
         "present": true,
         "nom": "CRT le Beausset",
         "telephone": "04 94 98 55 00 ou 06 08 46 20 3X",
-        "email": "crt.lebeausset@gmail.com",
-        "adresse": "Maison de Retraite Publique, 83330 Le Beausset"
+        "email": "crt.lebeausset@gmail.com"
       },
       "CPTS": {
         "present": true,
@@ -553,21 +521,18 @@
         "present": true,
         "nom": "DAC Var Ouest",
         "telephone": "04 94 35 32 01",
-        "email": "contact@dac-varouest.fr",
-        "adresse": "235 Avenue du Colonel Picot 83100 Toulon"
+        "email": "contact@dac-varouest.fr"
       },
       "CEV": {
         "present": true,
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
-        "email": "gro-cev@var.fr",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "email": "gro-cev@var.fr"
       },
       "PSCG_SS_APA": {
         "present": true,
         "nom": "PSCG SS APA - Secrétariat Toulon",
-        "telephone": "04 83 95 79 51",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "telephone": "04 83 95 79 51"
       },
       "SERVICE_SOCIAL_HOPITAL": {
         "present": true,
@@ -584,8 +549,7 @@
             "nom": "Service social de l'hôpital Saint Anne",
             "telephone": "04 83 16 22 82"
           }
-        },
-        "adresse": "Centre Hospitalier Intercommunal Toulon La Seyne-sur-Mer"
+        }
       }
     }
   },
@@ -608,8 +572,7 @@
         "present": true,
         "nom": "CRT le Beausset",
         "telephone": "04 94 98 55 00",
-        "email": "crt.lebeausset@gmail.com",
-        "adresse": "Maison de Retraite Publique, 83330 Le Beausset"
+        "email": "crt.lebeausset@gmail.com"
       },
       "CPTS": {
         "present": true,
@@ -622,21 +585,18 @@
         "present": true,
         "nom": "DAC Var Ouest",
         "telephone": "04 94 35 32 01",
-        "email": "contact@dac-varouest.fr",
-        "adresse": "235 Avenue du Colonel Picot 83100 Toulon"
+        "email": "contact@dac-varouest.fr"
       },
       "CEV": {
         "present": true,
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
-        "email": "gro-cev@var.fr",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "email": "gro-cev@var.fr"
       },
       "PSCG_SS_APA": {
         "present": true,
         "nom": "PSCG SS APA - Secrétariat Toulon",
-        "telephone": "04 83 95 79 51",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "telephone": "04 83 95 79 51"
       },
       "SERVICE_SOCIAL_HOPITAL": {
         "present": true,
@@ -653,8 +613,7 @@
             "nom": "Service social de l'hôpital Saint Anne",
             "telephone": "04 83 16 22 82"
           }
-        },
-        "adresse": "Centre Hospitalier Intercommunal Toulon La Seyne-sur-Mer"
+        }
       }
     }
   },
@@ -681,8 +640,7 @@
         "present": true,
         "nom": "CRT le Beausset",
         "telephone": "04 94 98 55 00",
-        "email": "crt.lebeausset@gmail.com",
-        "adresse": "Maison de Retraite Publique, 83330 Le Beausset"
+        "email": "crt.lebeausset@gmail.com"
       },
       "CPTS": {
         "present": true,
@@ -695,21 +653,18 @@
         "present": true,
         "nom": "DAC Var Ouest",
         "telephone": "04 94 35 32 01",
-        "email": "contact@dac-varouest.fr",
-        "adresse": "235 Avenue du Colonel Picot 83100 Toulon"
+        "email": "contact@dac-varouest.fr"
       },
       "CEV": {
         "present": true,
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
-        "email": "gro-cev@var.fr",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "email": "gro-cev@var.fr"
       },
       "PSCG_SS_APA": {
         "present": true,
         "nom": "PSCG SS APA - Secrétariat Toulon",
-        "telephone": "04 83 95 79 51",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "telephone": "04 83 95 79 51"
       },
       "SERVICE_SOCIAL_HOPITAL": {
         "present": true,
@@ -726,8 +681,7 @@
             "nom": "Service social de l'hôpital Saint Anne",
             "telephone": "04 83 16 22 82"
           }
-        },
-        "adresse": "Centre Hospitalier Intercommunal Toulon La Seyne-sur-Mer"
+        }
       }
     }
   },
@@ -754,8 +708,7 @@
         "present": true,
         "nom": "CRT le Beausset",
         "telephone": "04 94 98 55 00",
-        "email": "crt.lebeausset@gmail.com",
-        "adresse": "Maison de Retraite Publique, 83330 Le Beausset"
+        "email": "crt.lebeausset@gmail.com"
       },
       "CPTS": {
         "present": true,
@@ -768,21 +721,18 @@
         "present": true,
         "nom": "DAC Var Ouest",
         "telephone": "04 94 35 32 01",
-        "email": "contact@dac-varouest.fr",
-        "adresse": "235 Avenue du Colonel Picot 83100 Toulon"
+        "email": "contact@dac-varouest.fr"
       },
       "CEV": {
         "present": true,
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
-        "email": "gro-cev@var.fr",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "email": "gro-cev@var.fr"
       },
       "PSCG_SS_APA": {
         "present": true,
         "nom": "PSCG SS APA - Secrétariat Toulon",
-        "telephone": "04 83 95 79 51",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "telephone": "04 83 95 79 51"
       },
       "SERVICE_SOCIAL_HOPITAL": {
         "present": true,
@@ -799,8 +749,7 @@
             "nom": "Service social de l'hôpital Saint Anne",
             "telephone": "04 83 16 22 82"
           }
-        },
-        "adresse": "Centre Hospitalier Intercommunal Toulon La Seyne-sur-Mer"
+        }
       }
     }
   },
@@ -827,8 +776,7 @@
         "present": true,
         "nom": "CRT le Beausset",
         "telephone": "04 94 98 55 00",
-        "email": "crt.lebeausset@gmail.com",
-        "adresse": "Maison de Retraite Publique, 83330 Le Beausset"
+        "email": "crt.lebeausset@gmail.com"
       },
       "CPTS": {
         "present": true,
@@ -841,21 +789,18 @@
         "present": true,
         "nom": "DAC Var Ouest",
         "telephone": "04 94 35 32 01",
-        "email": "contact@dac-varouest.fr",
-        "adresse": "235 Avenue du Colonel Picot 83100 Toulon"
+        "email": "contact@dac-varouest.fr"
       },
       "CEV": {
         "present": true,
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
-        "email": "gro-cev@var.fr",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "email": "gro-cev@var.fr"
       },
       "PSCG_SS_APA": {
         "present": true,
         "nom": "PSCG SS APA - Secrétariat Toulon",
-        "telephone": "04 83 95 79 51",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "telephone": "04 83 95 79 51"
       },
       "SERVICE_SOCIAL_HOPITAL": {
         "present": true,
@@ -872,8 +817,7 @@
             "nom": "Service social de l'hôpital Saint Anne",
             "telephone": "04 83 16 22 82"
           }
-        },
-        "adresse": "Centre Hospitalier Intercommunal Toulon La Seyne-sur-Mer"
+        }
       }
     }
   },
@@ -900,8 +844,7 @@
         "present": true,
         "nom": "CRT le Beausset",
         "telephone": "04 94 98 55 00",
-        "email": "crt.lebeausset@gmail.com",
-        "adresse": "Maison de Retraite Publique, 83330 Le Beausset"
+        "email": "crt.lebeausset@gmail.com"
       },
       "CPTS": {
         "present": true,
@@ -914,21 +857,18 @@
         "present": true,
         "nom": "DAC Var Ouest",
         "telephone": "04 94 35 32 01",
-        "email": "contact@dac-varouest.fr",
-        "adresse": "235 Avenue du Colonel Picot 83100 Toulon"
+        "email": "contact@dac-varouest.fr"
       },
       "CEV": {
         "present": true,
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
-        "email": "gro-cev@var.fr",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "email": "gro-cev@var.fr"
       },
       "PSCG_SS_APA": {
         "present": true,
         "nom": "PSCG SS APA - Secrétariat Toulon",
-        "telephone": "04 83 95 79 51",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "telephone": "04 83 95 79 51"
       },
       "SERVICE_SOCIAL_HOPITAL": {
         "present": true,
@@ -945,8 +885,7 @@
             "nom": "Service social de l'hôpital Saint Anne",
             "telephone": "04 83 16 22 82"
           }
-        },
-        "adresse": "Centre Hospitalier Intercommunal Toulon La Seyne-sur-Mer"
+        }
       }
     }
   },
@@ -973,8 +912,7 @@
         "present": true,
         "nom": "CRT le Beausset",
         "telephone": "04 94 98 55 00",
-        "email": "crt.lebeausset@gmail.com",
-        "adresse": "Maison de Retraite Publique, 83330 Le Beausset"
+        "email": "crt.lebeausset@gmail.com"
       },
       "CPTS": {
         "present": true,
@@ -987,21 +925,18 @@
         "present": true,
         "nom": "DAC Var Ouest",
         "telephone": "04 94 35 32 01",
-        "email": "contact@dac-varouest.fr",
-        "adresse": "235 Avenue du Colonel Picot 83100 Toulon"
+        "email": "contact@dac-varouest.fr"
       },
       "CEV": {
         "present": true,
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
-        "email": "gro-cev@var.fr",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "email": "gro-cev@var.fr"
       },
       "PSCG_SS_APA": {
         "present": true,
         "nom": "PSCG SS APA - Secrétariat Toulon",
-        "telephone": "04 83 95 79 51",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "telephone": "04 83 95 79 51"
       },
       "SERVICE_SOCIAL_HOPITAL": {
         "present": true,
@@ -1018,8 +953,7 @@
             "nom": "Service social de l'hôpital Saint Anne",
             "telephone": "04 83 16 22 82"
           }
-        },
-        "adresse": "Centre Hospitalier Intercommunal Toulon La Seyne-sur-Mer"
+        }
       }
     }
   },
@@ -1059,21 +993,18 @@
         "present": true,
         "nom": "DAC Var Ouest",
         "telephone": "04 94 35 32 01",
-        "email": "contact@dac-varouest.fr",
-        "adresse": "235 Avenue du Colonel Picot 83100 Toulon"
+        "email": "contact@dac-varouest.fr"
       },
       "CEV": {
         "present": true,
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
-        "email": "gro-cev@var.fr",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "email": "gro-cev@var.fr"
       },
       "PSCG_SS_APA": {
         "present": true,
         "nom": "PSCG SS APA - Secrétariat Toulon",
-        "telephone": "04 83 95 79 51",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "telephone": "04 83 95 79 51"
       },
       "SERVICE_SOCIAL_HOPITAL": {
         "present": true,
@@ -1090,8 +1021,7 @@
             "nom": "Service social de l'hôpital Saint Anne",
             "telephone": "04 83 16 22 82"
           }
-        },
-        "adresse": "Centre Hospitalier Intercommunal Toulon La Seyne-sur-Mer"
+        }
       }
     }
   },
@@ -1132,21 +1062,18 @@
         "present": true,
         "nom": "DAC Var Ouest",
         "telephone": "04 94 35 32 01",
-        "email": "contact@dac-varouest.fr",
-        "adresse": "235 Avenue du Colonel Picot 83100 Toulon"
+        "email": "contact@dac-varouest.fr"
       },
       "CEV": {
         "present": true,
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
-        "email": "gro-cev@var.fr",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "email": "gro-cev@var.fr"
       },
       "PSCG_SS_APA": {
         "present": true,
         "nom": "PSCG SS APA - Secrétariat Toulon",
-        "telephone": "04 83 95 79 51",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "telephone": "04 83 95 79 51"
       },
       "SERVICE_SOCIAL_HOPITAL": {
         "present": true,
@@ -1163,8 +1090,7 @@
             "nom": "Service social de l'hôpital Saint Anne",
             "telephone": "04 83 16 22 82"
           }
-        },
-        "adresse": "Centre Hospitalier Intercommunal Toulon La Seyne-sur-Mer"
+        }
       }
     }
   },
@@ -1204,21 +1130,18 @@
         "present": true,
         "nom": "DAC Var Ouest",
         "telephone": "04 94 35 32 01",
-        "email": "contact@dac-varouest.fr",
-        "adresse": "235 Avenue du Colonel Picot 83100 Toulon"
+        "email": "contact@dac-varouest.fr"
       },
       "CEV": {
         "present": true,
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
-        "email": "gro-cev@var.fr",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "email": "gro-cev@var.fr"
       },
       "PSCG_SS_APA": {
         "present": true,
         "nom": "PSCG SS APA - Secrétariat Toulon",
-        "telephone": "04 83 95 79 51",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "telephone": "04 83 95 79 51"
       },
       "SERVICE_SOCIAL_HOPITAL": {
         "present": true,
@@ -1235,8 +1158,7 @@
             "nom": "Service social de l'hôpital Saint Anne",
             "telephone": "04 83 16 22 82"
           }
-        },
-        "adresse": "Centre Hospitalier Intercommunal Toulon La Seyne-sur-Mer"
+        }
       }
     }
   },
@@ -1276,21 +1198,18 @@
         "present": true,
         "nom": "DAC Var Ouest",
         "telephone": "04 94 35 32 01",
-        "email": "contact@dac-varouest.fr",
-        "adresse": "235 Avenue du Colonel Picot 83100 Toulon"
+        "email": "contact@dac-varouest.fr"
       },
       "CEV": {
         "present": true,
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
-        "email": "gro-cev@var.fr",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "email": "gro-cev@var.fr"
       },
       "PSCG_SS_APA": {
         "present": true,
         "nom": "PSCG SS APA - Secrétariat Toulon",
-        "telephone": "04 83 95 79 51",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "telephone": "04 83 95 79 51"
       },
       "SERVICE_SOCIAL_HOPITAL": {
         "present": true,
@@ -1307,8 +1226,7 @@
             "nom": "Service social de l'hôpital Saint Anne",
             "telephone": "04 83 16 22 82"
           }
-        },
-        "adresse": "Centre Hospitalier Intercommunal Toulon La Seyne-sur-Mer"
+        }
       }
     }
   },
@@ -1332,8 +1250,7 @@
         "present": true,
         "nom": "CLIC du Cap Sicié",
         "telephone": "04 94 06 97 04",
-        "email": "clic@la-seyne.fr",
-        "adresse": "1 Esplanade Marine 83500 La Seyne-sur-Mer"
+        "email": "clic@la-seyne.fr"
       },
       "CRT": {
         "present": true,
@@ -1352,21 +1269,18 @@
         "present": true,
         "nom": "DAC Var Ouest",
         "telephone": "04 94 35 32 01",
-        "email": "contact@dac-varouest.fr",
-        "adresse": "235 Avenue du Colonel Picot 83100 Toulon"
+        "email": "contact@dac-varouest.fr"
       },
       "CEV": {
         "present": true,
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
-        "email": "gro-cev@var.fr",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "email": "gro-cev@var.fr"
       },
       "PSCG_SS_APA": {
         "present": true,
         "nom": "PSCG SS APA - Secrétariat Toulon",
-        "telephone": "04 83 95 79 51",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "telephone": "04 83 95 79 51"
       },
       "SERVICE_SOCIAL_HOPITAL": {
         "present": true,
@@ -1383,8 +1297,7 @@
             "nom": "Service social de l'hôpital Saint Anne",
             "telephone": "04 83 16 22 82"
           }
-        },
-        "adresse": "Centre Hospitalier Intercommunal Toulon La Seyne-sur-Mer"
+        }
       }
     }
   },
@@ -1423,21 +1336,18 @@
         "present": true,
         "nom": "DAC Var Ouest",
         "telephone": "04 94 35 32 01",
-        "email": "contact@dac-varouest.fr",
-        "adresse": "235 Avenue du Colonel Picot 83100 Toulon"
+        "email": "contact@dac-varouest.fr"
       },
       "CEV": {
         "present": true,
         "nom": "Cellule Ecoute et Vigilance du Var",
         "telephone": "04 83 95 16 01",
-        "email": "gro-cev@var.fr",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "email": "gro-cev@var.fr"
       },
       "PSCG_SS_APA": {
         "present": true,
         "nom": "PSCG SS APA - Secrétariat Toulon",
-        "telephone": "04 83 95 79 51",
-        "adresse": "Hôtel du Département, 390 Boulevard de Strasbourg 83000 Toulon"
+        "telephone": "04 83 95 79 51"
       },
       "SERVICE_SOCIAL_HOPITAL": {
         "present": true,
@@ -1454,8 +1364,7 @@
             "nom": "Service social de l'hôpital Saint Anne",
             "telephone": "04 83 16 22 82"
           }
-        },
-        "adresse": "Centre Hospitalier Intercommunal Toulon La Seyne-sur-Mer"
+        }
       }
     }
   },
@@ -1466,8 +1375,7 @@
         "present": true,
         "nom": "CLIC Provence Verte",
         "telephone": "",
-        "email": "",
-        "adresse": "Immeuble Le Saint Louis, Allée des Soupirs 83170 Brignoles"
+        "email": ""
       }
     }
   },
@@ -1478,8 +1386,7 @@
         "present": true,
         "nom": "CLIC Hadage",
         "telephone": "",
-        "email": "",
-        "adresse": "18 Avenue Gambetta 83400 Hyères"
+        "email": ""
       }
     }
   }
