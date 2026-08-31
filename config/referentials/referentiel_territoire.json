@@ -18,8 +18,9 @@
       "CLIC": {
         "present": true,
         "nom": "CLIC de Toulon",
-        "telephone": "04 94 24 65 25",
-        "email": "clic@ccas-toulon.fr"
+        "telephone": "04 94 24 65 00",
+        "email": "clic@ccas-toulon.fr",
+        "adresse": "100 Rue des Remparts 83000 Toulon"
       },
       "CRT": {
         "present": true,
@@ -89,8 +90,9 @@
       "CLIC": {
         "present": true,
         "nom": "CLIC de Toulon",
-        "telephone": "04 94 24 65 25",
-        "email": "clic@ccas-toulon.fr"
+        "telephone": "04 94 24 65 00",
+        "email": "clic@ccas-toulon.fr",
+        "adresse": "100 Rue des Remparts 83000 Toulon"
       },
       "CRT": {
         "present": true,
