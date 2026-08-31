@@ -245,10 +245,20 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         ` : '';
 
-        // Formatage des éléments du récit avec verbatims précis et légers
-        const elementsList = (struct.elements_recit_detail && struct.elements_recit_detail.length > 0)
-            ? struct.elements_recit_detail
-            : (struct.elements_recit || []).map(e => ({ titre: e, verbatim: '' }));
+        // Formatage des éléments du récit : ON GARDE EXCLUSIVEMENT LES ÉLÉMENTS QUI ONT UN VERBATIM VALIDE ET EXPLICITE
+        let elementsList = (struct.elements_recit_detail && struct.elements_recit_detail.length > 0)
+            ? struct.elements_recit_detail.filter(item => item.verbatim && item.verbatim.trim() !== '')
+            : [];
+
+        // Fallback propre si aucun verbatim spécifique n'a été extrait
+        if (elementsList.length === 0) {
+            elementsList = [{
+                titre: (struct.elements_recit && struct.elements_recit.length > 0) 
+                    ? struct.elements_recit[0] 
+                    : "Demande d'accompagnement et d'orientation globale",
+                verbatim: ''
+            }];
+        }
 
         const elementsHtml = elementsList.map(item => `
             <li style="margin-bottom: 0.55rem; line-height: 1.45;">
