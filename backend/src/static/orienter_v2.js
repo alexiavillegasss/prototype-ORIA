@@ -301,8 +301,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 Pourquoi cette orientation ?
             </button>
 
-            <!-- Volet d'explication totalement épuré et sans cadre -->
-            <div id="explanation-pane" class="explanation-pane" style="display: none; margin-top: 0.5rem; margin-bottom: 1.1rem; padding: 0;">
+            <!-- Volet d'explication épuré (masqué par défaut) -->
+            <div id="explanation-pane" class="explanation-pane" style="display: none; margin-top: 0.5rem; margin-bottom: 0.85rem; padding: 0;">
                 <div style="font-size: 0.78rem; font-weight: 700; color: #059669; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
                     Éléments identifiés dans votre récit :
                 </div>
@@ -311,15 +311,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 </ul>
             </div>
 
-            <!-- 4. Coordonnées territoriales (placées au-dessus des Ressources complémentaires) -->
-            <div class="struct-contact" style="margin-top: 1.1rem; margin-bottom: 1.1rem; padding: 0.75rem 0.95rem; background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 8px; display: flex; flex-wrap: wrap; gap: 1.2rem; align-items: center;">
-                <div style="display: flex; align-items: center; gap: 0.45rem; font-size: 0.88rem; color: #334155;">
-                    <span style="font-size: 0.76rem; font-weight: 700; color: #2563eb; text-transform: uppercase; letter-spacing: 0.04em;">Tél :</span>
+            <!-- 4. Coordonnées territoriales (placées directement sous Pourquoi cette orientation) -->
+            <div class="struct-contact" style="margin-top: 0.85rem; margin-bottom: 1.1rem; padding: 0.65rem 0.85rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem; font-size: 0.88rem; color: #334155;">
+                <div style="display: flex; align-items: center; gap: 0.4rem; white-space: nowrap;">
+                    <span style="font-weight: 700; color: #2563eb; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.04em;">Tél :</span>
                     <a href="tel:${struct.telephone}" style="color: #1e293b; font-weight: 600; text-decoration: none;">${struct.telephone || 'Non répertorié'}</a>
                 </div>
-                <div style="display: flex; align-items: center; gap: 0.45rem; font-size: 0.88rem; color: #334155;">
-                    <span style="font-size: 0.76rem; font-weight: 700; color: #2563eb; text-transform: uppercase; letter-spacing: 0.04em;">Adresse :</span>
-                    <span style="color: #1e293b; font-weight: 500;">${struct.adresse || 'Non enregistrée'}</span>
+                <div style="display: flex; align-items: center; gap: 0.4rem; flex: 1; min-width: 220px;">
+                    <span style="font-weight: 700; color: #2563eb; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.04em; white-space: nowrap;">Adresse :</span>
+                    <span style="color: #1e293b; font-weight: 500;">${struct.adresse || 'Aucune adresse enregistrée pour cette commune'}</span>
                 </div>
             </div>
 
