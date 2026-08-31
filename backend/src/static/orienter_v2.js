@@ -218,69 +218,93 @@ document.addEventListener('DOMContentLoaded', () => {
             return formatted;
         };
 
-        const conseilsHtml = (struct.conseils && struct.conseils.length > 0) ? `
-            <div class="conseils-container" style="margin: 1.25rem 0; padding: 1.1rem; background: linear-gradient(135deg, rgba(239, 246, 255, 0.95) 0%, rgba(240, 249, 255, 0.85) 100%); border: 1px solid rgba(191, 219, 254, 0.9); border-left: 4px solid #2563eb; border-radius: 12px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.05);">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem;">
+        // Construction du bloc des Ressources complémentaires (anciennement Préconisations & Conseils)
+        const ressourcesList = (struct.ressources && struct.ressources.length > 0) 
+            ? struct.ressources 
+            : (struct.conseils || []).map(c => ({ text: c, verbatim: '' }));
+
+        const ressourcesHtml = (ressourcesList && ressourcesList.length > 0) ? `
+            <div class="ressources-container" style="margin: 1.25rem 0; padding: 1.1rem; background: linear-gradient(135deg, rgba(239, 246, 255, 0.95) 0%, rgba(240, 249, 255, 0.85) 100%); border: 1px solid rgba(191, 219, 254, 0.9); border-left: 4px solid #2563eb; border-radius: 12px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.05);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.65rem;">
                     <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;">
-                        <span>💡</span> Preconisations & Conseils
+                        <span>💡</span> Ressources complémentaires
                     </div>
-                    <span style="font-size: 0.76rem; color: #64748b; font-weight: 500;">Actions complémentaires</span>
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 0.55rem;">
-                    ${struct.conseils.map(c => `
-                        <div class="conseil-item" style="background: #ffffff; border: 1px solid rgba(226, 232, 240, 0.95); border-radius: 8px; padding: 0.75rem 0.95rem; font-size: 0.88rem; line-height: 1.45; color: #1e293b; display: flex; align-items: flex-start; gap: 0.6rem; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
-                            <span style="color: #2563eb; font-weight: 900; font-size: 1.1rem; line-height: 1.2; flex-shrink: 0;">•</span>
-                            <div style="flex: 1;">${formatConseilLink(c)}</div>
+                <p style="font-size: 0.88rem; color: #334155; margin-bottom: 0.65rem; font-weight: 600;">Vous pouvez aussi vous rapprocher de :</p>
+                <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+                    ${ressourcesList.map(r => `
+                        <div class="ressource-item" style="background: #ffffff; border: 1px solid rgba(226, 232, 240, 0.95); border-radius: 8px; padding: 0.75rem 0.95rem; font-size: 0.88rem; line-height: 1.45; color: #1e293b; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+                            <div style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                                <span style="color: #2563eb; font-weight: 900; font-size: 1.1rem; line-height: 1.2; flex-shrink: 0;">•</span>
+                                <div style="flex: 1;">${formatConseilLink(r.text)}</div>
+                            </div>
+                            ${r.verbatim ? `
+                                <div style="margin-top: 0.4rem; margin-left: 1.3rem; font-size: 0.82rem; color: #475569; font-style: italic; background: #f1f5f9; padding: 0.35rem 0.65rem; border-left: 3px solid #2563eb; border-radius: 4px;">
+                                    💬 <em>Motif / Extrait : « ${r.verbatim} »</em>
+                                </div>
+                            ` : ''}
                         </div>
                     `).join('')}
                 </div>
             </div>
         ` : '';
 
+        // Formatage des éléments du récit avec verbatims
+        const elementsList = (struct.elements_recit_detail && struct.elements_recit_detail.length > 0)
+            ? struct.elements_recit_detail
+            : (struct.elements_recit || []).map(e => ({ titre: e, verbatim: '' }));
+
+        const elementsHtml = elementsList.map(item => `
+            <li style="margin-bottom: 0.65rem;">
+                <div style="display: flex; align-items: flex-start; gap: 0.5rem; font-weight: 600; color: #1e293b;">
+                    <span style="color: #059669; font-weight: 900;">✓</span>
+                    <span>${item.titre}</span>
+                </div>
+                ${item.verbatim ? `
+                    <div style="margin-left: 1.4rem; margin-top: 0.25rem; font-size: 0.84rem; color: #475569; font-style: italic; background: #f8fafc; padding: 0.35rem 0.65rem; border-left: 3px solid #059669; border-radius: 4px;">
+                        💬 <em>Extrait du récit : « ${item.verbatim} »</em>
+                    </div>
+                ` : ''}
+            </li>
+        `).join('');
+
         card.innerHTML = `
             <div class="struct-card-header">
                 <span class="struct-badge" style="background-color: ${color}20; color: ${color}; border: 1px solid ${color}40;">
                     ${struct.structure_type}
                 </span>
-                <!--<span class="priority-badge">Indice de Priorité : <strong>${struct.priorite}</strong></span>-->
             </div>
             <h4 class="struct-name" style="margin-bottom: 0.75rem;">${struct.label}</h4>
-            <p class="struct-objective" style="margin-bottom: 0.75rem;"><strong>Mission de la structure :</strong> ${struct.objectif || 'Non renseigné'}</p>
-            
-            ${conseilsHtml}
 
-            <!-- Bouton "Pourquoi ?" -->
-            <button id="btn-why" class="btn-explain">
+            <!-- 2. Rôle de la structure directement sous le titre -->
+            <div class="role-structure-box" style="margin-bottom: 1.1rem; padding: 0.95rem 1.1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #3b82f6; border-radius: 8px;">
+                <div style="font-size: 0.78rem; font-weight: 800; color: #2563eb; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.35rem;">
+                    <span>🏛️</span> Rôle de la structure :
+                </div>
+                <p style="margin: 0; font-size: 0.91rem; color: #334155; line-height: 1.5; font-weight: 500;">
+                    ${struct.mission_structure || 'Structure d\'accompagnement et d\'orientation.'}
+                </p>
+            </div>
+
+            <!-- 3. Bouton & Volet "Pourquoi cette orientation ?" -->
+            <button id="btn-why" class="btn-explain" style="margin-bottom: 0.85rem;">
                 <span class="icon">🔍</span> Pourquoi cette orientation ?
             </button>
 
-            <!-- Volet d'explication simple (masqué par défaut) -->
-            <div id="explanation-pane" class="explanation-pane" style="display: none; margin-top: 1.1rem; padding: 1.15rem; background: #ffffff; border: 1px solid rgba(226, 232, 240, 0.9); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-                <!-- 1. Ce que fait la structure -->
-                <div style="margin-bottom: 0.95rem; padding-bottom: 0.85rem; border-bottom: 1px solid #f1f5f9;">
-                    <div style="font-size: 0.78rem; font-weight: 800; color: #2563eb; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.45rem;">
-                        <span>🏛️</span> Rôle de la structure :
-                    </div>
-                    <p style="margin: 0; font-size: 0.91rem; color: #334155; line-height: 1.5; font-weight: 500;">
-                        ${struct.mission_structure || 'Structure d\'accompagnement et d\'orientation.'}
-                    </p>
+            <!-- Volet d'explication avec verbatims (masqué par défaut) -->
+            <div id="explanation-pane" class="explanation-pane" style="display: none; margin-bottom: 1.25rem; padding: 1.15rem; background: #ffffff; border: 1px solid rgba(226, 232, 240, 0.9); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                <div style="font-size: 0.78rem; font-weight: 800; color: #059669; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.75rem;">
+                    <span>💬</span> Éléments identifiés dans votre récit :
                 </div>
-
-                <!-- 2. Éléments du récit retenus -->
-                <div>
-                    <div style="font-size: 0.78rem; font-weight: 800; color: #059669; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.5rem;">
-                        <span>💬</span> Éléments identifiés dans votre récit :
-                    </div>
-                    <ul style="margin: 0; padding: 0; list-style: none; font-size: 0.89rem; color: #1e293b; line-height: 1.5; display: flex; flex-direction: column; gap: 0.4rem;">
-                        ${(struct.elements_recit && struct.elements_recit.length > 0) ? 
-                            struct.elements_recit.map(el => `<li style="display: flex; align-items: flex-start; gap: 0.5rem;"><span style="color: #059669; font-weight: 800;">✓</span> <span><strong>${el}</strong></span></li>`).join('') : 
-                            `<li style="display: flex; align-items: flex-start; gap: 0.5rem;"><span style="color: #059669; font-weight: 800;">✓</span> <span><strong>Éléments cliniques généraux rapportés dans votre saisie.</strong></span></li>`
-                        }
-                    </ul>
-                </div>
+                <ul style="margin: 0; padding: 0; list-style: none; font-size: 0.89rem; color: #1e293b; line-height: 1.5; display: flex; flex-direction: column;">
+                    ${elementsHtml}
+                </ul>
             </div>
+
+            <!-- 4. Ressources complémentaires -->
+            ${ressourcesHtml}
             
-            <!-- Bloc des coordonnées territoriales -->
+            <!-- Coordonnées territoriales -->
             <div class="struct-contact" style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
                 <div class="contact-item">
                     <span class="icon">📞</span>

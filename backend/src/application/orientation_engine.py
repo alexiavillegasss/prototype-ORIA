@@ -230,16 +230,36 @@ class OrientationEngine:
             struct_type = winner["structure"]
             label = self._get_structure_label(struct_type)
             
-            identified_conseils = []
+            identified_conseils_detail = []
             for gf in triggered_garde_fous:
                 c = gf.get("conseil")
-                if c and str(c).strip() and str(c).strip() != "nan" and str(c).strip() not in identified_conseils:
-                    identified_conseils.append(str(c).strip())
+                if c and str(c).strip() and str(c).strip() != "nan":
+                    c_clean = str(c).strip()
+                    if not any(item["text"] == c_clean for item in identified_conseils_detail):
+                        identified_conseils_detail.append({
+                            "text": c_clean,
+                            "verbatim": self._extract_verbatim(gf.get("detail", ""), "", original_text)
+                        })
+
             for need in self.needs_mapping:
                 if self._is_need_identified(need, eval_context, text_lower):
                     c = need.get("conseil")
-                    if c and str(c).strip() and str(c).strip() != "nan" and str(c).strip() not in identified_conseils:
-                        identified_conseils.append(str(c).strip())
+                    if c and str(c).strip() and str(c).strip() != "nan":
+                        c_clean = str(c).strip()
+                        if not any(item["text"] == c_clean for item in identified_conseils_detail):
+                            identified_conseils_detail.append({
+                                "text": c_clean,
+                                "verbatim": self._extract_verbatim(need["detaille"], need.get("moteur_criteria", ""), original_text)
+                            })
+
+            conseils_simple_texts = [item["text"] for item in identified_conseils_detail]
+
+            final_elements_detail = []
+            for gf in triggered_garde_fous:
+                final_elements_detail.append({
+                    "titre": gf.get("detail", "Signalement de situation d'urgence"),
+                    "verbatim": self._extract_verbatim(gf.get("detail", ""), "", original_text)
+                })
 
             orientation_result = {
                 "structure_type": struct_type,
@@ -249,9 +269,11 @@ class OrientationEngine:
                 "objectif": winner["objectif"],
                 "score_confiance": 100,
                 "explication_confiance": "Priorisation absolue par garde-fou prioritaire.",
-                "conseils": identified_conseils,
+                "conseils": conseils_simple_texts,
+                "ressources": identified_conseils_detail,
                 "mission_structure": self.structure_missions.get(struct_type, "Structure d'accompagnement et d'orientation d'urgence."),
-                "elements_recit": [winner.get("detail", "Signalement d'urgence ou de situation critique identifié dans la saisie.")]
+                "elements_recit": [winner.get("detail", "Signalement d'urgence ou de situation critique identifié dans la saisie.")],
+                "elements_recit_detail": final_elements_detail
             }
             
             # Enrichit extracted_data pour la traçabilité dans l'interface
@@ -266,6 +288,7 @@ class OrientationEngine:
         # Étape 2 : Attribution des points par besoin détecté (seulement si le besoin est lié à des structures)
         scores = {struct: 0 for struct in self.structures}
         identified_needs = []
+        identified_conseils_detail = []
         
         danger_needs = [
             "spoliation financière", "spoliation financiere",
@@ -274,11 +297,19 @@ class OrientationEngine:
             "privation de droits", "privation de droit"
         ]
         
-        identified_conseils = []
         for need in self.needs_mapping:
             if self._is_need_identified(need, eval_context, text_lower):
+                verbatim = self._extract_verbatim(need["detaille"], need.get("moteur_criteria", ""), original_text)
+                need_obj = {
+                    "detaille": need["detaille"],
+                    "categorie": need.get("categorie", ""),
+                    "moteur_criteria": need.get("moteur_criteria", ""),
+                    "structures_cochees": need.get("structures_cochees", []),
+                    "verbatim": verbatim
+                }
+
                 if len(need["structures_cochees"]) > 0:
-                    identified_needs.append(need)
+                    identified_needs.append(need_obj)
                     detail_lower = need["detaille"].lower()
                     is_danger = any(dn in detail_lower for dn in danger_needs)
                     for s in need["structures_cochees"]:
@@ -287,9 +318,15 @@ class OrientationEngine:
                                 scores[s] += 100
                             else:
                                 scores[s] += 1
+
                 c_text = need.get("conseil")
-                if c_text and c_text.strip() and c_text not in identified_conseils:
-                    identified_conseils.append(c_text.strip())
+                if c_text and str(c_text).strip() and str(c_text).strip() != "nan":
+                    c_clean = str(c_text).strip()
+                    if not any(item["text"] == c_clean for item in identified_conseils_detail):
+                        identified_conseils_detail.append({
+                            "text": c_clean,
+                            "verbatim": verbatim
+                        })
                         
         # Étape 3 : Application des exclusions
         excluded_structures = []
@@ -476,13 +513,23 @@ class OrientationEngine:
                 
             label = self._get_structure_label(struct_type)
             
-            struct_elements = [n["detaille"] for n in identified_needs if struct_type in n.get("structures_cochees", [])]
-            if not struct_elements:
+            elements_detail = []
+            for n in identified_needs:
+                if struct_type in n.get("structures_cochees", []):
+                    elements_detail.append({
+                        "titre": n["detaille"],
+                        "verbatim": n.get("verbatim", "")
+                    })
+
+            if not elements_detail:
                 besoin_p = eval_context.get("demande.besoin_principal")
                 if besoin_p and besoin_p != "indetermine":
-                    struct_elements = [f"Demande en lien avec : {besoin_p}"]
+                    elements_detail = [{"titre": f"Demande en lien avec : {besoin_p}", "verbatim": self._extract_verbatim(besoin_p, "", original_text)}]
                 else:
-                    struct_elements = ["Éléments cliniques généraux rapportés dans votre saisie."]
+                    elements_detail = [{"titre": "Éléments cliniques généraux rapportés dans votre saisie", "verbatim": original_text[:120] + "..." if len(original_text) > 120 else original_text}]
+
+            struct_elements_titles = [e["titre"] for e in elements_detail]
+            conseils_simple_texts = [c["text"] for c in identified_conseils_detail]
 
             final_structures.append({
                 "structure_type": struct_type,
@@ -492,9 +539,11 @@ class OrientationEngine:
                 "objectif": objectif,
                 "score_confiance": 100,
                 "explication_confiance": f"Calculé par points. Score : {score} point(s).",
-                "conseils": identified_conseils,
+                "conseils": conseils_simple_texts,
+                "ressources": identified_conseils_detail,
                 "mission_structure": self.structure_missions.get(struct_type, "Structure d'accompagnement et d'orientation."),
-                "elements_recit": struct_elements
+                "elements_recit": struct_elements_titles,
+                "elements_recit_detail": elements_detail
             })
             
         # Fallback par défaut si rien n'est éligible
@@ -507,6 +556,8 @@ class OrientationEngine:
             except:
                 pass
                 
+            conseils_simple_texts = [c["text"] for c in identified_conseils_detail]
+
             if is_senior:
                 final_structures.append({
                     "structure_type": "CLIC",
@@ -516,9 +567,11 @@ class OrientationEngine:
                     "objectif": "Aucun besoin spécifique identifié. Orientation vers le CLIC sénior par défaut.",
                     "score_confiance": 50,
                     "explication_confiance": "Orientation par défaut pour senior.",
-                    "conseils": identified_conseils,
+                    "conseils": conseils_simple_texts,
+                    "ressources": identified_conseils_detail,
                     "mission_structure": self.structure_missions.get("CLIC"),
-                    "elements_recit": ["Demande d'information et d'orientation globale pour personne âgée de 60 ans ou plus."]
+                    "elements_recit": ["Demande d'information et d'orientation globale pour personne âgée de 60 ans ou plus."],
+                    "elements_recit_detail": [{"titre": "Demande d'information et d'orientation globale pour personne âgée de 60 ans ou plus", "verbatim": original_text[:120] if original_text else ""}]
                 })
             else:
                 final_structures.append({
@@ -529,9 +582,11 @@ class OrientationEngine:
                     "objectif": "Aucun besoin spécifique identifié. Orientation vers le DAC par défaut.",
                     "score_confiance": 50,
                     "explication_confiance": "Orientation par défaut.",
-                    "conseils": identified_conseils,
+                    "conseils": conseils_simple_texts,
+                    "ressources": identified_conseils_detail,
                     "mission_structure": self.structure_missions.get("DAC"),
-                    "elements_recit": ["Demande d'orientation et de coordination globale."]
+                    "elements_recit": ["Demande d'orientation et de coordination globale."],
+                    "elements_recit_detail": [{"titre": "Demande d'orientation et de coordination globale", "verbatim": original_text[:120] if original_text else ""}]
                 })
             
         # Stocke les métriques d'explicabilité pour le front
@@ -1072,3 +1127,32 @@ class OrientationEngine:
             "CONSULTATION MÉMOIRE": "Consultation Mémoire - Évaluation cognitive"
         }
         return labels.get(struct_type, struct_type)
+
+    def _extract_verbatim(self, detail: str, criteria: str, original_text: str) -> str:
+        if not original_text:
+            return ""
+        import re
+        sentences = [s.strip() for s in re.split(r'[.!?\n]+', original_text) if s.strip()]
+        if not sentences:
+            return original_text.strip()
+
+        kws = []
+        if criteria and str(criteria) != "nan":
+            kws.extend([k.strip().lower() for k in re.split(r'[,;/]+', str(criteria)) if len(k.strip()) > 2])
+        if detail:
+            kws.extend([w.lower() for w in detail.split() if len(w) > 3 and w.lower() not in ["besoin", "mise", "place", "dans", "pour", "avec", "cette", "adaptation"]])
+
+        best_sentence = ""
+        max_matches = 0
+
+        for sentence in sentences:
+            s_lower = sentence.lower()
+            matches = sum(1 for kw in kws if kw in s_lower)
+            if matches > max_matches:
+                max_matches = matches
+                best_sentence = sentence
+
+        if best_sentence:
+            return best_sentence
+
+        return sentences[0]
