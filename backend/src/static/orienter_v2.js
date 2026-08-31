@@ -224,45 +224,41 @@ document.addEventListener('DOMContentLoaded', () => {
             : (struct.conseils || []).map(c => ({ text: c, verbatim: '' }));
 
         const ressourcesHtml = (ressourcesList && ressourcesList.length > 0) ? `
-            <div class="ressources-container" style="margin: 1.25rem 0; padding: 1.1rem; background: linear-gradient(135deg, rgba(239, 246, 255, 0.95) 0%, rgba(240, 249, 255, 0.85) 100%); border: 1px solid rgba(191, 219, 254, 0.9); border-left: 4px solid #2563eb; border-radius: 12px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.05);">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.65rem;">
-                    <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;">
+            <div class="ressources-container" style="margin: 1.15rem 0; padding: 0.95rem 1.1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #2563eb; border-radius: 8px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.45rem;">
+                    <div style="display: inline-flex; align-items: center; gap: 0.4rem; color: #1e40af; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;">
                         <span>💡</span> Ressources complémentaires
                     </div>
                 </div>
-                <p style="font-size: 0.88rem; color: #334155; margin-bottom: 0.65rem; font-weight: 600;">Vous pouvez aussi vous rapprocher de :</p>
-                <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+                <p style="font-size: 0.86rem; color: #475569; margin-bottom: 0.55rem; font-weight: 500;">Vous pouvez aussi vous rapprocher de :</p>
+                <div style="display: flex; flex-direction: column; gap: 0.45rem;">
                     ${ressourcesList.map(r => `
-                        <div class="ressource-item" style="background: #ffffff; border: 1px solid rgba(226, 232, 240, 0.95); border-radius: 8px; padding: 0.75rem 0.95rem; font-size: 0.88rem; line-height: 1.45; color: #1e293b; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
-                            <div style="display: flex; align-items: flex-start; gap: 0.5rem;">
-                                <span style="color: #2563eb; font-weight: 900; font-size: 1.1rem; line-height: 1.2; flex-shrink: 0;">•</span>
-                                <div style="flex: 1;">${formatConseilLink(r.text)}</div>
+                        <div class="ressource-item" style="font-size: 0.88rem; line-height: 1.45; color: #1e293b; display: flex; align-items: flex-start; gap: 0.45rem;">
+                            <span style="color: #2563eb; font-weight: 900; line-height: 1.2; flex-shrink: 0;">•</span>
+                            <div style="flex: 1;">
+                                ${formatConseilLink(r.text)}
+                                ${r.verbatim ? `<span style="font-size: 0.81rem; color: #64748b; font-style: italic; margin-left: 0.35rem;">(« ${r.verbatim} »)</span>` : ''}
                             </div>
-                            ${r.verbatim ? `
-                                <div style="margin-top: 0.4rem; margin-left: 1.3rem; font-size: 0.82rem; color: #475569; font-style: italic; background: #f1f5f9; padding: 0.35rem 0.65rem; border-left: 3px solid #2563eb; border-radius: 4px;">
-                                    💬 <em>Motif / Extrait : « ${r.verbatim} »</em>
-                                </div>
-                            ` : ''}
                         </div>
                     `).join('')}
                 </div>
             </div>
         ` : '';
 
-        // Formatage des éléments du récit avec verbatims
+        // Formatage des éléments du récit avec verbatims précis et légers
         const elementsList = (struct.elements_recit_detail && struct.elements_recit_detail.length > 0)
             ? struct.elements_recit_detail
             : (struct.elements_recit || []).map(e => ({ titre: e, verbatim: '' }));
 
         const elementsHtml = elementsList.map(item => `
-            <li style="margin-bottom: 0.65rem;">
-                <div style="display: flex; align-items: flex-start; gap: 0.5rem; font-weight: 600; color: #1e293b;">
-                    <span style="color: #059669; font-weight: 900;">✓</span>
+            <li style="margin-bottom: 0.55rem; line-height: 1.45;">
+                <div style="display: flex; align-items: flex-start; gap: 0.45rem; font-weight: 600; color: #1e293b; font-size: 0.9rem;">
+                    <span style="color: #059669; font-weight: 900; line-height: 1.2;">✓</span>
                     <span>${item.titre}</span>
                 </div>
                 ${item.verbatim ? `
-                    <div style="margin-left: 1.4rem; margin-top: 0.25rem; font-size: 0.84rem; color: #475569; font-style: italic; background: #f8fafc; padding: 0.35rem 0.65rem; border-left: 3px solid #059669; border-radius: 4px;">
-                        💬 <em>Extrait du récit : « ${item.verbatim} »</em>
+                    <div style="margin-left: 1.35rem; margin-top: 0.15rem; font-size: 0.83rem; color: #475569; font-style: italic;">
+                        💬 « ${item.verbatim} »
                     </div>
                 ` : ''}
             </li>

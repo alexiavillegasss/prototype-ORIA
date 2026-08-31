@@ -513,20 +513,33 @@ class OrientationEngine:
                 
             label = self._get_structure_label(struct_type)
             
+            seen_titles = set()
+            seen_verbatims = set()
             elements_detail = []
+
             for n in identified_needs:
                 if struct_type in n.get("structures_cochees", []):
-                    elements_detail.append({
-                        "titre": n["detaille"],
-                        "verbatim": n.get("verbatim", "")
-                    })
+                    t = n["detaille"]
+                    v = n.get("verbatim", "")
+                    t_norm = t.lower().strip()
+                    
+                    if t_norm not in seen_titles:
+                        seen_titles.add(t_norm)
+                        final_v = ""
+                        if v and v not in seen_verbatims:
+                            final_v = v
+                            seen_verbatims.add(v)
+                        elements_detail.append({
+                            "titre": t,
+                            "verbatim": final_v
+                        })
 
             if not elements_detail:
                 besoin_p = eval_context.get("demande.besoin_principal")
                 if besoin_p and besoin_p != "indetermine":
                     elements_detail = [{"titre": f"Demande en lien avec : {besoin_p}", "verbatim": self._extract_verbatim(besoin_p, "", original_text)}]
                 else:
-                    elements_detail = [{"titre": "Éléments cliniques généraux rapportés dans votre saisie", "verbatim": original_text[:120] + "..." if len(original_text) > 120 else original_text}]
+                    elements_detail = [{"titre": "Éléments cliniques généraux rapportés dans votre saisie", "verbatim": ""}]
 
             struct_elements_titles = [e["titre"] for e in elements_detail]
             conseils_simple_texts = [c["text"] for c in identified_conseils_detail]
@@ -1134,25 +1147,35 @@ class OrientationEngine:
         import re
         sentences = [s.strip() for s in re.split(r'[.!?\n]+', original_text) if s.strip()]
         if not sentences:
-            return original_text.strip()
+            return ""
 
         kws = []
         if criteria and str(criteria) != "nan":
-            kws.extend([k.strip().lower() for k in re.split(r'[,;/]+', str(criteria)) if len(k.strip()) > 2])
+            raw_kws = re.split(r'[,;/]+', str(criteria))
+            for k in raw_kws:
+                cleaned = k.strip().lower()
+                if len(cleaned) >= 3 and cleaned not in ["oui", "non", "nan", "true", "false"]:
+                    kws.append(cleaned)
+                    
         if detail:
-            kws.extend([w.lower() for w in detail.split() if len(w) > 3 and w.lower() not in ["besoin", "mise", "place", "dans", "pour", "avec", "cette", "adaptation"]])
+            words = [w.lower() for w in detail.split() if len(w) >= 4 and w.lower() not in ["besoin", "mise", "place", "dans", "pour", "avec", "cette", "adaptation", "choix", "d'un", "d'une", "perte", "rapide"]]
+            kws.extend(words)
 
         best_sentence = ""
-        max_matches = 0
+        best_score = 0
 
         for sentence in sentences:
             s_lower = sentence.lower()
-            matches = sum(1 for kw in kws if kw in s_lower)
-            if matches > max_matches:
-                max_matches = matches
+            score = 0
+            for kw in kws:
+                if kw in s_lower:
+                    score += len(kw)
+            if score > best_score:
+                best_score = score
                 best_sentence = sentence
 
-        if best_sentence:
+        # STRICT QUALITY THRESHOLD: Require at least 4 score points to avoid random/irrelevant matches!
+        if best_score >= 4:
             return best_sentence
 
-        return sentences[0]
+        return ""
