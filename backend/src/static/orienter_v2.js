@@ -296,6 +296,33 @@ document.addEventListener('DOMContentLoaded', () => {
         const card = document.createElement('div');
         card.className = 'struct-card fadeInUp';
         const color = STRUCTURE_COLORS[struct.structure_type] || '#64748b';
+        const formatConseilLink = (text) => {
+            if (!text) return '';
+            let formatted = text.replace(
+                /\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, 
+                '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: #2563eb; text-decoration: underline; font-weight: 600;">$1</a>'
+            );
+            return formatted;
+        };
+
+        const conseilsHtml = (struct.conseils && struct.conseils.length > 0) ? `
+            <div class="conseils-container" style="margin: 1.25rem 0; padding: 1.1rem; background: linear-gradient(135deg, rgba(239, 246, 255, 0.95) 0%, rgba(240, 249, 255, 0.85) 100%); border: 1px solid rgba(191, 219, 254, 0.9); border-left: 4px solid #2563eb; border-radius: 12px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.05);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem;">
+                    <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;">
+                        <span>💡</span> Preconisations & Conseils
+                    </div>
+                    <span style="font-size: 0.76rem; color: #64748b; font-weight: 500;">Actions complémentaires</span>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 0.55rem;">
+                    ${struct.conseils.map(c => `
+                        <div class="conseil-item" style="background: #ffffff; border: 1px solid rgba(226, 232, 240, 0.95); border-radius: 8px; padding: 0.75rem 0.95rem; font-size: 0.88rem; line-height: 1.45; color: #1e293b; display: flex; align-items: flex-start; gap: 0.6rem; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+                            <span style="color: #2563eb; font-weight: 900; font-size: 1.1rem; line-height: 1.2; flex-shrink: 0;">•</span>
+                            <div style="flex: 1;">${formatConseilLink(c)}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        ` : '';
 
         card.innerHTML = `
             <div class="struct-card-header">
@@ -305,61 +332,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 <!--<span class="priority-badge">Indice de Priorité : <strong>${struct.priorite}</strong></span>-->
             </div>
             <h4 class="struct-name" style="margin-bottom: 0.75rem;">${struct.label}</h4>
-            <p class="struct-objective" style="margin-bottom: 1.25rem;"><strong>Mission de la structure :</strong> ${struct.objectif || 'Non renseigné'}</p>
+            <p class="struct-objective" style="margin-bottom: 0.75rem;"><strong>Mission de la structure :</strong> ${struct.objectif || 'Non renseigné'}</p>
             
+            ${conseilsHtml}
+
             <!-- Bouton "Pourquoi ?" -->
             <button id="btn-why" class="btn-explain">
                 <span class="icon">🔍</span> Pourquoi cette orientation ?
             </button>
 
-            <!-- Volet des explications cliniques (masqué par défaut) -->
-            <div id="explanation-pane" class="explanation-pane" style="display: none;">
-                
-                <!-- Section Signaux du Schéma Pivot -->
-                <div class="explain-section">
-                    <span class="explain-subtitle">Variables clés extraites</span>
-                    <div class="signals-grid">
-                        <div class="signal-item">
-                            <span class="signal-title">Besoin principal</span>
-                            <span>${formatBesoinPrincipal(schemaPivot["demande.besoin_principal"])}</span>
-                        </div>
-                        <div class="signal-item">
-                            <span class="signal-title">Médecin traitant</span>
-                            <span>${formatMedecin(schemaPivot["vulnerabilites.sante.suivi_medical.medecin_traitant"])}</span>
-                        </div>
-                        <div class="signal-item">
-                            <span class="signal-title">Malveillance</span>
-                            <span>${formatMalveillance(schemaPivot["usager.situation_actuelle.suspicion_malveillance"])}</span>
-                        </div>
-                        <div class="signal-item">
-                            <span class="signal-title">Hospitalisation</span>
-                            <span>${formatHospitalisation(schemaPivot["vulnerabilites.sante.hospitalisation.statut"])}</span>
-                        </div>
+            <!-- Volet d'explication simple (masqué par défaut) -->
+            <div id="explanation-pane" class="explanation-pane" style="display: none; margin-top: 1.1rem; padding: 1.15rem; background: #ffffff; border: 1px solid rgba(226, 232, 240, 0.9); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                <!-- 1. Ce que fait la structure -->
+                <div style="margin-bottom: 0.95rem; padding-bottom: 0.85rem; border-bottom: 1px solid #f1f5f9;">
+                    <div style="font-size: 0.78rem; font-weight: 800; color: #2563eb; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.45rem;">
+                        <span>🏛️</span> Rôle de la structure :
                     </div>
+                    <p style="margin: 0; font-size: 0.91rem; color: #334155; line-height: 1.5; font-weight: 500;">
+                        ${struct.mission_structure || 'Structure d\'accompagnement et d\'orientation.'}
+                    </p>
                 </div>
 
-                <!-- Section Critères COMID Justifiés -->
-                <div class="explain-section">
-                    <span class="explain-subtitle">Preuves COMID avérées (Justifications textuelles)</span>
-                    <div class="comid-proof-list" id="comid-proof-list">
-                        <!-- Rempli dynamiquement -->
+                <!-- 2. Éléments du récit retenus -->
+                <div>
+                    <div style="font-size: 0.78rem; font-weight: 800; color: #059669; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.5rem;">
+                        <span>💬</span> Éléments identifiés dans votre récit :
                     </div>
-                </div>
-
-                <!-- Section Attribution des Points & Phrases -->
-                <div class="explain-section" style="border-top: 1px solid var(--border-glass); padding-top: 1rem;">
-                    <span class="explain-subtitle">Attribution des points (Besoins & Phrases identifiés)</span>
-                    <div id="points-needs-list" style="display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.5rem;">
-                        <!-- Rempli dynamiquement -->
-                    </div>
-                </div>
-
-                <!-- Section Scores des structures -->
-                <div class="explain-section" style="border-top: 1px solid var(--border-glass); padding-top: 1rem;">
-                    <span class="explain-subtitle">Scores et exclusions des structures</span>
-                    <div id="points-scores-grid" class="signals-grid" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
-                        <!-- Rempli dynamiquement -->
-                    </div>
+                    <ul style="margin: 0; padding: 0; list-style: none; font-size: 0.89rem; color: #1e293b; line-height: 1.5; display: flex; flex-direction: column; gap: 0.4rem;">
+                        ${(struct.elements_recit && struct.elements_recit.length > 0) ? 
+                            struct.elements_recit.map(el => `<li style="display: flex; align-items: flex-start; gap: 0.5rem;"><span style="color: #059669; font-weight: 800;">✓</span> <span><strong>${el}</strong></span></li>`).join('') : 
+                            `<li style="display: flex; align-items: flex-start; gap: 0.5rem;"><span style="color: #059669; font-weight: 800;">✓</span> <span><strong>Éléments cliniques généraux rapportés dans votre saisie.</strong></span></li>`
+                        }
+                    </ul>
                 </div>
             </div>
             
@@ -404,10 +408,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const explainPane = card.querySelector('#explanation-pane');
         btnWhy.addEventListener('click', () => {
             if (explainPane.style.display === 'none') {
-                renderComidJustifications(card.querySelector('#comid-proof-list'));
-                renderPointsExplanation(card);
-                explainPane.style.display = 'flex';
-                btnWhy.innerHTML = '<span class="icon">✕</span> Masquer les détails';
+                explainPane.style.display = 'block';
+                btnWhy.innerHTML = '<span class="icon">✕</span> Masquer l\'explication';
             } else {
                 explainPane.style.display = 'none';
                 btnWhy.innerHTML = '<span class="icon">🔍</span> Pourquoi cette orientation ?';
@@ -1264,13 +1266,49 @@ window.toggleVoiceDictation = function() {
             if (label) label.textContent = "🔴 Écoute en direct... (Clic pour stopper)";
         };
 
+function cleanFrenchVoiceTranscript(text) {
+    if (!text) return '';
+    let cleaned = text;
+
+    // 1. Séparer la lettre A/a collée aux chiffres: "A6017" -> "A 6017", "A87" -> "A 87", "A507" -> "A 507"
+    cleaned = cleaned.replace(/\b([Aa])([0-9]{2,4})\b/g, '$1 $2');
+
+    // 2. Corriger les nombres à 4 chiffres Web Speech API : 601X (soixante-dix-X -> 71..79) et 801X (quatre-vingt-dix-X -> 91..99)
+    // ex: 6017 -> 77, 8017 -> 97, 6015 -> 75, 8015 -> 95
+    cleaned = cleaned.replace(/\b(6|8)01([1-9])\b/g, (m, p1, p2) => (p1 === '6' ? '7' : '9') + p2);
+    cleaned = cleaned.replace(/\b(6|8)0\s+1([1-9])\b/g, (m, p1, p2) => (p1 === '6' ? '7' : '9') + p2);
+
+    // 3. Corriger les nombres à 3 chiffres Web Speech API : X0Y (ex: 507 -> 57, 607 -> 67, 808 -> 88, 407 -> 47, 705 -> 75)
+    cleaned = cleaned.replace(/\b([2-9])0([1-9])\b/g, '$1$2');
+    cleaned = cleaned.replace(/\b([2-9])0\s+([1-9])\b/g, '$1$2');
+
+    // 4. Corriger les erreurs phonétiques de dictée vocale sur les noms de villes du Var
+    cleaned = cleaned.replace(/\bla saine en l'air\b/gi, 'La Seyne-sur-Mer');
+    cleaned = cleaned.replace(/\bla saine en lair\b/gi, 'La Seyne-sur-Mer');
+    cleaned = cleaned.replace(/\bla saine en l air\b/gi, 'La Seyne-sur-Mer');
+    cleaned = cleaned.replace(/\bla saine sur mer\b/gi, 'La Seyne-sur-Mer');
+    cleaned = cleaned.replace(/\bla saine\b/gi, 'La Seyne-sur-Mer');
+    cleaned = cleaned.replace(/\bla scène sur mer\b/gi, 'La Seyne-sur-Mer');
+    cleaned = cleaned.replace(/\bla scene sur mer\b/gi, 'La Seyne-sur-Mer');
+    cleaned = cleaned.replace(/\bla seine sur mer\b/gi, 'La Seyne-sur-Mer');
+    cleaned = cleaned.replace(/\bla seine\b/gi, 'La Seyne-sur-Mer');
+    cleaned = cleaned.replace(/\b6 fours les plages\b/gi, 'Six-Fours-les-Plages');
+    cleaned = cleaned.replace(/\b6 fours\b/gi, 'Six-Fours-les-Plages');
+    cleaned = cleaned.replace(/\bsi fours\b/gi, 'Six-Fours-les-Plages');
+    cleaned = cleaned.replace(/\bolioules?\b/gi, 'Ollioules');
+    cleaned = cleaned.replace(/\bolioules?\b/gi, 'Ollioules');
+
+    return cleaned;
+}
+
         activeRecognition.onresult = (event) => {
             let currentTranscript = '';
             for (let i = 0; i < event.results.length; i++) {
                 currentTranscript += event.results[i][0].transcript;
             }
+            const cleanedTranscript = cleanFrenchVoiceTranscript(currentTranscript);
             if (textarea) {
-                textarea.value = initialText ? (initialText.trim() + ' ' + currentTranscript) : currentTranscript;
+                textarea.value = initialText ? (initialText.trim() + ' ' + cleanedTranscript) : cleanedTranscript;
             }
         };
 

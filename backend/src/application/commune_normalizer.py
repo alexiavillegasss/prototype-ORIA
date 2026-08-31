@@ -23,16 +23,29 @@ COMMUNE_MAP = {
     "toulon canton 2": "Toulon",
     "toulon canton 3": "Toulon",
 
-    # La Seyne
+    # La Seyne (avec rattrapage des erreurs de dictée vocale)
     "la seyne": "La Seyne-sur-Mer",
     "la seyne sur mer": "La Seyne-sur-Mer",
     "la seyne-sur-mer": "La Seyne-sur-Mer",
     "laseyne": "La Seyne-sur-Mer",
+    "la saine en l'air": "La Seyne-sur-Mer",
+    "la saine en lair": "La Seyne-sur-Mer",
+    "la saine en l air": "La Seyne-sur-Mer",
+    "la saine sur mer": "La Seyne-sur-Mer",
+    "la saine": "La Seyne-sur-Mer",
+    "la scene sur mer": "La Seyne-sur-Mer",
+    "la scene": "La Seyne-sur-Mer",
+    "la seine sur mer": "La Seyne-sur-Mer",
+    "la seine": "La Seyne-sur-Mer",
+    "la scene-sur-mer": "La Seyne-sur-Mer",
 
     # Six Fours
     "six fours": "Six-Fours-les-Plages",
     "six fours les plages": "Six-Fours-les-Plages",
     "six-fours-les-plages": "Six-Fours-les-Plages",
+    "6 fours": "Six-Fours-les-Plages",
+    "6 fours les plages": "Six-Fours-les-Plages",
+    "si fours": "Six-Fours-les-Plages",
 
     # Hyères
     "hyeres": "Hyères",
@@ -50,6 +63,8 @@ COMMUNE_MAP = {
 
     # Ollioules & Bandol
     "ollioules": "Ollioules",
+    "olioules": "Ollioules",
+    "olioule": "Ollioules",
     "bandol": "Bandol",
 
     # Saint-Cyr & Saint-Mandrier
