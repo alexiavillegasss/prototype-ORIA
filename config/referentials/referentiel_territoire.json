@@ -1252,7 +1252,8 @@
         "present": true,
         "nom": "CLIC du Cap Sicié",
         "telephone": "04 94 06 97 04",
-        "email": "clic@la-seyne.fr"
+        "email": "clic@la-seyne.fr",
+        "adresse": "1 Rue Ernest Renan 83500 La Seyne-sur-Mer"
       },
       "CRT": {
         "present": true,
