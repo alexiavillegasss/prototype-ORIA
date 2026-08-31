@@ -233,12 +233,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p style="font-size: 0.86rem; color: #475569; margin-bottom: 0.55rem; font-weight: 500;">Vous pouvez aussi vous rapprocher de :</p>
                 <div style="display: flex; flex-direction: column; gap: 0.45rem;">
                     ${ressourcesList.map(r => `
-                        <div class="ressource-item" style="font-size: 0.88rem; line-height: 1.45; color: #1e293b; display: flex; align-items: flex-start; gap: 0.45rem;">
-                            <span style="color: #2563eb; font-weight: 900; line-height: 1.2; flex-shrink: 0;">•</span>
-                            <div style="flex: 1;">
-                                ${formatConseilLink(r.text)}
-                                ${r.verbatim ? `<span style="font-size: 0.81rem; color: #64748b; font-style: italic; margin-left: 0.35rem;">(« ${r.verbatim} »)</span>` : ''}
+                        <div class="ressource-item" style="font-size: 0.88rem; line-height: 1.45; color: #1e293b; display: flex; flex-direction: column; gap: 0.2rem; margin-bottom: 0.35rem;">
+                            <div style="display: flex; align-items: flex-start; gap: 0.45rem;">
+                                <span style="color: #2563eb; font-weight: 900; line-height: 1.2; flex-shrink: 0;">•</span>
+                                <div style="flex: 1;">${formatConseilLink(r.text)}</div>
                             </div>
+                            ${r.verbatim ? `
+                                <div style="margin-left: 1.25rem; font-size: 0.82rem; color: #475569; font-style: italic;">
+                                    💬 « ${r.verbatim} »
+                                </div>
+                            ` : ''}
                         </div>
                     `).join('')}
                 </div>

@@ -1161,6 +1161,15 @@ class OrientationEngine:
             words = [w.lower() for w in detail.split() if len(w) >= 4 and w.lower() not in ["besoin", "mise", "place", "dans", "pour", "avec", "cette", "adaptation", "choix", "d'un", "d'une", "perte", "rapide"]]
             kws.extend(words)
 
+        # Enrichissement thématique spécifique (Aidants, Domicile, Violence, Logement...)
+        detail_lower = (detail + " " + str(criteria)).lower()
+        if any(w in detail_lower for w in ["aidant", "aidants", "répit", "repit", "fil d'argent"]):
+            kws.extend(["aidant", "aidante", "aidants", "épuisé", "épuisée", "épuisement", "fatigué", "fatiguée", "fatigue", "à bout", "relais", "répit", "repit", "charge", "souffrance"])
+        elif any(w in detail_lower for w in ["domicile", "saad", "ssiad", "ménage", "repas", "prestataire"]):
+            kws.extend(["domicile", "aide", "aides", "auxiliaire", "ménage", "repas", "courses", "quotidien", "dégrade", "dégradation", "tâches"])
+        elif any(w in detail_lower for w in ["violence", "3919", "maltraitance", "frappe", "bleu", "danger"]):
+            kws.extend(["violence", "violences", "frappe", "frappé", "bleu", "bleus", "maltraitance", "peur", "danger", "menace", "insulte"])
+
         best_sentence = ""
         best_score = 0
 
