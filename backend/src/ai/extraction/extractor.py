@@ -236,8 +236,12 @@ JSON attendu :
                         ville = "La Valette-du-Var"
                     elif city in ["sanary", "sanary-sur-mer"]:
                         ville = "Sanary-sur-Mer"
+                    elif city in ["la garde"]:
+                        ville = "La Garde"
+                    elif city in ["le pradet"]:
+                        ville = "Le Pradet"
                     else:
-                        ville = city.capitalize()
+                        ville = city.title()
                     break
 
         # Rapprochement flou ou direct de la clé de besoin principal extraite
