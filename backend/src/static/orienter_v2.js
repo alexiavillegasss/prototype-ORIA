@@ -218,13 +218,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return formatted;
         };
 
-        // Construction du bloc des Ressources complémentaires (anciennement Préconisations & Conseils)
+        // Construction du bloc des Ressources complémentaires (sans cadre)
         const ressourcesList = (struct.ressources && struct.ressources.length > 0) 
             ? struct.ressources 
             : (struct.conseils || []).map(c => ({ text: c, verbatim: '' }));
 
         const ressourcesHtml = (ressourcesList && ressourcesList.length > 0) ? `
-            <div class="ressources-container" style="margin: 1.1rem 0; padding: 0.95rem 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-left: 3px solid #2563eb; border-radius: 8px;">
+            <div class="ressources-container" style="margin: 1.25rem 0 0.85rem 0; padding: 0;">
                 <div style="margin-bottom: 0.35rem;">
                     <span style="color: #1e40af; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;">
                         Ressources complémentaires
@@ -286,9 +286,9 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <h4 class="struct-name" style="margin-bottom: 0.75rem;">${struct.label}</h4>
 
-            <!-- 2. Rôle de la structure directement sous le titre -->
-            <div class="role-structure-box" style="margin-bottom: 1.1rem; padding: 0.85rem 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-left: 3px solid #3b82f6; border-radius: 6px;">
-                <div style="font-size: 0.78rem; font-weight: 700; color: #2563eb; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem;">
+            <!-- 2. Rôle de la structure directement sous le titre (sans cadre) -->
+            <div class="role-structure-box" style="margin-bottom: 1.1rem; padding: 0;">
+                <div style="font-size: 0.78rem; font-weight: 700; color: #2563eb; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
                     Rôle de la structure :
                 </div>
                 <p style="margin: 0; font-size: 0.9rem; color: #334155; line-height: 1.5; font-weight: 450;">
@@ -297,13 +297,13 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
 
             <!-- 3. Bouton & Volet "Pourquoi cette orientation ?" -->
-            <button id="btn-why" class="btn-explain" style="margin-bottom: 0.85rem;">
+            <button id="btn-why" class="btn-explain" style="margin-bottom: 0.75rem;">
                 Pourquoi cette orientation ?
             </button>
 
-            <!-- Volet d'explication épuré (masqué par défaut) -->
-            <div id="explanation-pane" class="explanation-pane" style="display: none; margin-bottom: 1.1rem; padding: 1rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px;">
-                <div style="font-size: 0.78rem; font-weight: 700; color: #059669; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.65rem;">
+            <!-- Volet d'explication totalement épuré et sans cadre -->
+            <div id="explanation-pane" class="explanation-pane" style="display: none; margin-top: 0.5rem; margin-bottom: 1.1rem; padding: 0;">
+                <div style="font-size: 0.78rem; font-weight: 700; color: #059669; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
                     Éléments identifiés dans votre récit :
                 </div>
                 <ul style="margin: 0; padding: 0; list-style: none; font-size: 0.88rem; color: #1e293b; line-height: 1.5; display: flex; flex-direction: column;">
