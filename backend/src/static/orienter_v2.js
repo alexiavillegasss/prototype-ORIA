@@ -218,20 +218,22 @@ document.addEventListener('DOMContentLoaded', () => {
             return formatted;
         };
 
-        // Construction du bloc des Ressources complémentaires (sans cadre)
+        // Construction du bloc des Ressources complémentaires (nettement séparé pour marquer la distinction)
         const ressourcesList = (struct.ressources && struct.ressources.length > 0) 
             ? struct.ressources 
             : (struct.conseils || []).map(c => ({ text: c, verbatim: '' }));
 
         const ressourcesHtml = (ressourcesList && ressourcesList.length > 0) ? `
-            <div class="ressources-container" style="margin: 1.25rem 0 0.85rem 0; padding: 0;">
-                <div style="margin-bottom: 0.35rem;">
-                    <span style="color: #1e40af; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;">
+            <div class="ressources-section" style="margin-top: 1.5rem; padding-top: 1.15rem; border-top: 2px solid #f1f5f9;">
+                <div style="margin-bottom: 0.55rem;">
+                    <div style="color: #475569; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">
                         Ressources complémentaires
-                    </span>
+                    </div>
+                    <p style="font-size: 0.84rem; color: #64748b; margin-top: 0.2rem; margin-bottom: 0.65rem; font-weight: 450;">
+                        Vous pouvez aussi vous rapprocher de ces structures secondaires :
+                    </p>
                 </div>
-                <p style="font-size: 0.86rem; color: #475569; margin-bottom: 0.5rem; font-weight: 500;">Vous pouvez aussi vous rapprocher de :</p>
-                <div style="display: flex; flex-direction: column; gap: 0.45rem;">
+                <div style="display: flex; flex-direction: column; gap: 0.55rem;">
                     ${ressourcesList.map(r => `
                         <div class="ressource-item" style="font-size: 0.88rem; line-height: 1.45; color: #1e293b; display: flex; flex-direction: column; gap: 0.15rem; margin-bottom: 0.25rem;">
                             <div style="display: flex; align-items: flex-start; gap: 0.45rem;">
@@ -279,19 +281,25 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
 
         card.innerHTML = `
-            <div class="struct-card-header">
-                <span class="struct-badge" style="background-color: ${color}20; color: ${color}; border: 1px solid ${color}40;">
+            <!-- En-tête : Badge clair "ORIENTATION PRINCIPALE RECOMMANDÉE" -->
+            <div class="struct-card-header" style="margin-bottom: 0.65rem;">
+                <span class="primary-badge" style="display: inline-block; font-size: 0.72rem; font-weight: 800; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 3px 10px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.06em;">
+                    ORIENTATION PRINCIPALE RECOMMANDÉE
+                </span>
+                <span class="struct-badge" style="float: right; background-color: ${color}20; color: ${color}; border: 1px solid ${color}40;">
                     ${struct.structure_type}
                 </span>
             </div>
-            <h4 class="struct-name" style="margin-bottom: 0.75rem;">${struct.label}</h4>
 
-            <!-- 2. Rôle de la structure directement sous le titre (sans cadre) -->
+            <!-- Titre de la structure principale mis en avant -->
+            <h3 class="struct-name" style="font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-bottom: 0.85rem; line-height: 1.3;">${struct.label}</h3>
+
+            <!-- 2. Rôle de la structure directement sous le titre -->
             <div class="role-structure-box" style="margin-bottom: 1.1rem; padding: 0;">
-                <div style="font-size: 0.78rem; font-weight: 700; color: #2563eb; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                <div style="font-size: 0.76rem; font-weight: 700; color: #2563eb; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem;">
                     Rôle de la structure :
                 </div>
-                <p style="margin: 0; font-size: 0.9rem; color: #334155; line-height: 1.5; font-weight: 450;">
+                <p style="margin: 0; font-size: 0.92rem; color: #334155; line-height: 1.55; font-weight: 450;">
                     ${struct.mission_structure || 'Structure d\'accompagnement et d\'orientation.'}
                 </p>
             </div>
@@ -303,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             <!-- Volet d'explication épuré (masqué par défaut) -->
             <div id="explanation-pane" class="explanation-pane" style="display: none; margin-top: 0.5rem; margin-bottom: 0.85rem; padding: 0;">
-                <div style="font-size: 0.78rem; font-weight: 700; color: #059669; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
+                <div style="font-size: 0.76rem; font-weight: 700; color: #059669; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
                     Éléments identifiés dans votre récit :
                 </div>
                 <ul style="margin: 0; padding: 0; list-style: none; font-size: 0.88rem; color: #1e293b; line-height: 1.5; display: flex; flex-direction: column;">
@@ -311,8 +319,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 </ul>
             </div>
 
-            <!-- 4. Coordonnées territoriales (placées directement sous Pourquoi cette orientation) -->
-            <div class="struct-contact" style="margin-top: 0.85rem; margin-bottom: 1.1rem; padding: 0.65rem 0.85rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem; font-size: 0.88rem; color: #334155;">
+            <!-- 4. Coordonnées de la structure principale -->
+            <div class="struct-contact" style="margin-top: 0.85rem; margin-bottom: 1.25rem; padding: 0.7rem 0.9rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem; font-size: 0.88rem; color: #334155;">
                 <div style="display: flex; align-items: center; gap: 0.4rem; white-space: nowrap;">
                     <span style="font-weight: 700; color: #2563eb; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.04em;">Tél :</span>
                     <a href="tel:${struct.telephone}" style="color: #1e293b; font-weight: 600; text-decoration: none;">${struct.telephone || 'Non répertorié'}</a>
@@ -323,11 +331,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
 
-            <!-- 5. Ressources complémentaires -->
+            <!-- 5. Section distincte pour les Ressources complémentaires -->
             ${ressourcesHtml}
             
-            <!-- Boucle de feedback d'orientation -->
-            <div class="feedback-pane" style="margin-top: 1.35rem;">
+            <!-- 6. Boucle de feedback d'orientation -->
+            <div class="feedback-pane" style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dashed #e2e8f0;">
                 <span class="feedback-title">Cette orientation convient-elle à la situation de l'usager ?</span>
                 <div class="feedback-buttons">
                     <button id="btn-validate-yes" class="btn-success">
