@@ -764,7 +764,7 @@ class OrientationEngine:
 
         # Relais de l'aidant / Épuisement aidant
         if "aidant" in detail_lower or "aidants" in detail_lower or "répit" in detail_lower or "repit" in detail_lower:
-            aidant_kws = ["aidant", "aidante", "aidants", "fatigue", "fatigué", "fatiguee", "épuisé", "épuisée", "epuise", "epuisee", "épuisement", "epuisement", "répit", "repit", "charge mentale", "l'aider", "aider"]
+            aidant_kws = ["aidant", "aidante", "aidants", "fatigue", "fatigué", "fatiguee", "épuisé", "épuisée", "epuise", "epuisee", "épuisement", "epuisement", "répit", "repit", "charge mentale", "l'aider", "aider", "surmené", "surmenée", "surmenes", "surmenés", "surmenage", "soulager", "souffle"]
             if any(kw in text for kw in aidant_kws):
                 return True
 
@@ -1174,7 +1174,7 @@ class OrientationEngine:
         # Enrichissement thématique spécifique (Aidants, Domicile, Autonomie, Violences...)
         detail_lower = (detail + " " + str(criteria)).lower()
         if any(w in detail_lower for w in ["aidant", "aidants", "répit", "repit", "fil d'argent"]):
-            kws.extend(["aidant", "aidante", "aidants", "épuisé", "épuisée", "épuisement", "fatigué", "fatiguée", "fatigue", "à bout", "relais", "répit", "repit", "charge", "souffrance"])
+            kws.extend(["aidant", "aidante", "aidants", "épuisé", "épuisée", "épuisement", "fatigué", "fatiguée", "fatigue", "à bout", "relais", "répit", "repit", "charge", "souffrance", "surmené", "surmenée", "surmenes", "surmenés", "surmenage", "soulager", "souffle"])
         elif any(w in detail_lower for w in ["domicile", "saad", "ssiad", "ménage", "repas", "prestataire", "autonomie", "aide", "perte"]):
             kws.extend(["domicile", "aide", "aides", "auxiliaire", "ménage", "repas", "courses", "quotidien", "dégrade", "dégradation", "tâches", "sortir", "chez elle", "chez lui", "mal à", "difficulté", "difficultés", "déplacer", "marche", "chute", "chutes", "seule", "seul", "autonomie", "isolement", "isolée"])
         elif any(w in detail_lower for w in ["violence", "3919", "maltraitance", "frappe", "bleu", "danger"]):
