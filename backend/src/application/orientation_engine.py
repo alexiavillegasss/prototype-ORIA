@@ -730,8 +730,15 @@ class OrientationEngine:
             
         detail_lower = need["detaille"].lower()
         
-        # Helper flags for help at home
-        has_aide = "aide à domicile" in text or "aide a domicile" in text or "aides à domicile" in text or "aides a domicile" in text or "aides au domicile" in text or "aide au domicile" in text or "ad" in text.split()
+        # Helper flags pour aides et maintien à domicile
+        has_aide_phrases = [
+            "aide à domicile", "aide a domicile", "aides à domicile", "aides a domicile",
+            "aides au domicile", "aide au domicile", "auxiliaire de vie", "saad", "ssiad",
+            "mal à sortir", "du mal à sortir", "ne peut plus sortir", "plus sortir",
+            "mal à se déplacer", "perte d'autonomie", "perte de mobilité", "difficulté à sortir",
+            "difficultés à sortir", "seule à la maison", "seule chez elle", "au quotidien"
+        ]
+        has_aide = any(p in text for p in has_aide_phrases) or "ad" in text.split()
         has_maintien = "maintien" in text and "domicile" in text
         has_refus = "refus" in text or "refusé" in text or "refuse" in text or "ne veut pas" in text or "ne veut plus" in text or "opposition" in text
         
