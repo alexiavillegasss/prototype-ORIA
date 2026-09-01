@@ -218,10 +218,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return formatted;
         };
 
-        // Construction du bloc des Ressources complémentaires (nettement séparé pour marquer la distinction)
-        const ressourcesList = (struct.ressources && struct.ressources.length > 0) 
+        // Construction du bloc des Ressources complémentaires (ON N'AFFICHE QUE CEUX QUI ONT UN VERBATIM JUSTIFICATIF DANS LE RÉCIT)
+        const rawRessources = (struct.ressources && struct.ressources.length > 0) 
             ? struct.ressources 
             : (struct.conseils || []).map(c => ({ text: c, verbatim: '' }));
+
+        const ressourcesList = rawRessources.filter(r => r.verbatim && r.verbatim.trim() !== '');
 
         const ressourcesHtml = (ressourcesList && ressourcesList.length > 0) ? `
             <div class="ressources-section" style="margin-top: 1.5rem; padding-top: 1.15rem; border-top: 2px solid #f1f5f9;">
