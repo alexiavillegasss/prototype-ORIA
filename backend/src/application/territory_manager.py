@@ -38,9 +38,21 @@ class TerritoryManager:
                     struct_copy["objectif"] = f"La commune ne dispose pas de CLIC, se rapprocher de l'UTS. {struct_copy.get('objectif', '')}"
                     local_info = uts_info
             
+            # NUMÉROS NATIONAUX ET D'URGENCE INCONTOURNABLES
+            emergency_phones = {
+                "POLICE": "17",
+                "SAMU": "15",
+                "3919": "3919",
+                "3977": "3977",
+                "115": "115"
+            }
+            if struct_type in emergency_phones:
+                struct_copy["telephone"] = emergency_phones[struct_type]
+
             if local_info and local_info.get("present"):
                 struct_copy["nom_local"] = local_info.get("nom")
-                struct_copy["telephone"] = local_info.get("telephone")
+                if struct_type not in emergency_phones:
+                    struct_copy["telephone"] = local_info.get("telephone")
                 struct_copy["email"] = local_info.get("email")
                 struct_copy["adresse"] = local_info.get("adresse")
                 

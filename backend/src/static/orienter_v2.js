@@ -280,6 +280,29 @@ document.addEventListener('DOMContentLoaded', () => {
             </li>
         `).join('');
 
+        // Construction dynamique du bloc des Coordonnées (On n'affiche QUE ce qui existe vraiment !)
+        const hasPhone = struct.telephone && struct.telephone.trim() !== '' && struct.telephone !== 'Non répertorié';
+        const hasAddress = struct.adresse && struct.adresse.trim() !== '' && struct.adresse !== 'Non enregistrée';
+
+        const contactHtml = (hasPhone || hasAddress) ? `
+            <div class="struct-contact" style="margin-top: 0.85rem; margin-bottom: 1.1rem; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 1.4rem; font-size: 0.88rem; color: #334155;">
+                ${hasPhone ? `
+                    <div style="display: flex; align-items: center; gap: 0.45rem; white-space: nowrap;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1e40af" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        <span style="font-weight: 700; color: #1e40af; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.04em;">Tél :</span>
+                        <a href="tel:${struct.telephone}" style="color: #1e293b; font-weight: 600; text-decoration: none;">${struct.telephone}</a>
+                    </div>
+                ` : ''}
+                ${hasAddress ? `
+                    <div style="display: flex; align-items: center; gap: 0.45rem; flex: 1; min-width: 220px;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1e40af" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        <span style="font-weight: 700; color: #1e40af; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.04em; white-space: nowrap;">Adresse :</span>
+                        <span style="color: #1e293b; font-weight: 500;">${struct.adresse}</span>
+                    </div>
+                ` : ''}
+            </div>
+        ` : '';
+
         card.innerHTML = `
             <!-- Titre de la structure principale -->
             <h4 class="struct-name" style="margin-bottom: 0.75rem; margin-top: 0.25rem;">${struct.label}</h4>
@@ -309,19 +332,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 </ul>
             </div>
 
-            <!-- 4. Coordonnées territoriales (avec icônes bleues épurées) -->
-            <div class="struct-contact" style="margin-top: 0.85rem; margin-bottom: 1.1rem; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 1.4rem; font-size: 0.88rem; color: #334155;">
-                <div style="display: flex; align-items: center; gap: 0.45rem; white-space: nowrap;">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1e40af" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                    <span style="font-weight: 700; color: #1e40af; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.04em;">Tél :</span>
-                    <a href="tel:${struct.telephone}" style="color: #1e293b; font-weight: 600; text-decoration: none;">${struct.telephone || 'Non répertorié'}</a>
-                </div>
-                <div style="display: flex; align-items: center; gap: 0.45rem; flex: 1; min-width: 220px;">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1e40af" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                    <span style="font-weight: 700; color: #1e40af; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.04em; white-space: nowrap;">Adresse :</span>
-                    <span style="color: #1e293b; font-weight: 500;">${struct.adresse || 'Non enregistrée'}</span>
-                </div>
-            </div>
+            <!-- 4. Coordonnées de la structure principale -->
+            ${contactHtml}
 
             <!-- 5. Section distincte pour les Ressources complémentaires -->
             ${ressourcesHtml}
