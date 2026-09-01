@@ -269,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const elementsHtml = elementsList.map(item => `
             <li style="margin-bottom: 0.5rem; line-height: 1.45;">
                 <div style="display: flex; align-items: flex-start; gap: 0.45rem; font-weight: 600; color: #1e293b; font-size: 0.89rem;">
-                    <span style="color: #059669; font-weight: 900; line-height: 1.2;">•</span>
+                    <span style="color: #1e40af; font-weight: 900; line-height: 1.2;">•</span>
                     <span>${item.titre}</span>
                 </div>
                 ${item.verbatim ? `
@@ -281,18 +281,14 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
 
         card.innerHTML = `
-            <!-- En-tête : Badge clair "ORIENTATION PRINCIPALE RECOMMANDÉE" -->
             <div class="struct-card-header" style="margin-bottom: 0.65rem;">
-                <span class="primary-badge" style="display: inline-block; font-size: 0.72rem; font-weight: 800; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 3px 10px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.06em;">
-                    ORIENTATION PRINCIPALE RECOMMANDÉE
-                </span>
-                <span class="struct-badge" style="float: right; background-color: ${color}20; color: ${color}; border: 1px solid ${color}40;">
+                <span class="struct-badge" style="background-color: ${color}20; color: ${color}; border: 1px solid ${color}40;">
                     ${struct.structure_type}
                 </span>
             </div>
 
-            <!-- Titre de la structure principale mis en avant -->
-            <h3 class="struct-name" style="font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-bottom: 0.85rem; line-height: 1.3;">${struct.label}</h3>
+            <!-- Titre de la structure principale -->
+            <h4 class="struct-name" style="margin-bottom: 0.75rem;">${struct.label}</h4>
 
             <!-- 2. Rôle de la structure directement sous le titre -->
             <div class="role-structure-box" style="margin-bottom: 1.1rem; padding: 0;">
@@ -309,9 +305,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 Pourquoi cette orientation ?
             </button>
 
-            <!-- Volet d'explication épuré (masqué par défaut) -->
+            <!-- Volet d'explication épuré en Bleu Foncé (masqué par défaut) -->
             <div id="explanation-pane" class="explanation-pane" style="display: none; margin-top: 0.5rem; margin-bottom: 0.85rem; padding: 0;">
-                <div style="font-size: 0.76rem; font-weight: 700; color: #059669; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
+                <div style="font-size: 0.76rem; font-weight: 700; color: #1e40af; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
                     Éléments identifiés dans votre récit :
                 </div>
                 <ul style="margin: 0; padding: 0; list-style: none; font-size: 0.88rem; color: #1e293b; line-height: 1.5; display: flex; flex-direction: column;">
@@ -319,14 +315,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 </ul>
             </div>
 
-            <!-- 4. Coordonnées de la structure principale -->
-            <div class="struct-contact" style="margin-top: 0.85rem; margin-bottom: 1.25rem; padding: 0.7rem 0.9rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem; font-size: 0.88rem; color: #334155;">
+            <!-- 4. Coordonnées territoriales (sans cadre) -->
+            <div class="struct-contact" style="margin-top: 0.85rem; margin-bottom: 1.1rem; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem; font-size: 0.88rem; color: #334155;">
                 <div style="display: flex; align-items: center; gap: 0.4rem; white-space: nowrap;">
-                    <span style="font-weight: 700; color: #2563eb; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.04em;">Tél :</span>
+                    <span style="font-weight: 700; color: #1e40af; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.04em;">Tél :</span>
                     <a href="tel:${struct.telephone}" style="color: #1e293b; font-weight: 600; text-decoration: none;">${struct.telephone || 'Non répertorié'}</a>
                 </div>
                 <div style="display: flex; align-items: center; gap: 0.4rem; flex: 1; min-width: 220px;">
-                    <span style="font-weight: 700; color: #2563eb; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.04em; white-space: nowrap;">Adresse :</span>
+                    <span style="font-weight: 700; color: #1e40af; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.04em; white-space: nowrap;">Adresse :</span>
                     <span style="color: #1e293b; font-weight: 500;">${struct.adresse || 'Non enregistrée'}</span>
                 </div>
             </div>
