@@ -48,6 +48,23 @@ class OrientationEngine:
             "fil d'argent": "Le Fil d'Argent est une plateforme téléphonique dédiée au soutien psychologique, au répit et à l'écoute des aidants familiaux.",
             "CONSULTATION MÉMOIRE": "La Consultation Mémoire réalise le bilan et le suivi médical spécialisé des troubles de la mémoire et des fonctions cognitives."
         }
+        self.structure_domains = {
+            "POLICE": {"id": "securite_urgence", "label": "Urgence Vitale & Protection (Sécurité)"},
+            "CEV": {"id": "securite_urgence", "label": "Protection & Vigilance (Signalement)"},
+            "CLIC": {"id": "medico_social", "label": "Accompagnement & Maintien à Domicile (Médico-Social)"},
+            "CRT": {"id": "medico_social", "label": "Accompagnement Renforcé à Domicile (Médico-Social)"},
+            "DAC": {"id": "medico_social", "label": "Coordination des Parcours Complexes (Médico-Social)"},
+            "CCAS": {"id": "medico_social", "label": "Action Sociale & Aides de Proximité (Social)"},
+            "UTS": {"id": "medico_social", "label": "Accompagnement Social Global (Social)"},
+            "PSCG_SS_APA": {"id": "medico_social", "label": "Évaluation & Instruction APA (Autonomie)"},
+            "COMPAGNONS_BATISSEURS": {"id": "medico_social", "label": "Aménagement & Salubrité du Logement (Habitat)"},
+            "SERVICE_SOCIAL_HOPITAL": {"id": "medico_social", "label": "Préparation de Sortie d'Hospitalisation (Social)"},
+            "PRADO": {"id": "medico_social", "label": "Retour à Domicile Post-Hospitalisation (Santé-Social)"},
+            "CPTS": {"id": "sante_soins", "label": "Accès aux Soins & Médecin Traitant (Médical / Soins)"},
+            "CONSULTATION MÉMOIRE": {"id": "sante_soins", "label": "Bilan & Suivi Spécialisé de la Mémoire (Médical)"},
+            "MISAS": {"id": "sante_soins", "label": "Appui & Prévention en Santé Mentale (Médical / Psychique)"},
+            "fil d'argent": {"id": "aidants", "label": "Soutien & Écoute des Aidants"}
+        }
         
         # Mappings des critères de la feuille 1 vers les conditions techniques
         self.condition_map = {
@@ -248,9 +265,12 @@ class OrientationEngine:
                     if c and str(c).strip() and str(c).strip() != "nan":
                         c_clean = str(c).strip()
                         if not any(item["text"] == c_clean for item in identified_conseils_detail):
+                            criteria_search = str(need.get("moteur_criteria", "") or "")
+                            if "addiction" in need["detaille"].lower():
+                                criteria_search += ", médicaments, medicaments, doses, surdosage, addiction, alcool, drogues, antalgiques"
                             identified_conseils_detail.append({
                                 "text": c_clean,
-                                "verbatim": self._extract_verbatim(need["detaille"], need.get("moteur_criteria", ""), original_text)
+                                "verbatim": self._extract_verbatim(need["detaille"], criteria_search, original_text)
                             })
 
             conseils_simple_texts = [item["text"] for item in identified_conseils_detail]
@@ -323,10 +343,20 @@ class OrientationEngine:
                 c_text = need.get("conseil")
                 if c_text and str(c_text).strip() and str(c_text).strip() != "nan":
                     c_clean = str(c_text).strip()
+                    # Filtre de sécurité : Les entreprises de nettoyage spécialisées ne sont conseillées qu'en cas d'insalubrité / Diogène avéré
+                    if "nettoyage" in c_clean.lower() or "sociétés spécialisées" in c_clean.lower():
+                        has_real_insalubrite = any(k in text_lower for k in ["diogène", "diogene", "incurie", "insalubre", "insalubrité", "nettoyage extrême", "nettoyage extreme", "désinfection", "desinfection", "très sale", "tres sale"])
+                        if not has_real_insalubrite:
+                            continue
+
                     if not any(item["text"] == c_clean for item in identified_conseils_detail):
+                        crit_search = str(need.get("moteur_criteria", "") or "")
+                        if "addiction" in need["detaille"].lower():
+                            crit_search += ", médicaments, medicaments, doses, surdosage, addiction, alcool, drogues, antalgiques"
+                        v_final = verbatim if (verbatim and verbatim.strip()) else self._extract_verbatim(need["detaille"], crit_search, original_text)
                         identified_conseils_detail.append({
                             "text": c_clean,
-                            "verbatim": verbatim
+                            "verbatim": v_final
                         })
                         
         # Étape 3 : Application des exclusions
@@ -479,7 +509,42 @@ class OrientationEngine:
                 scores["UTS"] = -9999
         elif comid_results.get("score_total", 0) < 6:
             scores["DAC"] = -9999
-            
+
+        # 4.4 : Fil d'Argent est toujours une Ressource Complémentaire et ne crée jamais de carte principale
+        scores["fil d'argent"] = -9999
+        has_aidant_need = any(kw in text_lower for kw in ["aidant", "aidante", "aidants", "fatigue", "épuisé", "epuise", "surmené", "surmene", "répit", "repit", "soulager"])
+        if has_aidant_need:
+            v_aidant = self._extract_verbatim("Relais de l'aidant", "aidant, aidante, surmené, surmene, fatigué, épuisé, epuise, répit, repit, soulager", original_text)
+            fil_text = "Se rapprocher du Fil d'Argent - Relais et écoute des aidants"
+            if not any(item["text"] == fil_text for item in identified_conseils_detail):
+                identified_conseils_detail.append({
+                    "text": fil_text,
+                    "verbatim": v_aidant
+                })
+
+        # 4.5 : Règle CPTS pour la recherche de médecin traitant -> Section 2 intégrée au même cube du CLIC
+        cpts_section_obj = None
+        has_medecin_search = (
+            eval_context.get("vulnerabilites.sante.suivi_medical.medecin_traitant") in ["absent", "non_identifie_avec_certitude"] or
+            "médecin" in text_lower or
+            "medecin" in text_lower or
+            "traitant" in text_lower or
+            "retraite" in text_lower
+        )
+        if has_medecin_search and "CPTS" not in excluded_structures:
+            v_med = self._extract_verbatim("Recherche de médecin traitant", "médecin, medecin, traitant, docteur, soins, retraite", original_text)
+            cpts_section_obj = {
+                "structure_type": "CPTS",
+                "label": self._get_structure_label("CPTS"),
+                "mission_structure": self.structure_missions.get("CPTS"),
+                "elements_recit_detail": [{
+                    "titre": "Recherche de médecin traitant / Accès aux soins de premier recours",
+                    "verbatim": v_med
+                }]
+            }
+            # La CPTS est intégrée en section 2 du cube unique et ne génère pas de cube principal distinct
+            scores["CPTS"] = -9999
+
         # Étape 5 : Mise en forme des candidats avec tri par niveau de priorité et hierarchie par défaut
         hierarchy = ["POLICE", "CEV", "SERVICE_SOCIAL_HOPITAL", "CLIC", "CRT", "UTS", "CCAS", "CPTS", "DAC", "PSCG_SS_APA", "PRADO", "MISAS", "fil d'argent", "CONSULTATION MÉMOIRE", "COMPAGNONS_BATISSEURS"]
         hierarchy_dict = {struct: i for i, struct in enumerate(hierarchy)}
@@ -542,12 +607,29 @@ class OrientationEngine:
                 else:
                     elements_detail = [{"titre": "Éléments cliniques généraux rapportés dans votre saisie", "verbatim": ""}]
 
+            # Règle d'explicabilité : si usager < 60 ans et orienté vers le DAC, l'expliquer explicitement
+            age_val = eval_context.get("usager.identite.age_estime")
+            if struct_type == "DAC" and age_val is not None:
+                try:
+                    if float(age_val) < 60:
+                        v_age = self._extract_verbatim("Âge de la personne", f"{int(float(age_val))} ans, {int(float(age_val))}, ans, âge, age", original_text)
+                        elements_detail.insert(0, {
+                            "titre": f"Usager âgé de moins de 60 ans ({int(float(age_val))} ans) : le DAC assure l'accompagnement et la coordination (le CLIC intervenant uniquement à partir de 60 ans)",
+                            "verbatim": v_age
+                        })
+                except Exception:
+                    pass
+
             struct_elements_titles = [e["titre"] for e in elements_detail]
             conseils_simple_texts = [c["text"] for c in identified_conseils_detail]
 
-            final_structures.append({
+            dom_info = self.structure_domains.get(struct_type, {"id": "autre", "label": "Accompagnement Complémentaire"})
+
+            struct_obj = {
                 "structure_type": struct_type,
                 "label": label,
+                "domaine_id": dom_info["id"],
+                "domaine_label": dom_info["label"],
                 "priorite": score,
                 "pertinence": pertinence,
                 "objectif": objectif,
@@ -557,8 +639,10 @@ class OrientationEngine:
                 "ressources": identified_conseils_detail,
                 "mission_structure": self.structure_missions.get(struct_type, "Structure d'accompagnement et d'orientation."),
                 "elements_recit": struct_elements_titles,
-                "elements_recit_detail": elements_detail
-            })
+                "elements_recit_detail": elements_detail,
+                "cpts_section": cpts_section_obj.copy() if (cpts_section_obj and struct_type in ["CLIC", "DAC", "CRT", "CCAS", "UTS"]) else None
+            }
+            final_structures.append(struct_obj)
             
         # Fallback par défaut si rien n'est éligible
         if not final_structures:
@@ -576,6 +660,8 @@ class OrientationEngine:
                 final_structures.append({
                     "structure_type": "CLIC",
                     "label": self._get_structure_label("CLIC"),
+                    "domaine_id": "medico_social",
+                    "domaine_label": "Accompagnement & Maintien à Domicile (Médico-Social)",
                     "priorite": 0,
                     "pertinence": "faible",
                     "objectif": "Aucun besoin spécifique identifié. Orientation vers le CLIC sénior par défaut.",
@@ -585,22 +671,40 @@ class OrientationEngine:
                     "ressources": identified_conseils_detail,
                     "mission_structure": self.structure_missions.get("CLIC"),
                     "elements_recit": ["Demande d'information et d'orientation globale pour personne âgée de 60 ans ou plus."],
-                    "elements_recit_detail": [{"titre": "Demande d'information et d'orientation globale pour personne âgée de 60 ans ou plus", "verbatim": original_text[:120] if original_text else ""}]
+                    "elements_recit_detail": [{"titre": "Demande d'information et d'orientation globale pour personne âgée de 60 ans ou plus", "verbatim": original_text[:120] if original_text else ""}],
+                    "cpts_section": cpts_section_obj.copy() if cpts_section_obj else None
                 })
             else:
+                v_age = ""
+                age_str = ""
+                if age is not None:
+                    try:
+                        age_str = f" ({int(float(age))} ans)"
+                        v_age = self._extract_verbatim("Âge de la personne", f"{int(float(age))} ans, {int(float(age))}, ans, âge, age", original_text)
+                    except Exception:
+                        pass
+
                 final_structures.append({
                     "structure_type": "DAC",
                     "label": self._get_structure_label("DAC"),
+                    "domaine_id": "medico_social",
+                    "domaine_label": "Coordination des Parcours Complexes (Médico-Social)",
                     "priorite": 0,
                     "pertinence": "faible",
-                    "objectif": "Aucun besoin spécifique identifié. Orientation vers le DAC par défaut.",
+                    "objectif": "Orientation vers le DAC pour accompagnement et coordination.",
                     "score_confiance": 50,
-                    "explication_confiance": "Orientation par défaut.",
+                    "explication_confiance": "Orientation pour usager de moins de 60 ans.",
                     "conseils": conseils_simple_texts,
                     "ressources": identified_conseils_detail,
                     "mission_structure": self.structure_missions.get("DAC"),
-                    "elements_recit": ["Demande d'orientation et de coordination globale."],
-                    "elements_recit_detail": [{"titre": "Demande d'orientation et de coordination globale", "verbatim": original_text[:120] if original_text else ""}]
+                    "elements_recit": ["Usager de moins de 60 ans : accompagnement et coordination par le DAC (le CLIC étant réservé aux personnes de 60 ans et plus)."],
+                    "elements_recit_detail": [
+                        {
+                            "titre": f"Usager âgé de moins de 60 ans{age_str} : le DAC assure l'accompagnement et la coordination (le CLIC intervenant uniquement à partir de 60 ans)",
+                            "verbatim": v_age if v_age else (original_text[:120] if original_text else "")
+                        }
+                    ],
+                    "cpts_section": cpts_section_obj.copy() if cpts_section_obj else None
                 })
             
         # Stocke les métriques d'explicabilité pour le front
@@ -716,7 +820,8 @@ class OrientationEngine:
                 "infirmier", "médecin", "medecin", "spoliation", "violence", "maltraitance",
                 "abus", "négligence", "negligence", "droits", "budget", "facture",
                 "accompagnement", "social", "évaluation", "evaluation", "veille", "suivi",
-                "secours", "urgence", "administrative", "administratives"
+                "secours", "urgence", "administrative", "administratives",
+                "diogène", "diogene", "incurie", "insalubre", "insalubrité", "nettoyage", "réhabilitation", "rehabilitation"
             ]
             if any(kw in detail_lower for kw in needs_requiring_lexical):
                 return self._is_need_identified_textual(need, text)
@@ -743,9 +848,9 @@ class OrientationEngine:
         has_maintien = "maintien" in text and "domicile" in text
         has_refus = "refus" in text or "refusé" in text or "refuse" in text or "ne veut pas" in text or "ne veut plus" in text or "opposition" in text
         
-        # Addictions / Alcool / Drogues
-        if "addiction" in detail_lower or "addictions" in detail_lower or "alcool" in detail_lower or "drogue" in detail_lower:
-            addiction_kws = ["addiction", "addictions", "alcool", "alcoolisme", "drogue", "drogues", "substance", "toxico", "addictologie", "arcasud", "dépendance", "dependance", "boit", "boit trop", "bouteille"]
+        # Addictions / Alcool / Drogues / Médicaments
+        if "addiction" in detail_lower or "addictions" in detail_lower or "alcool" in detail_lower or "drogue" in detail_lower or "médicament" in detail_lower or "medicament" in detail_lower:
+            addiction_kws = ["addiction", "addictions", "alcool", "alcoolisme", "drogue", "drogues", "substance", "toxico", "addictologie", "arcasud", "dépendance", "dependance", "boit", "boit trop", "bouteille", "médicament", "médicaments", "medicament", "medicaments", "doses", "surdosage", "antalgiques", "antidouleurs"]
             if any(kw in text for kw in addiction_kws):
                 return True
 
@@ -768,9 +873,9 @@ class OrientationEngine:
             if any(kw in text for kw in aidant_kws):
                 return True
 
-        # Choix d'un prestataire d'aide à domicile / SAAD / SSIAD
-        if "prestataire" in detail_lower or "aide à domicile" in detail_lower or "aides à domicile" in detail_lower or "saad" in detail_lower or "ssiad" in detail_lower:
-            aide_dom_kws = ["aide à domicile", "aide a domicile", "aides à domicile", "aides a domicile", "service d'aide", "services d'aide", "saad", "ssiad", "prestataire", "auxiliaire de vie"]
+        # Choix d'un prestataire d'aide à domicile / SAAD / SSIAD / Ménage simple du quotidien
+        if "prestataire" in detail_lower or "aide à domicile" in detail_lower or "aides à domicile" in detail_lower or "saad" in detail_lower or "ssiad" in detail_lower or "ménage" in detail_lower or "menage" in detail_lower:
+            aide_dom_kws = ["aide à domicile", "aide a domicile", "aides à domicile", "aides a domicile", "service d'aide", "services d'aide", "saad", "ssiad", "prestataire", "auxiliaire de vie", "ménage", "menage", "entretien du logement", "repassage", "nettoyer le logement"]
             if any(kw in text for kw in aide_dom_kws):
                 return True
 
@@ -786,8 +891,8 @@ class OrientationEngine:
             if any(kw in text for kw in idel_kws):
                 return True
 
-        # Nettoyage extrême / Diogène / Incurie / Insalubrité (Sociétés de nettoyage)
-        if "diogène" in detail_lower or "diogene" in detail_lower or "incurie" in detail_lower:
+        # Nettoyage extrême / Diogène / Incurie / Insalubrité (Sociétés de nettoyage spécialisées / Compagnons Bâtisseurs - UNIQUEMENT SI INSALUBRITÉ SÉVÈRE)
+        if "diogène" in detail_lower or "diogene" in detail_lower or "incurie" in detail_lower or "insalubrité" in detail_lower or "insalubre" in detail_lower:
             diogene_kws = ["diogène", "diogene", "incurie", "insalubre", "insalubrité", "nettoyage extrême", "nettoyage extreme", "très sale", "tres sale", "désinfection", "desinfection", "désencombrement", "desencombrement", "auto-réhabilitation", "auto-rehabilitation"]
             if any(kw in text for kw in diogene_kws):
                 return True
@@ -912,8 +1017,8 @@ class OrientationEngine:
         if "veille" in detail_lower or "suivi social régulier" in detail_lower:
             if "veille" in text or "suivi social" in text or "suivi régulier" in text or "suivi regulier" in text or "visite régulière" in text or "visite reguliere" in text:
                 return True
-        if "diogène" in detail_lower or "diogene" in detail_lower or "incurie" in detail_lower or "nettoyage" in detail_lower:
-            if "diogène" in text or "diogene" in text or "incurie" in text or "sale" in text or "nettoyage" in text or "nettoyer" in text:
+        if "diogène" in detail_lower or "diogene" in detail_lower or "incurie" in detail_lower or "insalubre" in detail_lower or "insalubrité" in detail_lower:
+            if "diogène" in text or "diogene" in text or "incurie" in text or "insalubre" in text or "insalubrité" in text or "nettoyage extrême" in text or "nettoyage extreme" in text or "désinfection" in text or "desinfection" in text or "très sale" in text or "tres sale" in text:
                 return True
 
         # 5. Maintien et Aides à domicile (core triggers)
@@ -1140,7 +1245,7 @@ class OrientationEngine:
             "CLIC": "CLIC - Centre Local d'Information et de Coordination (Sénior)",
             "CRT": "CRT - Centre de Ressources Territorial (Accompagnement Renforcé)",
             "DAC": "DAC - Dispositif d'Appui à la Coordination",
-            "UTS": "UTS - Unité Territoriale Sociale (Solidarité Conseil)",
+            "UTS": "UTS - Unité Territoriale Sociale",
             "CCAS": "CCAS - Secours d'Urgence (Alimentaire & Factures)",
             "COMPAGNONS_BATISSEURS": "Les Compagnons Bâtisseurs (Rénovation & Diogène)",
             "PSCG_SS_APA": "PSCG SS APA - Pôle Social Autonomie",

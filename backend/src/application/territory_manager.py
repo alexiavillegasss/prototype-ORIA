@@ -56,6 +56,15 @@ class TerritoryManager:
                 struct_copy["email"] = local_info.get("email")
                 struct_copy["adresse"] = local_info.get("adresse")
                 
+            # Enrichissement de cpts_section (CPTS intégrée sous le CLIC)
+            if struct_copy.get("cpts_section"):
+                cpts_info = available_local_structures.get("CPTS")
+                if cpts_info and cpts_info.get("present"):
+                    struct_copy["cpts_section"]["nom_local"] = cpts_info.get("nom")
+                    struct_copy["cpts_section"]["telephone"] = cpts_info.get("telephone")
+                    struct_copy["cpts_section"]["email"] = cpts_info.get("email")
+                    struct_copy["cpts_section"]["adresse"] = cpts_info.get("adresse")
+
             results.append(struct_copy)
 
         return results

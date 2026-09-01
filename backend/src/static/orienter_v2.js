@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error(error);
-            alert("Une erreur est survenue lors de l'analyse du cas. Vérifiez que votre serveur local et Ollama sont bien actifs.");
+            alert("Une erreur est survenue lors de l'analyse de la situation. Vérifiez que votre serveur local et Ollama sont bien actifs.");
         } finally {
             btnSubmit.disabled = false;
             spinner.style.display = 'none';
@@ -183,32 +183,26 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * Rentre l'orientation courante ou l'état de fallback si aucune n'est disponible
      */
-    window.renderOrientation = function() {
-        structuresList.innerHTML = '';
-        
-        // S'il n'y a aucune structure éligible ou qu'on a épuisé la liste
-        if (orientations.length === 0 || currentIndex >= orientations.length) {
-            structuresTitle.textContent = "Recherche d'informations supplémentaires :";
-            structuresList.innerHTML = `
-                <div class="empty-state card fadeInUp" style="padding: 2.5rem; text-align: center; border: 1px dashed var(--accent-purple); border-radius: var(--radius);">
-                    <h4 style="font-size: 1.15rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.75rem;">Plus d'informations cliniques requises</h4>
-                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5; font-size: 0.92rem;">
-                        Aucune autre structure d'orientation n'est disponible pour ce cas. Afin d'affiner le diagnostic et de débloquer de nouvelles éligibilités, veuillez enrichir votre description de situation clinique à gauche (précisez si chute récente, dénutrition, épuisement de l'aidant régulier, hospitalisation, ou opposition aux aides).
-                    </p>
-                    <button onclick="focusInput()" class="btn-primary" style="margin: 0 auto; max-width: 250px;">Modifier la description</button>
-                </div>
-            `;
-            return;
-        }
-
-        // On extrait l'orientation courante
-        const struct = orientations[currentIndex];
-        structuresTitle.style.display = "";
-        structuresTitle.textContent = `Proposition d'orientation (${currentIndex + 1} sur ${orientations.length}) :`;
-
+    /**
+     * Construit un composant de carte d'orientation complet avec justification par verbatim
+     */
+    /**
+     * Construit un composant de carte d'orientation complet avec justification par verbatim
+     */
+    /**
+     * Construit un composant de carte d'orientation complet avec justification par verbatim
+     */
+    /**
+     * Construit un composant de carte d'orientation complet unique (UN SEUL CUBE)
+     * 1. Section Principale (ex: CLIC) : Titre, Rôle, Explication/Verbatim, Coordonnées
+     * 2. Section CPTS (si besoin médecin traitant) : Titre, Rôle, Explication/Verbatim, Coordonnées
+     * 3. Section Ressources complémentaires : Fil d'Argent, Associations Aidants, SAAD/SSIAD
+     */
+    function buildSingleStructCard(struct) {
         const card = document.createElement('div');
         card.className = 'struct-card fadeInUp';
-        const color = STRUCTURE_COLORS[struct.structure_type] || '#64748b';
+        card.style.marginBottom = '1.75rem';
+
         const formatConseilLink = (text) => {
             if (!text) return '';
             let formatted = text.replace(
@@ -218,7 +212,140 @@ document.addEventListener('DOMContentLoaded', () => {
             return formatted;
         };
 
-        // Construction du bloc des Ressources complémentaires (ON N'AFFICHE QUE CEUX QUI ONT UN VERBATIM JUSTIFICATIF DANS LE RÉCIT)
+        // 1. SECTION PRINCIPALE (ex: CLIC)
+        let elementsList = (struct.elements_recit_detail && struct.elements_recit_detail.length > 0)
+            ? struct.elements_recit_detail.filter(item => item.verbatim && item.verbatim.trim() !== '')
+            : [];
+
+        if (elementsList.length === 0) {
+            const defaultTitle = (struct.elements_recit && struct.elements_recit.length > 0) 
+                ? struct.elements_recit[0] 
+                : "Demande d'accompagnement et d'orientation globale";
+            elementsList = [{
+                titre: defaultTitle,
+                verbatim: ''
+            }];
+        }
+
+        const elementsHtml = elementsList.map(item => `
+            <li style="margin-bottom: 0.65rem; line-height: 1.45;">
+                ${item.verbatim ? `
+                    <div style="font-style: italic; font-weight: 500; color: #0f172a; font-size: 0.89rem; margin-bottom: 0.25rem; background: #e0f2fe; padding: 0.4rem 0.7rem; border-left: 3px solid #2563eb; border-radius: 4px;">
+                        « ${item.verbatim} »
+                    </div>
+                ` : ''}
+                <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.84rem; color: #1e40af; font-weight: 600;">
+                    <span>${item.verbatim ? '➔' : '•'}</span>
+                    <span>${item.titre}</span>
+                </div>
+            </li>
+        `).join('');
+
+        const hasPhone = struct.telephone && struct.telephone.trim() !== '' && struct.telephone !== 'Non répertorié';
+        const hasAddress = struct.adresse && struct.adresse.trim() !== '' && struct.adresse !== 'Non enregistrée';
+
+        const contactHtml = (hasPhone || hasAddress) ? `
+            <div class="struct-contact" style="margin-top: 0.85rem; margin-bottom: 1.1rem; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 1.4rem; font-size: 0.88rem; color: #334155;">
+                ${hasPhone ? `
+                    <div style="display: flex; align-items: center; gap: 0.45rem; white-space: nowrap;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        <span style="font-weight: 700; color: #2563eb; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.04em;">Tél :</span>
+                        <a href="tel:${struct.telephone}" style="color: #1e293b; font-weight: 600; text-decoration: none;">${struct.telephone}</a>
+                    </div>
+                ` : ''}
+                ${hasAddress ? `
+                    <div style="display: flex; align-items: center; gap: 0.45rem; flex: 1; min-width: 220px;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        <span style="font-weight: 700; color: #2563eb; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.04em; white-space: nowrap;">Adresse :</span>
+                        <span style="color: #1e293b; font-weight: 500;">${struct.adresse}</span>
+                    </div>
+                ` : ''}
+            </div>
+        ` : '';
+
+        // 2. SECTION CPTS (DIRECTEMENT EN DESSOUS DANS LE MÊME CUBE)
+        let cptsSectionHtml = '';
+        if (struct.cpts_section) {
+            const cpts = struct.cpts_section;
+            const cptsPhone = cpts.telephone && cpts.telephone.trim() !== '' && cpts.telephone !== 'Non répertorié';
+            const cptsAddress = cpts.adresse && cpts.adresse.trim() !== '' && cpts.adresse !== 'Non enregistrée';
+            
+            let cptsList = (cpts.elements_recit_detail && cpts.elements_recit_detail.length > 0)
+                ? cpts.elements_recit_detail.filter(item => item.verbatim && item.verbatim.trim() !== '')
+                : [];
+                
+            if (cptsList.length === 0) {
+                cptsList = [{
+                    titre: "Recherche de médecin traitant & Accès aux soins de premier recours",
+                    verbatim: ""
+                }];
+            }
+
+            const cptsElementsHtml = cptsList.map(item => `
+                <li style="margin-bottom: 0.65rem; line-height: 1.45;">
+                    ${item.verbatim ? `
+                        <div style="font-style: italic; font-weight: 500; color: #0f172a; font-size: 0.89rem; margin-bottom: 0.25rem; background: #e0f2fe; padding: 0.4rem 0.7rem; border-left: 3px solid #0284c7; border-radius: 4px;">
+                            « ${item.verbatim} »
+                        </div>
+                    ` : ''}
+                    <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.84rem; color: #0369a1; font-weight: 600;">
+                        <span>${item.verbatim ? '➔' : '•'}</span>
+                        <span>${item.titre}</span>
+                    </div>
+                </li>
+            `).join('');
+
+            cptsSectionHtml = `
+                <div style="margin-top: 1.4rem; padding-top: 1.3rem; border-top: 2px solid #e2e8f0;">
+                    <h4 style="margin-bottom: 0.75rem; margin-top: 0.15rem; font-size: 1.12rem; font-weight: 700; color: #0f172a;">
+                        ${cpts.label}
+                    </h4>
+
+                    <div style="margin-bottom: 1.1rem; padding: 0.85rem 1rem; background: #f0f9ff; border: 1px solid #e0f2fe; border-radius: 8px;">
+                        <div style="font-size: 0.76rem; font-weight: 800; color: #0284c7; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem;">
+                            Rôle de la structure :
+                        </div>
+                        <p style="margin: 0; font-size: 0.91rem; color: #334155; line-height: 1.55; font-weight: 450;">
+                            ${cpts.mission_structure || 'La CPTS (Communauté Professionnelle Territoriale de Santé) facilite l\'accès aux soins de premier recours en coordonnant les médecins traitants du secteur.'}
+                        </p>
+                    </div>
+
+                    <button id="btn-why-cpts" class="btn-explain" style="margin-bottom: 0.75rem;">
+                        Pourquoi cette orientation ?
+                    </button>
+
+                    <div id="explanation-pane-cpts" class="explanation-pane" style="display: none; margin-top: 0.75rem; margin-bottom: 1.1rem; padding: 1rem 1.15rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                        <div style="font-size: 0.76rem; font-weight: 700; color: #0284c7; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.65rem;">
+                            Éléments identifiés dans votre récit :
+                        </div>
+                        <ul style="margin: 0; padding: 0; list-style: none; font-size: 0.88rem; color: #1e293b; line-height: 1.55; display: flex; flex-direction: column; gap: 0.55rem;">
+                            ${cptsElementsHtml}
+                        </ul>
+                    </div>
+
+                    ${(cptsPhone || cptsAddress) ? `
+                        <div class="struct-contact" style="margin-top: 0.85rem; margin-bottom: 1.1rem; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 1.4rem; font-size: 0.88rem; color: #334155;">
+                            ${cptsPhone ? `
+                                <div style="display: flex; align-items: center; gap: 0.45rem; white-space: nowrap;">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                    <span style="font-weight: 700; color: #0284c7; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.04em;">Tél :</span>
+                                    <a href="tel:${cpts.telephone}" style="color: #1e293b; font-weight: 600; text-decoration: none;">${cpts.telephone}</a>
+                                </div>
+                            ` : ''}
+                            ${cptsAddress ? `
+                                <div style="display: flex; align-items: center; gap: 0.45rem; flex: 1; min-width: 220px;">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                    <span style="font-weight: 700; color: #0284c7; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.04em; white-space: nowrap;">Adresse :</span>
+                                    <span style="color: #1e293b; font-weight: 500;">${cpts.adresse}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        // 3. SECTION RESSOURCES COMPLÉMENTAIRES (ENCORE EN DESSOUS DANS LE MÊME CUBE)
         const rawRessources = (struct.ressources && struct.ressources.length > 0) 
             ? struct.ressources 
             : (struct.conseils || []).map(c => ({ text: c, verbatim: '' }));
@@ -226,18 +353,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const ressourcesList = rawRessources.filter(r => r.verbatim && r.verbatim.trim() !== '');
 
         const ressourcesHtml = (ressourcesList && ressourcesList.length > 0) ? `
-            <div class="ressources-section" style="margin-top: 1.5rem; padding-top: 1.15rem; border-top: 2px solid #f1f5f9;">
-                <div style="margin-bottom: 0.55rem;">
+            <div class="ressources-section" style="margin-top: 1.4rem; padding-top: 1.2rem; border-top: 2px solid #e2e8f0;">
+                <div style="margin-bottom: 0.6rem;">
                     <div style="color: #475569; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">
                         Ressources complémentaires
                     </div>
-                    <p style="font-size: 0.84rem; color: #64748b; margin-top: 0.2rem; margin-bottom: 0.65rem; font-weight: 450;">
-                        Vous pouvez aussi vous rapprocher de ces structures secondaires :
-                    </p>
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 0.55rem;">
                     ${ressourcesList.map(r => `
-                        <div class="ressource-item" style="font-size: 0.88rem; line-height: 1.45; color: #1e293b; display: flex; flex-direction: column; gap: 0.15rem; margin-bottom: 0.25rem;">
+                        <div class="ressource-item" style="font-size: 0.88rem; line-height: 1.45; color: #1e293b; display: flex; flex-direction: column; gap: 0.15rem;">
                             <div style="display: flex; align-items: flex-start; gap: 0.45rem;">
                                 <span style="color: #2563eb; font-weight: 900; line-height: 1.2; flex-shrink: 0;">•</span>
                                 <div style="flex: 1;">${formatConseilLink(r.text)}</div>
@@ -253,81 +377,24 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         ` : '';
 
-        // Formatage des éléments du récit : ON GARDE EXCLUSIVEMENT LES ÉLÉMENTS QUI ONT UN VERBATIM VALIDE ET EXPLICITE
-        let elementsList = (struct.elements_recit_detail && struct.elements_recit_detail.length > 0)
-            ? struct.elements_recit_detail.filter(item => item.verbatim && item.verbatim.trim() !== '')
-            : [];
-
-        // Fallback propre si aucun verbatim spécifique n'a été extrait
-        if (elementsList.length === 0) {
-            const defaultTitle = (struct.elements_recit && struct.elements_recit.length > 0) 
-                ? struct.elements_recit[0] 
-                : "Demande d'accompagnement et d'orientation globale";
-            elementsList = [{
-                titre: defaultTitle,
-                verbatim: ''
-            }];
-        }
-
-        const elementsHtml = elementsList.map(item => `
-            <li style="margin-bottom: 0.65rem; line-height: 1.45;">
-                ${item.verbatim ? `
-                    <div style="font-style: italic; font-weight: 500; color: #0f172a; font-size: 0.89rem; margin-bottom: 0.2rem;">
-                        « ${item.verbatim} »
-                    </div>
-                ` : ''}
-                <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.83rem; color: #1e40af; font-weight: 600;">
-                    <span>${item.verbatim ? '➔' : '•'}</span>
-                    <span>${item.titre}</span>
-                </div>
-            </li>
-        `).join('');
-
-        // Construction dynamique du bloc des Coordonnées (On n'affiche QUE ce qui existe vraiment !)
-        const hasPhone = struct.telephone && struct.telephone.trim() !== '' && struct.telephone !== 'Non répertorié';
-        const hasAddress = struct.adresse && struct.adresse.trim() !== '' && struct.adresse !== 'Non enregistrée';
-
-        const contactHtml = (hasPhone || hasAddress) ? `
-            <div class="struct-contact" style="margin-top: 0.85rem; margin-bottom: 1.1rem; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 1.4rem; font-size: 0.88rem; color: #334155;">
-                ${hasPhone ? `
-                    <div style="display: flex; align-items: center; gap: 0.45rem; white-space: nowrap;">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1e40af" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                        <span style="font-weight: 700; color: #1e40af; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.04em;">Tél :</span>
-                        <a href="tel:${struct.telephone}" style="color: #1e293b; font-weight: 600; text-decoration: none;">${struct.telephone}</a>
-                    </div>
-                ` : ''}
-                ${hasAddress ? `
-                    <div style="display: flex; align-items: center; gap: 0.45rem; flex: 1; min-width: 220px;">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1e40af" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                        <span style="font-weight: 700; color: #1e40af; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.04em; white-space: nowrap;">Adresse :</span>
-                        <span style="color: #1e293b; font-weight: 500;">${struct.adresse}</span>
-                    </div>
-                ` : ''}
-            </div>
-        ` : '';
-
         card.innerHTML = `
-            <!-- Titre de la structure principale -->
-            <h4 class="struct-name" style="margin-bottom: 0.75rem; margin-top: 0.25rem;">${struct.label}</h4>
+            <h4 class="struct-name" style="margin-bottom: 0.75rem; margin-top: 0.15rem; font-size: 1.15rem; font-weight: 700; color: #0f172a;">${struct.label}</h4>
 
-            <!-- 2. Rôle de la structure directement sous le titre -->
-            <div class="role-structure-box" style="margin-bottom: 1.1rem; padding: 0;">
-                <div style="font-size: 0.76rem; font-weight: 700; color: #2563eb; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem;">
+            <div class="role-structure-box" style="margin-bottom: 1.1rem; padding: 0.85rem 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                <div style="font-size: 0.76rem; font-weight: 800; color: #2563eb; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem;">
                     Rôle de la structure :
                 </div>
-                <p style="margin: 0; font-size: 0.92rem; color: #334155; line-height: 1.55; font-weight: 450;">
+                <p style="margin: 0; font-size: 0.91rem; color: #334155; line-height: 1.55; font-weight: 450;">
                     ${struct.mission_structure || 'Structure d\'accompagnement et d\'orientation.'}
                 </p>
             </div>
 
-            <!-- 3. Bouton & Volet "Pourquoi cette orientation ?" -->
-            <button id="btn-why" class="btn-explain" style="margin-bottom: 0.75rem;">
+            <button id="btn-why-clic" class="btn-explain" style="margin-bottom: 0.75rem;">
                 Pourquoi cette orientation ?
             </button>
 
-            <!-- Volet d'explication aéré et bien espacé (masqué par défaut) -->
-            <div id="explanation-pane" class="explanation-pane" style="display: none; margin-top: 0.75rem; margin-bottom: 1.1rem; padding: 1rem 1.15rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
-                <div style="font-size: 0.76rem; font-weight: 700; color: #1e40af; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.65rem;">
+            <div id="explanation-pane-clic" class="explanation-pane" style="display: none; margin-top: 0.75rem; margin-bottom: 1.1rem; padding: 1rem 1.15rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                <div style="font-size: 0.76rem; font-weight: 700; color: #2563eb; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.65rem;">
                     Éléments identifiés dans votre récit :
                 </div>
                 <ul style="margin: 0; padding: 0; list-style: none; font-size: 0.88rem; color: #1e293b; line-height: 1.55; display: flex; flex-direction: column; gap: 0.55rem;">
@@ -335,15 +402,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 </ul>
             </div>
 
-            <!-- 4. Coordonnées de la structure principale -->
             ${contactHtml}
-
-            <!-- 5. Section distincte pour les Ressources complémentaires -->
+            ${cptsSectionHtml}
             ${ressourcesHtml}
             
-            <!-- 6. Boucle de feedback d'orientation -->
             <div class="feedback-pane" style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dashed #e2e8f0;">
-                <span class="feedback-title">Cette orientation convient-elle à la situation de l'usager ?</span>
+                <span class="feedback-title">${struct.cpts_section ? "Cette orientation (CLIC & CPTS) convient-elle à la situation de l'usager ?" : "Cette orientation convient-elle à la situation de l'usager ?"}</span>
                 <div class="feedback-buttons">
                     <button id="btn-validate-yes" class="btn-success">
                         <span>Oui, elle convient</span>
@@ -355,9 +419,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
 
-        structuresList.appendChild(card);
-
-        // Liaison programmatic event for Yes validation button
+        // Événements boutons explications
         const btnYes = card.querySelector('#btn-validate-yes');
         if (btnYes) {
             btnYes.addEventListener('click', () => {
@@ -365,18 +427,69 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Liaison de l'animation de toggle d'explications
-        const btnWhy = card.querySelector('#btn-why');
-        const explainPane = card.querySelector('#explanation-pane');
-        btnWhy.addEventListener('click', () => {
-            if (explainPane.style.display === 'none') {
-                explainPane.style.display = 'block';
-                btnWhy.textContent = 'Masquer l\'explication';
-            } else {
-                explainPane.style.display = 'none';
-                btnWhy.textContent = 'Pourquoi cette orientation ?';
-            }
-        });
+        const btnWhyClic = card.querySelector('#btn-why-clic');
+        const explainPaneClic = card.querySelector('#explanation-pane-clic');
+        if (btnWhyClic && explainPaneClic) {
+            btnWhyClic.addEventListener('click', () => {
+                if (explainPaneClic.style.display === 'none') {
+                    explainPaneClic.style.display = 'block';
+                    btnWhyClic.textContent = 'Masquer l\'explication';
+                } else {
+                    explainPaneClic.style.display = 'none';
+                    btnWhyClic.textContent = 'Pourquoi cette orientation ?';
+                }
+            });
+        }
+
+        const btnWhyCpts = card.querySelector('#btn-why-cpts');
+        const explainPaneCpts = card.querySelector('#explanation-pane-cpts');
+        if (btnWhyCpts && explainPaneCpts) {
+            btnWhyCpts.addEventListener('click', () => {
+                if (explainPaneCpts.style.display === 'none') {
+                    explainPaneCpts.style.display = 'block';
+                    btnWhyCpts.textContent = 'Masquer l\'explication';
+                } else {
+                    explainPaneCpts.style.display = 'none';
+                    btnWhyCpts.textContent = 'Pourquoi cette orientation ?';
+                }
+            });
+        }
+
+        return card;
+    }
+
+    /**
+     * Rend l'orientation courante (UN SEUL CUBE UNIQUE SUR L'ÉCRAN)
+     */
+    window.renderOrientation = function() {
+        structuresList.innerHTML = '';
+        
+        if (orientations.length === 0 || currentIndex >= orientations.length) {
+            structuresTitle.textContent = "Recherche d'informations supplémentaires :";
+            structuresList.innerHTML = `
+                <div class="empty-state card fadeInUp" style="padding: 2.5rem; text-align: center; border: 1px dashed var(--accent-purple); border-radius: var(--radius);">
+                    <h4 style="font-size: 1.15rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.75rem;">Plus d'informations cliniques requises</h4>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5; font-size: 0.92rem;">
+                        Aucune autre structure d'orientation n'est disponible pour cette situation. Afin d'affiner le diagnostic et de débloquer de nouvelles éligibilités, veuillez enrichir votre description de situation clinique à gauche (précisez si chute récente, dénutrition, épuisement de l'aidant régulier, hospitalisation, ou opposition aux aides).
+                    </p>
+                    <button onclick="focusInput()" class="btn-primary" style="margin: 0 auto; max-width: 250px;">Modifier la description</button>
+                </div>
+            `;
+            return;
+        }
+
+        const struct = orientations[currentIndex];
+        structuresTitle.style.display = "";
+        if (struct.cpts_section) {
+            let labelClean = struct.label.replace(" (Sénior)", "").replace(" (Senior)", "");
+            let cptsClean = struct.cpts_section.label || "CPTS - Communauté Professionnelle Territoriale de Santé";
+            structuresTitle.textContent = `Propositions d'orientation (${labelClean} & ${cptsClean}) :`;
+        } else {
+            structuresTitle.textContent = `Proposition d'orientation (${currentIndex + 1} sur ${orientations.length}) :`;
+        }
+
+        const card = buildSingleStructCard(struct);
+        structuresList.appendChild(card);
     };
 
     /**
@@ -389,7 +502,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (justifications.length === 0) {
             container.innerHTML = `
                 <div style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">
-                    Aucun facteur de complexité COMID spécifique validé pour ce cas.
+                    Aucun facteur de complexité COMID spécifique validé pour cette situation.
                 </div>
             `;
             return;
@@ -493,7 +606,7 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * Valide l'orientation en cours auprès de l'API FastApi
      */
-    window.validateCurrentOrientation = async function(label, type, options = {}) {
+    window.validateCurrentOrientation = async function(label, type, options = {}, structData = null) {
         label = label || "Orientation";
         type = type || "";
 
@@ -556,6 +669,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (displayLabel.includes("CLIC")) {
             displayLabel = displayLabel.replace(" (Sénior)", "").replace(" (Senior)", "");
         }
+        if (displayLabel.includes("UTS")) {
+            displayLabel = displayLabel.replace(" (Solidarité Conseil)", "");
+        }
+        if (structData && structData.cpts_section) {
+            const cptsFullLabel = structData.cpts_section.label || "CPTS - Communauté Professionnelle Territoriale de Santé";
+            displayLabel += " & " + cptsFullLabel;
+        }
 
         if (structuresList) {
             structuresList.innerHTML = `
@@ -566,7 +686,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </p>
                     <div style="display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap;">
                         <button onclick="resetAnalysis()" class="btn-primary" style="background: #22c55e; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3); margin-top: 1rem;">
-                            Traiter un nouveau cas
+                            Traiter une nouvelle situation
                         </button>
                         ${pdfButtonHtml}
                     </div>
@@ -586,17 +706,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const safeLabel = String(label).toLowerCase();
 
         if (type.startsWith('DAC')) {
-            window.validateCurrentOrientation(label, type, { showDacPdf: true });
+            window.validateCurrentOrientation(label, type, { showDacPdf: true }, structData);
         } else if (type.startsWith('CLIC') && (safeLabel.includes('seyne') || nomLocal.includes('seyne') || commune.includes('seyne'))) {
-            window.validateCurrentOrientation(label, type, { showClicPdf: true });
+            window.validateCurrentOrientation(label, type, { showClicPdf: true }, structData);
         } else if (type.startsWith('CLIC') && (safeLabel.includes('toulon') || nomLocal.includes('toulon') || commune.includes('toulon'))) {
-            window.validateCurrentOrientation(label, type, { showClicToulonPdf: true });
+            window.validateCurrentOrientation(label, type, { showClicToulonPdf: true }, structData);
         } else if (type.startsWith('CLIC') && (safeLabel.includes('provence verte') || nomLocal.includes('provence verte') || commune.includes('brignoles') || commune.includes('bras') || commune.includes('cotignac'))) {
-            window.validateCurrentOrientation(label, type, { showClicProvenceVertePdf: true });
+            window.validateCurrentOrientation(label, type, { showClicProvenceVertePdf: true }, structData);
         } else if (type.startsWith('CLIC') && (safeLabel.includes('hadage') || nomLocal.includes('hadage') || commune.includes('hyères') || commune.includes('hyeres') || commune.includes('bormes'))) {
-            window.validateCurrentOrientation(label, type, { showClicHadagePdf: true });
+            window.validateCurrentOrientation(label, type, { showClicHadagePdf: true }, structData);
         } else {
-            window.validateCurrentOrientation(label, type);
+            window.validateCurrentOrientation(label, type, {}, structData);
         }
     };
 
