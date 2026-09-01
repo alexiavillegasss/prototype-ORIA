@@ -1159,6 +1159,21 @@ class OrientationEngine:
         if not sentences:
             return ""
 
+        # 1. Découpage en sub-clauses (propositions) sur les connecteurs logiques majeurs ("parce que", "car", "afin de")
+        clauses = []
+        for sentence in sentences:
+            parts = re.split(r'\b(parce que|parce qu\'|car)\b', sentence, flags=re.IGNORECASE)
+            current = ""
+            for p in parts:
+                if p.lower() in ["parce que", "parce qu'", "car"]:
+                    if current.strip():
+                        clauses.append(current.strip())
+                    current = ""
+                else:
+                    current += " " + p
+            if current.strip():
+                clauses.append(current.strip())
+
         kws = []
         if criteria and str(criteria) != "nan":
             raw_kws = re.split(r'[,;/]+', str(criteria))
@@ -1171,18 +1186,39 @@ class OrientationEngine:
             words = [w.lower() for w in detail.split() if len(w) >= 4 and w.lower() not in ["besoin", "mise", "place", "dans", "pour", "avec", "cette", "adaptation", "choix", "d'un", "d'une", "perte", "rapide"]]
             kws.extend(words)
 
-        # Enrichissement thématique spécifique (Aidants, Domicile, Autonomie, Violences...)
+        # Target-specific keyword focus & tuning for Aidants vs Domicile
         detail_lower = (detail + " " + str(criteria)).lower()
         if any(w in detail_lower for w in ["aidant", "aidants", "répit", "repit", "fil d'argent"]):
-            kws.extend(["aidant", "aidante", "aidants", "épuisé", "épuisée", "épuisement", "fatigué", "fatiguée", "fatigue", "à bout", "relais", "répit", "repit", "charge", "souffrance", "surmené", "surmenée", "surmenes", "surmenés", "surmenage", "soulager", "souffle"])
-        elif any(w in detail_lower for w in ["domicile", "saad", "ssiad", "ménage", "repas", "prestataire", "autonomie", "aide", "perte"]):
-            kws.extend(["domicile", "aide", "aides", "auxiliaire", "ménage", "repas", "courses", "quotidien", "dégrade", "dégradation", "tâches", "sortir", "chez elle", "chez lui", "mal à", "difficulté", "difficultés", "déplacer", "marche", "chute", "chutes", "seule", "seul", "autonomie", "isolement", "isolée"])
+            kws = ["surmené", "surmenée", "surmenés", "surmenages", "surmenage", "épuisé", "épuisée", "épuisement", "fatigué", "aidant", "aidante", "aidants", "répit", "repit", "soulager", "souffle"]
+        elif any(w in detail_lower for w in ["domicile", "saad", "ssiad", "ménage", "repas", "prestataire"]):
+            kws = ["aides à domicile", "aide à domicile", "aides a domicile", "aide a domicile", "auxiliaire de vie", "saad", "ssiad", "prestataire", "domicile"]
         elif any(w in detail_lower for w in ["violence", "3919", "maltraitance", "frappe", "bleu", "danger"]):
-            kws.extend(["violence", "violences", "frappe", "frappé", "bleu", "bleus", "maltraitance", "peur", "danger", "menace", "insulte"])
+            kws = ["violence", "violences", "frappe", "frappé", "bleu", "bleus", "maltraitance", "peur", "danger", "menace", "insulte"]
 
-        best_sentence = ""
+        # Évaluation d'abord sur les clauses ciblées
+        best_clause = ""
         best_score = 0
 
+        for clause in clauses:
+            c_lower = clause.lower()
+            score = 0
+            for kw in kws:
+                if kw in c_lower:
+                    score += len(kw) * 2
+            if score > best_score:
+                best_score = score
+                best_clause = clause
+
+        if best_score >= 4:
+            cleaned = best_clause.strip()
+            # Nettoyage pour les aides à domicile si la clause se termine par "pour nous soulager"
+            if any(w in detail_lower for w in ["domicile", "saad", "ssiad", "prestataire"]):
+                cleaned = re.sub(r'\s+pour nous soulager.*$', '', cleaned, flags=re.IGNORECASE)
+            return cleaned.strip()
+
+        # Fallback au niveau de la phrase complète si la clause n'est pas suffisante
+        best_sentence = ""
+        best_score = 0
         for sentence in sentences:
             s_lower = sentence.lower()
             score = 0
@@ -1193,8 +1229,7 @@ class OrientationEngine:
                 best_score = score
                 best_sentence = sentence
 
-        # STRICT QUALITY THRESHOLD: Require at least 4 score points to avoid random/irrelevant matches!
         if best_score >= 4:
-            return best_sentence
+            return best_sentence.strip()
 
         return ""
