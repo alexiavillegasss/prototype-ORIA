@@ -267,16 +267,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const elementsHtml = elementsList.map(item => `
-            <li style="margin-bottom: 0.5rem; line-height: 1.45;">
-                <div style="display: flex; align-items: flex-start; gap: 0.45rem; font-weight: 600; color: #1e293b; font-size: 0.89rem;">
-                    <span style="color: #1e40af; font-weight: 900; line-height: 1.2;">•</span>
+            <li style="margin-bottom: 0.65rem; line-height: 1.45;">
+                <div style="font-style: italic; font-weight: 500; color: #0f172a; font-size: 0.89rem; margin-bottom: 0.2rem;">
+                    « ${item.verbatim} »
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.83rem; color: #1e40af; font-weight: 600;">
+                    <span>➔</span>
                     <span>${item.titre}</span>
                 </div>
-                ${item.verbatim ? `
-                    <div style="margin-left: 1rem; margin-top: 0.15rem; font-size: 0.83rem; color: #64748b; font-style: italic;">
-                        « ${item.verbatim} »
-                    </div>
-                ` : ''}
             </li>
         `).join('');
 

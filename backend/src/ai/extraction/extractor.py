@@ -313,6 +313,13 @@ JSON attendu :
         
         motif_principal = besoin_to_motif.get(besoin_principal, "indetermine")
 
+        # Validation anti-hallucination de la suspicion de malveillance
+        malveillance_val = str(raw_data.get("malveillance", "aucune")).lower()
+        if malveillance_val != "aucune":
+            violence_kws = ["violence", "violences", "maltraitance", "frapp", "bleu", "coups", "menace", "agression", "abus", "spoliation", "vol", "volé", "vols", "privation", "danger"]
+            if not any(kw in text.lower() for kw in violence_kws):
+                malveillance_val = "aucune"
+
         mapped = {
             "usager.identite.age_estime": age,
             "usager.localisation.commune_residence": ville,
@@ -320,7 +327,7 @@ JSON attendu :
             "usager.situation_actuelle.PCH": str(raw_data.get("pch", "non")).lower(),
             "usager.situation_actuelle.GIR": raw_data.get("gir"),
             "vulnerabilites.sante.suivi_medical.medecin_traitant": raw_data.get("medecin_traitant", "non_mentionne"),
-            "usager.situation_actuelle.suspicion_malveillance": raw_data.get("malveillance", "aucune"),
+            "usager.situation_actuelle.suspicion_malveillance": malveillance_val,
             "adresseur.degre_urgence_percu": raw_data.get("urgence", "faible"),
             "vulnerabilites.sante.hospitalisation.statut": raw_data.get("hospitalisation", "aucun"),
             "demande.motif_principal": motif_principal,
