@@ -258,21 +258,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Fallback propre si aucun verbatim spécifique n'a été extrait
         if (elementsList.length === 0) {
+            const defaultTitle = (struct.elements_recit && struct.elements_recit.length > 0) 
+                ? struct.elements_recit[0] 
+                : "Demande d'accompagnement et d'orientation globale";
             elementsList = [{
-                titre: (struct.elements_recit && struct.elements_recit.length > 0) 
-                    ? struct.elements_recit[0] 
-                    : "Demande d'accompagnement et d'orientation globale",
+                titre: defaultTitle,
                 verbatim: ''
             }];
         }
 
         const elementsHtml = elementsList.map(item => `
             <li style="margin-bottom: 0.65rem; line-height: 1.45;">
-                <div style="font-style: italic; font-weight: 500; color: #0f172a; font-size: 0.89rem; margin-bottom: 0.2rem;">
-                    « ${item.verbatim} »
-                </div>
+                ${item.verbatim ? `
+                    <div style="font-style: italic; font-weight: 500; color: #0f172a; font-size: 0.89rem; margin-bottom: 0.2rem;">
+                        « ${item.verbatim} »
+                    </div>
+                ` : ''}
                 <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.83rem; color: #1e40af; font-weight: 600;">
-                    <span>➔</span>
+                    <span>${item.verbatim ? '➔' : '•'}</span>
                     <span>${item.titre}</span>
                 </div>
             </li>

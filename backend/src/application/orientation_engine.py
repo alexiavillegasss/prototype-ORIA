@@ -794,8 +794,8 @@ class OrientationEngine:
         if "violence" in detail_lower or "violences" in detail_lower:
             if any(kw in text for kw in ["violence", "violences", "agression", "coups", "coup", "ecchymoses", "bleus", "bleu", "frappe", "frapper", "battu", "battre"]):
                 return True
-        if "maltraitance" in detail_lower or "négligence" in detail_lower:
-            if any(kw in text for kw in ["maltraitance", "maltraitant", "maltraiter", "maltraité", "maltraitée", "négligence", "negligence", "suspecte", "suspicion"]):
+        if "maltraitance" in detail_lower or "négligence" in detail_lower or "negligence" in detail_lower:
+            if any(kw in text for kw in ["maltraitance", "maltraitant", "maltraiter", "maltraité", "maltraitée", "négligence", "negligence"]):
                 return True
         if "sécurité du domicile" in detail_lower or "securite du domicile" in detail_lower:
             if "sécurité" in text or "securite" in text or "danger" in text or "effondre" in text or "délabré" in text:
