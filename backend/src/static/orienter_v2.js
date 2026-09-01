@@ -299,12 +299,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 Pourquoi cette orientation ?
             </button>
 
-            <!-- Volet d'explication épuré en Bleu Foncé (masqué par défaut) -->
-            <div id="explanation-pane" class="explanation-pane" style="display: none; margin-top: 0.5rem; margin-bottom: 0.85rem; padding: 0;">
-                <div style="font-size: 0.76rem; font-weight: 700; color: #1e40af; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
+            <!-- Volet d'explication aéré et bien espacé (masqué par défaut) -->
+            <div id="explanation-pane" class="explanation-pane" style="display: none; margin-top: 0.75rem; margin-bottom: 1.1rem; padding: 1rem 1.15rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                <div style="font-size: 0.76rem; font-weight: 700; color: #1e40af; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.65rem;">
                     Éléments identifiés dans votre récit :
                 </div>
-                <ul style="margin: 0; padding: 0; list-style: none; font-size: 0.88rem; color: #1e293b; line-height: 1.5; display: flex; flex-direction: column;">
+                <ul style="margin: 0; padding: 0; list-style: none; font-size: 0.88rem; color: #1e293b; line-height: 1.55; display: flex; flex-direction: column; gap: 0.55rem;">
                     ${elementsHtml}
                 </ul>
             </div>
