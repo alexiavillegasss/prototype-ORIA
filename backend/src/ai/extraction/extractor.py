@@ -316,8 +316,8 @@ JSON attendu :
         # Validation anti-hallucination de la suspicion de malveillance
         malveillance_val = str(raw_data.get("malveillance", "aucune")).lower()
         if malveillance_val != "aucune":
-            violence_kws = ["violence", "violences", "maltraitance", "frapp", "bleu", "coups", "menace", "agression", "abus", "spoliation", "vol", "volé", "vols", "privation", "danger"]
-            if not any(kw in text.lower() for kw in violence_kws):
+            has_violence_kw = re.search(r'\b(violence|violences|maltraitance|frappe|frapper|bleus?|coups?|menace|agression|agressions|abus|spoliation|vol|volé|vols|privation|danger)\b', text, re.IGNORECASE)
+            if not has_violence_kw:
                 malveillance_val = "aucune"
 
         mapped = {

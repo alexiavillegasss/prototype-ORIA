@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import pandas as pd
 
 class OrientationEngine:
@@ -793,16 +794,18 @@ class OrientationEngine:
 
         # 1. Urgent / Danger
         if "danger vital" in detail_lower or "secours d’urgence" in detail_lower or "secours d'urgence" in detail_lower:
-            if "secours" in text or "urgence" in text or "danger" in text or "agression" in text:
+            if re.search(r'\b(secours|urgence|danger|agression|agressions)\b', text):
                 return True
         if "violence conjugale" in detail_lower:
-            if ("violence" in text or "frappe" in text or "frapper" in text or "battu" in text or "battre" in text or "coups" in text) and ("conjugale" in text or "conjoint" in text or "mari" in text or "épouse" in text or "epouse" in text or "femme" in text or "voisin" in text):
+            has_v_kw = re.search(r'\b(violence|violences|frappe|frapper|battu|battre|coups?)\b', text)
+            has_c_kw = re.search(r'\b(conjugale?|conjoint|mari|épouse|epouse|femme|voisin)\b', text)
+            if has_v_kw and has_c_kw:
                 return True
         if "violence" in detail_lower or "violences" in detail_lower:
-            if any(kw in text for kw in ["violence", "violences", "agression", "coups", "coup", "ecchymoses", "bleus", "bleu", "frappe", "frapper", "battu", "battre"]):
+            if re.search(r'\b(violence|violences|agression|agressions|coups?|ecchymoses|bleus?|frappe|frapper|battu|battre)\b', text):
                 return True
         if "maltraitance" in detail_lower or "négligence" in detail_lower or "negligence" in detail_lower:
-            if any(kw in text for kw in ["maltraitance", "maltraitant", "maltraiter", "maltraité", "maltraitée", "négligence", "negligence"]):
+            if re.search(r'\b(maltraitance|maltraitant|maltraiter|maltraité|maltraitée|négligence|negligence)\b', text):
                 return True
         if "sécurité du domicile" in detail_lower or "securite du domicile" in detail_lower:
             if "sécurité" in text or "securite" in text or "danger" in text or "effondre" in text or "délabré" in text:
