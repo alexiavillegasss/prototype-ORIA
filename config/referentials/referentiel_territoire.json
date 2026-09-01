@@ -18,8 +18,9 @@
       "CLIC": {
         "present": true,
         "nom": "CLIC de Toulon",
-        "telephone": "04 94 24 65 25",
-        "email": "clic@ccas-toulon.fr"
+        "telephone": "04 94 24 65 00",
+        "email": "clic@ccas-toulon.fr",
+        "adresse": "100 Rue des Remparts 83000 Toulon"
       },
       "CRT": {
         "present": true,
@@ -89,8 +90,9 @@
       "CLIC": {
         "present": true,
         "nom": "CLIC de Toulon",
-        "telephone": "04 94 24 65 25",
-        "email": "clic@ccas-toulon.fr"
+        "telephone": "04 94 24 65 00",
+        "email": "clic@ccas-toulon.fr",
+        "adresse": "100 Rue des Remparts 83000 Toulon"
       },
       "CRT": {
         "present": true,
@@ -162,7 +164,8 @@
         "present": true,
         "nom": "CLIC du Coudon",
         "telephone": "04 22 44 84 73",
-        "email": "clicducoudon@neuf.fr"
+        "email": "clicducoudon@neuf.fr",
+        "adresse": "9 Rue Jean Baptiste Lavène 83130 La Garde"
       },
       "CRT": {
         "present": false
@@ -223,14 +226,15 @@
       "UTS": {
         "present": true,
         "nom": "UTS Val Gapeau Iles d'Or - LA GARDE",
-        "adresse": "53 Impasse Blériot Immeuble Le Frédéric 83130 La Garde",
+        "adresse": "53 Impasse Blériot 83130 La Garde",
         "telephone": "04 83 95 56 50"
       },
       "CLIC": {
         "present": true,
         "nom": "CLIC du Coudon",
         "telephone": "04 22 44 84 73",
-        "email": "clicducoudon@neuf.fr"
+        "email": "clicducoudon@neuf.fr",
+        "adresse": "9 Rue Jean Baptiste Lavène 83130 La Garde"
       },
       "CRT": {
         "present": true,
@@ -295,14 +299,15 @@
       "UTS": {
         "present": true,
         "nom": "UTS Val Gapeau Iles d'Or - LA GARDE",
-        "adresse": "53 Impasse Blériot Immeuble Le Frédéric 83130 La Garde",
+        "adresse": "53 Impasse Blériot 83130 La Garde",
         "telephone": "04 83 95 56 50"
       },
       "CLIC": {
         "present": true,
         "nom": "CLIC du Coudon",
         "telephone": "04 22 44 84 73",
-        "email": "clicducoudon@neuf.fr"
+        "email": "clicducoudon@neuf.fr",
+        "adresse": "9 Rue Jean Baptiste Lavène 83130 La Garde"
       },
       "CRT": {
         "present": false
@@ -437,7 +442,8 @@
         "present": true,
         "nom": "CLIC du Coudon",
         "telephone": "04 22 44 84 73",
-        "email": "clicducoudon@neuf.fr"
+        "email": "clicducoudon@neuf.fr",
+        "adresse": "9 Rue Jean Baptiste Lavène 83130 La Garde"
       },
       "CRT": {
         "present": false
@@ -1246,7 +1252,8 @@
         "present": true,
         "nom": "CLIC du Cap Sicié",
         "telephone": "04 94 06 97 04",
-        "email": "clic@la-seyne.fr"
+        "email": "clic@la-seyne.fr",
+        "adresse": "1 Rue Ernest Renan 83500 La Seyne-sur-Mer"
       },
       "CRT": {
         "present": true,

@@ -13,107 +13,113 @@ la maintenabilité du code et une extensibilité simplifiée.
 
 prototype-ORIA/
 ├── backend/
-│   └── src/                     # Code source de l'application
-│       ├── ai/                  # Module d'Intelligence Artificielle (Ollama/Llama3)
+│   ├── fields_mapping.json       # Mapping des champs pour la génération de fiches PDF
+│   └── src/                      # Code source principal de l'application
+│       ├── ai/                   # Module d'Intelligence Artificielle (Ollama/Llama3)
 │       │   ├── extraction/
-│       │   │   ├── extractor.py # Prompting, extraction & formatage du pivot
-│       │   │   └── fiche_extractor.py # Extracteur spécifique pour le remplissage des fiches PDF (DAC/CLIC)
-│       │   └── transcription/   # [Futur] Module d'intégration voix (Whisper)
-│       ├── application/         # Le Coeur Métier (Logique pure sans framework)
-│       │   ├── scoring_engine.py      # Calcul du score COMID
-│       │   ├── orientation_engine.py  # Moteur de règles & dédoublonnement
-│       │   ├── territory_manager.py   # Routage territorial (contacts Var)
-│       │   └── pdf_generator.py       # Générateur de documents PDF à partir de modèles
-│       ├── infrastructure/      # Connexion aux services physiques / externes
-│       │   ├── llm_client.py    # Client HTTP pour Ollama
-│       │   └── database.py      # Gestion de la base SQLite
-│       ├── static/              # Fichiers statiques et modèles (Templates)
-│       │   ├── fiche_dac_vierge.pdf       # Modèle PDF vierge pour le DAC
-│       │   ├── fiche_clic_LaSeyne_vierge.pdf # Modèle PDF vierge pour le CLIC de La Seyne
-│       │   ├── index.html       # Page d'accueil (Saisie libre & Analyse métier)
-│       │   ├── app.js           # Logique front-end de la page d'accueil
-│       │   ├── orienter.html    # Interface web d'orientation
-│       │   ├── orienter.js      # Logique de l'interface d'orientation et téléchargement PDF
-│       │   ├── style.css        # Feuille de style CSS globale
-│       │   └── logo.png         # Logo ORIA
-│       └── main.py              # Le Chef d'Orchestre (FastAPI)
-├── config/                      # Toutes les données de configuration (Hors code)
+│       │   │   ├── extractor.py  # Prompting, extraction & formatage du Schéma Pivot
+│       │   │   └── fiche_extractor.py # Extracteur spécifique pour fiches de liaison PDF (DAC/CLIC)
+│       │   ├── security/
+│       │   │   └── anonymizer.py # Module de masquage des données nominatives sensibles
+│       │   └── transcription/    # Module d'intégration dictée vocale / transcription
+│       ├── application/          # Cœur Métier (Logique décisionnelle pure)
+│       │   ├── scoring_engine.py      # Calcul du score et du niveau de complexité COMID
+│       │   ├── orientation_engine.py  # Moteur d'orientation par points, règles Excel, conseils & explications simples
+│       │   ├── territory_manager.py   # Routage territorial (contacts des structures du Var)
+│       │   ├── commune_normalizer.py  # Table de normalisation des communes (rattrapage des coquilles de dictée vocale)
+│       │   └── pdf_generator.py       # Générateur des fiches de liaison PDF pré-remplies
+│       ├── infrastructure/       # Connexion aux services physiques & stockage
+│       │   ├── llm_client.py     # Client HTTP pour l'IA locale (Ollama API)
+│       │   ├── database.py       # Gestionnaire de la base SQLite (dossiers, COMID, Zarit)
+│       │   └── whisper_transcriber.py # Transcripteur audio local
+│       ├── static/               # Interface Web (Frontend HTML/JS/CSS) & Modèles PDF
+│       │   ├── index.html        # Tableau de bord principal (KPIs & Diagramme de Sankey)
+│       │   ├── app.js            # Logique front-end du Tableau de bord & Sankey
+│       │   ├── orienter.html     # Interface du Moteur d'Orientation Interactif
+│       │   ├── orienter_v2.js    # Logique du Moteur d'Orientation (dictée vocale, conseils, explications 2 parties)
+│       │   ├── comid.html        # Interface d'évaluation de la Grille COMID
+│       │   ├── zarit.html        # Interface d'évaluation du fardeau de l'aidant (Grille Zarit)
+│       │   ├── remplir.html      # Générateur interactif de fiches de liaison PDF
+│       │   ├── fiches.html       # Visualiseur de fiches de liaison
+│       │   ├── style_v2.css      # Feuille de style CSS globale (thème clair/sombre, animations)
+│       │   ├── logo.png          # Logo officiel ORIA
+│       │   ├── fiche_dac_vierge.pdf            # Modèle PDF vierge DAC Var Ouest
+│       │   ├── fiche_clic_LaSeyne_vierge.pdf   # Modèle PDF vierge CLIC La Seyne
+│       │   ├── fiche_clic_Toulon.pdf           # Modèle PDF vierge CLIC Toulon
+│       │   ├── fiche_clic_ProvenceVerte.pdf    # Modèle PDF vierge CLIC Provence Verte
+│       │   └── fiche_clic_Hadage.pdf           # Modèle PDF vierge CLIC Hadage
+│       ├── oria_database.db      # Base de données SQLite locale
+│       └── main.py               # Le Chef d'Orchestre Backend (Serveur FastAPI & routes API)
+├── config/                       # Référentiels Métier & Configuration (Hors code)
+│   ├── app_config.yaml           # Configuration technique globale (modèle IA, URLs, réseau)
 │   ├── rules/
-│   │   ├── COMID.json           # Référentiel des 30 critères et synonymes
-│   │   └── orientation_rules.json # Règles logiques métier (ET / OU)
+│   │   ├── tableau_oria.xlsx     # SOURCE DE VÉRITÉ MÉTIER (Besoins, structures, mots-clés, conseils & liens)
+│   │   ├── COMID.json            # Référentiel des critères COMID et synonymes
+│   │   └── orientation_rules.json# Export JSON des règles d'orientation
 │   ├── referentials/
-│   │   └── referentiel_territoire.json # Contacts géographiques (Var, 83)
+│   │   └── referentiel_territoire.json # Sectorisation géolocalisée et annuaire des structures du Var
 │   ├── schemas/
-│   │   └── schema_definition.json     # Le "Moule" JSON Schema officiel
-│   └── app_config.yaml          # Fichier de configuration technique globale
-├── docs/                        # Documentation vivante du projet
+│   │   └── schema_definition.json     # Le Schéma Pivot officiel des variables
+│   └── prompt/
+│       ├── extraction_prompt.txt      # Prompt d'extraction Llama
+│       ├── decision_explanation_prompt.txt # Prompt d'explication décisionnelle
+│       └── transcription_prompt.txt   # Prompt d'assistance transcription
+├── docs/                         # Documentation officielle du projet
 │   └── architecture/
-│       ├── ARCHITECTURE_DOSSIERS.txt # Ce fichier d'explication
-│       ├── grille/               # [Vide] Grilles d'évaluation cliniques
-│       ├── tableau de bord/      # Manuels de la brique analytique (Sankey, KPIs, API)
-│       └── tableau principal/    # Manuels de l'orientation (Moteur, PDF, Sécurité)
-│   └── metier/
-│       └── RECAP_SIMULATIONS_CAS_PATIENTS.md # Journal de bord des 24 cas tests
-├── tests_simulation/            # Scénarios cliniques de validation
-│   ├── test_mr_gilbert.py       # Cas Dépendance et médecin
-│   ├── test_mme_antoinette.py   # Cas Épuisement aidant (APA Actif)
-│   ├── test_mme_huguette.py     # Cas Spoliation financière & Urgence Sociale
-│   └── [21 autres scripts...]   # Total de 24 cas cliniques d'école
-├── oria_database.db             # Base de données SQLite locale
-├── tester_interactivement.py    # Script pour tester l'orientation et l'export PDF en CLI
-├── requirements.txt             # Dépendances Python du projet
-├── .gitignore                   # Fichiers ignorés par Git (ex: venv)
-└── README.md                    # Page d'accueil & Guide de démarrage rapide
+│       └── ARCHITECTURE_DOSSIERS.txt  # Ce document de référence
+├── tests_simulation/             # Scénarios cliniques de validation
+│   ├── test_mr_gilbert.py        # Cas Dépendance et médecin traitant
+│   ├── test_mme_antoinette.py    # Cas Épuisement aidant (APA Actif)
+│   ├── test_mme_huguette.py      # Cas Spoliation financière & Urgence Sociale
+│   └── [...]                     # Suite de cas tests cliniques de validation
+├── requirements.txt              # Dépendances Python (FastAPI, openpyxl, PyMuPDF, etc.)
+├── .gitignore                    # Fichiers ignorés par Git
+└── README.md                     # Présentation générale du projet ORIA
 
 -------------------------------------------------------------------------------
-2. LES 3 GRANDS PRINCIPES DE CETTE ARCHITECTURE
+2. LES GRANDES BRIQUES FONCTIONNELLES & MÉTIER D'ORIA
 -------------------------------------------------------------------------------
 
-A. SÉPARATION DES RESPONSABILITÉS (Separation of Concerns)
-   Chaque dossier a une mission unique et hermétique :
-   - Le dossier "ai" ne sait pas comment fonctionne le calcul du score.
-   - Le dossier "application" (scoring, règles) contient la logique métier
-     pure. Il est 100% indépendant des frameworks : il ne sait pas qu'il existe
-     une base de données SQLite ou un serveur FastAPI. Si vous changez de base
-     de données ou de serveur web demain, ce code n'a pas à être modifié.
-   - Le dossier "infrastructure" gère les détails techniques de bas niveau :
-     l'écriture des fichiers, les requêtes réseau et les requêtes SQL.
+A. LE MOTEUR DÉCISIONNEL D'ORIENTATION (`orientation_engine.py`)
+   - Analyse les récits cliniques et sociaux rédigés ou dictés à la voix.
+   - Recharge dynamiquement les règles et conseils à partir de `tableau_oria.xlsx`.
+   - Traite les garde-fous d'urgence (Police / Gendarmerie, CEV) avec priorité +400 pts.
+   - Applique les priorités seniors vers le CLIC (60+ ans) et de complexité vers le DAC.
+   - Formate les Conseils & Préconisations sous forme de liens web cliquables.
+   - Génère l'explication simple en 2 parties :
+     1. Rôle de la structure (mission synthétique).
+     2. Éléments identifiés dans le récit de l'usager.
 
-B. ARCHITECTURE DÉCLARATIVE & GUIDÉE PAR LA DONNÉE (Data-Driven)
-   Toute la configuration et la logique d'aiguillage sont en dehors du code
-   Python, centralisées dans le répertoire "/config".
-   - Si un numéro de téléphone change dans le Var, vous modifiez le fichier JSON.
-   - Si les règles du DAC ou du CRT évoluent (ex: GIR 3 au lieu de GIR 2), vous
-     modifiez le fichier JSON.
-   - Un utilisateur non-développeur peut ajuster le comportement d'ORIA
-     sans toucher à une ligne de code Python.
+B. LA RECONNAISSANCE VOCALE & CORRECTION AUTOMATIQUE DES CHIFFRES (`orienter_v2.js`)
+   - Intègre la dictée vocale en direct via la Web Speech API.
+   - Nettoie en temps réel les décompositions de nombres fréquentes en français
+     (ex: "605 ans" ➔ 65 ans, "808 ans" ➔ 88 ans, "6017 ans" ➔ 77 ans, "8017 ans" ➔ 97 ans).
 
-C. SUITE DE TESTS CLINIQUES ISOLÉE
-   Le dossier "/tests_simulation" est une force majeure du projet. Il regroupe
-   24 cas patients réels d'école. Il fait office de filet de sécurité : à chaque
-   mise à jour du code, vous pouvez lancer ces scripts pour vous assurer qu'aucun
-   diagnostic ni aiguillage n'a été altéré.
+C. LA NORMALISATION TERRITORIALE DES COMMUNES (`commune_normalizer.py`)
+   - Intercepte les erreurs phonétiques de dictée vocale (ex: "la saine en l'air" ➔ La Seyne-sur-Mer).
+   - Harmonise les noms de communes pour garantir un affichage uniforme dans le moteur
+     et dans le diagramme de Sankey du Tableau de bord.
+
+D. LA BASE DE DONNÉES & LE TABLEAU DE BORD (`database.py` & `main.py`)
+   - Stocke l'historique complet des évaluations et des orientations dans `oria_database.db`.
+   - Alimente le diagramme de Sankey dynamique et les indicateurs KPIs du Tableau de bord.
 
 -------------------------------------------------------------------------------
-3. LE FLUX D'EXÉCUTION D'UNE REQUÊTE DANS CETTE STRUCTURE
+3. FLUX D'EXÉCUTION D'UNE REQUÊTE D'ORIENTATION
 -------------------------------------------------------------------------------
 
-Quand un récit patient arrive sur l'application :
-
-1. L'API (main.py) reçoit le texte et l'envoie à l'extracteur.
-2. L'Extracteur (ai/extractor.py) appelle le client Ollama (infrastructure/llm_client.py)
-   avec une température de 0.0 (déterministe) pour obtenir un JSON propre.
-3. L'Extracteur traduit ce JSON brut selon le moule officiel (config/schemas/schema_definition.json).
-4. Le Scoring (application/scoring_engine.py) calcule le score COMID à partir
-   des règles définies dans config/rules/COMID.json.
-5. L'Orientation (application/orientation_engine.py) évalue les règles logiques
-   définies dans config/rules/orientation_rules.json, et filtre/fusionne
-   les structures en éliminant les doublons.
-6. Le Territoire (application/territory_manager.py) injecte les coordonnées physiques
-   à partir du référentiel config/referentials/referentiel_territoire.json.
-7. La Base de Données (infrastructure/database.py) enregistre le tout.
-8. L'API (main.py) renvoie le résultat complet au format JSON.
+1. L'usager ou le professionnel saisit ou dicte un texte sur `orienter.html`.
+2. Le script JS (`orienter_v2.js`) corrige immédiatement les nombres et villes parlés.
+3. L'API FastAPI (`main.py`) reçoit la requête POST `/api/orienter`.
+4. L'Extracteur IA (`ai/extractor.py`) extrait les variables du Schéma Pivot.
+5. Le Moteur (`application/orientation_engine.py`) :
+   a. Vérifie les garde-fous de sécurité (Police, CEV).
+   b. Calcule les scores par structure selon `tableau_oria.xlsx`.
+   c. Rattache les conseils et les fiches territoriales (`territory_manager.py`).
+   d. Génère la mission de la structure et les éléments clés du récit.
+6. La base de données (`database.py`) enregistre le dossier.
+7. L'interface affiche le carrousel des orientations avec les préconisations et le volet "Pourquoi cette orientation ?".
 
 ===============================================================================
-Document rédigé par Antigravity le 20/05/2026 (Mis à jour le 29/05/2026).
+Document rédigé par l'équipe projet ORIA & Antigravity (Mis à jour le 28/08/2026).
 ===============================================================================
