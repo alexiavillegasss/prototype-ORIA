@@ -281,14 +281,8 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
 
         card.innerHTML = `
-            <div class="struct-card-header" style="margin-bottom: 0.65rem;">
-                <span class="struct-badge" style="background-color: ${color}20; color: ${color}; border: 1px solid ${color}40;">
-                    ${struct.structure_type}
-                </span>
-            </div>
-
             <!-- Titre de la structure principale -->
-            <h4 class="struct-name" style="margin-bottom: 0.75rem;">${struct.label}</h4>
+            <h4 class="struct-name" style="margin-bottom: 0.75rem; margin-top: 0.25rem;">${struct.label}</h4>
 
             <!-- 2. Rôle de la structure directement sous le titre -->
             <div class="role-structure-box" style="margin-bottom: 1.1rem; padding: 0;">
