@@ -17,13 +17,18 @@ class Anonymizer:
             "Donc", "Or", "Ni", "Car", "Dans", "Pour", "Avec", "Chez", "Par"
         }
         
+        # Regex d'anonymisation des adresses physiques exactes (ex: 18 rue des mimosas, 53 impasse Blériot)
+        self.address_pattern = re.compile(
+            r'\b(?:\d{1,4}\s*(?:bis|ter|quater|[a-c])?\s*,?\s*)?(?:rue|avenue|av\.?|bd\.?|boulevard|impasse|chemin|allée|allee|place|route|résidence|residence|square|passage|quai|cours)\s+[^,\.\;\n]+?(?=\s+(?:à|a|au|en|sur|\b\d{5}\b|\.|\,|\;|\n|$))',
+            re.IGNORECASE | re.UNICODE
+        )
+        
     def pseudonymize(self, text: str) -> str:
         """
-        Anonymizes proper names in a clinical description by replacing them with initials.
+        Anonymizes proper names and street addresses in a clinical description.
         Example:
-            "Mme Antoinette Durand, 88 ans..." -> "Mme A. D., 88 ans..."
-            "M. Albert Vacek, 65 ans..."       -> "M. A. V., 65 ans..."
-            "Monsieur Dubois, 70 ans..."       -> "Monsieur D., 70 ans..."
+            "Mme Antoinette Durand, 88 ans, 18 rue des mimosas à La Seyne..." 
+            -> "Mme A. D., 88 ans, [ADRESSE ANONYMISÉE] à La Seyne..."
         """
         if not text:
             return text
@@ -55,8 +60,6 @@ class Anonymizer:
             pseudonym = f"{title} {' '.join(initials)}"
             
             # Calculate exactly how much of the original string was matched and converted to initials
-            # We reconstruct the matched substring to find its length in the original text
-            # We must account for spaces, hyphens, and apostrophes in the original name
             matched_substring_pattern = r'^' + r'[\s\-\']+'.join(re.escape(p) for p in valid_parts)
             sub_match = re.search(matched_substring_pattern, full_name)
             
@@ -67,4 +70,6 @@ class Anonymizer:
             else:
                 return pseudonym
 
-        return self.title_pattern.sub(replace_name, text)
+        text = self.title_pattern.sub(replace_name, text)
+        text = self.address_pattern.sub("[ADRESSE ANONYMISÉE]", text)
+        return text
