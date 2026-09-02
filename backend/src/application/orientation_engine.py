@@ -1362,7 +1362,7 @@ class OrientationEngine:
             # Nettoyage pour les aides à domicile si la clause se termine par "pour nous soulager"
             if any(w in detail_lower for w in ["domicile", "saad", "ssiad", "prestataire"]):
                 cleaned = re.sub(r'\s+pour nous soulager.*$', '', cleaned, flags=re.IGNORECASE)
-            return cleaned.strip()
+            return self._clean_verbatim_text(cleaned)
 
         # Fallback au niveau de la phrase complète si la clause n'est pas suffisante
         best_sentence = ""
@@ -1378,6 +1378,29 @@ class OrientationEngine:
                 best_sentence = sentence
 
         if best_score >= 4:
-            return best_sentence.strip()
+            return self._clean_verbatim_text(best_sentence)
 
         return ""
+
+    def _clean_verbatim_text(self, text: str) -> str:
+        if not text:
+            return ""
+        import re
+        # 1. Supprime l'adresse exacte (ex: 18 rue bon marchais, 18 rue des mimosas, [ADRESSE ANONYMISÉE])
+        cleaned = re.sub(r'\[ADRESSE ANONYMISÉE\]', '', text, flags=re.IGNORECASE)
+        cleaned = re.sub(
+            r'\b(?:\d{1,4}\s*(?:bis|ter|quater|[a-c])?\s*,?\s*)?(?:rue|avenue|av\.?|bd\.?|boulevard|impasse|chemin|allée|allee|place|route|résidence|residence|square|passage|quai|cours)\s+[^,\.\;\n]+',
+            '',
+            cleaned,
+            flags=re.IGNORECASE
+        )
+        # 2. Supprime la mention d'habitation/commune associée au début ("dans mon bâtiment, j'habite à la valette")
+        cleaned = re.sub(r'\b(?:dans\s+mon\s+bâtiment|dans\s+mon\s+batiment|j\'habite|habite|réside|vit)\s*(?:à|a|au|en)?\s*(?:la\s+valette|la\s+seyne|toulon|la\s+garde|solliès|le\s+pradet|[a-zA-Z\u00c0-\u00dc\u00e0-\u00f6\u00f8-\u00ff\s\-]+)?,?\s*', '', cleaned, flags=re.IGNORECASE)
+        
+        cleaned = re.sub(r'\s*,\s*,', ',', cleaned)
+        cleaned = re.sub(r'^\s*,\s*', '', cleaned)
+        cleaned = re.sub(r'\s*,\s*$', '', cleaned)
+        cleaned = re.sub(r'\s{2,}', ' ', cleaned).strip()
+        if cleaned:
+            cleaned = cleaned[0].upper() + cleaned[1:]
+        return cleaned
