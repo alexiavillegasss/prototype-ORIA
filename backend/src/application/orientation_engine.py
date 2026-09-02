@@ -380,6 +380,9 @@ class OrientationEngine:
                 "diogene" in text_lower or
                 "incurie" in text_lower or
                 "insalubre" in text_lower or
+                "nettoyer" in text_lower or
+                "odeur" in text_lower or
+                "sentir" in text_lower or
                 "auto-réhabilitation" in text_lower or
                 "auto-rehabilitation" in text_lower
             )
@@ -607,9 +610,18 @@ class OrientationEngine:
                     if t_norm not in seen_titles:
                         seen_titles.add(t_norm)
                         final_v = ""
-                        if v and v not in seen_verbatims:
+                        if v and v.strip() and v not in seen_verbatims:
                             final_v = v
                             seen_verbatims.add(v)
+                        else:
+                            crit_fallback = str(n.get("moteur_criteria", "") or "")
+                            if any(k in t_norm for k in ["diogène", "diogene", "incurie", "insalubrité", "nettoyage", "réhabilitation", "aménagement"]):
+                                crit_fallback += ", nettoyer, appartement, sentir, odeur, odeurs, sale, propreté, porte, bâtiment"
+                            v_retry = self._extract_verbatim(t, crit_fallback, original_text)
+                            if v_retry and v_retry.strip():
+                                final_v = v_retry.strip()
+                                seen_verbatims.add(final_v)
+
                         elements_detail.append({
                             "titre": t,
                             "verbatim": final_v
@@ -919,8 +931,8 @@ class OrientationEngine:
                 return True
 
         # Nettoyage extrême / Diogène / Incurie / Insalubrité (Sociétés de nettoyage spécialisées / Compagnons Bâtisseurs - UNIQUEMENT SI INSALUBRITÉ SÉVÈRE)
-        if "diogène" in detail_lower or "diogene" in detail_lower or "incurie" in detail_lower or "insalubrité" in detail_lower or "insalubre" in detail_lower:
-            diogene_kws = ["diogène", "diogene", "incurie", "insalubre", "insalubrité", "nettoyage extrême", "nettoyage extreme", "très sale", "tres sale", "désinfection", "desinfection", "désencombrement", "desencombrement", "auto-réhabilitation", "auto-rehabilitation"]
+        if "diogène" in detail_lower or "diogene" in detail_lower or "incurie" in detail_lower or "insalubrité" in detail_lower or "insalubre" in detail_lower or "réhabilitation" in detail_lower:
+            diogene_kws = ["diogène", "diogene", "incurie", "insalubre", "insalubrité", "nettoyage", "nettoyer", "sentir", "odeur", "odeurs", "sale", "propreté", "proprete", "désinfection", "desinfection", "désencombrement", "desencombrement", "auto-réhabilitation", "auto-rehabilitation"]
             if any(kw in text for kw in diogene_kws):
                 return True
 
@@ -1320,11 +1332,13 @@ class OrientationEngine:
             words = [w.lower() for w in detail.split() if len(w) >= 4 and w.lower() not in ["besoin", "mise", "place", "dans", "pour", "avec", "cette", "adaptation", "choix", "d'un", "d'une", "perte", "rapide"]]
             kws.extend(words)
 
-        # Target-specific keyword focus & tuning for Aidants vs Domicile
+        # Target-specific keyword focus & tuning for Diogène vs Aidants vs Domicile
         detail_lower = (detail + " " + str(criteria)).lower()
-        if any(w in detail_lower for w in ["aidant", "aidants", "répit", "repit", "fil d'argent"]):
+        if any(w in detail_lower for w in ["diogène", "diogene", "incurie", "insalubrité", "insalubre", "nettoyage", "réhabilitation", "désinfection"]):
+            kws = ["diogène", "diogene", "incurie", "insalubrité", "insalubre", "nettoyage", "nettoyer", "sentir", "odeur", "odeurs", "sale", "propreté", "appartement", "logement", "désinfection", "desinfection"]
+        elif any(w in detail_lower for w in ["aidant", "aidants", "répit", "repit", "fil d'argent"]):
             kws = ["surmené", "surmenée", "surmenés", "surmenages", "surmenage", "épuisé", "épuisée", "épuisement", "fatigué", "aidant", "aidante", "aidants", "répit", "repit", "soulager", "souffle"]
-        elif any(w in detail_lower for w in ["domicile", "saad", "ssiad", "ménage", "repas", "prestataire"]):
+        elif any(w in detail_lower for w in ["domicile", "saad", "ssiad", "prestataire"]):
             kws = ["aides à domicile", "aide à domicile", "aides a domicile", "aide a domicile", "auxiliaire de vie", "saad", "ssiad", "prestataire", "domicile"]
         elif any(w in detail_lower for w in ["violence", "3919", "maltraitance", "frappe", "bleu", "danger"]):
             kws = ["violence", "violences", "frappe", "frappé", "bleu", "bleus", "maltraitance", "peur", "danger", "menace", "insulte"]
