@@ -107,7 +107,7 @@ class OrientationEngine:
             "Médecin traitant ne se déplace plus ": 
                 lambda d, c, text_lower: "ne se déplace plus" in text_lower or "ne se deplace plus" in text_lower,
             "Recherche de kinésithérapeute": 
-                lambda d, c, text_lower: "kiné" in text_lower or "kine" in text_lower or "kinésithérapeute" in text_lower or "recherche de kine" in text_lower,
+                lambda d, c, text_lower: ("kiné" in text_lower or "kine" in text_lower or "kinésithérapeute" in text_lower) and not any(kw in text_lower for kw in ["a un kiné", "a une kiné", "a un kinésithérapeute", "a une kinésithérapeute", "déjà un kiné", "déjà une kiné", "suivi par un kiné", "suivie par un kiné", "qu'une kiné", "qu'un kiné", "qu'une kinésithérapeute", "qu'un kinésithérapeute", "kinésithérapeute qui arrive", "kinésithérapeute qui rentre", "kiné qui arrive"]),
             "Recherche d'infirmière": 
                 lambda d, c, text_lower: "infirmier" in text_lower or "infirmière" in text_lower or "idel" in text_lower,
             "Recherche de Médecin Traitant": 
@@ -501,13 +501,28 @@ class OrientationEngine:
             extracted_data.get("evaluation.comid.depression") is True
         ):
             redirection_dac = False
-            
-        # Application de la redirection DAC
-        if redirection_dac:
-            scores["DAC"] = max(scores.values()) + 1
-            if temp_winner == "UTS" and person_cannot_move:
-                scores["UTS"] = -9999
-        elif comid_results.get("score_total", 0) < 6:
+        has_refus_soins_or_aides = (
+            extracted_data.get("evaluation.comid.opposition_soins") is True or
+            extracted_data.get("demande.motif_principal") in ["refus_de_soins", "refus_aide_domicile"] or
+            "refuse" in text_lower or
+            "refus" in text_lower or
+            "opposition" in text_lower or
+            "ne veut pas" in text_lower
+        )
+
+        dac_section_obj = None
+        if has_refus_soins_or_aides and "DAC" not in excluded_structures:
+            v_refus = self._extract_verbatim("Refus d'aide et opposition aux soins", "refuse, refus, opposition, aide, infirmières, rentrent", original_text)
+            dac_section_obj = {
+                "structure_type": "DAC",
+                "label": self._get_structure_label("DAC"),
+                "mission_structure": "Le DAC (Dispositif d'Appui à la Coordination) intervient en second recours si le refus d'aide ou de soins persiste et complique l'accompagnement de proximité.",
+                "elements_recit_detail": [{
+                    "titre": "Refus d'aide à domicile et opposition aux soins (relais DAC si persistance du refus)",
+                    "verbatim": v_refus
+                }]
+            }
+            # Le DAC vit en section 2 sous le CLIC et ne crée pas de cube principal séparé
             scores["DAC"] = -9999
 
         # 4.4 : Fil d'Argent est toujours une Ressource Complémentaire et ne crée jamais de carte principale
@@ -607,6 +622,14 @@ class OrientationEngine:
                 else:
                     elements_detail = [{"titre": "Éléments cliniques généraux rapportés dans votre saisie", "verbatim": ""}]
 
+            # Règle d'explicabilité : si refus d'aide/soins et orienté vers le DAC, l'expliquer explicitement
+            if struct_type == "DAC" and has_refus_soins_or_aides:
+                v_refus = self._extract_verbatim("Refus d'aide et opposition aux soins", "refuse, refus, opposition, aide, infirmières, rentrent", original_text)
+                elements_detail.insert(0, {
+                    "titre": "Refus d'aide à domicile et opposition aux soins : le DAC assure la médiation et l'accompagnement des situations de refus de soins et de rupture",
+                    "verbatim": v_refus
+                })
+
             # Règle d'explicabilité : si usager < 60 ans et orienté vers le DAC, l'expliquer explicitement
             age_val = eval_context.get("usager.identite.age_estime")
             if struct_type == "DAC" and age_val is not None:
@@ -640,7 +663,8 @@ class OrientationEngine:
                 "mission_structure": self.structure_missions.get(struct_type, "Structure d'accompagnement et d'orientation."),
                 "elements_recit": struct_elements_titles,
                 "elements_recit_detail": elements_detail,
-                "cpts_section": cpts_section_obj.copy() if (cpts_section_obj and struct_type in ["CLIC", "DAC", "CRT", "CCAS", "UTS"]) else None
+                "cpts_section": cpts_section_obj.copy() if (cpts_section_obj and struct_type in ["CLIC", "DAC", "CRT", "CCAS", "UTS"]) else None,
+                "dac_section": dac_section_obj.copy() if (dac_section_obj and struct_type in ["CLIC", "UTS", "CCAS", "CRT"]) else None
             }
             final_structures.append(struct_obj)
             
@@ -881,6 +905,9 @@ class OrientationEngine:
 
         # Kinésithérapeute / Kiné
         if "kiné" in detail_lower or "kine" in detail_lower or "kinésithérapeute" in detail_lower or "kinesitherapeute" in detail_lower:
+            has_already_kine = any(kw in text for kw in ["a un kiné", "a une kiné", "a un kinésithérapeute", "a une kinésithérapeute", "déjà un kiné", "déjà une kiné", "suivi par un kiné", "suivie par un kiné", "qu'une kiné", "qu'un kiné", "qu'une kinésithérapeute", "qu'un kinésithérapeute", "kinésithérapeute qui arrive", "kinésithérapeute qui rentre", "kiné qui arrive"])
+            if has_already_kine:
+                return False
             kine_kws = ["kiné", "kine", "kinésithérapeute", "kinesitherapeute", "masso-kinésithérapie"]
             if any(kw in text for kw in kine_kws):
                 return True
@@ -924,8 +951,10 @@ class OrientationEngine:
             if ("médecin" in text or "medecin" in text or "docteur" in text) and ("visite" in text or "déplace" in text or "deplace" in text or "vad" in text.split()):
                 return True
         if "kinésithérapeute" in detail_lower or "kinesitherapeute" in detail_lower:
-            if ("cherche" in text or "recherche" in text or "besoin" in text or "trouver" in text or "demande" in text) and ("kiné" in text or "kine" in text or "kinésithérapeute" in text or "kinesitherapeute" in text):
+            has_already_kine = any(kw in text for kw in ["a un kiné", "a une kiné", "a un kinésithérapeute", "a une kinésithérapeute", "déjà un kiné", "déjà une kiné", "suivi par un kiné", "suivie par un kiné", "qu'une kiné", "qu'un kiné", "qu'une kinésithérapeute", "qu'un kinésithérapeute", "kinésithérapeute qui arrive", "kinésithérapeute qui rentre", "kiné qui arrive"])
+            if not has_already_kine and ("cherche" in text or "recherche" in text or "besoin" in text or "trouver" in text or "demande" in text) and ("kiné" in text or "kine" in text or "kinésithérapeute" in text or "kinesitherapeute" in text):
                 return True
+            return False
         if "infirmier" in detail_lower or "idel" in detail_lower:
             if ("cherche" in text or "recherche" in text or "besoin" in text or "trouver" in text or "demande" in text) and ("infirmier" in text or "infirmière" in text or "infirmiere" in text or "idel" in text):
                 return True

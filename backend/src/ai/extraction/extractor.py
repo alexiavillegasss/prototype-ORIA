@@ -458,7 +458,8 @@ JSON attendu :
             "perte_autonomie_recente": ["chute", "chutes", "perte d'autonomie", "perte d’autonomie", "perte autonomie"],
             "precarite_financiere": ["dette", "dettes", "surendettement", "surendetté", "surendette", "pas les moyens", "pas de moyens", "factures", "aide sociale à l'hébergement", "aide sociale a l'hebergement"],
             "isolement_social": ["seul", "seule", "isolé", "isole", "isolement"],
-            "douleurs": ["douleur", "douleurs", "souffre", "souffrance", "chutes à répétition", "chutes repetees"]
+            "douleurs": ["douleur", "douleurs", "souffre", "souffrance", "chutes à répétition", "chutes repetees"],
+            "opposition_soins": ["refuse", "refus", "opposition", "ne veut pas", "ne veut plus", "refuse l'aide", "refuse les"]
         }
         
         # Épuisement aidant

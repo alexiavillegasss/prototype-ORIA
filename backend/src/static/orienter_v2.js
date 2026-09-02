@@ -345,6 +345,88 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }
 
+        // 2.2 SECTION DAC (DIRECTEMENT EN DESSOUS DANS LE MÊME CUBE SI RELAIS DAC)
+        let dacSectionHtml = '';
+        if (struct.dac_section) {
+            const dac = struct.dac_section;
+            const dacPhone = dac.telephone && dac.telephone.trim() !== '' && dac.telephone !== 'Non répertorié';
+            const dacAddress = dac.adresse && dac.adresse.trim() !== '' && dac.adresse !== 'Non enregistrée';
+            
+            let dacList = (dac.elements_recit_detail && dac.elements_recit_detail.length > 0)
+                ? dac.elements_recit_detail.filter(item => item.verbatim && item.verbatim.trim() !== '')
+                : [];
+                
+            if (dacList.length === 0) {
+                dacList = [{
+                    titre: "Refus d'aide à domicile et opposition aux soins (relais DAC en 2ème intention)",
+                    verbatim: ""
+                }];
+            }
+
+            const dacElementsHtml = dacList.map(item => `
+                <li style="margin-bottom: 0.65rem; line-height: 1.45;">
+                    ${item.verbatim ? `
+                        <div style="font-style: italic; font-weight: 500; color: #0f172a; font-size: 0.89rem; margin-bottom: 0.25rem; background: #eff6ff; padding: 0.4rem 0.7rem; border-left: 3px solid #2563eb; border-radius: 4px;">
+                            « ${item.verbatim} »
+                        </div>
+                    ` : ''}
+                    <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.84rem; color: #1d4ed8; font-weight: 600;">
+                        <span>${item.verbatim ? '➔' : '•'}</span>
+                        <span>${item.titre}</span>
+                    </div>
+                </li>
+            `).join('');
+
+            dacSectionHtml = `
+                <div style="margin-top: 1.4rem; padding-top: 1.3rem; border-top: 2px solid #e2e8f0;">
+                    <h4 style="margin-bottom: 0.75rem; margin-top: 0.15rem; font-size: 1.12rem; font-weight: 700; color: #0f172a;">
+                        ${dac.label} (Relais en 2nd recours)
+                    </h4>
+
+                    <div style="margin-bottom: 1.1rem; padding: 0.85rem 1rem; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px;">
+                        <div style="font-size: 0.76rem; font-weight: 800; color: #1d4ed8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem;">
+                            Rôle de la structure :
+                        </div>
+                        <p style="margin: 0; font-size: 0.91rem; color: #334155; line-height: 1.55; font-weight: 450;">
+                            ${dac.mission_structure || 'Le DAC (Dispositif d\'Appui à la Coordination) intervient en second recours si le refus d\'aide ou de soins persiste.'}
+                        </p>
+                    </div>
+
+                    <button id="btn-why-dac" class="btn-explain" style="margin-bottom: 0.75rem;">
+                        Pourquoi cette orientation ?
+                    </button>
+
+                    <div id="explanation-pane-dac" class="explanation-pane" style="display: none; margin-top: 0.75rem; margin-bottom: 1.1rem; padding: 1rem 1.15rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                        <div style="font-size: 0.76rem; font-weight: 700; color: #1d4ed8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.65rem;">
+                            Éléments identifiés dans votre récit :
+                        </div>
+                        <ul style="margin: 0; padding: 0; list-style: none; font-size: 0.88rem; color: #1e293b; line-height: 1.55; display: flex; flex-direction: column; gap: 0.55rem;">
+                            ${dacElementsHtml}
+                        </ul>
+                    </div>
+
+                    ${(dacPhone || dacAddress) ? `
+                        <div class="struct-contact" style="margin-top: 0.85rem; margin-bottom: 1.1rem; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 1.4rem; font-size: 0.88rem; color: #334155;">
+                            ${dacPhone ? `
+                                <div style="display: flex; align-items: center; gap: 0.45rem; white-space: nowrap;">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                    <span style="font-weight: 700; color: #2563eb; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.04em;">Tél :</span>
+                                    <a href="tel:${dac.telephone}" style="color: #1e293b; font-weight: 600; text-decoration: none;">${dac.telephone}</a>
+                                </div>
+                            ` : ''}
+                            ${dacAddress ? `
+                                <div style="display: flex; align-items: center; gap: 0.45rem; flex: 1; min-width: 220px;">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                    <span style="font-weight: 700; color: #2563eb; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.04em; white-space: nowrap;">Adresse :</span>
+                                    <span style="color: #1e293b; font-weight: 500;">${dac.adresse}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
         // 3. SECTION RESSOURCES COMPLÉMENTAIRES (ENCORE EN DESSOUS DANS LE MÊME CUBE)
         const rawRessources = (struct.ressources && struct.ressources.length > 0) 
             ? struct.ressources 
@@ -404,10 +486,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             ${contactHtml}
             ${cptsSectionHtml}
+            ${dacSectionHtml}
             ${ressourcesHtml}
             
             <div class="feedback-pane" style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dashed #e2e8f0;">
-                <span class="feedback-title">${struct.cpts_section ? "Cette orientation (CLIC & CPTS) convient-elle à la situation de l'usager ?" : "Cette orientation convient-elle à la situation de l'usager ?"}</span>
+                <span class="feedback-title">${(struct.cpts_section && struct.dac_section) ? "Cette orientation (CLIC, CPTS & DAC) convient-elle à la situation de l'usager ?" : (struct.dac_section ? "Cette orientation (CLIC & DAC) convient-elle à la situation de l'usager ?" : (struct.cpts_section ? "Cette orientation (CLIC & CPTS) convient-elle à la situation de l'usager ?" : "Cette orientation convient-elle à la situation de l'usager ?"))}</span>
                 <div class="feedback-buttons">
                     <button id="btn-validate-yes" class="btn-success">
                         <span>Oui, elle convient</span>
@@ -455,6 +538,20 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        const btnWhyDac = card.querySelector('#btn-why-dac');
+        const explainPaneDac = card.querySelector('#explanation-pane-dac');
+        if (btnWhyDac && explainPaneDac) {
+            btnWhyDac.addEventListener('click', () => {
+                if (explainPaneDac.style.display === 'none') {
+                    explainPaneDac.style.display = 'block';
+                    btnWhyDac.textContent = 'Masquer l\'explication';
+                } else {
+                    explainPaneDac.style.display = 'none';
+                    btnWhyDac.textContent = 'Pourquoi cette orientation ?';
+                }
+            });
+        }
+
         return card;
     }
 
@@ -480,7 +577,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const struct = orientations[currentIndex];
         structuresTitle.style.display = "";
-        if (struct.cpts_section) {
+        if (struct.dac_section && struct.cpts_section) {
+            let labelClean = struct.label.replace(" (Sénior)", "").replace(" (Senior)", "");
+            structuresTitle.textContent = `Propositions d'orientation (${labelClean}, CPTS & DAC) :`;
+        } else if (struct.dac_section) {
+            let labelClean = struct.label.replace(" (Sénior)", "").replace(" (Senior)", "");
+            structuresTitle.textContent = `Propositions d'orientation (${labelClean} & DAC) :`;
+        } else if (struct.cpts_section) {
             let labelClean = struct.label.replace(" (Sénior)", "").replace(" (Senior)", "");
             let cptsClean = struct.cpts_section.label || "CPTS - Communauté Professionnelle Territoriale de Santé";
             structuresTitle.textContent = `Propositions d'orientation (${labelClean} & ${cptsClean}) :`;

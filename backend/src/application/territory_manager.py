@@ -65,6 +65,15 @@ class TerritoryManager:
                     struct_copy["cpts_section"]["email"] = cpts_info.get("email")
                     struct_copy["cpts_section"]["adresse"] = cpts_info.get("adresse")
 
+            # Enrichissement de dac_section (DAC intégré sous le CLIC en 2ème intention)
+            if struct_copy.get("dac_section"):
+                dac_info = available_local_structures.get("DAC")
+                if dac_info and dac_info.get("present"):
+                    struct_copy["dac_section"]["nom_local"] = dac_info.get("nom")
+                    struct_copy["dac_section"]["telephone"] = dac_info.get("telephone")
+                    struct_copy["dac_section"]["email"] = dac_info.get("email")
+                    struct_copy["dac_section"]["adresse"] = dac_info.get("adresse")
+
             results.append(struct_copy)
 
         return results
