@@ -655,6 +655,22 @@ class OrientationEngine:
                 except Exception:
                     pass
 
+            # Règle d'explicabilité pour le CLIC : inclure systématiquement l'élément sur l'âge (>= 60 ans) et son verbatim
+            if struct_type == "CLIC":
+                age_val = eval_context.get("usager.identite.age_estime")
+                age_str = f" ({int(float(age_val))} ans)" if age_val is not None and str(age_val) != "nan" else ""
+                v_age = ""
+                if age_val is not None and str(age_val) != "nan":
+                    v_age = self._extract_verbatim("Âge de la personne", f"{int(float(age_val))} ans, {int(float(age_val))}, ans, âge, age, grand-mère, grand-mere, âgée, agee", original_text)
+                if not v_age:
+                    v_age = self._extract_verbatim("Âge de la personne", "ans, âge, age, grand-mère, grand-mere, âgée, agee, 60, 70, 80, 85, 90", original_text)
+                
+                if not any("60 ans ou plus" in d.get("titre", "").lower() or "clic sénior" in d.get("titre", "").lower() for d in elements_detail):
+                    elements_detail.insert(0, {
+                        "titre": f"Personne âgée de 60 ans ou plus{age_str} : éligibilité et orientation vers le CLIC sénior",
+                        "verbatim": v_age
+                    })
+
             struct_elements_titles = [e["titre"] for e in elements_detail]
             conseils_simple_texts = [c["text"] for c in identified_conseils_detail]
 
@@ -693,6 +709,14 @@ class OrientationEngine:
             conseils_simple_texts = [c["text"] for c in identified_conseils_detail]
 
             if is_senior:
+                age_val_f = eval_context.get("usager.identite.age_estime")
+                age_str_f = f" ({int(float(age_val_f))} ans)" if age_val_f is not None and str(age_val_f) != "nan" else ""
+                v_age_fallback = ""
+                if age_val_f is not None and str(age_val_f) != "nan":
+                    v_age_fallback = self._extract_verbatim("Âge de la personne", f"{int(float(age_val_f))} ans, {int(float(age_val_f))}, ans, âge, age, grand-mère, grand-mere, âgée, agee", original_text)
+                if not v_age_fallback:
+                    v_age_fallback = self._extract_verbatim("Âge de la personne", "ans, âge, age, grand-mère, grand-mere, âgée, agee, 60, 70, 80, 85, 90", original_text)
+
                 v_clic_fallback = self._extract_verbatim("Aide et maintien à domicile pour personne âgée", "aides à domicile, aide à domicile, états domicile, etats domicile, maintien à domicile, dépendante, dépendance, absente, aide, aides, soins, autonome, autonomie, quotidien, grand-mère, grand-mere", original_text)
                 final_structures.append({
                     "structure_type": "CLIC",
@@ -707,8 +731,20 @@ class OrientationEngine:
                     "conseils": conseils_simple_texts,
                     "ressources": identified_conseils_detail,
                     "mission_structure": self.structure_missions.get("CLIC"),
-                    "elements_recit": ["Besoin de mise en place d'aide et de maintien à domicile pour personne âgée."],
-                    "elements_recit_detail": [{"titre": "Besoin de mise en place d'aide et de maintien à domicile pour personne âgée (60 ans ou plus)", "verbatim": v_clic_fallback if v_clic_fallback else (original_text[:120] if original_text else "")}],
+                    "elements_recit": [
+                        f"Personne âgée de 60 ans ou plus{age_str_f} : éligibilité et orientation vers le CLIC sénior.",
+                        "Besoin de mise en place d'aide et de maintien à domicile pour personne âgée."
+                    ],
+                    "elements_recit_detail": [
+                        {
+                            "titre": f"Personne âgée de 60 ans ou plus{age_str_f} : éligibilité et orientation vers le CLIC sénior",
+                            "verbatim": v_age_fallback if v_age_fallback else (original_text[:120] if original_text else "")
+                        },
+                        {
+                            "titre": "Besoin de mise en place d'aide et de maintien à domicile pour personne âgée (60 ans ou plus)",
+                            "verbatim": v_clic_fallback if v_clic_fallback else (original_text[:120] if original_text else "")
+                        }
+                    ],
                     "cpts_section": cpts_section_obj.copy() if cpts_section_obj else None
                 })
             else:
