@@ -402,26 +402,29 @@ class OrientationEngine:
         # 4.1 : UTS vs CCAS
         # Si UTS et CCAS et besoin social complexe ➡️ UTS l'emporte sur CCAS (besoin d'assistante sociale)
         # Sinon, simple aide alimentaire / courses / isolement ➡️ CCAS l'emporte sur UTS
+        has_expulsion_risk = any(kw in text_lower for kw in ["expuls", "expulsion", "impayé", "impayes", "résiliation", "preavis", "préavis"])
+        if has_expulsion_risk and "UTS" not in excluded_structures:
+            scores["UTS"] += 3
+
         if scores.get("UTS", 0) > 0 and scores.get("CCAS", 0) > 0:
             has_complex_social_need = False
-            complex_social_keywords = ["évaluation sociale", "evaluation sociale", "droits sociaux", "ouverture", "accompagnement social", "logement", "surendettement", "budget"]
+            complex_social_keywords = ["évaluation sociale", "evaluation sociale", "droits sociaux", "ouverture", "accompagnement social", "logement", "surendettement", "budget", "expulsion", "expuls"]
             for need in identified_needs:
-                if need["categorie"] == "Social / droits / budget":
-                    if any(kw in need["detaille"].lower() for kw in complex_social_keywords):
-                        has_complex_social_need = True
-                        break
+                if any(kw in need["detaille"].lower() for kw in complex_social_keywords):
+                    has_complex_social_need = True
+                    break
                         
-            # Si senior (>= 60 ans), le CCAS est privilégié pour l'accompagnement social de proximité et les aides seniors (ex: ASH)
+            # Si risque d'expulsion ou besoin social complexe distinct de l'isolement communal, on préserve les DEUX structures (UTS pour l'expulsion/droits, CCAS pour l'isolement)
             age = eval_context.get("usager.identite.age_estime")
-            if age is not None and age >= 60:
+            if has_expulsion_risk or has_complex_social_need:
+                scores["UTS"] = max(scores["UTS"], 2)
+                scores["CCAS"] = max(scores["CCAS"], 2)
+            elif age is not None and age >= 60:
                 scores["CCAS"] = max(scores["UTS"], scores["CCAS"]) + 1
-                scores["UTS"] = scores["UTS"] - 1
-            elif has_complex_social_need:
-                scores["UTS"] = max(scores["UTS"], scores["CCAS"]) + 1
-                scores["CCAS"] = scores["CCAS"] - 1
+                scores["UTS"] = max(scores["UTS"] - 1, 0)
             else:
                 scores["CCAS"] = max(scores["UTS"], scores["CCAS"]) + 1
-                scores["UTS"] = scores["UTS"] - 1
+                scores["UTS"] = max(scores["UTS"] - 1, 0)
                 
         # 4.2 : CRT vs CLIC
         # Si la situation est complexe (COMID >= 6), CRT l'emporte sur CLIC (car c'est le volet renforcé du CLIC pour éviter l'EHPAD)
@@ -669,6 +672,15 @@ class OrientationEngine:
                     elements_detail.insert(0, {
                         "titre": f"Personne âgée de 60 ans ou plus{age_str} : éligibilité et orientation vers le CLIC sénior",
                         "verbatim": v_age
+                    })
+
+            # Règle d'explicabilité pour l'UTS : si risque d'expulsion ou démarche sociale complexe, l'expliquer explicitement
+            if struct_type == "UTS" and has_expulsion_risk:
+                v_expuls = self._extract_verbatim("Prévention expulsion locative", "expulsé, expulsion, impayé, bail, résiliation, logement", original_text)
+                if not any("expulsion" in d.get("titre", "").lower() for d in elements_detail):
+                    elements_detail.insert(0, {
+                        "titre": "Prévention d'expulsion locative et accompagnement au maintien dans le logement",
+                        "verbatim": v_expuls
                     })
 
             struct_elements_titles = [e["titre"] for e in elements_detail]
