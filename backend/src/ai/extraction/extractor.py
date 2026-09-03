@@ -316,7 +316,9 @@ JSON attendu :
         # Validation anti-hallucination de la suspicion de malveillance
         malveillance_val = str(raw_data.get("malveillance", "aucune")).lower()
         if malveillance_val != "aucune":
-            has_violence_kw = re.search(r'\b(violence|violences|maltraitance|frappe|frapper|bleus?|coups?|menace|agression|agressions|abus|spoliation|vol|volé|vols|privation|danger)\b', text, re.IGNORECASE)
+            text_no_idioms = re.sub(r'\b(?:du|d\'un|un|tout\s+à|pour\s+le)\s+coup\b', '', text, flags=re.IGNORECASE)
+            text_no_idioms = re.sub(r'\bcoup\s+de\s+(?:main|fil|téléphone|tel|pouce)\b', '', text_no_idioms, flags=re.IGNORECASE)
+            has_violence_kw = re.search(r'\b(violence|violences|maltraitance|frappe|frapper|bleus?|coups?|menace|agression|agressions|abus|spoliation|vol|volé|vols|privation|danger)\b', text_no_idioms, re.IGNORECASE)
             if not has_violence_kw:
                 malveillance_val = "aucune"
 

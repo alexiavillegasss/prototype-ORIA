@@ -937,16 +937,19 @@ class OrientationEngine:
                 return True
 
         # 1. Urgent / Danger
+        text_no_idioms = re.sub(r'\b(?:du|d\'un|un|tout\s+à|pour\s+le)\s+coup\b', '', text, flags=re.IGNORECASE)
+        text_no_idioms = re.sub(r'\bcoup\s+de\s+(?:main|fil|téléphone|tel|pouce)\b', '', text_no_idioms, flags=re.IGNORECASE)
+
         if "danger vital" in detail_lower or "secours d’urgence" in detail_lower or "secours d'urgence" in detail_lower:
-            if re.search(r'\b(secours|urgence|danger|agression|agressions)\b', text):
+            if re.search(r'\b(secours|urgence|danger|agression|agressions)\b', text_no_idioms):
                 return True
         if "violence conjugale" in detail_lower:
-            has_v_kw = re.search(r'\b(violence|violences|frappe|frapper|battu|battre|coups?)\b', text)
-            has_c_kw = re.search(r'\b(conjugale?|conjoint|mari|épouse|epouse|femme|voisin)\b', text)
+            has_v_kw = re.search(r'\b(violence|violences|frappe|frapper|battu|battre|coups?)\b', text_no_idioms)
+            has_c_kw = re.search(r'\b(conjugale?|conjoint|mari|épouse|epouse|femme|voisin)\b', text_no_idioms)
             if has_v_kw and has_c_kw:
                 return True
         if "violence" in detail_lower or "violences" in detail_lower:
-            if re.search(r'\b(violence|violences|agression|agressions|coups?|ecchymoses|bleus?|frappe|frapper|battu|battre)\b', text):
+            if re.search(r'\b(violence|violences|agression|agressions|coups?|ecchymoses|bleus?|frappe|frapper|battu|battre)\b', text_no_idioms):
                 return True
         if "maltraitance" in detail_lower or "négligence" in detail_lower or "negligence" in detail_lower:
             if re.search(r'\b(maltraitance|maltraitant|maltraiter|maltraité|maltraitée|négligence|negligence)\b', text):
@@ -1397,6 +1400,14 @@ class OrientationEngine:
         # 2. Supprime la mention d'habitation/commune associée au début ("dans mon bâtiment, j'habite à la valette")
         cleaned = re.sub(r'\b(?:dans\s+mon\s+bâtiment|dans\s+mon\s+batiment|j\'habite|habite|réside|vit)\s*(?:à|a|au|en)?\s*(?:la\s+valette|la\s+seyne|toulon|la\s+garde|solliès|le\s+pradet|[a-zA-Z\u00c0-\u00dc\u00e0-\u00f6\u00f8-\u00ff\s\-]+)?,?\s*', '', cleaned, flags=re.IGNORECASE)
         
+        # 3. Nettoyage des prépositions ou ponctuations orphelines AU DÉBUT du verbatim (ex: "au , ", "à , ", ", ")
+        while True:
+            prev = cleaned
+            cleaned = re.sub(r'^(?:\s*|\s*,\s*|\s*;\s*)*(?:au|à|a|du|en|de|d\'|sur|dans|le|la|les)\b\s*,?\s*', '', cleaned, flags=re.IGNORECASE)
+            cleaned = re.sub(r'^\s*[\,\;\.\:\-]\s*', '', cleaned)
+            if cleaned == prev:
+                break
+
         cleaned = re.sub(r'\s*,\s*,', ',', cleaned)
         cleaned = re.sub(r'^\s*,\s*', '', cleaned)
         cleaned = re.sub(r'\s*,\s*$', '', cleaned)
