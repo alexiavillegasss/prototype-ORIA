@@ -693,6 +693,7 @@ class OrientationEngine:
             conseils_simple_texts = [c["text"] for c in identified_conseils_detail]
 
             if is_senior:
+                v_clic_fallback = self._extract_verbatim("Aide et maintien à domicile pour personne âgée", "aides à domicile, aide à domicile, états domicile, etats domicile, maintien à domicile, dépendante, dépendance, absente, aide, aides, soins, autonome, autonomie, quotidien, grand-mère, grand-mere", original_text)
                 final_structures.append({
                     "structure_type": "CLIC",
                     "label": self._get_structure_label("CLIC"),
@@ -700,14 +701,14 @@ class OrientationEngine:
                     "domaine_label": "Accompagnement & Maintien à Domicile (Médico-Social)",
                     "priorite": 0,
                     "pertinence": "faible",
-                    "objectif": "Aucun besoin spécifique identifié. Orientation vers le CLIC sénior par défaut.",
+                    "objectif": "Orientation vers le CLIC sénior pour le maintien à domicile et l'accompagnement de l'autonomie.",
                     "score_confiance": 50,
-                    "explication_confiance": "Orientation par défaut pour senior.",
+                    "explication_confiance": "Orientation pour senior.",
                     "conseils": conseils_simple_texts,
                     "ressources": identified_conseils_detail,
                     "mission_structure": self.structure_missions.get("CLIC"),
-                    "elements_recit": ["Demande d'information et d'orientation globale pour personne âgée de 60 ans ou plus."],
-                    "elements_recit_detail": [{"titre": "Demande d'information et d'orientation globale pour personne âgée de 60 ans ou plus", "verbatim": original_text[:120] if original_text else ""}],
+                    "elements_recit": ["Besoin de mise en place d'aide et de maintien à domicile pour personne âgée."],
+                    "elements_recit_detail": [{"titre": "Besoin de mise en place d'aide et de maintien à domicile pour personne âgée (60 ans ou plus)", "verbatim": v_clic_fallback if v_clic_fallback else (original_text[:120] if original_text else "")}],
                     "cpts_section": cpts_section_obj.copy() if cpts_section_obj else None
                 })
             else:
@@ -1392,7 +1393,7 @@ class OrientationEngine:
         # 1. Supprime l'adresse exacte (ex: 18 rue bon marchais, 18 rue des mimosas, [ADRESSE ANONYMISÉE])
         cleaned = re.sub(r'\[ADRESSE ANONYMISÉE\]', '', text, flags=re.IGNORECASE)
         cleaned = re.sub(
-            r'\b(?:\d{1,4}\s*(?:bis|ter|quater|[a-c])?\s*,?\s*)?(?:rue|avenue|av\.?|bd\.?|boulevard|impasse|chemin|allée|allee|place|route|résidence|residence|square|passage|quai|cours)\s+[^,\.\;\n]+',
+            r'\b(?:\d{1,4}\s*(?:bis|ter|quater|[a-c])?\s*,?\s*)?(?:rue|avenue|av\.?|bd\.?|boulevard|impasse|chemin|allée|allee|(?<!en\s)(?<!mettre\s)(?<!mise\s)place|route|résidence|residence|square|passage|quai|cours)\s+[^,\.\;\n]+',
             '',
             cleaned,
             flags=re.IGNORECASE

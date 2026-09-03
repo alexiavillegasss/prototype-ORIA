@@ -19,7 +19,7 @@ class Anonymizer:
         
         # Regex d'anonymisation des adresses physiques exactes (ex: 18 rue des mimosas, 53 impasse Blériot)
         self.address_pattern = re.compile(
-            r'\b(?:\d{1,4}\s*(?:bis|ter|quater|[a-c])?\s*,?\s*)?(?:rue|avenue|av\.?|bd\.?|boulevard|impasse|chemin|allée|allee|place|route|résidence|residence|square|passage|quai|cours)\s+[^,\.\;\n]+?(?=\s+(?:à|a|au|en|sur|\b\d{5}\b|\.|\,|\;|\n|$))',
+            r'\b(?:\d{1,4}\s*(?:bis|ter|quater|[a-c])?\s*,?\s*)?(?:rue|avenue|av\.?|bd\.?|boulevard|impasse|chemin|allée|allee|(?<!en\s)(?<!mettre\s)(?<!mise\s)place|route|résidence|residence|square|passage|quai|cours)\s+[^,\.\;\n]+?(?=\s+(?:à|a|au|en|sur|\b\d{5}\b|\.|\,|\;|\n|$))',
             re.IGNORECASE | re.UNICODE
         )
         
