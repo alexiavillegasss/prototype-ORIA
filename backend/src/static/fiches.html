@@ -1424,6 +1424,41 @@
             dropdownMenu.classList.toggle('hidden');
         });
         document.addEventListener('click', () => dropdownMenu.classList.add('hidden'));
+
+        // AUTO-OPEN MODAL APRES ORIENTATION
+        document.addEventListener('DOMContentLoaded', () => {
+            const pendingText = sessionStorage.getItem('pending_fiche_text');
+            const pendingDossierId = sessionStorage.getItem('pending_fiche_dossier_id');
+            const params = new URLSearchParams(window.location.search);
+            const structParam = params.get('structure');
+            const autoParam = params.get('auto');
+
+            if (pendingText || (structParam && autoParam)) {
+                const text = pendingText || '';
+                sessionStorage.removeItem('pending_fiche_text');
+                sessionStorage.removeItem('pending_fiche_dossier_id');
+
+                const structMap = {
+                    'DAC Var Ouest': { endpoint: '/api/orientation/dac/generate_pdf', template: '/static/fiche_dac_vierge.pdf' },
+                    'CLIC La Seyne': { endpoint: '/api/orientation/clic/generate_pdf', template: '/static/fiche_clic_LaSeyne_vierge.pdf' },
+                    'CLIC Toulon': { endpoint: '/api/orientation/clic_toulon/generate_pdf', template: '/static/fiche_clic_Toulon.pdf' },
+                    'CLIC Provence Verte': { endpoint: '/api/orientation/clic_provence_verte/generate_pdf', template: '/static/fiche_clic_ProvenceVerte.pdf' },
+                    'CLIC Hadage': { endpoint: '/api/orientation/clic_hadage/generate_pdf', template: '/static/fiche_clic_Hadage.pdf' }
+                };
+
+                const structName = structParam || 'DAC Var Ouest';
+                const cfg = structMap[structName] || structMap['DAC Var Ouest'];
+
+                openVoiceFormModal(structName, cfg.endpoint, cfg.template);
+                if (text) {
+                    const textEl = document.getElementById('modal-voice-transcript');
+                    if (textEl) textEl.value = text;
+                    setTimeout(() => {
+                        analyzeAndFillModalForm();
+                    }, 200);
+                }
+            }
+        });
     </script>
 </body>
 </html>

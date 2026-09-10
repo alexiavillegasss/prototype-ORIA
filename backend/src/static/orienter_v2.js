@@ -1080,160 +1080,24 @@ Cordialement,`;
     };
 
     /**
-     * Télécharge la fiche d'orientation DAC sous format PDF
+     * Ouvre la modale de révision/édition interactive sur la page des fiches avec le texte de la situation pré-rempli
      */
-    window.downloadDacPdf = async function() {
+    function openFicheModalWithText(structureName) {
         const text = document.getElementById('situation-input').value.trim();
-        if (!text) return;
-
-        const btn = document.querySelector('[onclick="downloadDacPdf()"]');
-        let originalHtml = "";
-        if (btn) {
-            originalHtml = btn.innerHTML;
-            btn.innerHTML = `<span>⏳ Remplissage...</span>`;
-            btn.disabled = true;
+        if (!text) {
+            alert("Veuillez saisir ou analyser une situation avant de générer la fiche.");
+            return;
         }
-
-        try {
-            const activeUserJson = localStorage.getItem('active_user');
-            const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
-            const creatorName = activeUser ? activeUser.name : 'Anonyme';
-
-            const response = await fetch('/api/orientation/dac/generate_pdf', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ text: text, createur: creatorName, dossier_id: dossierId ? String(dossierId) : null })
-            });
-
-            if (!response.ok) {
-                throw new Error("Erreur de téléchargement");
-            }
-
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `fiche_orientation_dac_dossier_${dossierId || 'nouveau'}.pdf`;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            window.URL.revokeObjectURL(url);
-        } catch (err) {
-            console.error(err);
-            alert("Une erreur est survenue lors de la génération du PDF.");
-        } finally {
-            if (btn) {
-                btn.innerHTML = originalHtml;
-                btn.disabled = false;
-            }
+        sessionStorage.setItem('pending_fiche_text', text);
+        if (dossierId) {
+            sessionStorage.setItem('pending_fiche_dossier_id', String(dossierId));
         }
-    };
+        window.location.href = `/fiches?structure=${encodeURIComponent(structureName)}&auto=1`;
+    }
 
-    /**
-     * Télécharge la fiche d'orientation CLIC La Seyne sous format PDF
-     */
-    window.downloadClicPdf = async function() {
-        const text = document.getElementById('situation-input').value.trim();
-        if (!text) return;
-
-        const btn = document.querySelector('[onclick="downloadClicPdf()"]');
-        let originalHtml = "";
-        if (btn) {
-            originalHtml = btn.innerHTML;
-            btn.innerHTML = `<span>⏳ Remplissage...</span>`;
-            btn.disabled = true;
-        }
-
-        try {
-            const activeUserJson = localStorage.getItem('active_user');
-            const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
-            const creatorName = activeUser ? activeUser.name : 'Anonyme';
-
-            const response = await fetch('/api/orientation/clic/generate_pdf', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ text: text, createur: creatorName, dossier_id: dossierId ? String(dossierId) : null })
-            });
-
-            if (!response.ok) {
-                throw new Error("Erreur de téléchargement");
-            }
-
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `fiche_orientation_clic_laseyne_dossier_${dossierId || 'nouveau'}.pdf`;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            window.URL.revokeObjectURL(url);
-        } catch (err) {
-            console.error(err);
-            alert("Une erreur est survenue lors de la génération du PDF CLIC.");
-        } finally {
-            if (btn) {
-                btn.innerHTML = originalHtml;
-                btn.disabled = false;
-            }
-        }
-    };
-
-    /**
-     * Télécharge la fiche d'orientation CLIC Toulon sous format PDF
-     */
-    window.downloadClicToulonPdf = async function() {
-        const text = document.getElementById('situation-input').value.trim();
-        if (!text) return;
-
-        const btn = document.querySelector('[onclick="downloadClicToulonPdf()"]');
-        let originalHtml = "";
-        if (btn) {
-            originalHtml = btn.innerHTML;
-            btn.innerHTML = `<span>⏳ Remplissage...</span>`;
-            btn.disabled = true;
-        }
-
-        try {
-            const activeUserJson = localStorage.getItem('active_user');
-            const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
-            const creatorName = activeUser ? activeUser.name : 'Anonyme';
-
-            const response = await fetch('/api/orientation/clic_toulon/generate_pdf', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ text: text, createur: creatorName, dossier_id: dossierId ? String(dossierId) : null })
-            });
-
-            if (!response.ok) {
-                throw new Error("Erreur de téléchargement");
-            }
-
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `fiche_orientation_clic_toulon_dossier_${dossierId || 'nouveau'}.pdf`;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            window.URL.revokeObjectURL(url);
-        } catch (err) {
-            console.error(err);
-            alert("Une erreur est survenue lors de la génération du PDF CLIC Toulon.");
-        } finally {
-            if (btn) {
-                btn.innerHTML = originalHtml;
-                btn.disabled = false;
-            }
-        }
-    };
+    window.downloadDacPdf = function() { openFicheModalWithText('DAC Var Ouest'); };
+    window.downloadClicPdf = function() { openFicheModalWithText('CLIC La Seyne'); };
+    window.downloadClicToulonPdf = function() { openFicheModalWithText('CLIC Toulon'); };
 
     /**
      * Passe à l'orientation de priorité inférieure
@@ -1264,99 +1128,8 @@ Cordialement,`;
         inputArea.focus();
     };
 
-    /**
-     * Télécharge la fiche d'orientation CLIC Provence Verte sous format PDF
-     */
-    window.downloadClicProvenceVertePdf = async function() {
-        const analyzeBtn = document.getElementById('analyze-btn');
-        const text = document.getElementById('situation-input').value.trim();
-
-        const btn = document.querySelector('[onclick="downloadClicProvenceVertePdf()"]');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '⏳ Génération en cours...';
-        btn.disabled = true;
-
-        try {
-            const activeUserJson = localStorage.getItem('active_user');
-            const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
-            const creatorName = activeUser ? activeUser.name : 'Anonyme';
-
-            const response = await fetch('/api/orientation/clic_provence_verte/generate_pdf', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ text: text, createur: creatorName, dossier_id: dossierId ? String(dossierId) : null })
-            });
-
-            if (!response.ok) {
-                throw new Error("Erreur réseau");
-            }
-
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `fiche_orientation_clic_provence_verte_dossier_${dossierId || 'nouveau'}.pdf`;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            window.URL.revokeObjectURL(url);
-        } catch (error) {
-            console.error("Erreur PDF:", error);
-            alert("Une erreur est survenue lors de la génération du PDF CLIC Provence Verte.");
-        } finally {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-        }
-    };
-
-    /**
-     * Télécharge la fiche d'orientation CLIC Hadage sous format PDF
-     */
-    window.downloadClicHadagePdf = async function() {
-        const analyzeBtn = document.getElementById('analyze-btn');
-        const text = document.getElementById('situation-input').value.trim();
-
-        const btn = document.querySelector('[onclick="downloadClicHadagePdf()"]');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '⏳ Génération en cours...';
-        btn.disabled = true;
-
-        try {
-            const activeUserJson = localStorage.getItem('active_user');
-            const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
-            const creatorName = activeUser ? activeUser.name : 'Anonyme';
-
-            const response = await fetch('/api/orientation/clic_hadage/generate_pdf', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ text: text, createur: creatorName, dossier_id: dossierId ? String(dossierId) : null })
-            });
-
-            if (!response.ok) {
-                throw new Error("Erreur réseau");
-            }
-
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `fiche_orientation_clic_hadage_dossier_${dossierId || 'nouveau'}.pdf`;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            window.URL.revokeObjectURL(url);
-        } catch (error) {
-            console.error("Erreur PDF:", error);
-            alert("Une erreur est survenue lors de la génération du PDF CLIC Hadage.");
-        } finally {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-        }
-    };
+    window.downloadClicProvenceVertePdf = function() { openFicheModalWithText('CLIC Provence Verte'); };
+    window.downloadClicHadagePdf = function() { openFicheModalWithText('CLIC Hadage'); };
 
 });
 

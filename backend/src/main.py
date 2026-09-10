@@ -176,6 +176,7 @@ async def analyze(request: AnalyzeRequest):
         details = existing_details.copy() if isinstance(existing_details, dict) else {}
         details["createur"] = request.createur or details.get("createur", "Anonyme")
         details["historique_orientations"] = historique
+        details["raw_text"] = request.text
         
         # Si un ID de dossier existant est passé, on met à jour
         if d_id_int is not None:
@@ -840,7 +841,8 @@ async def generate_dossier_orientation_pdf(dossier_id: int, structure_type: str)
         if not dossier_details or not dossier_details.get("orientation"):
             return {"error": "Dossier introuvable"}
         
-        texte_original = dossier_details["orientation"].get("texte_original") or ""
+        details_complet = dossier_details["orientation"].get("details_complet") or {}
+        texte_original = details_complet.get("raw_text") or dossier_details["orientation"].get("texte_original") or ""
         if not texte_original:
             return {"error": "Aucun texte d'orientation disponible pour ce dossier"}
 

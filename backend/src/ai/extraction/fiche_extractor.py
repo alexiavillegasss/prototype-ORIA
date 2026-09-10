@@ -331,9 +331,26 @@ Réponds UNIQUEMENT par ce JSON complet :
         if not parsed["alertes"].get("conduites_addictives"):
             parsed["alertes"]["conduites_addictives"] = any(x in text_lower for x in ["toxico", "addict", "alcool", "drogue", "sevrage", "stupéfiant", "stupefiant"])
             
-        if not parsed["alertes"].get("isolement_social"):
-            parsed["alertes"]["isolement_social"] = any(x in text_lower for x in ["isolé", "isole", "pas de famille", "rupture", "besoin d’être accompagné", "besoin d'être accompagné", "sans appui"])
-                
+        # PARSEUR REGEX DE SECOURS (ZERO-FALLBACK PARSER)
+        if not parsed.get("telephone"):
+            tel_match = re.search(r'(?:0[1-9][\s\.\-]?\d{2}[\s\.\-]?\d{2}[\s\.\-]?\d{2}[\s\.\-]?\d{2})', raw_text)
+            if tel_match:
+                parsed["telephone"] = tel_match.group(0)
+
+        if not parsed.get("gir"):
+            gir_match = re.search(r'\bGIR\s*([1-6])\b', raw_text, re.IGNORECASE)
+            if gir_match:
+                parsed["gir"] = f"GIR {gir_match.group(1)}"
+
+        if not parsed.get("apa") and re.search(r"bénéficie\s+de\s+l['’]APA|a\s+l['’]APA|\bAPA\b", raw_text, re.IGNORECASE):
+            parsed["apa"] = "Oui"
+
+        if not parsed.get("date_naissance"):
+            age_match = re.search(r'\b(\d{1,3})\s*ans\b', raw_text, re.IGNORECASE)
+            if age_match:
+                parsed["date_naissance"] = f"{age_match.group(1)} ans"
+
+        parsed["raw_text"] = raw_text
         return parsed
 
     async def extract_for_clic(self, raw_text: str):
@@ -592,6 +609,25 @@ Réponds UNIQUEMENT par ce JSON complet :
                     freq = " tous les jours"
                 parsed["aide_1"] = f"Infirmière{freq}"
             
+        # PARSEUR REGEX DE SECOURS (ZERO-FALLBACK PARSER)
+        if not parsed.get("telephone"):
+            tel_match = re.search(r'(?:0[1-9][\s\.\-]?\d{2}[\s\.\-]?\d{2}[\s\.\-]?\d{2}[\s\.\-]?\d{2})', raw_text)
+            if tel_match:
+                parsed["telephone"] = tel_match.group(0)
+
+        if not parsed.get("gir"):
+            gir_match = re.search(r'\bGIR\s*([1-6])\b', raw_text, re.IGNORECASE)
+            if gir_match:
+                parsed["gir"] = f"GIR {gir_match.group(1)}"
+
+        if not parsed.get("apa") and re.search(r"bénéficie\s+de\s+l['’]APA|a\s+l['’]APA|\bAPA\b", raw_text, re.IGNORECASE):
+            parsed["apa"] = "Oui"
+
+        if not parsed.get("date_naissance"):
+            age_match = re.search(r'\b(\d{1,3})\s*ans\b', raw_text, re.IGNORECASE)
+            if age_match:
+                parsed["date_naissance"] = f"{age_match.group(1)} ans"
+
         # Toujours forcer la date d'émission au jour J
         parsed["emetteur_date"] = datetime.datetime.now().strftime("%d/%m/%Y")
         parsed["raw_text"] = raw_text
