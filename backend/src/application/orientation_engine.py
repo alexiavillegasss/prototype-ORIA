@@ -543,7 +543,7 @@ class OrientationEngine:
                     "verbatim": v_aidant
                 })
 
-        # 4.5 : Règle CPTS pour la recherche de médecin traitant -> Section 2 intégrée au même cube du CLIC
+        # 4.5 : Règle CPTS pour la recherche de médecin traitant -> Structure autonome prioritaire N°1
         cpts_section_obj = None
         has_medecin_search = (
             eval_context.get("vulnerabilites.sante.suivi_medical.medecin_traitant") in ["absent", "non_identifie_avec_certitude"] or
@@ -563,11 +563,19 @@ class OrientationEngine:
                     "verbatim": v_med
                 }]
             }
-            # La CPTS est intégrée en section 2 du cube unique et ne génère pas de cube principal distinct
-            scores["CPTS"] = -9999
+            # La CPTS sort en structure principale prioritaire N°1 pour la recherche de médecin traitant
+            scores["CPTS"] = max(scores.get("CPTS", 0), 1) + 100
+
+            # Ajout systématique du conseil MISAS pour la recherche de médecin traitant
+            misas_conseil_text = "La MISAS peut aussi vous accompagner dans la recherche d'un médecin traitant"
+            if not any(item.get("text") == misas_conseil_text for item in identified_conseils_detail):
+                identified_conseils_detail.append({
+                    "text": misas_conseil_text,
+                    "verbatim": v_med
+                })
 
         # Étape 5 : Mise en forme des candidats avec tri par niveau de priorité et hierarchie par défaut
-        hierarchy = ["POLICE", "CEV", "SERVICE_SOCIAL_HOPITAL", "CLIC", "CRT", "UTS", "CCAS", "CPTS", "DAC", "PSCG_SS_APA", "PRADO", "MISAS", "fil d'argent", "CONSULTATION MÉMOIRE", "COMPAGNONS_BATISSEURS"]
+        hierarchy = ["POLICE", "CEV", "CPTS", "SERVICE_SOCIAL_HOPITAL", "CLIC", "CRT", "UTS", "CCAS", "DAC", "PSCG_SS_APA", "PRADO", "MISAS", "fil d'argent", "CONSULTATION MÉMOIRE", "COMPAGNONS_BATISSEURS"]
         hierarchy_dict = {struct: i for i, struct in enumerate(hierarchy)}
         
         candidates = [(s, score) for s, score in scores.items() if score > 0]
@@ -583,7 +591,9 @@ class OrientationEngine:
                 
             # Confection de l'objectif d'orientation en montrant uniquement le besoin principal
             besoin_p = eval_context.get("demande.besoin_principal", "indetermine")
-            if besoin_p and besoin_p != "indetermine":
+            if struct_type == "CPTS" and has_medecin_search:
+                objectif = "Accès aux soins : Recherche de médecin traitant et coordination des soins de premier recours par la CPTS."
+            elif besoin_p and besoin_p != "indetermine":
                 # On vérifie si ce besoin principal est lié à cette structure
                 is_linked = False
                 for need in self.needs_mapping:
@@ -631,11 +641,15 @@ class OrientationEngine:
                         })
 
             if not elements_detail:
-                besoin_p = eval_context.get("demande.besoin_principal")
-                if besoin_p and besoin_p != "indetermine":
-                    elements_detail = [{"titre": f"Demande en lien avec : {besoin_p}", "verbatim": self._extract_verbatim(besoin_p, "", original_text)}]
+                if struct_type == "CPTS" and has_medecin_search:
+                    v_med = self._extract_verbatim("Recherche de médecin traitant", "médecin, medecin, traitant, docteur, soins, retraite", original_text)
+                    elements_detail = [{"titre": "Recherche de médecin traitant / Accès aux soins de premier recours", "verbatim": v_med}]
                 else:
-                    elements_detail = [{"titre": "Éléments cliniques généraux rapportés dans votre saisie", "verbatim": ""}]
+                    besoin_p = eval_context.get("demande.besoin_principal")
+                    if besoin_p and besoin_p != "indetermine":
+                        elements_detail = [{"titre": f"Demande en lien avec : {besoin_p}", "verbatim": self._extract_verbatim(besoin_p, "", original_text)}]
+                    else:
+                        elements_detail = [{"titre": "Éléments cliniques généraux rapportés dans votre saisie", "verbatim": ""}]
 
             # Règle d'explicabilité : si refus d'aide/soins et orienté vers le DAC, l'expliquer explicitement
             if struct_type == "DAC" and has_refus_soins_or_aides:
@@ -658,21 +672,35 @@ class OrientationEngine:
                 except Exception:
                     pass
 
-            # Règle d'explicabilité pour le CLIC : inclure systématiquement l'élément sur l'âge (>= 60 ans) et son verbatim
+            # Règle d'explicabilité pour le CLIC : inclure l'élément sur l'âge SEULEMENT si l'âge est connu ou si un mot-clé d'âge est présent dans le récit
             if struct_type == "CLIC":
                 age_val = eval_context.get("usager.identite.age_estime")
-                age_str = f" ({int(float(age_val))} ans)" if age_val is not None and str(age_val) != "nan" else ""
                 v_age = ""
-                if age_val is not None and str(age_val) != "nan":
-                    v_age = self._extract_verbatim("Âge de la personne", f"{int(float(age_val))} ans, {int(float(age_val))}, ans, âge, age, grand-mère, grand-mere, âgée, agee", original_text)
-                if not v_age:
-                    v_age = self._extract_verbatim("Âge de la personne", "ans, âge, age, grand-mère, grand-mere, âgée, agee, 60, 70, 80, 85, 90", original_text)
+                has_explicit_age = False
                 
-                if not any("60 ans ou plus" in d.get("titre", "").lower() or "clic sénior" in d.get("titre", "").lower() for d in elements_detail):
-                    elements_detail.insert(0, {
-                        "titre": f"Personne âgée de 60 ans ou plus{age_str} : éligibilité et orientation vers le CLIC sénior",
-                        "verbatim": v_age
-                    })
+                if age_val is not None and str(age_val) != "nan":
+                    try:
+                        if float(age_val) >= 60:
+                            has_explicit_age = True
+                            v_age = self._extract_verbatim("Âge de la personne", f"{int(float(age_val))} ans, {int(float(age_val))}, ans, âge, age", original_text)
+                    except Exception:
+                        pass
+                
+                # Si pas d'âge numérique extrait, vérifier si un terme lié à l'âge ou la gériatrie est réellement présent en tant que mot entier dans la saisie
+                if not has_explicit_age:
+                    if re.search(r'\b(ans|âge|age|grand-mère|grand-mere|âgée|agee|retraité|retraitee|octogénaire|septuagénaire|nonagénaire)\b', original_text, flags=re.IGNORECASE):
+                        v_age_candidate = self._extract_verbatim("Âge de la personne", "ans, âge, age, grand-mère, grand-mere, âgée, agee, 60, 70, 80, 85, 90", original_text)
+                        if v_age_candidate:
+                            v_age = v_age_candidate
+                            has_explicit_age = True
+
+                if has_explicit_age:
+                    age_str = f" ({int(float(age_val))} ans)" if (age_val is not None and str(age_val) != "nan") else ""
+                    if not any("60 ans ou plus" in d.get("titre", "").lower() or "clic sénior" in d.get("titre", "").lower() for d in elements_detail):
+                        elements_detail.insert(0, {
+                            "titre": f"Personne âgée de 60 ans ou plus{age_str} : éligibilité et orientation vers le CLIC sénior",
+                            "verbatim": v_age
+                        })
 
             # Règle d'explicabilité pour l'UTS : si risque d'expulsion ou démarche sociale complexe, l'expliquer explicitement
             if struct_type == "UTS" and has_expulsion_risk:
@@ -682,6 +710,25 @@ class OrientationEngine:
                         "titre": "Prévention d'expulsion locative et accompagnement au maintien dans le logement",
                         "verbatim": v_expuls
                     })
+
+            # Déduplication des verbatims identiques au sein d'une même carte d'orientation (pour éviter de répéter le cadre bleu 10 fois)
+            clean_elements_detail = []
+            seen_verbatims_in_card = set()
+            for item in elements_detail:
+                v_str = (item.get("verbatim") or "").strip()
+                if v_str and v_str in seen_verbatims_in_card:
+                    clean_elements_detail.append({
+                        "titre": item["titre"],
+                        "verbatim": ""
+                    })
+                else:
+                    if v_str:
+                        seen_verbatims_in_card.add(v_str)
+                    clean_elements_detail.append({
+                        "titre": item["titre"],
+                        "verbatim": v_str
+                    })
+            elements_detail = clean_elements_detail
 
             struct_elements_titles = [e["titre"] for e in elements_detail]
             conseils_simple_texts = [c["text"] for c in identified_conseils_detail]
@@ -1357,20 +1404,17 @@ class OrientationEngine:
         if not sentences:
             return ""
 
-        # 1. Découpage en sub-clauses (propositions) sur les connecteurs logiques majeurs ("parce que", "car", "afin de")
+        # 1. Découpage en sub-clauses (propositions) sur les connecteurs logiques et ponctuations
         clauses = []
         for sentence in sentences:
-            parts = re.split(r'\b(parce que|parce qu\'|car)\b', sentence, flags=re.IGNORECASE)
-            current = ""
+            parts = re.split(
+                r'\b(?:parce que|parce qu\'|car|et aussi|ainsi que|puis|mais)\b|\bet\b|[\,;\n]+',
+                sentence,
+                flags=re.IGNORECASE
+            )
             for p in parts:
-                if p.lower() in ["parce que", "parce qu'", "car"]:
-                    if current.strip():
-                        clauses.append(current.strip())
-                    current = ""
-                else:
-                    current += " " + p
-            if current.strip():
-                clauses.append(current.strip())
+                if p and p.strip():
+                    clauses.append(p.strip())
 
         kws = []
         if criteria and str(criteria) != "nan":
@@ -1384,20 +1428,25 @@ class OrientationEngine:
             words = [w.lower() for w in detail.split() if len(w) >= 4 and w.lower() not in ["besoin", "mise", "place", "dans", "pour", "avec", "cette", "adaptation", "choix", "d'un", "d'une", "perte", "rapide"]]
             kws.extend(words)
 
-        # Target-specific keyword focus & tuning for Diogène vs Aidants vs Domicile
+        # Target-specific keyword focus & tuning pour MISAS vs SAAD/SSIAD vs Diogène vs Aidants
         detail_lower = (detail + " " + str(criteria)).lower()
+        is_misas_medecin = any(w in detail_lower for w in ["misas", "médecin", "medecin", "traitant", "docteur"])
+        is_saad_ssiad = any(w in detail_lower for w in ["saad", "ssiad", "aide à domicile", "aides à domicile", "aide a domicile", "aides a domicile", "service d'aide", "services d'aide", "prestataire"])
+
         if any(w in detail_lower for w in ["diogène", "diogene", "incurie", "insalubrité", "insalubre", "nettoyage", "réhabilitation", "désinfection"]):
             kws = ["diogène", "diogene", "incurie", "insalubrité", "insalubre", "nettoyage", "nettoyer", "sentir", "odeur", "odeurs", "sale", "propreté", "appartement", "logement", "désinfection", "desinfection"]
         elif any(w in detail_lower for w in ["aidant", "aidants", "répit", "repit", "fil d'argent"]):
             kws = ["surmené", "surmenée", "surmenés", "surmenages", "surmenage", "épuisé", "épuisée", "épuisement", "fatigué", "aidant", "aidante", "aidants", "répit", "repit", "soulager", "souffle"]
-        elif any(w in detail_lower for w in ["domicile", "saad", "ssiad", "prestataire"]):
-            kws = ["aides à domicile", "aide à domicile", "aides a domicile", "aide a domicile", "auxiliaire de vie", "saad", "ssiad", "prestataire", "domicile"]
+        elif is_saad_ssiad:
+            kws = ["aides à domicile", "aide à domicile", "aides a domicile", "aide a domicile", "auxiliaire de vie", "saad", "ssiad", "prestataire", "domicile", "portage de repas"]
+        elif is_misas_medecin:
+            kws = ["médecin traitant", "medecin traitant", "médecin", "medecin", "traitant", "docteur"]
         elif any(w in detail_lower for w in ["violence", "3919", "maltraitance", "frappe", "bleu", "danger"]):
             kws = ["violence", "violences", "frappe", "frappé", "bleu", "bleus", "maltraitance", "peur", "danger", "menace", "insulte"]
 
         # Évaluation d'abord sur les clauses ciblées
         best_clause = ""
-        best_score = 0
+        best_score = -999
 
         for clause in clauses:
             c_lower = clause.lower()
@@ -1405,11 +1454,23 @@ class OrientationEngine:
             for kw in kws:
                 if kw in c_lower:
                     score += len(kw) * 2
+            
+            if is_misas_medecin:
+                if any(w in c_lower for w in ["médecin", "medecin", "traitant", "docteur"]):
+                    score += 50
+                if any(w in c_lower for w in ["aides à domicile", "aide à domicile", "aides a domicile", "aide a domicile", "portage de repas", "saad", "ssiad"]):
+                    score -= 40
+            elif is_saad_ssiad:
+                if any(w in c_lower for w in ["aides à domicile", "aide à domicile", "aides a domicile", "aide a domicile", "saad", "ssiad", "portage de repas"]):
+                    score += 50
+                if any(w in c_lower for w in ["médecin", "medecin", "traitant"]):
+                    score -= 40
+
             if score > best_score:
                 best_score = score
                 best_clause = clause
 
-        if best_score >= 4:
+        if best_score > 0:
             cleaned = best_clause.strip()
             # Nettoyage pour les aides à domicile si la clause se termine par "pour nous soulager"
             if any(w in detail_lower for w in ["domicile", "saad", "ssiad", "prestataire"]):

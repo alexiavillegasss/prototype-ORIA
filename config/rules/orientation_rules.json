@@ -636,18 +636,12 @@
                     "value": ["recherche_medecin", "acces_aux_soins", "misas", "renoncement_aux_soins", "demenagement", "retraite_medecin"]
                 }
             ],
-            "none_of": [
-                {
-                    "field": "usager.identite.age_estime",
-                    "operator": "<=",
-                    "value": 60
-                }
-            ],
+            "none_of": [],
             "result": {
                 "eligible": true,
-                "base_pertinence": "moyenne",
-                "base_priority_score": 50,
-                "objectif_orientation": "Accès aux soins : Recherche de médecin traitant (justifiée par retraite/déménagement) et dispositif MISAS pour éviter le renoncement aux soins."
+                "base_pertinence": "eleve",
+                "base_priority_score": 100,
+                "objectif_orientation": "Accès aux soins : Recherche de médecin traitant et coordination des soins de premier recours par la CPTS."
             }
         },
         {
