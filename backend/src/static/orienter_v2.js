@@ -1137,6 +1137,11 @@ Cordialement,`;
 
             if (!response.ok) throw new Error("Erreur de génération PDF");
 
+            const returnedDossierId = response.headers.get('X-Dossier-ID');
+            if (returnedDossierId) {
+                dossierId = returnedDossierId;
+            }
+
             const blob = await response.blob();
             if (currentModalBlobUrl) {
                 URL.revokeObjectURL(currentModalBlobUrl);

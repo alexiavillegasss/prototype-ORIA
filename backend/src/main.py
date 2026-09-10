@@ -755,8 +755,39 @@ async def process_and_save_fiche_pdf(request: AnalyzeRequest, structure_type: st
     # 4. Enregistrer physiquement le PDF dans le dossier
     filename = f"fiche_orientation_{filename_prefix}_dossier_{dossier_id}.pdf"
     save_pdf_to_dossier(dossier_id, filename, pdf_bytes)
+
+    # 5. Synchroniser le dossier patient en Base de Données avec les modifications/extractions de la fiche
+    try:
+        d_id_int = clean_dossier_id(dossier_id)
+        if d_id_int is not None:
+            dossier_360 = db_manager.get_dossier_360_details(str(d_id_int))
+            if dossier_360 and dossier_360.get("orientation"):
+                existing_details = dossier_360["orientation"].get("details_complet") or {}
+                if isinstance(existing_details, str):
+                    try: existing_details = json.loads(existing_details)
+                    except: existing_details = {}
+                existing_details["raw_text"] = request.text
+                existing_details["fiche_extracted_data"] = extracted_data
+                
+                old_data = dossier_360["orientation"].get("donnees_extraites") or {}
+                if isinstance(old_data, str):
+                    try: old_data = json.loads(old_data)
+                    except: old_data = {}
+                merged_data = {**old_data, **extracted_data}
+
+                db_manager.update_dossier(
+                    dossier_id=d_id_int,
+                    texte_original=dossier_360["orientation"].get("texte_original") or extractor.anonymizer.pseudonymize(request.text),
+                    donnees_extraites=merged_data,
+                    score_comid=dossier_360["orientation"].get("score_comid") or 0,
+                    niveau_comid=dossier_360["orientation"].get("niveau_comid") or f"Validé - {structure_type}",
+                    structures_orientations=dossier_360["orientation"].get("structures_orientations") or [],
+                    details_complet=existing_details
+                )
+    except Exception as e:
+        print(f"Erreur mise à jour BDD dossier patient lors du PDF: {e}")
     
-    # 5. Renvoyer la réponse avec l'ID du dossier dans les headers
+    # 6. Renvoyer la réponse avec l'ID du dossier dans les headers
     return Response(
         content=pdf_bytes,
         media_type="application/pdf",
