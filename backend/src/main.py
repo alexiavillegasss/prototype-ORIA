@@ -342,7 +342,7 @@ def save_comid_evaluation(request: ComidEvalRequest):
     if cleaned_id is None:
         # Nouveau dossier
         d_id_int = db_manager.save_dossier(
-            texte_original=f"Dossier créé via l'évaluation COMID de {request.senior_nom}",
+            texte_original="",
             donnees_extraites={
                 "usager.identite.nom": request.senior_nom.split()[-1] if request.senior_nom else "",
                 "usager.identite.prenom": " ".join(request.senior_nom.split()[:-1]) if request.senior_nom and len(request.senior_nom.split()) > 1 else (request.senior_nom or ""),
@@ -352,7 +352,7 @@ def save_comid_evaluation(request: ComidEvalRequest):
             score_comid=request.score if request.type_eval == "entree" else 0,
             niveau_comid=request.niveau if request.type_eval == "entree" else "",
             structures_orientations=[],
-            details_complet={"createur": request.createur or "Anonyme"}
+            details_complet={"createur": request.createur or "Anonyme", "historique_orientations": []}
         )
         d_id = str(d_id_int)
     else:
@@ -361,7 +361,7 @@ def save_comid_evaluation(request: ComidEvalRequest):
         dossier_360 = db_manager.get_dossier_360_details(d_id)
         if not dossier_360 or not dossier_360.get("orientation"):
             db_manager.save_dossier(
-                texte_original=f"Dossier créé via l'évaluation COMID de {request.senior_nom}",
+                texte_original="",
                 donnees_extraites={
                     "usager.identite.nom": request.senior_nom.split()[-1] if request.senior_nom else "",
                     "usager.identite.prenom": " ".join(request.senior_nom.split()[:-1]) if request.senior_nom and len(request.senior_nom.split()) > 1 else (request.senior_nom or ""),
@@ -371,7 +371,7 @@ def save_comid_evaluation(request: ComidEvalRequest):
                 score_comid=request.score if request.type_eval == "entree" else 0,
                 niveau_comid=request.niveau if request.type_eval == "entree" else "",
                 structures_orientations=[],
-                details_complet={"createur": request.createur or "Anonyme"},
+                details_complet={"createur": request.createur or "Anonyme", "historique_orientations": []},
                 dossier_id=cleaned_id
             )
 
@@ -526,30 +526,67 @@ def _get_structure_types(dossier: dict) -> list:
     return ["Inconnu"]
 
 
+def matches_user_status(creator_name: Optional[str], status_role: Optional[str]) -> bool:
+    if not status_role or str(status_role).lower() in ("all", "tous", "toutes", ""):
+        return True
+    c_lower = (creator_name or "").lower()
+    s_lower = str(status_role).lower()
+    if s_lower == "dac":
+        return "durand" in c_lower or "dac" in c_lower
+    elif s_lower == "pro":
+        return "dupont" in c_lower or "dr" in c_lower or "sante" in c_lower or "santé" in c_lower or "pro" in c_lower
+    elif s_lower in ("usager", "aidant"):
+        return "martin" in c_lower or "bernard" in c_lower or "usager" in c_lower or "aidant" in c_lower or "patient" in c_lower or c_lower == "" or c_lower == "anonyme"
+    return True
+
 @app.get("/api/dashboard/sankey")
-def get_sankey_data(dim1: str = "commune", dim2: str = "complexite", dim3: str = "structure"):
+def get_sankey_data(dim1: str = "commune", dim2: str = "complexite", dim3: str = "structure", createur: Optional[str] = None, status_role: Optional[str] = None):
     """Construit les données du diagramme de Sankey à partir de la BDD.
     Les 3 dimensions sont configurables via les paramètres dim1, dim2, dim3.
-    Dimensions disponibles : commune, tranche_age, complexite, structure, apa, gir, medecin_traitant, urgence.
     """
-    dossiers = db_manager.get_all_dossiers()
+    all_dossiers = db_manager.get_all_dossiers()
 
-    # --- KPIs ---
-    total = len(dossiers)
-    scores = [d["score_comid"] for d in dossiers if d.get("score_comid") is not None]
+    # Filtrer par créateur ou statut si spécifié
+    dossiers = []
+    for d in all_dossiers:
+        details = d.get("details_complet") or {}
+        if isinstance(details, str):
+            try: details = json.loads(details)
+            except: details = {}
+        c_name = details.get("createur") if isinstance(details, dict) else None
+        
+        if createur and str(createur).lower() not in ("all", "anonyme", "tous", "toutes", ""):
+            if not (c_name and c_name.lower() == createur.lower()):
+                continue
+        if status_role and not matches_user_status(c_name, status_role):
+            continue
+            
+        dossiers.append(d)
+
+    # Exclure impérativement les dossiers sans commune renseignée pour le Sankey (pas d'inconnus)
+    valid_sankey_dossiers = []
+    for d in dossiers:
+        data = d.get("donnees_extraites", {})
+        if isinstance(data, dict):
+            raw_c = data.get("usager.localisation.commune_residence", "") or data.get("ville", "")
+            norm_c = normalize_commune(raw_c)
+            if norm_c and norm_c.lower() not in ("inconnue", "commune inconnue", "inconnu"):
+                valid_sankey_dossiers.append(d)
+
+    # --- KPIs (calculés sur les dossiers valides) ---
+    total = len(valid_sankey_dossiers)
+    scores = [d["score_comid"] for d in valid_sankey_dossiers if d.get("score_comid") is not None]
     score_moyen = sum(scores) / len(scores) if scores else None
 
     communes = []
     all_structure_types = []
     niveaux = []
 
-    for d in dossiers:
+    for d in valid_sankey_dossiers:
         data = d.get("donnees_extraites", {})
         if isinstance(data, dict):
             raw_c = data.get("usager.localisation.commune_residence", "") or data.get("ville", "")
             communes.append(normalize_commune(raw_c))
-        else:
-            communes.append("Inconnue")
 
         niveaux.append(d.get("niveau_comid", "Inconnu") or "Inconnu")
 
@@ -581,7 +618,7 @@ def get_sankey_data(dim1: str = "commune", dim2: str = "complexite", dim3: str =
     for i in range(len(valid_dims) - 1):
         links_counts.append(Counter())
 
-    for d in dossiers:
+    for d in valid_sankey_dossiers:
         # Extraire les valeurs pour chaque dimension valide
         dim_values = []
         for dim in valid_dims:
@@ -596,7 +633,9 @@ def get_sankey_data(dim1: str = "commune", dim2: str = "complexite", dim3: str =
             vals_tgt = dim_values[i+1]
             for src in vals_src:
                 for tgt in vals_tgt:
-                    links_counts[i][(src, tgt)] += 1
+                    # Ne pas inclure de nœuds Inconnus
+                    if "inconnu" not in src.lower() and "inconnu" not in tgt.lower():
+                        links_counts[i][(src, tgt)] += 1
 
     # Construction des nœuds (uniques)
     node_names = set()
@@ -640,15 +679,26 @@ async def extract_orientation_fields(request: ExtractFieldsRequest):
         return {"success": False, "error": str(e), "data": {}}
 
 def save_pdf_to_dossier(dossier_id: str, filename: str, pdf_bytes: bytes):
-    """Enregistre le fichier PDF physique dans le répertoire du dossier patient."""
+    """Enregistre le fichier PDF physique dans le répertoire du dossier patient et évite les doublons."""
     dossier_dir = os.path.join(STORAGE_DIR, str(dossier_id))
     os.makedirs(dossier_dir, exist_ok=True)
+    
+    # Supprimer d'éventuels doublons précédents pour la même fiche
+    prefix = filename.rsplit("_dossier_", 1)[0] if "_dossier_" in filename else filename.rsplit(".", 1)[0]
+    for existing in os.listdir(dossier_dir):
+        if existing.startswith(prefix) and existing.endswith(".pdf"):
+            try:
+                os.remove(os.path.join(dossier_dir, existing))
+            except Exception as e:
+                print(f"Erreur suppression ancien PDF {existing}: {e}")
+
     file_path = os.path.join(dossier_dir, filename)
     with open(file_path, "wb") as f:
         f.write(pdf_bytes)
 
 async def get_or_create_dossier_for_fiche(dossier_id: Optional[str], text: str, createur: str, structure_type: str) -> str:
-    """Assure qu'un dossier patient existe en BDD et retourne son ID."""
+    """Assure qu'un dossier patient existe en BDD et retourne son ID.
+    Si le dossier est créé directement depuis une fiche d'orientation, on laisse l'historique d'orientation vide."""
     cleaned_id = clean_dossier_id(dossier_id)
     if cleaned_id is None:
         # Extraction des données via l'IA
@@ -657,28 +707,32 @@ async def get_or_create_dossier_for_fiche(dossier_id: Optional[str], text: str, 
         else:
             extracted_data = await fiche_extractor.extract_for_clic(text)
         
-        # Créer un dossier dans dossiers_patients
+        val_data = {
+            "status": f"Fiche téléchargée ({structure_type})",
+            "structure_choisie": structure_type,
+            "date_validation": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        
         details = {
             "createur": createur,
             "orientation_results": [],
-            "orientation_with_contacts": []
+            "orientation_with_contacts": [],
+            "validation_utilisateur": val_data,
+            "historique_orientations": [] # Laissé vide pour ne pas créer de faux panneau d'orientation
         }
-        # On pseudonymise le texte
-        safe_text = extractor.anonymizer.pseudonymize(text)
-        
-        # Déterminer les structures
-        structures_orientations = [{"type": structure_type}]
         
         new_id = db_manager.save_dossier(
-            texte_original=safe_text,
+            texte_original="", # Laissé vide
             donnees_extraites=extracted_data,
             score_comid=0,
-            niveau_comid="Non évalué",
-            structures_orientations=structures_orientations,
+            niveau_comid=f"Validé - {structure_type}",
+            structures_orientations=[], # Laissé vide
             details_complet=details
         )
         return str(new_id)
-    return str(cleaned_id)
+    else:
+        db_manager.update_dossier_validation(cleaned_id, f"Acceptée ({structure_type})", structure_type)
+        return str(cleaned_id)
 
 async def process_and_save_fiche_pdf(request: AnalyzeRequest, structure_type: str, pdf_generator_func, filename_prefix: str):
     """
@@ -706,7 +760,7 @@ async def process_and_save_fiche_pdf(request: AnalyzeRequest, structure_type: st
         content=pdf_bytes,
         media_type="application/pdf",
         headers={
-            "Content-Disposition": f"attachment; filename={filename}",
+            "Content-Disposition": f'inline; filename="{filename}"',
             "X-Dossier-ID": str(dossier_id),
             "Access-Control-Expose-Headers": "X-Dossier-ID"
         }
@@ -751,49 +805,68 @@ async def generate_clic_hadage_pdf(request: AnalyzeRequest):
 @app.get("/api/dossiers/{dossier_id}/pdf/{structure_type}")
 async def generate_dossier_orientation_pdf(dossier_id: int, structure_type: str):
     """
-    Génère la fiche d'orientation PDF pour un dossier existant.
-    Récupère le texte original depuis la BDD, lance l'extraction IA spécifique 
-    puis remplit le template PDF correspondant.
+    Génère ou sert la fiche d'orientation PDF pour un dossier existant.
     """
     try:
+        struct_lower = structure_type.lower()
+        if "dac" in struct_lower:
+            prefix = "dac"
+        elif "toulon" in struct_lower:
+            prefix = "clic_toulon"
+        elif "provence" in struct_lower:
+            prefix = "clic_provence_verte"
+        elif "hadage" in struct_lower:
+            prefix = "clic_hadage"
+        elif "seyne" in struct_lower or "clic" in struct_lower:
+            prefix = "clic_laseyne"
+        else:
+            prefix = struct_lower
+
+        filename = f"fiche_orientation_{prefix}_dossier_{dossier_id}.pdf"
+        saved_file_path = os.path.join(STORAGE_DIR, str(dossier_id), filename)
+
+        # Si le fichier existe déjà physiquement sur le disque, on le sert directement inline
+        if os.path.exists(saved_file_path):
+            with open(saved_file_path, "rb") as f:
+                pdf_bytes = f.read()
+            return Response(
+                content=pdf_bytes,
+                media_type="application/pdf",
+                headers={"Content-Disposition": f'inline; filename="{filename}"'}
+            )
+
         # 1. Récupération des données du dossier
         dossier_details = db_manager.get_dossier_360_details(str(dossier_id))
         if not dossier_details or not dossier_details.get("orientation"):
-            return{"error": "Dossier introuvable"}
-        texte_original = dossier_details["orientation"]["texte_original"]
+            return {"error": "Dossier introuvable"}
+        
+        texte_original = dossier_details["orientation"].get("texte_original") or ""
+        if not texte_original:
+            return {"error": "Aucun texte d'orientation disponible pour ce dossier"}
 
         # 2. Extraction des champs et génération selon la structure demandée
-        struct_lower = structure_type.lower()
         if "dac" in struct_lower:
             extracted = await fiche_extractor.extract_for_dac(texte_original)
             pdf_bytes = pdf_generator.generate_dac_pdf(extracted)
-            filename = f"fiche_orientation_dac_dossier_{dossier_id}.pdf"
-        elif "laseyne" in struct_lower:
-            extracted = await fiche_extractor.extract_for_clic(texte_original)
-            pdf_bytes = pdf_generator.generate_clic_pdf(extracted)
-            filename = f"fiche_orientation_clic_laseyne_dossier_{dossier_id}.pdf"
         elif "toulon" in struct_lower:
             extracted = await fiche_extractor.extract_for_clic(texte_original)
             pdf_bytes = pdf_generator.generate_clic_toulon_pdf(extracted)
-            filename = f"fiche_orientation_clic_toulon_dossier_{dossier_id}.pdf"
-        elif "provence_verte" in struct_lower:
+        elif "provence" in struct_lower:
             extracted = await fiche_extractor.extract_for_clic(texte_original)
             pdf_bytes = pdf_generator._fill_clic_provence_verte(extracted)
-            filename = f"fiche_orientation_clic_provence_verte_dossier_{dossier_id}.pdf"
         elif "hadage" in struct_lower:
             extracted = await fiche_extractor.extract_for_clic(texte_original)
             pdf_bytes = pdf_generator._fill_clic_hadage(extracted)
-            filename = f"fiche_orientation_clic_hadage_dossier_{dossier_id}.pdf"
         else:
-            return {"error": f"Type de structure inconnu: {structure_type}"}
+            extracted = await fiche_extractor.extract_for_clic(texte_original)
+            pdf_bytes = pdf_generator.generate_clic_pdf(extracted)
 
-            
-        save_pdf_to_dossier(dossier_id, filename, pdf_bytes)
+        save_pdf_to_dossier(str(dossier_id), filename, pdf_bytes)
 
         return Response(
             content=pdf_bytes,
             media_type="application/pdf",
-            headers={"Content-Disposition": f"attachment; filename={filename}"}
+            headers={"Content-Disposition": f'inline; filename="{filename}"'}
         )
     except Exception as e:
         return {"error": f"Erreur lors de la génération du PDF : {str(e)}"}
@@ -806,14 +879,13 @@ def get_all_dossiers_summary(createur: Optional[str] = None):
     et en filtrant selon le créateur.
     """
     try:
-        # 1. Charger les données de toutes les tables
         dossiers = db_manager.get_all_dossiers()
         comids = db_manager.get_comid_evaluations()
         zarits = db_manager.get_zarit_evaluations()
         
         dossier_map = {}
         
-        # 2. Insérer d'abord les dossiers d'orientations patients
+        # 1. Insérer d'abord les dossiers d'orientations patients
         for d in dossiers:
             details_complet = d.get("details_complet") or {}
             if isinstance(details_complet, str):
@@ -821,27 +893,38 @@ def get_all_dossiers_summary(createur: Optional[str] = None):
                 except: details_complet = {}
             d_createur = details_complet.get("createur") if isinstance(details_complet, dict) else None
             
-            # Filtre par créateur (les dossiers anonymes ou du créateur courant restent visibles)
             if createur and d_createur and str(d_createur).lower() != "anonyme" and d_createur != createur:
                 continue
                 
             d_id = str(d["id"])
             senior_nom = "Anonyme"
-            if isinstance(details_complet, dict):
-                prenom = details_complet.get("senior_prenom", "")
-                nom = details_complet.get("senior_nom", "")
-                if prenom or nom:
-                    senior_nom = f"{prenom} {nom}".strip()
+            senior_prenom = ""
+            age = None
+            sexe = None
 
-            if senior_nom == "Anonyme":
-                dEx = d.get("donnees_extraites") or {}
-                if isinstance(dEx, str):
-                    try: dEx = json.loads(dEx)
-                    except: dEx = {}
+            if isinstance(details_complet, dict):
+                senior_prenom = details_complet.get("senior_prenom", "")
+                nom = details_complet.get("senior_nom", "")
+                if senior_prenom or nom:
+                    senior_nom = f"{senior_prenom} {nom}".strip()
+                age = details_complet.get("age")
+                sexe = details_complet.get("sexe")
+
+            dEx = d.get("donnees_extraites") or {}
+            if isinstance(dEx, str):
+                try: dEx = json.loads(dEx)
+                except: dEx = {}
+
+            if senior_nom == "Anonyme" and isinstance(dEx, dict):
                 nom_u = dEx.get("usager.identite.nom") or dEx.get("usager_nom_usage") or ""
                 prenom_u = dEx.get("usager.identite.prenom") or dEx.get("usager_prenoms") or ""
                 if nom_u or prenom_u:
                     senior_nom = f"{prenom_u} {nom_u}".strip()
+                    senior_prenom = prenom_u
+                if not age:
+                    age = dEx.get("usager.identite.age_estime")
+                if not sexe:
+                    sexe = dEx.get("usager.identite.sexe")
                 
             validation_status = "En attente"
             val_user = details_complet.get("validation_utilisateur") if isinstance(details_complet, dict) else None
@@ -852,19 +935,28 @@ def get_all_dossiers_summary(createur: Optional[str] = None):
                 else:
                     validation_status = "Refusé"
 
+            structs = d.get("structures_orientations", [])
+            has_orientation = bool(structs and len(structs) > 0 or (d.get("texte_original") and d.get("texte_original").strip() != ""))
+
             dossier_map[d_id] = {
                 "dossier_id": d_id,
                 "senior_nom": senior_nom,
+                "senior_prenom": senior_prenom,
+                "age": age,
+                "sexe": sexe,
+                "has_orientation": has_orientation,
                 "has_comid": False,
                 "has_zarit": False,
-                "has_fiches": len(d.get("structures_orientations", [])) > 0,
                 "score_comid": d.get("score_comid"),
                 "niveau_comid": d.get("niveau_comid"),
-                "structures": [s.get("type") or s.get("nom") for s in d.get("structures_orientations", []) if isinstance(s, dict)],
-                "validation_status": validation_status
+                "structures": [s.get("type") or s.get("nom") for s in structs if isinstance(s, dict)],
+                "validation_status": validation_status,
+                "is_archived": bool(d.get("is_archived", 0)),
+                "date_modification": d.get("date_modification") or d.get("date_creation") or "",
+                "zarits_info": []
             }
             
-        # 3. Insérer/Fusionner les dossiers créés depuis les évaluations COMID
+        # 2. Insérer/Fusionner les dossiers créés depuis les évaluations COMID
         for c in comids:
             c_d_id = str(c["dossier_id"])
             cleaned_c_d_id = clean_dossier_id(c_d_id)
@@ -878,13 +970,19 @@ def get_all_dossiers_summary(createur: Optional[str] = None):
                 dossier_map[d_id] = {
                     "dossier_id": d_id,
                     "senior_nom": c.get("senior_nom") or "Anonyme",
+                    "senior_prenom": "",
+                    "age": None,
+                    "sexe": None,
+                    "has_orientation": False,
                     "has_comid": True,
                     "has_zarit": False,
-                    "has_fiches": False,
                     "score_comid": c.get("score"),
                     "niveau_comid": c.get("niveau"),
                     "structures": [],
-                    "validation_status": "En attente"
+                    "validation_status": "En attente",
+                    "is_archived": False,
+                    "date_modification": c.get("date_creation") or "",
+                    "zarits_info": []
                 }
             else:
                 dossier_map[d_id]["has_comid"] = True
@@ -893,8 +991,10 @@ def get_all_dossiers_summary(createur: Optional[str] = None):
                     dossier_map[d_id]["niveau_comid"] = c.get("niveau")
                 if c.get("senior_nom") and dossier_map[d_id]["senior_nom"] == "Anonyme":
                     dossier_map[d_id]["senior_nom"] = c.get("senior_nom")
+                if c.get("date_creation") and c.get("date_creation") > dossier_map[d_id]["date_modification"]:
+                    dossier_map[d_id]["date_modification"] = c.get("date_creation")
                     
-        # 4. Insérer/Fusionner les dossiers créés depuis les évaluations ZARIT
+        # 3. Insérer/Fusionner les dossiers créés depuis les évaluations ZARIT
         for z in zarits:
             z_d_id = str(z["dossier_id"]) if z.get("dossier_id") else ""
             if not z_d_id:
@@ -905,27 +1005,69 @@ def get_all_dossiers_summary(createur: Optional[str] = None):
             
             if createur and d_createur and str(d_createur).lower() != "anonyme" and d_createur != createur:
                 continue
+
+            z_info = {
+                "aidant_nom": z.get("aidant_nom") or "Aidant",
+                "aidant_lien": z.get("aidant_lien") or "",
+                "score": z.get("score"),
+                "niveau": z.get("niveau"),
+                "date_creation": z.get("date_creation")
+            }
                 
             if d_id not in dossier_map:
                 dossier_map[d_id] = {
                     "dossier_id": d_id,
                     "senior_nom": z.get("senior_nom") or "Anonyme",
+                    "senior_prenom": "",
+                    "age": None,
+                    "sexe": None,
+                    "has_orientation": False,
                     "has_comid": False,
                     "has_zarit": True,
-                    "has_fiches": False,
                     "score_comid": None,
                     "niveau_comid": None,
                     "structures": [],
-                    "validation_status": "En attente"
+                    "validation_status": "En attente",
+                    "is_archived": False,
+                    "date_modification": z.get("date_creation") or "",
+                    "zarits_info": [z_info]
                 }
             else:
                 dossier_map[d_id]["has_zarit"] = True
+                dossier_map[d_id]["zarits_info"].append(z_info)
                 if z.get("senior_nom") and dossier_map[d_id]["senior_nom"] == "Anonyme":
                     dossier_map[d_id]["senior_nom"] = z.get("senior_nom")
-                    
-        return list(dossier_map.values())
+                if z.get("date_creation") and z.get("date_creation") > dossier_map[d_id]["date_modification"]:
+                    dossier_map[d_id]["date_modification"] = z.get("date_creation")
+
+        result = list(dossier_map.values())
+        # Trier par date_modification descendant (plus récent en haut)
+        result.sort(key=lambda item: item.get("date_modification") or "", reverse=True)
+        return result
     except Exception as e:
         return {"error": f"Erreur de fusion : {str(e)}"}
+
+@app.post("/api/dossiers/{dossier_id}/archive")
+def archive_dossier_endpoint(dossier_id: str):
+    """Archive un dossier patient."""
+    cleaned_id = clean_dossier_id(dossier_id)
+    if cleaned_id is None:
+        return {"error": "Dossier introuvable."}
+    success = db_manager.toggle_archive_dossier(cleaned_id, archive=True)
+    if not success:
+        return {"error": "Dossier introuvable."}
+    return {"success": True, "message": "Dossier archivé avec succès !"}
+
+@app.post("/api/dossiers/{dossier_id}/unarchive")
+def unarchive_dossier_endpoint(dossier_id: str):
+    """Désarchive un dossier patient."""
+    cleaned_id = clean_dossier_id(dossier_id)
+    if cleaned_id is None:
+        return {"error": "Dossier introuvable."}
+    success = db_manager.toggle_archive_dossier(cleaned_id, archive=False)
+    if not success:
+        return {"error": "Dossier introuvable."}
+    return {"success": True, "message": "Dossier restauré avec succès !"}
 
 class ComidPDFRequest(BaseModel):
     email: str = ""
@@ -955,6 +1097,7 @@ class ZaritEvalRequest(BaseModel):
     dossier_id: Optional[str] = None
     senior_nom: Optional[str] = "Senior non renseigné"
     aidant_nom: Optional[str] = "Aidant"
+    aidant_lien: Optional[str] = ""
     score: int
     niveau: str
     reponses: list
@@ -964,6 +1107,7 @@ class ZaritPDFRequest(BaseModel):
     dossier_id: Optional[str] = None
     senior_nom: Optional[str] = "Senior non renseigné"
     aidant_nom: Optional[str] = "Aidant"
+    aidant_lien: Optional[str] = ""
     score: int = 0
     niveau: str = "Charge faible"
     date: str = ""
@@ -998,7 +1142,7 @@ def save_zarit_evaluation(req: ZaritEvalRequest):
     cleaned_id = clean_dossier_id(req.dossier_id)
     if cleaned_id is None:
         d_id_int = db_manager.save_dossier(
-            texte_original=f"Dossier créé via l'évaluation ZARIT de {req.senior_nom}",
+            texte_original="",
             donnees_extraites={
                 "usager.identite.nom": req.senior_nom.split()[-1] if req.senior_nom else "",
                 "usager.identite.prenom": " ".join(req.senior_nom.split()[:-1]) if req.senior_nom and len(req.senior_nom.split()) > 1 else (req.senior_nom or ""),
@@ -1008,7 +1152,7 @@ def save_zarit_evaluation(req: ZaritEvalRequest):
             score_comid=0,
             niveau_comid="",
             structures_orientations=[],
-            details_complet={"createur": req.createur or "Anonyme"}
+            details_complet={"createur": req.createur or "Anonyme", "historique_orientations": []}
         )
         d_id = str(d_id_int)
     else:
@@ -1016,7 +1160,7 @@ def save_zarit_evaluation(req: ZaritEvalRequest):
         dossier_360 = db_manager.get_dossier_360_details(d_id)
         if not dossier_360 or not dossier_360.get("orientation"):
             db_manager.save_dossier(
-                texte_original=f"Dossier créé via l'évaluation ZARIT de {req.senior_nom}",
+                texte_original="",
                 donnees_extraites={
                     "usager.identite.nom": req.senior_nom.split()[-1] if req.senior_nom else "",
                     "usager.identite.prenom": " ".join(req.senior_nom.split()[:-1]) if req.senior_nom and len(req.senior_nom.split()) > 1 else (req.senior_nom or ""),
@@ -1026,7 +1170,7 @@ def save_zarit_evaluation(req: ZaritEvalRequest):
                 score_comid=0,
                 niveau_comid="",
                 structures_orientations=[],
-                details_complet={"createur": req.createur or "Anonyme"},
+                details_complet={"createur": req.createur or "Anonyme", "historique_orientations": []},
                 dossier_id=cleaned_id
             )
 
@@ -1037,7 +1181,8 @@ def save_zarit_evaluation(req: ZaritEvalRequest):
         niveau=req.niveau,
         reponses=req.reponses,
         dossier_id=d_id,
-        createur=req.createur
+        createur=req.createur,
+        aidant_lien=req.aidant_lien or ""
     )
     return {"status": "ok", "id": eval_id, "dossier_id": d_id}
 
@@ -1085,7 +1230,7 @@ def download_saved_pdf(dossier_id: str, filename: str):
     file_path = os.path.join(STORAGE_DIR, str(dossier_id), filename)
     if not os.path.exists(file_path):
         return Response(content="Fichier introuvable.", status_code=404)
-    return FileResponse(file_path, media_type="application/pdf", filename=filename)
+    return FileResponse(file_path, media_type="application/pdf", content_disposition_type="inline", filename=filename)
 
 class PatientInfoUpdateRequest(BaseModel):
     senior_nom: Optional[str] = None

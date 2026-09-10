@@ -87,6 +87,18 @@ class DatabaseManager:
                 cursor.execute('ALTER TABLE zarit_evaluations ADD COLUMN createur TEXT')
             except Exception:
                 pass
+            try:
+                cursor.execute('ALTER TABLE dossiers_patients ADD COLUMN is_archived INTEGER DEFAULT 0')
+            except Exception:
+                pass
+            try:
+                cursor.execute('ALTER TABLE dossiers_patients ADD COLUMN date_modification TEXT')
+            except Exception:
+                pass
+            try:
+                cursor.execute('ALTER TABLE zarit_evaluations ADD COLUMN aidant_lien TEXT')
+            except Exception:
+                pass
             conn.commit()
 
     def save_dossier(self, texte_original: str, donnees_extraites: dict, score_comid: int, niveau_comid: str, structures_orientations: list, details_complet: dict = None, dossier_id: Optional[int] = None) -> Optional[int]:
@@ -97,6 +109,7 @@ class DatabaseManager:
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             date_creation = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            date_modification = date_creation
             
             # SQLite ne stocke que du texte ou des nombres. 
             # On convertit donc nos dictionnaires Python en chaînes de texte JSON.
@@ -105,16 +118,18 @@ class DatabaseManager:
                     INSERT INTO dossiers_patients (
                         id,
                         date_creation,
+                        date_modification,
                         texte_original,
                         donnees_extraites,
                         score_comid,
                         niveau_comid,
                         structures_orientations,
                         details_complet
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (
                     dossier_id,
                     date_creation,
+                    date_modification,
                     texte_original,
                     json.dumps(donnees_extraites, ensure_ascii=False),
                     score_comid,
@@ -126,15 +141,17 @@ class DatabaseManager:
                 cursor.execute('''
                     INSERT INTO dossiers_patients (
                         date_creation,
+                        date_modification,
                         texte_original,
                         donnees_extraites,
                         score_comid,
                         niveau_comid,
                         structures_orientations,
                         details_complet
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (
                     date_creation,
+                    date_modification,
                     texte_original,
                     json.dumps(donnees_extraites, ensure_ascii=False),
                     score_comid,
@@ -149,9 +166,10 @@ class DatabaseManager:
         """Met à jour un dossier existant avec les nouvelles données d'orientation."""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
+            date_modification = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             cursor.execute('''
                 UPDATE dossiers_patients
-                SET texte_original = ?, donnees_extraites = ?, score_comid = ?, niveau_comid = ?, structures_orientations = ?, details_complet = ?
+                SET texte_original = ?, donnees_extraites = ?, score_comid = ?, niveau_comid = ?, structures_orientations = ?, details_complet = ?, date_modification = ?
                 WHERE id = ?
             ''', (
                 texte_original,
@@ -160,6 +178,7 @@ class DatabaseManager:
                 niveau_comid,
                 json.dumps(structures_orientations, ensure_ascii=False),
                 json.dumps(details_complet or {}, ensure_ascii=False),
+                date_modification,
                 dossier_id
             ))
             conn.commit()
@@ -387,9 +406,11 @@ class DatabaseManager:
                     if score_entree > 0:
                         evolution_pct = round((delta / score_entree) * 100, 1)
 
+                createur_val = (entree and entree.get('createur')) or (sortie and sortie.get('createur')) or "Anonyme"
                 comparisons.append({
                     "dossier_id": d_id,
                     "senior_nom": data['senior_nom'],
+                    "createur": createur_val,
                     "score_entree": score_entree,
                     "niveau_entree": entree['niveau'] if entree else None,
                     "date_entree": entree['date_creation'] if entree else None,
@@ -410,17 +431,40 @@ class DatabaseManager:
             conn.commit()
             return cursor.rowcount > 0
 
-    def save_zarit_eval(self, senior_nom: str, aidant_nom: str, score: int, niveau: str, reponses: list, dossier_id: str = None, createur: str = "Anonyme") -> int:
+    def save_zarit_eval(self, senior_nom: str, aidant_nom: str, score: int, niveau: str, reponses: list, dossier_id: str = None, createur: str = "Anonyme", aidant_lien: str = "") -> int:
         """Enregistre une évaluation de la grille de Zarit (Fardeau de l'aidant)."""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             date_creation = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             cursor.execute('''
-                INSERT INTO zarit_evaluations (dossier_id, senior_nom, aidant_nom, score, niveau, reponses_json, date_creation, createur)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (dossier_id, senior_nom, aidant_nom, score, niveau, json.dumps(reponses), date_creation, createur))
+                INSERT INTO zarit_evaluations (dossier_id, senior_nom, aidant_nom, aidant_lien, score, niveau, reponses_json, date_creation, createur)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (dossier_id, senior_nom, aidant_nom, aidant_lien or "", score, niveau, json.dumps(reponses), date_creation, createur))
+            if dossier_id:
+                clean_id = clean_id_str(str(dossier_id))
+                try:
+                    d_id_int = int(clean_id)
+                    cursor.execute('UPDATE dossiers_patients SET date_modification = ? WHERE id = ?', (date_creation, d_id_int))
+                except (ValueError, TypeError):
+                    pass
             conn.commit()
             return cursor.lastrowid
+
+    def toggle_archive_dossier(self, dossier_id: Union[int, str], archive: bool = True) -> bool:
+        """Archive ou désarchive un dossier patient."""
+        clean_id = clean_id_str(str(dossier_id))
+        try:
+            d_id_int = int(clean_id)
+        except (ValueError, TypeError):
+            return False
+
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            val = 1 if archive else 0
+            date_modif = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            cursor.execute('UPDATE dossiers_patients SET is_archived = ?, date_modification = ? WHERE id = ?', (val, date_modif, d_id_int))
+            conn.commit()
+            return cursor.rowcount > 0
 
     def get_zarit_evaluations(self) -> list:
         """Récupère l'historique de toutes les évaluations de Zarit."""

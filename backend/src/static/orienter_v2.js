@@ -171,10 +171,26 @@ document.addEventListener('DOMContentLoaded', () => {
     //const jsonOutput = document.getElementById('raw-json-output');
 
     btnSubmit.addEventListener('click', async () => {
-        const text = inputArea.value.trim();
+        let text = inputArea.value.trim();
         if (!text) {
             alert("Veuillez saisir la description d'une situation avant de lancer l'analyse.");
             return;
+        }
+
+        // Vérification des champs clés (Commune et Âge) pour éviter les "Inconnus" dans le Sankey
+        const hasAge = /\b(6[0-9]|7[0-9]|8[0-9]|9[0-9]|10[0-9]|\d{2,3}\s*ans)\b/i.test(text);
+        const hasCommune = /\b(toulon|la seyne|seyne|hyères|hyeres|brignoles|draguignan|sanary|bandol|six-fours|st-tropez|saint-tropez|le pradet|la garde|la valette|cuers|solliès|sollies|ollioules|cotignac|bormes|bras|evenos|le beausset|signes|saint-mandrier)\b/i.test(text);
+
+        const missing = [];
+        if (!hasAge) missing.push("Âge du senior (ex: 84 ans)");
+        if (!hasCommune) missing.push("Commune de résidence (ex: Toulon, La Seyne, Hyères...)");
+
+        if (missing.length > 0) {
+            const extraInfo = prompt(`Pour un classement optimal dans le Sankey et les statistiques (sans mention 'Inconnu'), veuillez préciser :\n- ${missing.join('\n- ')}\n\nEntrez les précisions ci-dessous (ou validez pour continuer ainsi) :`);
+            if (extraInfo && extraInfo.trim()) {
+                text += " " + extraInfo.trim();
+                inputArea.value = text;
+            }
         }
 
         // 1. Passage en état de chargement

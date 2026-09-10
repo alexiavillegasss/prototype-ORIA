@@ -181,8 +181,8 @@
         /* --- Score bar (sticky) --- */
         .score-bar {
             position: sticky;
-            top: 80px;
-            z-index: 50;
+            top: 130px;
+            z-index: 90;
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: var(--radius);
@@ -1891,15 +1891,15 @@
     }
 
     async function saveComidEvaluation(silent = false) {
-        let dossierId = document.getElementById('comid-dossier-id').value.trim();
+        let rawDossierId = document.getElementById('comid-dossier-id').value.trim();
         let selectedGlobalDossierId = document.getElementById('comid-global-dossier-select')?.value;
 
-        if (!dossierId) {
-            if (!silent) alert('Veuillez spécifier ou sélectionner un Identifiant de Dossier.');
-            return;
+        let dossierId = selectedGlobalDossierId || rawDossierId;
+        if (!dossierId || dossierId.startsWith('DOS-') || dossierId === 'new') {
+            dossierId = 'new';
         }
 
-        if (!silent && selectedGlobalDossierId) {
+        if (!silent && selectedGlobalDossierId && selectedGlobalDossierId !== 'new') {
             try {
                 const checkRes = await fetch(`/api/dossier-360/${encodeURIComponent(selectedGlobalDossierId)}`);
                 if (checkRes.ok) {
@@ -1928,7 +1928,7 @@
         if (score >= 10) niveau = 'Très complexe';
         else if (score >= 6) niveau = 'À risque';
 
-        const seniorNom = document.getElementById('comid-senior-nom').value.trim();
+        const seniorNom = document.getElementById('comid-senior-nom').value.trim() || 'Senior non renseigné';
 
         const activeUserJson = localStorage.getItem('active_user');
         const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
@@ -1956,12 +1956,23 @@
                 const actualDossierId = data.dossier_id || dossierId;
                 
                 const inputId = document.getElementById('comid-dossier-id');
-                if (inputId) {
+                if (inputId && actualDossierId) {
                     inputId.value = actualDossierId;
                 }
                 
                 await loadGlobalDossiersDropdown();
-                updateComidGoToDossierButton(actualDossierId);
+
+                const redirectContainer = document.getElementById('comid-goto-dossier-container');
+                if (redirectContainer && actualDossierId) {
+                    redirectContainer.style.display = 'block';
+                    redirectContainer.innerHTML = `
+                        <div style="margin-top: 1rem; padding: 0.85rem; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px; text-align: center;">
+                            <a href="/dossier/${encodeURIComponent(actualDossierId)}" class="btn-primary" style="background: #3b82f6; color: #ffffff; padding: 0.6rem 1.2rem; font-size: 0.9rem; font-weight: 700; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+                                📁 Accéder au dossier patient (#${actualDossierId})
+                            </a>
+                        </div>
+                    `;
+                }
 
                 if (!silent) {
                     const goDossier = confirm(`✅ Évaluation COMID d'${currentComidType === 'entree' ? 'Entrée' : 'Sortie'} enregistrée avec succès !\n\nN° Dossier : ${actualDossierId}\nScore : ${score}/30 (${niveau})\n\nVoulez-vous ouvrir la fiche du dossier patient maintenant ?`);
