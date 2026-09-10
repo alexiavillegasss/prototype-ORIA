@@ -769,6 +769,21 @@ async def process_and_save_fiche_pdf(request: AnalyzeRequest, structure_type: st
                 existing_details["raw_text"] = request.text
                 existing_details["fiche_extracted_data"] = extracted_data
                 
+                # Mettre à jour l'historique d'orientations pour que h.texte_original affiche le texte révisé dans la Situation clinique décrite
+                historique = list(existing_details.get("historique_orientations", []))
+                if historique:
+                    historique[-1]["texte_original"] = request.text
+                    historique[-1]["donnees_extraites"] = {**historique[-1].get("donnees_extraites", {}), **extracted_data}
+                else:
+                    historique.append({
+                        "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        "texte_original": request.text,
+                        "donnees_extraites": extracted_data,
+                        "structures_orientations": dossier_360["orientation"].get("structures_orientations") or [],
+                        "validation_utilisateur": existing_details.get("validation_utilisateur")
+                    })
+                existing_details["historique_orientations"] = historique
+
                 old_data = dossier_360["orientation"].get("donnees_extraites") or {}
                 if isinstance(old_data, str):
                     try: old_data = json.loads(old_data)
@@ -777,7 +792,7 @@ async def process_and_save_fiche_pdf(request: AnalyzeRequest, structure_type: st
 
                 db_manager.update_dossier(
                     dossier_id=d_id_int,
-                    texte_original=dossier_360["orientation"].get("texte_original") or extractor.anonymizer.pseudonymize(request.text),
+                    texte_original=request.text,
                     donnees_extraites=merged_data,
                     score_comid=dossier_360["orientation"].get("score_comid") or 0,
                     niveau_comid=dossier_360["orientation"].get("niveau_comid") or f"Validé - {structure_type}",

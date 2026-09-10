@@ -639,11 +639,11 @@
                                             ` : ''}
                                         </div>
                                         
-                                        ${h.texte_original ? `
+                                        ${(h.texte_original || h.raw_text || detailsComplet.raw_text) ? `
                                             <div style="margin-top: 0.35rem;">
                                                 <span style="font-weight: 600; color: var(--text-secondary);">Situation clinique décrite :</span>
                                                 <div style="margin-top: 0.35rem; padding: 0.75rem; background: var(--bg-primary); border-radius: 6px; font-style: italic; color: var(--text-secondary); max-height: 200px; overflow-y: auto; border: 1px solid var(--border-glass);">
-                                                    "${h.texte_original}"
+                                                    "${h.texte_original || h.raw_text || detailsComplet.raw_text}"
                                                 </div>
                                             </div>
                                         ` : ''}
