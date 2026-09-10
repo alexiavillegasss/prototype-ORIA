@@ -1149,7 +1149,19 @@ Cordialement,`;
             currentModalBlobUrl = URL.createObjectURL(blob);
             
             if (iframe) {
-                iframe.src = currentModalBlobUrl + '#view=FitH&zoom=100';
+                const pdfZoomUrl = currentModalBlobUrl + '#view=FitH&zoom=100';
+                iframe.src = 'about:blank';
+                setTimeout(() => {
+                    try {
+                        if (iframe.contentWindow) {
+                            iframe.contentWindow.location.replace(pdfZoomUrl);
+                        } else {
+                            iframe.src = pdfZoomUrl;
+                        }
+                    } catch(e) {
+                        iframe.src = pdfZoomUrl;
+                    }
+                }, 50);
             }
 
             if (downloadBtn) {
@@ -1163,7 +1175,7 @@ Cordialement,`;
                 };
             }
 
-            if (statusEl) statusEl.textContent = "🟢 Aperçu PDF pré-rempli avec succès !";
+            if (statusEl) statusEl.textContent = "🟢 Aperçu PDF pré-rempli et enregistré avec succès !";
         } catch(e) {
             console.error("Erreur PDF preview:", e);
             if (statusEl) statusEl.textContent = "🔴 Erreur lors de la génération de la fiche PDF.";
@@ -1200,13 +1212,13 @@ Cordialement,`;
                 }
             };
 
-            const nom = data.nom_usage || '';
-            const prenom = data.prenoms || '';
+            const nom = data.nom_usage || data.usager_nom_usage || '';
+            const prenom = data.prenoms || data.usager_prenoms || '';
             const identity = (nom || prenom) ? `${prenom} ${nom}`.trim() : '';
             addSummaryRow("Identité usager", identity, "👤");
-            addSummaryRow("Âge / Naissance", data.date_naissance || '', "🎂");
-            addSummaryRow("Téléphone usager", data.telephone || '', "📞");
-            addSummaryRow("Adresse domicile", data.adresse_complete || '', "🏠");
+            addSummaryRow("Âge / Naissance", data.date_naissance || data.usager_date_naissance || '', "🎂");
+            addSummaryRow("Téléphone usager", data.telephone || data.usager_telephone || '', "📞");
+            addSummaryRow("Adresse domicile", data.adresse_complete || data.usager_adresse || '', "🏠");
             addSummaryRow("GIR Autonomie", data.gir || '', "📊");
             addSummaryRow("Bénéficiaire APA", data.apa || '', "📋");
 
@@ -1220,10 +1232,16 @@ Cordialement,`;
         }
     }
 
+    let modalAutoSaveTimeout = null;
+
     window.reanalyzeOrienterModalFiche = async function() {
         const textEl = document.getElementById('orienter-modal-text');
         const text = textEl ? textEl.value.trim() : '';
         if (!text) return;
+
+        // Synchroniser le texte révisé vers la zone principale de la page
+        const mainInput = document.getElementById('situation-input');
+        if (mainInput) mainInput.value = text;
 
         const loadingEl = document.getElementById('orienter-pdf-loading');
         if (loadingEl) loadingEl.style.display = 'flex';
@@ -1233,6 +1251,26 @@ Cordialement,`;
             fetchAndRenderFieldsSummary(text, currentModalStructure)
         ]);
     };
+
+    // Écouteur en direct sur la zone de texte pour re-générer automatiquement dès que la frappe s'arrête
+    document.addEventListener('DOMContentLoaded', () => {
+        const textEl = document.getElementById('orienter-modal-text');
+        if (textEl) {
+            textEl.addEventListener('input', () => {
+                const text = textEl.value.trim();
+                const mainInput = document.getElementById('situation-input');
+                if (mainInput) mainInput.value = text;
+
+                const statusEl = document.getElementById('orienter-modal-status');
+                if (statusEl) statusEl.textContent = "⏳ Prise en compte des modifications en cours...";
+
+                if (modalAutoSaveTimeout) clearTimeout(modalAutoSaveTimeout);
+                modalAutoSaveTimeout = setTimeout(() => {
+                    reanalyzeOrienterModalFiche();
+                }, 1000);
+            });
+        }
+    });
 
     window.closeOrienterFicheModal = function() {
         const modal = document.getElementById('orienter-fiche-modal');
