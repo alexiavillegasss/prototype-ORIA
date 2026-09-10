@@ -562,25 +562,19 @@
                             }
 
                             if (endpointType && !pdfButtonsList.some(b => b.endpointType === endpointType)) {
-                                pdfButtonsList.push({ endpointType, btnLabel });
+                                // S'il existe déjà un fichier PDF physique sur le disque pour cette structure, l'utiliser en priorité
+                                const matchingSavedFile = (savedPdfs || []).find(f => {
+                                    const fLower = f.toLowerCase();
+                                    return fLower.includes(`fiche_orientation_${endpointType}_`) || fLower.includes(endpointType);
+                                });
+
+                                if (matchingSavedFile) {
+                                    pdfButtonsList.push({ isSavedFile: true, filename: matchingSavedFile, btnLabel, endpointType });
+                                } else {
+                                    pdfButtonsList.push({ isSavedFile: false, endpointType, btnLabel });
+                                }
                             }
                         });
-
-                        // Inclure également les fichiers PDF enregistrés de type orientation sur le disque pour cette orientation
-                        if (isLatest) {
-                            const savedOrientationPdfs = (savedPdfs || []).filter(f => f.toLowerCase().includes('fiche_orientation_') || f.toLowerCase().includes('fiche_'));
-                            savedOrientationPdfs.forEach(fname => {
-                                let cleanLabel = fname.replace(/\.pdf$/i, '').replace(/_/g, ' ');
-                                if (cleanLabel.toLowerCase().includes('dac')) cleanLabel = "Fiche DAC (Enregistrée)";
-                                else if (cleanLabel.toLowerCase().includes('clic')) cleanLabel = "Fiche CLIC (Enregistrée)";
-                                
-                                pdfButtonsList.push({
-                                    isSavedFile: true,
-                                    filename: fname,
-                                    btnLabel: `Télécharger ${cleanLabel}`
-                                });
-                            });
-                        }
 
                         if (pdfButtonsList.length > 0) {
                             pdfButtonsHtml = '<div style="margin-top: 0.8rem; display: flex; flex-direction: column; gap: 0.5rem;">';
