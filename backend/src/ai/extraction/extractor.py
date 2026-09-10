@@ -240,8 +240,12 @@ JSON attendu :
                         ville = "La Valette-du-Var"
                     elif city in ["sanary", "sanary-sur-mer"]:
                         ville = "Sanary-sur-Mer"
+                    elif city in ["la garde"]:
+                        ville = "La Garde"
+                    elif city in ["le pradet"]:
+                        ville = "Le Pradet"
                     else:
-                        ville = city.capitalize()
+                        ville = city.title()
                     break
 
         # Rapprochement flou ou direct de la clé de besoin principal extraite
@@ -321,6 +325,12 @@ JSON attendu :
             nom_usager = ""
         if prenom_usager and any(x in prenom_usager.lower() for x in ["ans", "monsieur", "dame", "patient", "usager", "homme", "femme", "oria"]):
             prenom_usager = ""
+        # Validation anti-hallucination de la suspicion de malveillance
+        malveillance_val = str(raw_data.get("malveillance", "aucune")).lower()
+        if malveillance_val != "aucune":
+            has_violence_kw = re.search(r'\b(violence|violences|maltraitance|frappe|frapper|bleus?|coups?|menace|agression|agressions|abus|spoliation|vol|volé|vols|privation|danger)\b', text, re.IGNORECASE)
+            if not has_violence_kw:
+                malveillance_val = "aucune"
 
         mapped = {
             "usager.identite.nom": nom_usager,
@@ -333,7 +343,7 @@ JSON attendu :
             "usager.situation_actuelle.PCH": str(raw_data.get("pch", "non")).lower(),
             "usager.situation_actuelle.GIR": raw_data.get("gir"),
             "vulnerabilites.sante.suivi_medical.medecin_traitant": raw_data.get("medecin_traitant", "non_mentionne"),
-            "usager.situation_actuelle.suspicion_malveillance": raw_data.get("malveillance", "aucune"),
+            "usager.situation_actuelle.suspicion_malveillance": malveillance_val,
             "adresseur.degre_urgence_percu": raw_data.get("urgence", "faible"),
             "vulnerabilites.sante.hospitalisation.statut": raw_data.get("hospitalisation", "aucun"),
             "demande.motif_principal": motif_principal,
@@ -459,7 +469,7 @@ JSON attendu :
             "psychiatrie": ["paranoia", "paranoïaque", "psychiatre", "CMP", "psychiatrique", "psychose", "schizophrène", "schizophrenie"],
             "depression": ["dépression", "depression", "dépressif", "depressif", "suicide", "suicidaire", "glissement"],
             "troubles_cognitifs": ["démence", "demence", "alzheimer", "mémoire", "memoire", "cognitif", "cognitive", "aphasie"],
-            "addiction": ["alcool", "toxicoman", "toxico", "drogue", "addict"],
+            "addiction": ["alcool", "toxicoman", "toxico", "drogue", "addict", "trop de médicaments", "trop de medicaments", "doses qu'elle prend", "doses qu'il prend", "surdosage", "dépendance médicamenteuse", "dependance medicamenteuse", "antalgiques", "antidouleurs"],
             "degradation_recente": ["dégrade", "degrade", "dégradation", "degradation"],
             "perte_autonomie_recente": ["chute", "chutes", "perte d'autonomie", "perte d’autonomie", "perte autonomie"],
             "precarite_financiere": ["dette", "dettes", "surendettement", "surendetté", "surendette", "pas les moyens", "pas de moyens", "factures", "aide sociale à l'hébergement", "aide sociale a l'hebergement"],
@@ -521,8 +531,9 @@ JSON attendu :
                 mapped["evaluation.comid.multimorbidite"] = True
                 mapped["evaluation.confiance.comid"]["multimorbidite"] = 100
 
-        # H. Force addiction si alcoolisme ou alcool mentionné de manière négative
-        if "addiction à l'alcool" in text_lower or "alcoolisme" in text_lower:
+        # H. Force addiction si alcoolisme, alcool ou surdosage/dépendance médicamenteuse mentionné
+        medication_addiction_kws = ["trop de médicaments", "trop de medicaments", "surdosage", "dépendance médicamenteuse", "dependance medicamenteuse", "doses qu'elle prend", "doses qu'il prend"]
+        if "addiction à l'alcool" in text_lower or "alcoolisme" in text_lower or any(kw in text_lower for kw in medication_addiction_kws):
             mapped["evaluation.comid.addiction"] = True
             mapped["evaluation.confiance.comid"]["addiction"] = 100
 

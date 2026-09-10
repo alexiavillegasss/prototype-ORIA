@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import pandas as pd
 
 class OrientationEngine:
@@ -46,6 +47,23 @@ class OrientationEngine:
             "PRADO": "Le programme PRADO de l'Assurance Maladie anticipe et sécurise le retour à domicile du patient après une hospitalisation.",
             "fil d'argent": "Le Fil d'Argent est une plateforme téléphonique dédiée au soutien psychologique, au répit et à l'écoute des aidants familiaux.",
             "CONSULTATION MÉMOIRE": "La Consultation Mémoire réalise le bilan et le suivi médical spécialisé des troubles de la mémoire et des fonctions cognitives."
+        }
+        self.structure_domains = {
+            "POLICE": {"id": "securite_urgence", "label": "Urgence Vitale & Protection (Sécurité)"},
+            "CEV": {"id": "securite_urgence", "label": "Protection & Vigilance (Signalement)"},
+            "CLIC": {"id": "medico_social", "label": "Accompagnement & Maintien à Domicile (Médico-Social)"},
+            "CRT": {"id": "medico_social", "label": "Accompagnement Renforcé à Domicile (Médico-Social)"},
+            "DAC": {"id": "medico_social", "label": "Coordination des Parcours Complexes (Médico-Social)"},
+            "CCAS": {"id": "medico_social", "label": "Action Sociale & Aides de Proximité (Social)"},
+            "UTS": {"id": "medico_social", "label": "Accompagnement Social Global (Social)"},
+            "PSCG_SS_APA": {"id": "medico_social", "label": "Évaluation & Instruction APA (Autonomie)"},
+            "COMPAGNONS_BATISSEURS": {"id": "medico_social", "label": "Aménagement & Salubrité du Logement (Habitat)"},
+            "SERVICE_SOCIAL_HOPITAL": {"id": "medico_social", "label": "Préparation de Sortie d'Hospitalisation (Social)"},
+            "PRADO": {"id": "medico_social", "label": "Retour à Domicile Post-Hospitalisation (Santé-Social)"},
+            "CPTS": {"id": "sante_soins", "label": "Accès aux Soins & Médecin Traitant (Médical / Soins)"},
+            "CONSULTATION MÉMOIRE": {"id": "sante_soins", "label": "Bilan & Suivi Spécialisé de la Mémoire (Médical)"},
+            "MISAS": {"id": "sante_soins", "label": "Appui & Prévention en Santé Mentale (Médical / Psychique)"},
+            "fil d'argent": {"id": "aidants", "label": "Soutien & Écoute des Aidants"}
         }
         
         # Mappings des critères de la feuille 1 vers les conditions techniques
@@ -230,16 +248,39 @@ class OrientationEngine:
             struct_type = winner["structure"]
             label = self._get_structure_label(struct_type)
             
-            identified_conseils = []
+            identified_conseils_detail = []
             for gf in triggered_garde_fous:
                 c = gf.get("conseil")
-                if c and str(c).strip() and str(c).strip() != "nan" and str(c).strip() not in identified_conseils:
-                    identified_conseils.append(str(c).strip())
+                if c and str(c).strip() and str(c).strip() != "nan":
+                    c_clean = str(c).strip()
+                    if not any(item["text"] == c_clean for item in identified_conseils_detail):
+                        identified_conseils_detail.append({
+                            "text": c_clean,
+                            "verbatim": self._extract_verbatim(gf.get("detail", ""), "", original_text)
+                        })
+
             for need in self.needs_mapping:
                 if self._is_need_identified(need, eval_context, text_lower):
                     c = need.get("conseil")
-                    if c and str(c).strip() and str(c).strip() != "nan" and str(c).strip() not in identified_conseils:
-                        identified_conseils.append(str(c).strip())
+                    if c and str(c).strip() and str(c).strip() != "nan":
+                        c_clean = str(c).strip()
+                        if not any(item["text"] == c_clean for item in identified_conseils_detail):
+                            criteria_search = str(need.get("moteur_criteria", "") or "")
+                            if "addiction" in need["detaille"].lower():
+                                criteria_search += ", médicaments, medicaments, doses, surdosage, addiction, alcool, drogues, antalgiques"
+                            identified_conseils_detail.append({
+                                "text": c_clean,
+                                "verbatim": self._extract_verbatim(need["detaille"], criteria_search, original_text)
+                            })
+
+            conseils_simple_texts = [item["text"] for item in identified_conseils_detail]
+
+            final_elements_detail = []
+            for gf in triggered_garde_fous:
+                final_elements_detail.append({
+                    "titre": gf.get("detail", "Signalement de situation d'urgence"),
+                    "verbatim": self._extract_verbatim(gf.get("detail", ""), "", original_text)
+                })
 
             orientation_result = {
                 "structure_type": struct_type,
@@ -249,9 +290,11 @@ class OrientationEngine:
                 "objectif": winner["objectif"],
                 "score_confiance": 100,
                 "explication_confiance": "Priorisation absolue par garde-fou prioritaire.",
-                "conseils": identified_conseils,
+                "conseils": conseils_simple_texts,
+                "ressources": identified_conseils_detail,
                 "mission_structure": self.structure_missions.get(struct_type, "Structure d'accompagnement et d'orientation d'urgence."),
-                "elements_recit": [winner.get("detail", "Signalement d'urgence ou de situation critique identifié dans la saisie.")]
+                "elements_recit": [winner.get("detail", "Signalement d'urgence ou de situation critique identifié dans la saisie.")],
+                "elements_recit_detail": final_elements_detail
             }
             
             # Enrichit extracted_data pour la traçabilité dans l'interface
@@ -266,6 +309,7 @@ class OrientationEngine:
         # Étape 2 : Attribution des points par besoin détecté (seulement si le besoin est lié à des structures)
         scores = {struct: 0 for struct in self.structures}
         identified_needs = []
+        identified_conseils_detail = []
         
         danger_needs = [
             "spoliation financière", "spoliation financiere",
@@ -274,11 +318,19 @@ class OrientationEngine:
             "privation de droits", "privation de droit"
         ]
         
-        identified_conseils = []
         for need in self.needs_mapping:
             if self._is_need_identified(need, eval_context, text_lower):
+                verbatim = self._extract_verbatim(need["detaille"], need.get("moteur_criteria", ""), original_text)
+                need_obj = {
+                    "detaille": need["detaille"],
+                    "categorie": need.get("categorie", ""),
+                    "moteur_criteria": need.get("moteur_criteria", ""),
+                    "structures_cochees": need.get("structures_cochees", []),
+                    "verbatim": verbatim
+                }
+
                 if len(need["structures_cochees"]) > 0:
-                    identified_needs.append(need)
+                    identified_needs.append(need_obj)
                     detail_lower = need["detaille"].lower()
                     is_danger = any(dn in detail_lower for dn in danger_needs)
                     for s in need["structures_cochees"]:
@@ -287,9 +339,25 @@ class OrientationEngine:
                                 scores[s] += 100
                             else:
                                 scores[s] += 1
+
                 c_text = need.get("conseil")
-                if c_text and c_text.strip() and c_text not in identified_conseils:
-                    identified_conseils.append(c_text.strip())
+                if c_text and str(c_text).strip() and str(c_text).strip() != "nan":
+                    c_clean = str(c_text).strip()
+                    # Filtre de sécurité : Les entreprises de nettoyage spécialisées ne sont conseillées qu'en cas d'insalubrité / Diogène avéré
+                    if "nettoyage" in c_clean.lower() or "sociétés spécialisées" in c_clean.lower():
+                        has_real_insalubrite = any(k in text_lower for k in ["diogène", "diogene", "incurie", "insalubre", "insalubrité", "nettoyage extrême", "nettoyage extreme", "désinfection", "desinfection", "très sale", "tres sale"])
+                        if not has_real_insalubrite:
+                            continue
+
+                    if not any(item["text"] == c_clean for item in identified_conseils_detail):
+                        crit_search = str(need.get("moteur_criteria", "") or "")
+                        if "addiction" in need["detaille"].lower():
+                            crit_search += ", médicaments, medicaments, doses, surdosage, addiction, alcool, drogues, antalgiques"
+                        v_final = verbatim if (verbatim and verbatim.strip()) else self._extract_verbatim(need["detaille"], crit_search, original_text)
+                        identified_conseils_detail.append({
+                            "text": c_clean,
+                            "verbatim": v_final
+                        })
                         
         # Étape 3 : Application des exclusions
         excluded_structures = []
@@ -441,7 +509,42 @@ class OrientationEngine:
                 scores["UTS"] = -9999
         elif comid_results.get("score_total", 0) < 6:
             scores["DAC"] = -9999
-            
+
+        # 4.4 : Fil d'Argent est toujours une Ressource Complémentaire et ne crée jamais de carte principale
+        scores["fil d'argent"] = -9999
+        has_aidant_need = any(kw in text_lower for kw in ["aidant", "aidante", "aidants", "fatigue", "épuisé", "epuise", "surmené", "surmene", "répit", "repit", "soulager"])
+        if has_aidant_need:
+            v_aidant = self._extract_verbatim("Relais de l'aidant", "aidant, aidante, surmené, surmene, fatigué, épuisé, epuise, répit, repit, soulager", original_text)
+            fil_text = "Se rapprocher du Fil d'Argent - Relais et écoute des aidants"
+            if not any(item["text"] == fil_text for item in identified_conseils_detail):
+                identified_conseils_detail.append({
+                    "text": fil_text,
+                    "verbatim": v_aidant
+                })
+
+        # 4.5 : Règle CPTS pour la recherche de médecin traitant -> Section 2 intégrée au même cube du CLIC
+        cpts_section_obj = None
+        has_medecin_search = (
+            eval_context.get("vulnerabilites.sante.suivi_medical.medecin_traitant") in ["absent", "non_identifie_avec_certitude"] or
+            "médecin" in text_lower or
+            "medecin" in text_lower or
+            "traitant" in text_lower or
+            "retraite" in text_lower
+        )
+        if has_medecin_search and "CPTS" not in excluded_structures:
+            v_med = self._extract_verbatim("Recherche de médecin traitant", "médecin, medecin, traitant, docteur, soins, retraite", original_text)
+            cpts_section_obj = {
+                "structure_type": "CPTS",
+                "label": self._get_structure_label("CPTS"),
+                "mission_structure": self.structure_missions.get("CPTS"),
+                "elements_recit_detail": [{
+                    "titre": "Recherche de médecin traitant / Accès aux soins de premier recours",
+                    "verbatim": v_med
+                }]
+            }
+            # La CPTS est intégrée en section 2 du cube unique et ne génère pas de cube principal distinct
+            scores["CPTS"] = -9999
+
         # Étape 5 : Mise en forme des candidats avec tri par niveau de priorité et hierarchie par défaut
         hierarchy = ["POLICE", "CEV", "SERVICE_SOCIAL_HOPITAL", "CLIC", "CRT", "UTS", "CCAS", "CPTS", "DAC", "PSCG_SS_APA", "PRADO", "MISAS", "fil d'argent", "CONSULTATION MÉMOIRE", "COMPAGNONS_BATISSEURS"]
         hierarchy_dict = {struct: i for i, struct in enumerate(hierarchy)}
@@ -476,26 +579,70 @@ class OrientationEngine:
                 
             label = self._get_structure_label(struct_type)
             
-            struct_elements = [n["detaille"] for n in identified_needs if struct_type in n.get("structures_cochees", [])]
-            if not struct_elements:
+            seen_titles = set()
+            seen_verbatims = set()
+            elements_detail = []
+
+            for n in identified_needs:
+                if struct_type in n.get("structures_cochees", []):
+                    t = n["detaille"]
+                    v = n.get("verbatim", "")
+                    t_norm = t.lower().strip()
+                    
+                    if t_norm not in seen_titles:
+                        seen_titles.add(t_norm)
+                        final_v = ""
+                        if v and v not in seen_verbatims:
+                            final_v = v
+                            seen_verbatims.add(v)
+                        elements_detail.append({
+                            "titre": t,
+                            "verbatim": final_v
+                        })
+
+            if not elements_detail:
                 besoin_p = eval_context.get("demande.besoin_principal")
                 if besoin_p and besoin_p != "indetermine":
-                    struct_elements = [f"Demande en lien avec : {besoin_p}"]
+                    elements_detail = [{"titre": f"Demande en lien avec : {besoin_p}", "verbatim": self._extract_verbatim(besoin_p, "", original_text)}]
                 else:
-                    struct_elements = ["Éléments cliniques généraux rapportés dans votre saisie."]
+                    elements_detail = [{"titre": "Éléments cliniques généraux rapportés dans votre saisie", "verbatim": ""}]
 
-            final_structures.append({
+            # Règle d'explicabilité : si usager < 60 ans et orienté vers le DAC, l'expliquer explicitement
+            age_val = eval_context.get("usager.identite.age_estime")
+            if struct_type == "DAC" and age_val is not None:
+                try:
+                    if float(age_val) < 60:
+                        v_age = self._extract_verbatim("Âge de la personne", f"{int(float(age_val))} ans, {int(float(age_val))}, ans, âge, age", original_text)
+                        elements_detail.insert(0, {
+                            "titre": f"Usager âgé de moins de 60 ans ({int(float(age_val))} ans) : le DAC assure l'accompagnement et la coordination (le CLIC intervenant uniquement à partir de 60 ans)",
+                            "verbatim": v_age
+                        })
+                except Exception:
+                    pass
+
+            struct_elements_titles = [e["titre"] for e in elements_detail]
+            conseils_simple_texts = [c["text"] for c in identified_conseils_detail]
+
+            dom_info = self.structure_domains.get(struct_type, {"id": "autre", "label": "Accompagnement Complémentaire"})
+
+            struct_obj = {
                 "structure_type": struct_type,
                 "label": label,
+                "domaine_id": dom_info["id"],
+                "domaine_label": dom_info["label"],
                 "priorite": score,
                 "pertinence": pertinence,
                 "objectif": objectif,
                 "score_confiance": 100,
                 "explication_confiance": f"Calculé par points. Score : {score} point(s).",
-                "conseils": identified_conseils,
+                "conseils": conseils_simple_texts,
+                "ressources": identified_conseils_detail,
                 "mission_structure": self.structure_missions.get(struct_type, "Structure d'accompagnement et d'orientation."),
-                "elements_recit": struct_elements
-            })
+                "elements_recit": struct_elements_titles,
+                "elements_recit_detail": elements_detail,
+                "cpts_section": cpts_section_obj.copy() if (cpts_section_obj and struct_type in ["CLIC", "DAC", "CRT", "CCAS", "UTS"]) else None
+            }
+            final_structures.append(struct_obj)
             
         # Fallback par défaut si rien n'est éligible
         if not final_structures:
@@ -507,31 +654,57 @@ class OrientationEngine:
             except:
                 pass
                 
+            conseils_simple_texts = [c["text"] for c in identified_conseils_detail]
+
             if is_senior:
                 final_structures.append({
                     "structure_type": "CLIC",
                     "label": self._get_structure_label("CLIC"),
+                    "domaine_id": "medico_social",
+                    "domaine_label": "Accompagnement & Maintien à Domicile (Médico-Social)",
                     "priorite": 0,
                     "pertinence": "faible",
                     "objectif": "Aucun besoin spécifique identifié. Orientation vers le CLIC sénior par défaut.",
                     "score_confiance": 50,
                     "explication_confiance": "Orientation par défaut pour senior.",
-                    "conseils": identified_conseils,
+                    "conseils": conseils_simple_texts,
+                    "ressources": identified_conseils_detail,
                     "mission_structure": self.structure_missions.get("CLIC"),
-                    "elements_recit": ["Demande d'information et d'orientation globale pour personne âgée de 60 ans ou plus."]
+                    "elements_recit": ["Demande d'information et d'orientation globale pour personne âgée de 60 ans ou plus."],
+                    "elements_recit_detail": [{"titre": "Demande d'information et d'orientation globale pour personne âgée de 60 ans ou plus", "verbatim": original_text[:120] if original_text else ""}],
+                    "cpts_section": cpts_section_obj.copy() if cpts_section_obj else None
                 })
             else:
+                v_age = ""
+                age_str = ""
+                if age is not None:
+                    try:
+                        age_str = f" ({int(float(age))} ans)"
+                        v_age = self._extract_verbatim("Âge de la personne", f"{int(float(age))} ans, {int(float(age))}, ans, âge, age", original_text)
+                    except Exception:
+                        pass
+
                 final_structures.append({
                     "structure_type": "DAC",
                     "label": self._get_structure_label("DAC"),
+                    "domaine_id": "medico_social",
+                    "domaine_label": "Coordination des Parcours Complexes (Médico-Social)",
                     "priorite": 0,
                     "pertinence": "faible",
-                    "objectif": "Aucun besoin spécifique identifié. Orientation vers le DAC par défaut.",
+                    "objectif": "Orientation vers le DAC pour accompagnement et coordination.",
                     "score_confiance": 50,
-                    "explication_confiance": "Orientation par défaut.",
-                    "conseils": identified_conseils,
+                    "explication_confiance": "Orientation pour usager de moins de 60 ans.",
+                    "conseils": conseils_simple_texts,
+                    "ressources": identified_conseils_detail,
                     "mission_structure": self.structure_missions.get("DAC"),
-                    "elements_recit": ["Demande d'orientation et de coordination globale."]
+                    "elements_recit": ["Usager de moins de 60 ans : accompagnement et coordination par le DAC (le CLIC étant réservé aux personnes de 60 ans et plus)."],
+                    "elements_recit_detail": [
+                        {
+                            "titre": f"Usager âgé de moins de 60 ans{age_str} : le DAC assure l'accompagnement et la coordination (le CLIC intervenant uniquement à partir de 60 ans)",
+                            "verbatim": v_age if v_age else (original_text[:120] if original_text else "")
+                        }
+                    ],
+                    "cpts_section": cpts_section_obj.copy() if cpts_section_obj else None
                 })
             
         # Stocke les métriques d'explicabilité pour le front
@@ -647,7 +820,8 @@ class OrientationEngine:
                 "infirmier", "médecin", "medecin", "spoliation", "violence", "maltraitance",
                 "abus", "négligence", "negligence", "droits", "budget", "facture",
                 "accompagnement", "social", "évaluation", "evaluation", "veille", "suivi",
-                "secours", "urgence", "administrative", "administratives"
+                "secours", "urgence", "administrative", "administratives",
+                "diogène", "diogene", "incurie", "insalubre", "insalubrité", "nettoyage", "réhabilitation", "rehabilitation"
             ]
             if any(kw in detail_lower for kw in needs_requiring_lexical):
                 return self._is_need_identified_textual(need, text)
@@ -662,14 +836,21 @@ class OrientationEngine:
             
         detail_lower = need["detaille"].lower()
         
-        # Helper flags for help at home
-        has_aide = "aide à domicile" in text or "aide a domicile" in text or "aides à domicile" in text or "aides a domicile" in text or "aides au domicile" in text or "aide au domicile" in text or "ad" in text.split()
+        # Helper flags pour aides et maintien à domicile
+        has_aide_phrases = [
+            "aide à domicile", "aide a domicile", "aides à domicile", "aides a domicile",
+            "aides au domicile", "aide au domicile", "auxiliaire de vie", "saad", "ssiad",
+            "mal à sortir", "du mal à sortir", "ne peut plus sortir", "plus sortir",
+            "mal à se déplacer", "perte d'autonomie", "perte de mobilité", "difficulté à sortir",
+            "difficultés à sortir", "seule à la maison", "seule chez elle", "au quotidien"
+        ]
+        has_aide = any(p in text for p in has_aide_phrases) or "ad" in text.split()
         has_maintien = "maintien" in text and "domicile" in text
         has_refus = "refus" in text or "refusé" in text or "refuse" in text or "ne veut pas" in text or "ne veut plus" in text or "opposition" in text
         
-        # Addictions / Alcool / Drogues
-        if "addiction" in detail_lower or "addictions" in detail_lower or "alcool" in detail_lower or "drogue" in detail_lower:
-            addiction_kws = ["addiction", "addictions", "alcool", "alcoolisme", "drogue", "drogues", "substance", "toxico", "addictologie", "arcasud", "dépendance", "dependance", "boit", "boit trop", "bouteille"]
+        # Addictions / Alcool / Drogues / Médicaments
+        if "addiction" in detail_lower or "addictions" in detail_lower or "alcool" in detail_lower or "drogue" in detail_lower or "médicament" in detail_lower or "medicament" in detail_lower:
+            addiction_kws = ["addiction", "addictions", "alcool", "alcoolisme", "drogue", "drogues", "substance", "toxico", "addictologie", "arcasud", "dépendance", "dependance", "boit", "boit trop", "bouteille", "médicament", "médicaments", "medicament", "medicaments", "doses", "surdosage", "antalgiques", "antidouleurs"]
             if any(kw in text for kw in addiction_kws):
                 return True
 
@@ -688,13 +869,13 @@ class OrientationEngine:
 
         # Relais de l'aidant / Épuisement aidant
         if "aidant" in detail_lower or "aidants" in detail_lower or "répit" in detail_lower or "repit" in detail_lower:
-            aidant_kws = ["aidant", "aidante", "aidants", "fatigue", "fatigué", "fatiguee", "épuisé", "épuisée", "epuise", "epuisee", "épuisement", "epuisement", "répit", "repit", "charge mentale", "l'aider", "aider"]
+            aidant_kws = ["aidant", "aidante", "aidants", "fatigue", "fatigué", "fatiguee", "épuisé", "épuisée", "epuise", "epuisee", "épuisement", "epuisement", "répit", "repit", "charge mentale", "l'aider", "aider", "surmené", "surmenée", "surmenes", "surmenés", "surmenage", "soulager", "souffle"]
             if any(kw in text for kw in aidant_kws):
                 return True
 
-        # Choix d'un prestataire d'aide à domicile / SAAD / SSIAD
-        if "prestataire" in detail_lower or "aide à domicile" in detail_lower or "aides à domicile" in detail_lower or "saad" in detail_lower or "ssiad" in detail_lower:
-            aide_dom_kws = ["aide à domicile", "aide a domicile", "aides à domicile", "aides a domicile", "service d'aide", "services d'aide", "saad", "ssiad", "prestataire", "auxiliaire de vie"]
+        # Choix d'un prestataire d'aide à domicile / SAAD / SSIAD / Ménage simple du quotidien
+        if "prestataire" in detail_lower or "aide à domicile" in detail_lower or "aides à domicile" in detail_lower or "saad" in detail_lower or "ssiad" in detail_lower or "ménage" in detail_lower or "menage" in detail_lower:
+            aide_dom_kws = ["aide à domicile", "aide a domicile", "aides à domicile", "aides a domicile", "service d'aide", "services d'aide", "saad", "ssiad", "prestataire", "auxiliaire de vie", "ménage", "menage", "entretien du logement", "repassage", "nettoyer le logement"]
             if any(kw in text for kw in aide_dom_kws):
                 return True
 
@@ -710,24 +891,26 @@ class OrientationEngine:
             if any(kw in text for kw in idel_kws):
                 return True
 
-        # Nettoyage extrême / Diogène / Incurie / Insalubrité (Sociétés de nettoyage)
-        if "diogène" in detail_lower or "diogene" in detail_lower or "incurie" in detail_lower:
+        # Nettoyage extrême / Diogène / Incurie / Insalubrité (Sociétés de nettoyage spécialisées / Compagnons Bâtisseurs - UNIQUEMENT SI INSALUBRITÉ SÉVÈRE)
+        if "diogène" in detail_lower or "diogene" in detail_lower or "incurie" in detail_lower or "insalubrité" in detail_lower or "insalubre" in detail_lower:
             diogene_kws = ["diogène", "diogene", "incurie", "insalubre", "insalubrité", "nettoyage extrême", "nettoyage extreme", "très sale", "tres sale", "désinfection", "desinfection", "désencombrement", "desencombrement", "auto-réhabilitation", "auto-rehabilitation"]
             if any(kw in text for kw in diogene_kws):
                 return True
 
         # 1. Urgent / Danger
         if "danger vital" in detail_lower or "secours d’urgence" in detail_lower or "secours d'urgence" in detail_lower:
-            if "secours" in text or "urgence" in text or "danger" in text or "agression" in text:
+            if re.search(r'\b(secours|urgence|danger|agression|agressions)\b', text):
                 return True
         if "violence conjugale" in detail_lower:
-            if ("violence" in text or "frappe" in text or "frapper" in text or "battu" in text or "battre" in text or "coups" in text) and ("conjugale" in text or "conjoint" in text or "mari" in text or "épouse" in text or "epouse" in text or "femme" in text or "voisin" in text):
+            has_v_kw = re.search(r'\b(violence|violences|frappe|frapper|battu|battre|coups?)\b', text)
+            has_c_kw = re.search(r'\b(conjugale?|conjoint|mari|épouse|epouse|femme|voisin)\b', text)
+            if has_v_kw and has_c_kw:
                 return True
         if "violence" in detail_lower or "violences" in detail_lower:
-            if any(kw in text for kw in ["violence", "violences", "agression", "coups", "coup", "ecchymoses", "bleus", "bleu", "frappe", "frapper", "battu", "battre"]):
+            if re.search(r'\b(violence|violences|agression|agressions|coups?|ecchymoses|bleus?|frappe|frapper|battu|battre)\b', text):
                 return True
-        if "maltraitance" in detail_lower or "négligence" in detail_lower:
-            if any(kw in text for kw in ["maltraitance", "maltraitant", "maltraiter", "maltraité", "maltraitée", "négligence", "negligence", "suspecte", "suspicion"]):
+        if "maltraitance" in detail_lower or "négligence" in detail_lower or "negligence" in detail_lower:
+            if re.search(r'\b(maltraitance|maltraitant|maltraiter|maltraité|maltraitée|négligence|negligence)\b', text):
                 return True
         if "sécurité du domicile" in detail_lower or "securite du domicile" in detail_lower:
             if "sécurité" in text or "securite" in text or "danger" in text or "effondre" in text or "délabré" in text:
@@ -834,8 +1017,8 @@ class OrientationEngine:
         if "veille" in detail_lower or "suivi social régulier" in detail_lower:
             if "veille" in text or "suivi social" in text or "suivi régulier" in text or "suivi regulier" in text or "visite régulière" in text or "visite reguliere" in text:
                 return True
-        if "diogène" in detail_lower or "diogene" in detail_lower or "incurie" in detail_lower or "nettoyage" in detail_lower:
-            if "diogène" in text or "diogene" in text or "incurie" in text or "sale" in text or "nettoyage" in text or "nettoyer" in text:
+        if "diogène" in detail_lower or "diogene" in detail_lower or "incurie" in detail_lower or "insalubre" in detail_lower or "insalubrité" in detail_lower:
+            if "diogène" in text or "diogene" in text or "incurie" in text or "insalubre" in text or "insalubrité" in text or "nettoyage extrême" in text or "nettoyage extreme" in text or "désinfection" in text or "desinfection" in text or "très sale" in text or "tres sale" in text:
                 return True
 
         # 5. Maintien et Aides à domicile (core triggers)
@@ -1062,7 +1245,7 @@ class OrientationEngine:
             "CLIC": "CLIC - Centre Local d'Information et de Coordination (Sénior)",
             "CRT": "CRT - Centre de Ressources Territorial (Accompagnement Renforcé)",
             "DAC": "DAC - Dispositif d'Appui à la Coordination",
-            "UTS": "UTS - Unité Territoriale Sociale (Solidarité Conseil)",
+            "UTS": "UTS - Unité Territoriale Sociale",
             "CCAS": "CCAS - Secours d'Urgence (Alimentaire & Factures)",
             "COMPAGNONS_BATISSEURS": "Les Compagnons Bâtisseurs (Rénovation & Diogène)",
             "PSCG_SS_APA": "PSCG SS APA - Pôle Social Autonomie",
@@ -1072,3 +1255,86 @@ class OrientationEngine:
             "CONSULTATION MÉMOIRE": "Consultation Mémoire - Évaluation cognitive"
         }
         return labels.get(struct_type, struct_type)
+
+    def _extract_verbatim(self, detail: str, criteria: str, original_text: str) -> str:
+        if not original_text:
+            return ""
+        import re
+        sentences = [s.strip() for s in re.split(r'[.!?\n]+', original_text) if s.strip()]
+        if not sentences:
+            return ""
+
+        # 1. Découpage en sub-clauses (propositions) sur les connecteurs logiques majeurs ("parce que", "car", "afin de")
+        clauses = []
+        for sentence in sentences:
+            parts = re.split(r'\b(parce que|parce qu\'|car)\b', sentence, flags=re.IGNORECASE)
+            current = ""
+            for p in parts:
+                if p.lower() in ["parce que", "parce qu'", "car"]:
+                    if current.strip():
+                        clauses.append(current.strip())
+                    current = ""
+                else:
+                    current += " " + p
+            if current.strip():
+                clauses.append(current.strip())
+
+        kws = []
+        if criteria and str(criteria) != "nan":
+            raw_kws = re.split(r'[,;/]+', str(criteria))
+            for k in raw_kws:
+                cleaned = k.strip().lower()
+                if len(cleaned) >= 3 and cleaned not in ["oui", "non", "nan", "true", "false"]:
+                    kws.append(cleaned)
+                    
+        if detail:
+            words = [w.lower() for w in detail.split() if len(w) >= 4 and w.lower() not in ["besoin", "mise", "place", "dans", "pour", "avec", "cette", "adaptation", "choix", "d'un", "d'une", "perte", "rapide"]]
+            kws.extend(words)
+
+        # Target-specific keyword focus & tuning for Aidants vs Domicile
+        detail_lower = (detail + " " + str(criteria)).lower()
+        if any(w in detail_lower for w in ["aidant", "aidants", "répit", "repit", "fil d'argent"]):
+            kws = ["surmené", "surmenée", "surmenés", "surmenages", "surmenage", "épuisé", "épuisée", "épuisement", "fatigué", "aidant", "aidante", "aidants", "répit", "repit", "soulager", "souffle"]
+        elif any(w in detail_lower for w in ["domicile", "saad", "ssiad", "ménage", "repas", "prestataire"]):
+            kws = ["aides à domicile", "aide à domicile", "aides a domicile", "aide a domicile", "auxiliaire de vie", "saad", "ssiad", "prestataire", "domicile"]
+        elif any(w in detail_lower for w in ["violence", "3919", "maltraitance", "frappe", "bleu", "danger"]):
+            kws = ["violence", "violences", "frappe", "frappé", "bleu", "bleus", "maltraitance", "peur", "danger", "menace", "insulte"]
+
+        # Évaluation d'abord sur les clauses ciblées
+        best_clause = ""
+        best_score = 0
+
+        for clause in clauses:
+            c_lower = clause.lower()
+            score = 0
+            for kw in kws:
+                if kw in c_lower:
+                    score += len(kw) * 2
+            if score > best_score:
+                best_score = score
+                best_clause = clause
+
+        if best_score >= 4:
+            cleaned = best_clause.strip()
+            # Nettoyage pour les aides à domicile si la clause se termine par "pour nous soulager"
+            if any(w in detail_lower for w in ["domicile", "saad", "ssiad", "prestataire"]):
+                cleaned = re.sub(r'\s+pour nous soulager.*$', '', cleaned, flags=re.IGNORECASE)
+            return cleaned.strip()
+
+        # Fallback au niveau de la phrase complète si la clause n'est pas suffisante
+        best_sentence = ""
+        best_score = 0
+        for sentence in sentences:
+            s_lower = sentence.lower()
+            score = 0
+            for kw in kws:
+                if kw in s_lower:
+                    score += len(kw)
+            if score > best_score:
+                best_score = score
+                best_sentence = sentence
+
+        if best_score >= 4:
+            return best_sentence.strip()
+
+        return ""

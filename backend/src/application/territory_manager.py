@@ -11,9 +11,12 @@ class TerritoryManager:
         Gère les relais territoriaux (ex: CLIC absent -> UTS).
         """
         if not city:
-            return eligible_structures
+            city = "La Garde"
 
         area_data = self._find_area(city)
+        if not area_data:
+            area_data = self._find_area("La Garde")
+
         if not area_data:
             return eligible_structures
 
@@ -35,12 +38,33 @@ class TerritoryManager:
                     struct_copy["objectif"] = f"La commune ne dispose pas de CLIC, se rapprocher de l'UTS. {struct_copy.get('objectif', '')}"
                     local_info = uts_info
             
+            # NUMÉROS NATIONAUX ET D'URGENCE INCONTOURNABLES
+            emergency_phones = {
+                "POLICE": "17",
+                "SAMU": "15",
+                "3919": "3919",
+                "3977": "3977",
+                "115": "115"
+            }
+            if struct_type in emergency_phones:
+                struct_copy["telephone"] = emergency_phones[struct_type]
+
             if local_info and local_info.get("present"):
                 struct_copy["nom_local"] = local_info.get("nom")
-                struct_copy["telephone"] = local_info.get("telephone")
+                if struct_type not in emergency_phones:
+                    struct_copy["telephone"] = local_info.get("telephone")
                 struct_copy["email"] = local_info.get("email")
                 struct_copy["adresse"] = local_info.get("adresse")
                 
+            # Enrichissement de cpts_section (CPTS intégrée sous le CLIC)
+            if struct_copy.get("cpts_section"):
+                cpts_info = available_local_structures.get("CPTS")
+                if cpts_info and cpts_info.get("present"):
+                    struct_copy["cpts_section"]["nom_local"] = cpts_info.get("nom")
+                    struct_copy["cpts_section"]["telephone"] = cpts_info.get("telephone")
+                    struct_copy["cpts_section"]["email"] = cpts_info.get("email")
+                    struct_copy["cpts_section"]["adresse"] = cpts_info.get("adresse")
+
             results.append(struct_copy)
 
         return results
