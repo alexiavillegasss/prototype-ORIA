@@ -362,6 +362,88 @@
     </main>
 
     <!-- Footer -->
+    <!-- MODAL DE VISUALISATION ET REMPLISSAGE DE FICHE EN DUPLEX SUR LA MÊME PAGE -->
+    <div id="orienter-fiche-modal" class="modal-voice-overlay">
+        <div class="modal-voice-content" style="max-width: 1250px; width: 95%; height: 92vh; background: var(--bg-card); border-radius: 16px; margin: 2vh auto; display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--border-glass); box-shadow: 0 15px 50px rgba(0,0,0,0.5);">
+            
+            <!-- Modal Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 1.5rem; border-bottom: 1px solid var(--border-glass); background: var(--bg-primary);">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span style="font-size: 1.4rem;">📄</span>
+                    <div>
+                        <h2 id="orienter-modal-title" style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin: 0;">Aperçu de la Fiche d'Orientation</h2>
+                        <span id="orienter-modal-subtitle" style="font-size: 0.8rem; color: #3b82f6; font-weight: 600;">Générée et pré-remplie automatiquement par l'IA ORIA sur cette page</span>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <button type="button" id="orienter-modal-download-btn" class="btn-primary" style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 0.55rem 1.1rem; border-radius: 8px; font-weight: 800; font-size: 0.9rem; border: none; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">
+                        📥 Télécharger le PDF
+                    </button>
+                    <button type="button" onclick="closeOrienterFicheModal()" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 0.55rem 0.95rem; font-size: 0.88rem; font-weight: 700; cursor: pointer;">
+                        ✕ Fermer
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal Body (2 colonnes étalées sur la même page) -->
+            <div style="flex: 1; display: grid; grid-template-columns: 0.95fr 1.25fr; gap: 1.1rem; padding: 1.1rem; overflow: hidden; background: var(--bg-primary);">
+                
+                <!-- Colonne Gauche : Situation & Champs extraits -->
+                <div style="display: flex; flex-direction: column; gap: 0.85rem; overflow-y: auto; padding-right: 0.3rem;">
+                    
+                    <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 10px; padding: 0.9rem;">
+                        <label style="font-size: 0.82rem; font-weight: 700; color: var(--text-primary); display: block; margin-bottom: 0.4rem;">Récit de la situation clinique :</label>
+                        <textarea id="orienter-modal-text" style="width: 100%; height: 150px; background: var(--bg-primary); border: 1px solid var(--border-glass); border-radius: 8px; padding: 0.65rem; color: var(--text-primary); font-size: 0.86rem; font-family: inherit; resize: vertical;" placeholder="Ajustez ou complétez le texte si besoin..."></textarea>
+                        
+                        <button type="button" onclick="reanalyzeOrienterModalFiche()" class="btn-primary" style="width: 100%; margin-top: 0.65rem; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 0.6rem; border-radius: 8px; font-weight: 700; font-size: 0.88rem; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
+                            🔄 Ré-actualiser l'aperçu PDF
+                        </button>
+                    </div>
+
+                    <!-- Status -->
+                    <div id="orienter-modal-status" style="font-size: 0.82rem; font-weight: 700; color: #10b981; text-align: center;"></div>
+
+                    <!-- Résumé des variables extraites pour la fiche -->
+                    <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 10px; padding: 0.9rem; display: flex; flex-direction: column; gap: 0.6rem;">
+                        <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">Champs pré-remplis sur la fiche PDF :</span>
+                        <div id="orienter-modal-fields-summary" style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.83rem;">
+                            <span style="color: var(--text-muted);">Analyse en cours...</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Colonne Droite : Aperçu Visuel du PDF en Direct -->
+                <div style="background: #0f172a; border: 1px solid var(--border-glass); border-radius: 10px; overflow: hidden; height: 100%; display: flex; flex-direction: column; position: relative; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);">
+                    <div id="orienter-pdf-loading" style="position: absolute; inset: 0; background: rgba(15, 23, 42, 0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.85rem; color: white; font-weight: 700; z-index: 10;">
+                        <span style="font-size: 2.2rem; animation: spin 1s linear infinite;">⏳</span>
+                        <span style="font-size: 0.95rem; color: #60a5fa;">Génération et pré-remplissage de la fiche PDF en cours...</span>
+                    </div>
+                    <iframe id="orienter-pdf-iframe" src="" style="width: 100%; height: 100%; border: none;"></iframe>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <style>
+        .modal-voice-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.82);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+
     <footer id="dashboard-footer" style="margin-top: auto; width: 100%;">
         <p>Prototype ORIA – Module d'évaluation interactif</p>
     </footer>

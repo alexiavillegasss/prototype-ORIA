@@ -1079,25 +1079,168 @@ Cordialement,`;
         };
     };
 
+    let currentModalStructure = 'DAC Var Ouest';
+    let currentModalPdfEndpoint = '/api/orientation/dac/generate_pdf';
+    let currentModalBlobUrl = null;
+
     /**
-     * Ouvre la modale de révision/édition interactive sur la page des fiches avec le texte de la situation pré-rempli
+     * Ouvre l'encart/modale de visualisation de fiche d'orientation directement sur la même page
      */
-    function openFicheModalWithText(structureName) {
+    window.openOrienterFicheModal = async function(structureName, pdfEndpoint) {
         const text = document.getElementById('situation-input').value.trim();
         if (!text) {
             alert("Veuillez saisir ou analyser une situation avant de générer la fiche.");
             return;
         }
-        sessionStorage.setItem('pending_fiche_text', text);
-        if (dossierId) {
-            sessionStorage.setItem('pending_fiche_dossier_id', String(dossierId));
+
+        currentModalStructure = structureName;
+        currentModalPdfEndpoint = pdfEndpoint;
+
+        const modal = document.getElementById('orienter-fiche-modal');
+        const titleEl = document.getElementById('orienter-modal-title');
+        const textEl = document.getElementById('orienter-modal-text');
+        const loadingEl = document.getElementById('orienter-pdf-loading');
+        const iframe = document.getElementById('orienter-pdf-iframe');
+        const statusEl = document.getElementById('orienter-modal-status');
+        const summaryEl = document.getElementById('orienter-modal-fields-summary');
+
+        if (titleEl) titleEl.textContent = `Aperçu & Remplissage Fiche ${structureName}`;
+        if (textEl) textEl.value = text;
+        if (statusEl) statusEl.textContent = "Génération de l'aperçu PDF en cours...";
+        if (summaryEl) summaryEl.innerHTML = `<span style="color: var(--text-muted);">Extraction des variables en cours...</span>`;
+        if (loadingEl) loadingEl.style.display = 'flex';
+        if (modal) modal.style.display = 'flex';
+
+        // Lancer la génération PDF et l'extraction des rubriques en parallèle
+        await Promise.all([
+            fetchAndRenderPdfPreview(text, pdfEndpoint, structureName),
+            fetchAndRenderFieldsSummary(text, structureName)
+        ]);
+    };
+
+    async function fetchAndRenderPdfPreview(text, pdfEndpoint, structureName) {
+        const loadingEl = document.getElementById('orienter-pdf-loading');
+        const iframe = document.getElementById('orienter-pdf-iframe');
+        const downloadBtn = document.getElementById('orienter-modal-download-btn');
+        const statusEl = document.getElementById('orienter-modal-status');
+
+        try {
+            const activeUserJson = localStorage.getItem('active_user');
+            const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
+            const creatorName = activeUser ? activeUser.name : 'Anonyme';
+
+            const response = await fetch(pdfEndpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: text, createur: creatorName, dossier_id: dossierId ? String(dossierId) : null })
+            });
+
+            if (!response.ok) throw new Error("Erreur de génération PDF");
+
+            const blob = await response.blob();
+            if (currentModalBlobUrl) {
+                URL.revokeObjectURL(currentModalBlobUrl);
+            }
+            currentModalBlobUrl = URL.createObjectURL(blob);
+            
+            if (iframe) {
+                iframe.src = currentModalBlobUrl + '#view=FitH&zoom=100';
+            }
+
+            if (downloadBtn) {
+                downloadBtn.onclick = function() {
+                    const a = document.createElement('a');
+                    a.href = currentModalBlobUrl;
+                    a.download = `fiche_orientation_${structureName.toLowerCase().replace(/[^a-z0-9]/g, '_')}_dossier_${dossierId || 'nouveau'}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                };
+            }
+
+            if (statusEl) statusEl.textContent = "🟢 Aperçu PDF pré-rempli avec succès !";
+        } catch(e) {
+            console.error("Erreur PDF preview:", e);
+            if (statusEl) statusEl.textContent = "🔴 Erreur lors de la génération de la fiche PDF.";
+        } finally {
+            if (loadingEl) loadingEl.style.display = 'none';
         }
-        window.location.href = `/fiches?structure=${encodeURIComponent(structureName)}&auto=1`;
     }
 
-    window.downloadDacPdf = function() { openFicheModalWithText('DAC Var Ouest'); };
-    window.downloadClicPdf = function() { openFicheModalWithText('CLIC La Seyne'); };
-    window.downloadClicToulonPdf = function() { openFicheModalWithText('CLIC Toulon'); };
+    async function fetchAndRenderFieldsSummary(text, structureName) {
+        const summaryEl = document.getElementById('orienter-modal-fields-summary');
+        try {
+            const res = await fetch('/api/orientation/extract_fields', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: text, structure: structureName })
+            });
+            if (!res.ok) return;
+
+            const resJson = await res.json();
+            const data = resJson.data || {};
+
+            let html = '';
+            const addSummaryRow = (label, val, icon) => {
+                if (val && String(val).trim()) {
+                    html += `<div style="display: flex; align-items: center; justify-content: space-between; background: rgba(34, 197, 94, 0.08); padding: 0.35rem 0.6rem; border-radius: 6px; border: 1px solid rgba(34, 197, 94, 0.25);">
+                        <span>${icon} <strong>${label}</strong> :</span>
+                        <strong style="color: #10b981;">${val}</strong>
+                    </div>`;
+                } else {
+                    html += `<div style="display: flex; align-items: center; justify-content: space-between; background: rgba(148, 163, 184, 0.05); padding: 0.35rem 0.6rem; border-radius: 6px; border: 1px solid var(--border-glass);">
+                        <span>⚪ <strong>${label}</strong> :</span>
+                        <span style="color: var(--text-muted);">Non précisé</span>
+                    </div>`;
+                }
+            };
+
+            const nom = data.nom_usage || '';
+            const prenom = data.prenoms || '';
+            const identity = (nom || prenom) ? `${prenom} ${nom}`.trim() : '';
+            addSummaryRow("Identité usager", identity, "👤");
+            addSummaryRow("Âge / Naissance", data.date_naissance || '', "🎂");
+            addSummaryRow("Téléphone usager", data.telephone || '', "📞");
+            addSummaryRow("Adresse domicile", data.adresse_complete || '', "🏠");
+            addSummaryRow("GIR Autonomie", data.gir || '', "📊");
+            addSummaryRow("Bénéficiaire APA", data.apa || '', "📋");
+
+            const alertesObj = data.alertes || {};
+            const alertesCount = Object.values(alertesObj).filter(v => v === true).length;
+            addSummaryRow("Alertes détectées", alertesCount > 0 ? `${alertesCount} alertes cochées` : '', "⚠️");
+
+            if (summaryEl) summaryEl.innerHTML = html;
+        } catch(e) {
+            console.error("Erreur résumé champs:", e);
+        }
+    }
+
+    window.reanalyzeOrienterModalFiche = async function() {
+        const textEl = document.getElementById('orienter-modal-text');
+        const text = textEl ? textEl.value.trim() : '';
+        if (!text) return;
+
+        const loadingEl = document.getElementById('orienter-pdf-loading');
+        if (loadingEl) loadingEl.style.display = 'flex';
+
+        await Promise.all([
+            fetchAndRenderPdfPreview(text, currentModalPdfEndpoint, currentModalStructure),
+            fetchAndRenderFieldsSummary(text, currentModalStructure)
+        ]);
+    };
+
+    window.closeOrienterFicheModal = function() {
+        const modal = document.getElementById('orienter-fiche-modal');
+        if (modal) modal.style.display = 'none';
+        if (currentModalBlobUrl) {
+            URL.revokeObjectURL(currentModalBlobUrl);
+            currentModalBlobUrl = null;
+        }
+    };
+
+    window.downloadDacPdf = function() { openOrienterFicheModal('DAC Var Ouest', '/api/orientation/dac/generate_pdf'); };
+    window.downloadClicPdf = function() { openOrienterFicheModal('CLIC La Seyne', '/api/orientation/clic/generate_pdf'); };
+    window.downloadClicToulonPdf = function() { openOrienterFicheModal('CLIC Toulon', '/api/orientation/clic_toulon/generate_pdf'); };
 
     /**
      * Passe à l'orientation de priorité inférieure
