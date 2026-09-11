@@ -399,12 +399,18 @@ document.addEventListener('DOMContentLoaded', () => {
             `).join('');
 
             cptsSectionHtml = `
-                <div style="margin-top: 1.4rem; padding-top: 1.3rem; border-top: 2px solid #e2e8f0;">
+                <div class="cpts-encart" style="margin-top: 1.5rem; padding: 1.1rem 1.25rem; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 12px; box-shadow: 0 2px 8px rgba(2, 132, 199, 0.06);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; padding-bottom: 0.6rem; border-bottom: 1px solid #e0f2fe;">
+                        <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: #0369a1; background: #e0f2fe; padding: 0.25rem 0.65rem; border-radius: 20px; border: 1px solid #7dd3fc; display: inline-flex; align-items: center; gap: 0.35rem;">
+                            📌 Orientation additionnelle
+                        </span>
+                    </div>
+
                     <h4 style="margin-bottom: 0.75rem; margin-top: 0.15rem; font-size: 1.12rem; font-weight: 700; color: #0f172a;">
                         ${cpts.label}
                     </h4>
 
-                    <div style="margin-bottom: 1.1rem; padding: 0.85rem 1rem; background: #f0f9ff; border: 1px solid #e0f2fe; border-radius: 8px;">
+                    <div style="margin-bottom: 1.1rem; padding: 0.85rem 1rem; background: #ffffff; border: 1px solid #e0f2fe; border-radius: 8px;">
                         <div style="font-size: 0.76rem; font-weight: 800; color: #0284c7; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem;">
                             Rôle de la structure :
                         </div>
@@ -417,7 +423,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         Pourquoi cette orientation ?
                     </button>
 
-                    <div id="explanation-pane-cpts" class="explanation-pane" style="display: none; margin-top: 0.75rem; margin-bottom: 1.1rem; padding: 1rem 1.15rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                    <div id="explanation-pane-cpts" class="explanation-pane" style="display: none; margin-top: 0.75rem; margin-bottom: 1.1rem; padding: 1rem 1.15rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px;">
                         <div style="font-size: 0.76rem; font-weight: 700; color: #0284c7; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.65rem;">
                             Éléments identifiés dans votre récit :
                         </div>
@@ -427,7 +433,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
 
                     ${(cptsPhone || cptsAddress) ? `
-                        <div class="struct-contact" style="margin-top: 0.85rem; margin-bottom: 1.1rem; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 1.4rem; font-size: 0.88rem; color: #334155;">
+                        <div class="struct-contact" style="margin-top: 0.85rem; margin-bottom: 0.2rem; padding-top: 0.6rem; border-top: 1px solid #e0f2fe; display: flex; flex-wrap: wrap; align-items: center; gap: 1.4rem; font-size: 0.88rem; color: #334155;">
                             ${cptsPhone ? `
                                 <div style="display: flex; align-items: center; gap: 0.45rem; white-space: nowrap;">
                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
@@ -480,7 +486,16 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         ` : '';
 
+        const mainBadgeHtml = struct.cpts_section ? `
+            <div style="margin-bottom: 0.65rem;">
+                <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: #2563eb; background: #eff6ff; padding: 0.25rem 0.65rem; border-radius: 20px; border: 1px solid #bfdbfe; display: inline-flex; align-items: center; gap: 0.35rem;">
+                    🎯 Orientation principale
+                </span>
+            </div>
+        ` : '';
+
         card.innerHTML = `
+            ${mainBadgeHtml}
             <h4 class="struct-name" style="margin-bottom: 0.75rem; margin-top: 0.15rem; font-size: 1.15rem; font-weight: 700; color: #0f172a;">${struct.label}</h4>
 
             <div class="role-structure-box" style="margin-bottom: 1.1rem; padding: 0.85rem 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
@@ -510,7 +525,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ${ressourcesHtml}
             
             <div class="feedback-pane" style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dashed #e2e8f0;">
-                <span class="feedback-title">${struct.cpts_section ? "Cette orientation (CLIC & CPTS) convient-elle à la situation de l'usager ?" : "Cette orientation convient-elle à la situation de l'usager ?"}</span>
+                <span class="feedback-title">${struct.cpts_section ? "Cette orientation (DAC & CPTS) convient-elle à la situation de l'usager ?" : "Cette orientation convient-elle à la situation de l'usager ?"}</span>
                 <div class="feedback-buttons">
                     <button id="btn-validate-yes" class="btn-success">
                         <span>Oui, elle convient</span>
