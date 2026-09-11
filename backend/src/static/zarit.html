@@ -2,6 +2,12 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <script>
+        // Redirection immédiate si l'utilisateur n'est pas connecté
+        if (!localStorage.getItem('active_user')) {
+            window.location.href = '/profil';
+        }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="ORIA – Évaluation du fardeau des aidants (Grille de Zarit)">
     <title>ORIA – Grille de Zarit (Évaluation Aidant)</title>
@@ -31,7 +37,7 @@
 
         .zarit-score-sticky {
             position: sticky;
-            top: 5.5rem;
+            top: 130px;
             z-index: 90;
             background: var(--bg-card);
             border: 1px solid var(--border-glass);
@@ -197,17 +203,21 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
                     </button>
                     <div id="dropdown-menu" class="dropdown-menu hidden">
-                        <a href="/dashboard" class="dropdown-item" title="Accéder au tableau de bord">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                            Tableau de bord
+                        <a href="/profil" class="dropdown-item" title="Accéder à mon profil">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            Mon profil
                         </a>
-                        <a href="/orienter" class="dropdown-item" title="Moteur d'orientation interactif">
+                        <a href="/orienter" class="dropdown-item">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
                             Moteur d'orientation
                         </a>
-                        <a href="/remplir" class="dropdown-item" title="Accéder au choix des fiches et grilles">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+                        <a href="/remplir" class="dropdown-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
                             Remplir ma fiche d'orientation / grille
+                        </a>
+                        <a href="/dashboard" class="dropdown-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                            Tableau de bord
                         </a>
                     </div>
                 </div>
@@ -226,20 +236,25 @@
                 Cette grille évalue la charge matérielle, émotionnelle et physique qui pèse sur l'aidant d'un senior.
                 Pour chacune des 22 questions ci-dessous, sélectionnez la fréquence qui correspond au ressenti de l'aidant.
             </p>
-            <div style="display: grid; grid-template-columns: minmax(280px, 1.4fr) minmax(200px, 1fr) minmax(180px, 1fr); gap: 1rem; margin-top: 1.25rem;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 1.25rem;">
                 <div>
-                    <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Rattacher au dossier existant (Optionnel) :</label>
+                    <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Rattacher au dossier existant :</label>
                     <select id="zarit-dossier-select" onchange="onSelectZaritDossier(this)" style="width: 100%; padding: 0.6rem 0.75rem; border-radius: 8px; border: 1px solid var(--border-glass); background: var(--bg-main); color: var(--text-primary); font-size: 0.84rem; font-family: inherit; outline: none; cursor: pointer;">
-                        <option value="" style="background: var(--bg-card); color: var(--text-primary);">-- Choisir un dossier existant --</option>
+                        <option value="" style="background: var(--bg-card); color: var(--text-primary);">-- Créer un nouveau dossier --</option>
                     </select>
+                    <div id="zarit-goto-dossier-container" style="display: none;"></div>
                 </div>
                 <div>
                     <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Nom / Prénom du Senior :</label>
                     <input type="text" id="zarit-senior-nom" placeholder="Ex: Mme Jeanne Dupont" style="width: 100%; padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-glass); background: var(--bg-main); color: var(--text-primary); font-size: 0.9rem;" />
                 </div>
                 <div>
-                    <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Lien avec l'aidant :</label>
-                    <input type="text" id="zarit-aidant-nom" placeholder="Ex: Fille, Époux..." style="width: 100%; padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-glass); background: var(--bg-main); color: var(--text-primary); font-size: 0.9rem;" />
+                    <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Nom / Prénom de l'Aidant :</label>
+                    <input type="text" id="zarit-aidant-nom" placeholder="Ex: Jean Dupont" style="width: 100%; padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-glass); background: var(--bg-main); color: var(--text-primary); font-size: 0.9rem;" />
+                </div>
+                <div>
+                    <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Lien avec le Senior :</label>
+                    <input type="text" id="zarit-aidant-lien" placeholder="Ex: Fils, Épouse, Voisin..." style="width: 100%; padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-glass); background: var(--bg-main); color: var(--text-primary); font-size: 0.9rem;" />
                 </div>
             </div>
         </div>
@@ -276,8 +291,8 @@
             <!-- Rempli dynamiquement par JS -->
         </div>
 
-        <!-- Boîte de Conseils & Interprétation -->
-        <div class="advice-box" id="zarit-advice-box">
+        <!-- Boîte de Conseils & Interprétation (Masquée initialement) -->
+        <div class="advice-box" id="zarit-advice-box" style="display: none;">
             <h4 id="advice-title">💡 Recommandations & Interprétation</h4>
             <p id="advice-text">Remplissez les questions ci-dessus pour obtenir une évaluation personnalisée de la charge de l'aidant.</p>
         </div>
@@ -287,13 +302,13 @@
             <button id="btn-reset-zarit" class="btn-primary" style="background: rgba(148, 163, 184, 0.15); color: var(--text-secondary); border: 1px solid var(--border-glass);">
                 Réinitialiser la grille
             </button>
-            <div style="display: flex; gap: 1rem;">
-                <button id="btn-save-zarit" class="btn-primary" style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-glass);">
-                    Sauvegarder
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <button id="btn-calc-zarit" class="btn-primary" style="background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%); color: #ffffff; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);">
+                    📊 Calculer & Enregistrer au dossier
                 </button>
                 <button id="btn-download-pdf-zarit" class="btn-primary" style="background: var(--accent-amber); color: #ffffff; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35); display: inline-flex; align-items: center; gap: 0.45rem;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    <span>Télécharger la grille en PDF</span>
+                    <span>Télécharger en PDF</span>
                 </button>
             </div>
         </div>
@@ -420,7 +435,11 @@
 
         async function loadDossiersDropdown() {
             try {
-                const res = await fetch('/api/dossiers/dropdown-list');
+                const activeUserJson = localStorage.getItem('active_user');
+                const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
+                const creatorParam = activeUser ? `?createur=${encodeURIComponent(activeUser.name)}` : '';
+
+                const res = await fetch(`/api/dossiers/dropdown-list${creatorParam}`);
                 if (res.ok) {
                     dossiersList = await res.json();
                     const select = document.getElementById('zarit-dossier-select');
@@ -433,6 +452,13 @@
                         opt.style.color = 'var(--text-primary)';
                         select.appendChild(opt);
                     });
+
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const dParam = urlParams.get('dossier_id');
+                    if (dParam) {
+                        select.value = dParam;
+                        onSelectZaritDossier(select);
+                    }
                 }
             } catch (e) {
                 console.error("Erreur chargement liste dossiers", e);
@@ -445,19 +471,38 @@
             if (found) {
                 document.getElementById('zarit-senior-nom').value = found.senior_nom || "";
             }
+            updateGoToDossierButton(selectedDossierId);
+        }
+
+        function updateGoToDossierButton(dId) {
+            let container = document.getElementById('zarit-goto-dossier-container');
+            if (!container) return;
+            if (dId) {
+                container.innerHTML = `
+                    <a href="/dossier/${encodeURIComponent(dId)}" class="btn-primary" style="margin-top: 0.5rem; background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); border: 1px solid rgba(59, 130, 246, 0.3); text-decoration: none; padding: 0.45rem 0.85rem; border-radius: 6px; font-size: 0.82rem; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; box-shadow: none;">
+                        📂 Accéder au dossier patient (#${dId})
+                    </a>
+                `;
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+            }
         }
 
         document.getElementById('btn-reset-zarit').addEventListener('click', () => {
             answers = new Array(ZARIT_QUESTIONS.length).fill(0);
             document.getElementById('zarit-senior-nom').value = '';
             document.getElementById('zarit-aidant-nom').value = '';
+            document.getElementById('zarit-aidant-lien').value = '';
             document.getElementById('zarit-dossier-select').value = '';
             selectedDossierId = null;
+            updateGoToDossierButton(null);
             updateScore();
             renderQuestions();
         });
 
-        document.getElementById('btn-save-zarit').addEventListener('click', async () => {
+        const processSaveZarit = async () => {
+            updateScore();
             const totalScore = answers.reduce((acc, curr) => acc + curr, 0);
             let levelLabel = "Charge légère";
             if (totalScore > 60) levelLabel = "Charge sévère";
@@ -466,6 +511,11 @@
 
             const seniorNom = document.getElementById('zarit-senior-nom').value.trim();
             const aidantNom = document.getElementById('zarit-aidant-nom').value.trim();
+            const aidantLien = document.getElementById('zarit-aidant-lien').value.trim();
+
+            const activeUserJson = localStorage.getItem('active_user');
+            const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
+            const creatorName = activeUser ? activeUser.name : 'Anonyme';
 
             try {
                 const response = await fetch('/api/zarit/evaluations', {
@@ -475,22 +525,51 @@
                         dossier_id: selectedDossierId,
                         senior_nom: seniorNom || "Senior non renseigné",
                         aidant_nom: aidantNom || "Aidant",
+                        aidant_lien: aidantLien || "",
                         score: totalScore,
                         niveau: levelLabel,
-                        reponses: answers
+                        reponses: answers,
+                        createur: creatorName
                     })
                 });
 
                 if (response.ok) {
-                    alert(`Évaluation Zarit enregistrée avec succès !\nScore : ${totalScore}/88 (${levelLabel})`);
+                    const data = await response.json();
+                    const actualDossierId = data.dossier_id;
+                    
+                    const adviceBox = document.getElementById('zarit-advice-box');
+                    if (adviceBox) {
+                        adviceBox.style.display = 'block';
+                        adviceBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    
+                    await loadDossiersDropdown();
+                    if (actualDossierId) {
+                        selectedDossierId = actualDossierId;
+                        document.getElementById('zarit-dossier-select').value = actualDossierId;
+                        
+                        const gotoContainer = document.getElementById('zarit-goto-dossier-container');
+                        if (gotoContainer) {
+                            gotoContainer.style.display = 'block';
+                            gotoContainer.innerHTML = `
+                                <div style="margin-top: 1rem; padding: 0.85rem; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; text-align: center;">
+                                    <a href="/dossier/${encodeURIComponent(actualDossierId)}" class="btn-primary" style="background: var(--accent-amber); color: #ffffff; padding: 0.65rem 1.2rem; font-size: 0.9rem; font-weight: 700; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+                                        📁 Accéder au dossier patient (#${actualDossierId})
+                                    </a>
+                                </div>
+                            `;
+                        }
+                    }
                 } else {
-                    alert("Enregistré localement.");
+                    alert("Erreur lors de l'enregistrement de l'évaluation.");
                 }
             } catch(e) {
                 console.error(e);
-                alert("Enregistré localement.");
+                alert("Erreur lors de l'enregistrement de l'évaluation.");
             }
-        });
+        };
+
+        document.getElementById('btn-calc-zarit').addEventListener('click', processSaveZarit);
 
         document.getElementById('btn-download-pdf-zarit').addEventListener('click', async () => {
             const totalScore = answers.reduce((acc, curr) => acc + curr, 0);

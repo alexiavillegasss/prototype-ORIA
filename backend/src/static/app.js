@@ -77,8 +77,12 @@ function getSelectedDimensions() {
  */
 async function loadDashboard() {
     const dims = getSelectedDimensions();
+    const creatorSelect = document.getElementById('select-creator-sankey');
+    const creator = creatorSelect ? creatorSelect.value : 'all';
+    const statusSelect = document.getElementById('select-status-role');
+    const statusRole = statusSelect ? statusSelect.value : 'all';
     
-    const url = `/api/dashboard/sankey?dim1=${dims.dim1}&dim2=${dims.dim2}&dim3=${dims.dim3}`;
+    const url = `/api/dashboard/sankey?dim1=${dims.dim1}&dim2=${dims.dim2}&dim3=${dims.dim3}&createur=${encodeURIComponent(creator)}&status_role=${encodeURIComponent(statusRole)}`;
 
     try {
         const response = await fetch(url);

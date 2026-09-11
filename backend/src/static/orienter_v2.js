@@ -58,6 +58,58 @@ let dossierId = null;
 let schemaPivot = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Charger les dossiers dans le select
+    function updateOrienterGoToDossierButton(dId) {
+        let container = document.getElementById('orienter-goto-dossier-container');
+        if (!container) return;
+        if (dId && dId !== 'new') {
+            container.innerHTML = `
+                <a href="/dossier/${encodeURIComponent(dId)}" class="btn-primary" style="margin-top: 0.5rem; background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); border: 1px solid rgba(59, 130, 246, 0.3); text-decoration: none; padding: 0.45rem 0.85rem; border-radius: 6px; font-size: 0.82rem; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; box-shadow: none;">
+                    📂 Accéder au dossier patient (#${dId})
+                </a>
+            `;
+            container.style.display = 'block';
+        } else {
+            container.style.display = 'none';
+        }
+    }
+
+    async function loadDossiersSelect() {
+        try {
+            const activeUserJson = localStorage.getItem('active_user');
+            const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
+            const creatorParam = activeUser ? `?createur=${encodeURIComponent(activeUser.name)}` : '';
+            const res = await fetch(`/api/dossiers/dropdown-list${creatorParam}`);
+            if (res.ok) {
+                const list = await res.json();
+                const select = document.getElementById('orienter-dossier-select');
+                if (select) {
+                    select.innerHTML = '<option value="new">-- Créer un nouveau dossier patient --</option>';
+                    list.forEach(d => {
+                        const opt = document.createElement('option');
+                        opt.value = d.dossier_id;
+                        opt.textContent = d.display_label;
+                        select.appendChild(opt);
+                    });
+
+                    select.addEventListener('change', () => {
+                        updateOrienterGoToDossierButton(select.value);
+                    });
+
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const dParam = urlParams.get('dossier_id');
+                    if (dParam) {
+                        select.value = dParam;
+                        updateOrienterGoToDossierButton(dParam);
+                    }
+                }
+            }
+        } catch (e) {
+            console.error("Erreur chargement dossiers select", e);
+        }
+    }
+    loadDossiersSelect();
+
     // Gestion du thème clair/sombre
     const themeToggle = document.getElementById('theme-toggle');
     const currentTheme = localStorage.getItem('theme') || 'dark';
@@ -119,10 +171,26 @@ document.addEventListener('DOMContentLoaded', () => {
     //const jsonOutput = document.getElementById('raw-json-output');
 
     btnSubmit.addEventListener('click', async () => {
-        const text = inputArea.value.trim();
+        let text = inputArea.value.trim();
         if (!text) {
             alert("Veuillez saisir la description d'une situation avant de lancer l'analyse.");
             return;
+        }
+
+        // Vérification des champs clés (Commune et Âge) pour éviter les "Inconnus" dans le Sankey
+        const hasAge = /\b(6[0-9]|7[0-9]|8[0-9]|9[0-9]|10[0-9]|\d{2,3}\s*ans)\b/i.test(text);
+        const hasCommune = /\b(toulon|la seyne|seyne|hyères|hyeres|brignoles|draguignan|sanary|bandol|six-fours|st-tropez|saint-tropez|le pradet|la garde|la valette|cuers|solliès|sollies|ollioules|cotignac|bormes|bras|evenos|le beausset|signes|saint-mandrier)\b/i.test(text);
+
+        const missing = [];
+        if (!hasAge) missing.push("Âge du senior (ex: 84 ans)");
+        if (!hasCommune) missing.push("Commune de résidence (ex: Toulon, La Seyne, Hyères...)");
+
+        if (missing.length > 0) {
+            const extraInfo = prompt(`Pour un classement optimal dans le Sankey et les statistiques (sans mention 'Inconnu'), veuillez préciser :\n- ${missing.join('\n- ')}\n\nEntrez les précisions ci-dessous (ou validez pour continuer ainsi) :`);
+            if (extraInfo && extraInfo.trim()) {
+                text += " " + extraInfo.trim();
+                inputArea.value = text;
+            }
         }
 
         // 1. Passage en état de chargement
@@ -131,13 +199,19 @@ document.addEventListener('DOMContentLoaded', () => {
         btnSubmit.querySelector('.btn-text').textContent = 'Analyse IA en cours (Ollama)...';
 
         try {
-            // 2. Appel à l'API /analyze de FastAPI
+            // 2. Appel à l'API /analyze de FastAPI et transmettre créateur et dossier_id
+            const activeUserJson = localStorage.getItem('active_user');
+            const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
+            const creatorName = activeUser ? activeUser.name : 'Anonyme';
+            const selectEl = document.getElementById('orienter-dossier-select');
+            const selectedDossierId = selectEl ? selectEl.value : 'new';
+
             const response = await fetch('/analyze', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ text: text })
+                body: JSON.stringify({ text: text, createur: creatorName, dossier_id: selectedDossierId })
             });
 
             if (!response.ok) {
@@ -151,10 +225,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            // Mettre à jour la liste des dossiers uniquement si c'était un nouveau dossier
+            const selectElement = document.getElementById('orienter-dossier-select');
+            if (selectElement) {
+                const selectedValBefore = selectElement.value;
+                if (selectedValBefore === 'new') {
+                    const activeUserJson = localStorage.getItem('active_user');
+                    const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
+                    const creatorParam = activeUser ? `?createur=${encodeURIComponent(activeUser.name)}` : '';
+                    const res = await fetch(`/api/dossiers/dropdown-list${creatorParam}`);
+                    if (res.ok) {
+                        const list = await res.json();
+                        selectElement.innerHTML = '<option value="new">-- Créer un nouveau dossier patient --</option>';
+                        list.forEach(d => {
+                            const opt = document.createElement('option');
+                            opt.value = String(d.dossier_id);
+                            opt.textContent = d.display_label;
+                            selectElement.appendChild(opt);
+                        });
+                        if (data.id_dossier) {
+                            selectElement.value = String(data.id_dossier);
+                        }
+                    }
+                } else {
+                    if (data.id_dossier) {
+                        selectElement.value = String(data.id_dossier);
+                    }
+                }
+            }
+
             // 3. Initialisation de l'état local
             orientations = data.orientation_suggeree || [];
             currentIndex = 0;
-            dossierId = data.id_dossier;
+            dossierId = data.id_dossier ? String(data.id_dossier) : null;
             schemaPivot = data.schema_pivot;
 
             // Remplissage des KPIs globaux
@@ -296,12 +399,18 @@ document.addEventListener('DOMContentLoaded', () => {
             `).join('');
 
             cptsSectionHtml = `
-                <div style="margin-top: 1.4rem; padding-top: 1.3rem; border-top: 2px solid #e2e8f0;">
+                <div class="cpts-encart" style="margin-top: 1.5rem; padding: 1.1rem 1.25rem; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 12px; box-shadow: 0 2px 8px rgba(2, 132, 199, 0.06);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; padding-bottom: 0.6rem; border-bottom: 1px solid #e0f2fe;">
+                        <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: #0369a1; background: #e0f2fe; padding: 0.25rem 0.65rem; border-radius: 20px; border: 1px solid #7dd3fc; display: inline-flex; align-items: center; gap: 0.35rem;">
+                            📌 Orientation additionnelle
+                        </span>
+                    </div>
+
                     <h4 style="margin-bottom: 0.75rem; margin-top: 0.15rem; font-size: 1.12rem; font-weight: 700; color: #0f172a;">
                         ${cpts.label}
                     </h4>
 
-                    <div style="margin-bottom: 1.1rem; padding: 0.85rem 1rem; background: #f0f9ff; border: 1px solid #e0f2fe; border-radius: 8px;">
+                    <div style="margin-bottom: 1.1rem; padding: 0.85rem 1rem; background: #ffffff; border: 1px solid #e0f2fe; border-radius: 8px;">
                         <div style="font-size: 0.76rem; font-weight: 800; color: #0284c7; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem;">
                             Rôle de la structure :
                         </div>
@@ -314,7 +423,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         Pourquoi cette orientation ?
                     </button>
 
-                    <div id="explanation-pane-cpts" class="explanation-pane" style="display: none; margin-top: 0.75rem; margin-bottom: 1.1rem; padding: 1rem 1.15rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                    <div id="explanation-pane-cpts" class="explanation-pane" style="display: none; margin-top: 0.75rem; margin-bottom: 1.1rem; padding: 1rem 1.15rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px;">
                         <div style="font-size: 0.76rem; font-weight: 700; color: #0284c7; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.65rem;">
                             Éléments identifiés dans votre récit :
                         </div>
@@ -324,7 +433,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
 
                     ${(cptsPhone || cptsAddress) ? `
-                        <div class="struct-contact" style="margin-top: 0.85rem; margin-bottom: 1.1rem; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 1.4rem; font-size: 0.88rem; color: #334155;">
+                        <div class="struct-contact" style="margin-top: 0.85rem; margin-bottom: 0.2rem; padding-top: 0.6rem; border-top: 1px solid #e0f2fe; display: flex; flex-wrap: wrap; align-items: center; gap: 1.4rem; font-size: 0.88rem; color: #334155;">
                             ${cptsPhone ? `
                                 <div style="display: flex; align-items: center; gap: 0.45rem; white-space: nowrap;">
                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
@@ -377,7 +486,16 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         ` : '';
 
+        const mainBadgeHtml = struct.cpts_section ? `
+            <div style="margin-bottom: 0.65rem;">
+                <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: #2563eb; background: #eff6ff; padding: 0.25rem 0.65rem; border-radius: 20px; border: 1px solid #bfdbfe; display: inline-flex; align-items: center; gap: 0.35rem;">
+                    🎯 Orientation principale
+                </span>
+            </div>
+        ` : '';
+
         card.innerHTML = `
+            ${mainBadgeHtml}
             <h4 class="struct-name" style="margin-bottom: 0.75rem; margin-top: 0.15rem; font-size: 1.15rem; font-weight: 700; color: #0f172a;">${struct.label}</h4>
 
             <div class="role-structure-box" style="margin-bottom: 1.1rem; padding: 0.85rem 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
@@ -407,7 +525,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ${ressourcesHtml}
             
             <div class="feedback-pane" style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dashed #e2e8f0;">
-                <span class="feedback-title">${struct.cpts_section ? "Cette orientation (CLIC & CPTS) convient-elle à la situation de l'usager ?" : "Cette orientation convient-elle à la situation de l'usager ?"}</span>
+                <span class="feedback-title">${struct.cpts_section ? "Cette orientation (DAC & CPTS) convient-elle à la situation de l'usager ?" : "Cette orientation convient-elle à la situation de l'usager ?"}</span>
                 <div class="feedback-buttons">
                     <button id="btn-validate-yes" class="btn-success">
                         <span>Oui, elle convient</span>
@@ -689,6 +807,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             Traiter une nouvelle situation
                         </button>
                         ${pdfButtonHtml}
+                        ${dossierId ? `
+                            <a href="/dossier/${encodeURIComponent(dossierId)}" class="btn-primary" style="background: rgba(59, 130, 246, 0.2); color: var(--accent-blue); border: 1px solid rgba(59, 130, 246, 0.4); text-decoration: none; margin-top: 1rem; padding: 0.65rem 1.2rem; border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; box-shadow: none;">
+                                📂 Retourner au dossier patient (#${dossierId})
+                            </a>
+                        ` : ''}
                     </div>
                 </div>
             `;
@@ -971,149 +1094,211 @@ Cordialement,`;
         };
     };
 
-    /**
-     * Télécharge la fiche d'orientation DAC sous format PDF
-     */
-    window.downloadDacPdf = async function() {
-        const text = document.getElementById('situation-input').value.trim();
-        if (!text) return;
+    let currentModalStructure = 'DAC Var Ouest';
+    let currentModalPdfEndpoint = '/api/orientation/dac/generate_pdf';
+    let currentModalBlobUrl = null;
 
-        const btn = document.querySelector('[onclick="downloadDacPdf()"]');
-        let originalHtml = "";
-        if (btn) {
-            originalHtml = btn.innerHTML;
-            btn.innerHTML = `<span>⏳ Remplissage...</span>`;
-            btn.disabled = true;
+    /**
+     * Ouvre l'encart/modale de visualisation de fiche d'orientation directement sur la même page
+     */
+    window.openOrienterFicheModal = async function(structureName, pdfEndpoint) {
+        const text = document.getElementById('situation-input').value.trim();
+        if (!text) {
+            alert("Veuillez saisir ou analyser une situation avant de générer la fiche.");
+            return;
         }
 
+        currentModalStructure = structureName;
+        currentModalPdfEndpoint = pdfEndpoint;
+
+        const modal = document.getElementById('orienter-fiche-modal');
+        const titleEl = document.getElementById('orienter-modal-title');
+        const textEl = document.getElementById('orienter-modal-text');
+        const loadingEl = document.getElementById('orienter-pdf-loading');
+        const iframe = document.getElementById('orienter-pdf-iframe');
+        const statusEl = document.getElementById('orienter-modal-status');
+        const summaryEl = document.getElementById('orienter-modal-fields-summary');
+
+        if (titleEl) titleEl.textContent = `Aperçu & Remplissage Fiche ${structureName}`;
+        if (textEl) textEl.value = text;
+        if (statusEl) statusEl.textContent = "Génération de l'aperçu PDF en cours...";
+        if (summaryEl) summaryEl.innerHTML = `<span style="color: var(--text-muted);">Extraction des variables en cours...</span>`;
+        if (loadingEl) loadingEl.style.display = 'flex';
+        if (modal) modal.style.display = 'flex';
+
+        // Lancer la génération PDF et l'extraction des rubriques en parallèle
+        await Promise.all([
+            fetchAndRenderPdfPreview(text, pdfEndpoint, structureName),
+            fetchAndRenderFieldsSummary(text, structureName)
+        ]);
+    };
+
+    async function fetchAndRenderPdfPreview(text, pdfEndpoint, structureName) {
+        const loadingEl = document.getElementById('orienter-pdf-loading');
+        const iframe = document.getElementById('orienter-pdf-iframe');
+        const downloadBtn = document.getElementById('orienter-modal-download-btn');
+        const statusEl = document.getElementById('orienter-modal-status');
+
         try {
-            const response = await fetch('/api/orientation/dac/generate_pdf', {
+            const activeUserJson = localStorage.getItem('active_user');
+            const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
+            const creatorName = activeUser ? activeUser.name : 'Anonyme';
+
+            const response = await fetch(pdfEndpoint, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ text: text })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: text, createur: creatorName, dossier_id: dossierId ? String(dossierId) : null })
             });
 
-            if (!response.ok) {
-                throw new Error("Erreur de téléchargement");
+            if (!response.ok) throw new Error("Erreur de génération PDF");
+
+            const returnedDossierId = response.headers.get('X-Dossier-ID');
+            if (returnedDossierId) {
+                dossierId = returnedDossierId;
             }
 
             const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'fiche_orientation_dac.pdf';
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            window.URL.revokeObjectURL(url);
-        } catch (err) {
-            console.error(err);
-            alert("Une erreur est survenue lors de la génération du PDF.");
-        } finally {
-            if (btn) {
-                btn.innerHTML = originalHtml;
-                btn.disabled = false;
+            if (currentModalBlobUrl) {
+                URL.revokeObjectURL(currentModalBlobUrl);
             }
-        }
-    };
+            currentModalBlobUrl = URL.createObjectURL(blob);
+            
+            if (iframe) {
+                const pdfZoomUrl = currentModalBlobUrl + '#view=FitH&zoom=100';
+                iframe.src = 'about:blank';
+                setTimeout(() => {
+                    try {
+                        if (iframe.contentWindow) {
+                            iframe.contentWindow.location.replace(pdfZoomUrl);
+                        } else {
+                            iframe.src = pdfZoomUrl;
+                        }
+                    } catch(e) {
+                        iframe.src = pdfZoomUrl;
+                    }
+                }, 50);
+            }
 
-    /**
-     * Télécharge la fiche d'orientation CLIC La Seyne sous format PDF
-     */
-    window.downloadClicPdf = async function() {
-        const text = document.getElementById('situation-input').value.trim();
+            if (downloadBtn) {
+                downloadBtn.onclick = function() {
+                    const a = document.createElement('a');
+                    a.href = currentModalBlobUrl;
+                    a.download = `fiche_orientation_${structureName.toLowerCase().replace(/[^a-z0-9]/g, '_')}_dossier_${dossierId || 'nouveau'}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                };
+            }
+
+            if (statusEl) statusEl.textContent = "🟢 Aperçu PDF pré-rempli et enregistré avec succès !";
+        } catch(e) {
+            console.error("Erreur PDF preview:", e);
+            if (statusEl) statusEl.textContent = "🔴 Erreur lors de la génération de la fiche PDF.";
+        } finally {
+            if (loadingEl) loadingEl.style.display = 'none';
+        }
+    }
+
+    async function fetchAndRenderFieldsSummary(text, structureName) {
+        const summaryEl = document.getElementById('orienter-modal-fields-summary');
+        try {
+            const res = await fetch('/api/orientation/extract_fields', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: text, structure: structureName })
+            });
+            if (!res.ok) return;
+
+            const resJson = await res.json();
+            const data = resJson.data || {};
+
+            let html = '';
+            const addSummaryRow = (label, val, icon) => {
+                if (val && String(val).trim()) {
+                    html += `<div style="display: flex; align-items: center; justify-content: space-between; background: rgba(34, 197, 94, 0.08); padding: 0.35rem 0.6rem; border-radius: 6px; border: 1px solid rgba(34, 197, 94, 0.25);">
+                        <span>${icon} <strong>${label}</strong> :</span>
+                        <strong style="color: #10b981;">${val}</strong>
+                    </div>`;
+                } else {
+                    html += `<div style="display: flex; align-items: center; justify-content: space-between; background: rgba(148, 163, 184, 0.05); padding: 0.35rem 0.6rem; border-radius: 6px; border: 1px solid var(--border-glass);">
+                        <span>⚪ <strong>${label}</strong> :</span>
+                        <span style="color: var(--text-muted);">Non précisé</span>
+                    </div>`;
+                }
+            };
+
+            const nom = data.nom_usage || data.usager_nom_usage || '';
+            const prenom = data.prenoms || data.usager_prenoms || '';
+            const identity = (nom || prenom) ? `${prenom} ${nom}`.trim() : '';
+            addSummaryRow("Identité usager", identity, "👤");
+            addSummaryRow("Âge / Naissance", data.date_naissance || data.usager_date_naissance || '', "🎂");
+            addSummaryRow("Téléphone usager", data.telephone || data.usager_telephone || '', "📞");
+            addSummaryRow("Adresse domicile", data.adresse_complete || data.usager_adresse || '', "🏠");
+            addSummaryRow("GIR Autonomie", data.gir || '', "📊");
+            addSummaryRow("Bénéficiaire APA", data.apa || '', "📋");
+
+            const alertesObj = data.alertes || {};
+            const alertesCount = Object.values(alertesObj).filter(v => v === true).length;
+            addSummaryRow("Alertes détectées", alertesCount > 0 ? `${alertesCount} alertes cochées` : '', "⚠️");
+
+            if (summaryEl) summaryEl.innerHTML = html;
+        } catch(e) {
+            console.error("Erreur résumé champs:", e);
+        }
+    }
+
+    let modalAutoSaveTimeout = null;
+
+    window.reanalyzeOrienterModalFiche = async function() {
+        const textEl = document.getElementById('orienter-modal-text');
+        const text = textEl ? textEl.value.trim() : '';
         if (!text) return;
 
-        const btn = document.querySelector('[onclick="downloadClicPdf()"]');
-        let originalHtml = "";
-        if (btn) {
-            originalHtml = btn.innerHTML;
-            btn.innerHTML = `<span>⏳ Remplissage...</span>`;
-            btn.disabled = true;
-        }
+        // Synchroniser le texte révisé vers la zone principale de la page
+        const mainInput = document.getElementById('situation-input');
+        if (mainInput) mainInput.value = text;
 
-        try {
-            const response = await fetch('/api/orientation/clic/generate_pdf', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ text: text })
+        const loadingEl = document.getElementById('orienter-pdf-loading');
+        if (loadingEl) loadingEl.style.display = 'flex';
+
+        await Promise.all([
+            fetchAndRenderPdfPreview(text, currentModalPdfEndpoint, currentModalStructure),
+            fetchAndRenderFieldsSummary(text, currentModalStructure)
+        ]);
+    };
+
+    // Écouteur en direct sur la zone de texte pour re-générer automatiquement dès que la frappe s'arrête
+    document.addEventListener('DOMContentLoaded', () => {
+        const textEl = document.getElementById('orienter-modal-text');
+        if (textEl) {
+            textEl.addEventListener('input', () => {
+                const text = textEl.value.trim();
+                const mainInput = document.getElementById('situation-input');
+                if (mainInput) mainInput.value = text;
+
+                const statusEl = document.getElementById('orienter-modal-status');
+                if (statusEl) statusEl.textContent = "⏳ Prise en compte des modifications en cours...";
+
+                if (modalAutoSaveTimeout) clearTimeout(modalAutoSaveTimeout);
+                modalAutoSaveTimeout = setTimeout(() => {
+                    reanalyzeOrienterModalFiche();
+                }, 1000);
             });
+        }
+    });
 
-            if (!response.ok) {
-                throw new Error("Erreur de téléchargement");
-            }
-
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'fiche_orientation_clic_laseyne.pdf';
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            window.URL.revokeObjectURL(url);
-        } catch (err) {
-            console.error(err);
-            alert("Une erreur est survenue lors de la génération du PDF CLIC.");
-        } finally {
-            if (btn) {
-                btn.innerHTML = originalHtml;
-                btn.disabled = false;
-            }
+    window.closeOrienterFicheModal = function() {
+        const modal = document.getElementById('orienter-fiche-modal');
+        if (modal) modal.style.display = 'none';
+        if (currentModalBlobUrl) {
+            URL.revokeObjectURL(currentModalBlobUrl);
+            currentModalBlobUrl = null;
         }
     };
 
-    /**
-     * Télécharge la fiche d'orientation CLIC Toulon sous format PDF
-     */
-    window.downloadClicToulonPdf = async function() {
-        const text = document.getElementById('situation-input').value.trim();
-        if (!text) return;
-
-        const btn = document.querySelector('[onclick="downloadClicToulonPdf()"]');
-        let originalHtml = "";
-        if (btn) {
-            originalHtml = btn.innerHTML;
-            btn.innerHTML = `<span>⏳ Remplissage...</span>`;
-            btn.disabled = true;
-        }
-
-        try {
-            const response = await fetch('/api/orientation/clic_toulon/generate_pdf', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ text: text })
-            });
-
-            if (!response.ok) {
-                throw new Error("Erreur de téléchargement");
-            }
-
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'fiche_orientation_clic_toulon.pdf';
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            window.URL.revokeObjectURL(url);
-        } catch (err) {
-            console.error(err);
-            alert("Une erreur est survenue lors de la génération du PDF CLIC Toulon.");
-        } finally {
-            if (btn) {
-                btn.innerHTML = originalHtml;
-                btn.disabled = false;
-            }
-        }
-    };
+    window.downloadDacPdf = function() { openOrienterFicheModal('DAC Var Ouest', '/api/orientation/dac/generate_pdf'); };
+    window.downloadClicPdf = function() { openOrienterFicheModal('CLIC La Seyne', '/api/orientation/clic/generate_pdf'); };
+    window.downloadClicToulonPdf = function() { openOrienterFicheModal('CLIC Toulon', '/api/orientation/clic_toulon/generate_pdf'); };
 
     /**
      * Passe à l'orientation de priorité inférieure
@@ -1144,91 +1329,8 @@ Cordialement,`;
         inputArea.focus();
     };
 
-    /**
-     * Télécharge la fiche d'orientation CLIC Provence Verte sous format PDF
-     */
-    window.downloadClicProvenceVertePdf = async function() {
-        const analyzeBtn = document.getElementById('analyze-btn');
-        const text = document.getElementById('situation-input').value.trim();
-
-        const btn = document.querySelector('[onclick="downloadClicProvenceVertePdf()"]');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '⏳ Génération en cours...';
-        btn.disabled = true;
-
-        try {
-            const response = await fetch('/api/orientation/clic_provence_verte/generate_pdf', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ text: text })
-            });
-
-            if (!response.ok) {
-                throw new Error("Erreur réseau");
-            }
-
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'fiche_orientation_clic_provence_verte.pdf';
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            window.URL.revokeObjectURL(url);
-        } catch (error) {
-            console.error("Erreur PDF:", error);
-            alert("Une erreur est survenue lors de la génération du PDF CLIC Provence Verte.");
-        } finally {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-        }
-    };
-
-    /**
-     * Télécharge la fiche d'orientation CLIC Hadage sous format PDF
-     */
-    window.downloadClicHadagePdf = async function() {
-        const analyzeBtn = document.getElementById('analyze-btn');
-        const text = document.getElementById('situation-input').value.trim();
-
-        const btn = document.querySelector('[onclick="downloadClicHadagePdf()"]');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '⏳ Génération en cours...';
-        btn.disabled = true;
-
-        try {
-            const response = await fetch('/api/orientation/clic_hadage/generate_pdf', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ text: text })
-            });
-
-            if (!response.ok) {
-                throw new Error("Erreur réseau");
-            }
-
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'fiche_orientation_clic_hadage.pdf';
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            window.URL.revokeObjectURL(url);
-        } catch (error) {
-            console.error("Erreur PDF:", error);
-            alert("Une erreur est survenue lors de la génération du PDF CLIC Hadage.");
-        } finally {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-        }
-    };
+    window.downloadClicProvenceVertePdf = function() { openFicheModalWithText('CLIC Provence Verte'); };
+    window.downloadClicHadagePdf = function() { openFicheModalWithText('CLIC Hadage'); };
 
 });
 

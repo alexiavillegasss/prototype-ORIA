@@ -2,6 +2,12 @@
 <html lang="fr" data-theme="dark">
 <head>
     <meta charset="UTF-8">
+    <script>
+        // Redirection immédiate si l'utilisateur n'est pas connecté
+        if (!localStorage.getItem('active_user')) {
+            window.location.href = '/profil';
+        }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="ORIA – Sélection des Fiches d'Orientation">
     <title>ORIA – Fiches d'Orientation</title>
@@ -217,17 +223,21 @@
                     </button>
                     <!-- Dropdown Menu -->
                     <div id="dropdown-menu" class="dropdown-menu hidden">
-                        <a href="/dashboard" class="dropdown-item" title="Accéder au tableau de bord">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                            Tableau de bord
+                        <a href="/profil" class="dropdown-item" title="Accéder à mon profil">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            Mon profil
                         </a>
-                        <a href="/orienter" class="dropdown-item" title="Moteur d'orientation interactif">
+                        <a href="/orienter" class="dropdown-item">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
                             Moteur d'orientation
                         </a>
-                        <a href="/remplir" class="dropdown-item" title="Accéder au choix des fiches et grilles">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+                        <a href="/remplir" class="dropdown-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
                             Remplir ma fiche d'orientation / grille
+                        </a>
+                        <a href="/dashboard" class="dropdown-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                            Tableau de bord
                         </a>
                     </div>
                 </div>
@@ -262,10 +272,10 @@
                     </div>
                 </div>
                 <div class="fo-sub-actions">
-                    <a class="btn-sub-action btn-manual" href="/static/fiche_dac_vierge.pdf" target="_blank">
+                    <button type="button" class="btn-sub-action btn-manual" onclick="openManualFormModal('DAC Var Ouest', '/api/orientation/dac/generate_pdf', '/static/fiche_dac_vierge.pdf')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         Remplir à la main
-                    </a>
+                    </button>
                     <button type="button" class="btn-sub-action btn-voice" onclick="openVoiceFormModal('DAC Var Ouest', '/api/orientation/dac/generate_pdf', '/static/fiche_dac_vierge.pdf')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
                         Remplir à la voix
@@ -285,10 +295,10 @@
                     </div>
                 </div>
                 <div class="fo-sub-actions">
-                    <a class="btn-sub-action btn-manual" href="/static/fiche_clic_LaSeyne_vierge.pdf" target="_blank">
+                    <button type="button" class="btn-sub-action btn-manual" onclick="openManualFormModal('CLIC La Seyne', '/api/orientation/clic/generate_pdf', '/static/fiche_clic_LaSeyne_vierge.pdf')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         Remplir à la main
-                    </a>
+                    </button>
                     <button type="button" class="btn-sub-action btn-voice" onclick="openVoiceFormModal('CLIC La Seyne', '/api/orientation/clic/generate_pdf', '/static/fiche_clic_LaSeyne_vierge.pdf')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
                         Remplir à la voix
@@ -308,10 +318,10 @@
                     </div>
                 </div>
                 <div class="fo-sub-actions">
-                    <a class="btn-sub-action btn-manual" href="/static/fiche_clic_Toulon.pdf" target="_blank">
+                    <button type="button" class="btn-sub-action btn-manual" onclick="openManualFormModal('CLIC Toulon', '/api/orientation/clic_toulon/generate_pdf', '/static/fiche_clic_Toulon.pdf')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         Remplir à la main
-                    </a>
+                    </button>
                     <button type="button" class="btn-sub-action btn-voice" onclick="openVoiceFormModal('CLIC Toulon', '/api/orientation/clic_toulon/generate_pdf', '/static/fiche_clic_Toulon.pdf')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
                         Remplir à la voix
@@ -331,10 +341,10 @@
                     </div>
                 </div>
                 <div class="fo-sub-actions">
-                    <a class="btn-sub-action btn-manual" href="/static/fiche_clic_ProvenceVerte.pdf" target="_blank">
+                    <button type="button" class="btn-sub-action btn-manual" onclick="openManualFormModal('CLIC Provence Verte', '/api/orientation/clic_provence_verte/generate_pdf', '/static/fiche_clic_ProvenceVerte.pdf')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         Remplir à la main
-                    </a>
+                    </button>
                     <button type="button" class="btn-sub-action btn-voice" onclick="openVoiceFormModal('CLIC Provence Verte', '/api/orientation/clic_provence_verte/generate_pdf', '/static/fiche_clic_ProvenceVerte.pdf')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
                         Remplir à la voix
@@ -354,10 +364,10 @@
                     </div>
                 </div>
                 <div class="fo-sub-actions">
-                    <a class="btn-sub-action btn-manual" href="/static/fiche_clic_Hadage.pdf" target="_blank">
+                    <button type="button" class="btn-sub-action btn-manual" onclick="openManualFormModal('CLIC Hadage', '/api/orientation/clic_hadage/generate_pdf', '/static/fiche_clic_Hadage.pdf')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         Remplir à la main
-                    </a>
+                    </button>
                     <button type="button" class="btn-sub-action btn-voice" onclick="openVoiceFormModal('CLIC Hadage', '/api/orientation/clic_hadage/generate_pdf', '/static/fiche_clic_Hadage.pdf')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
                         Remplir à la voix
@@ -417,6 +427,14 @@
                             </div>
                         </div>
 
+                        <!-- Dossier select dropdown -->
+                        <div style="margin-bottom: 0.5rem; width: 100%;">
+                            <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.3rem; letter-spacing: 0.05em;">RATTACHER AU DOSSIER PATIENT :</label>
+                            <select id="fiches-dossier-select" style="width: 100%; padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px solid var(--border-glass); background: var(--bg-primary); color: var(--text-primary); font-size: 0.88rem; font-weight: 600;">
+                                <option value="new">-- Créer un nouveau dossier patient --</option>
+                            </select>
+                        </div>
+
                         <!-- Mic -->
                         <button type="button" id="btn-modal-mic" onclick="toggleModalMic()" class="btn-primary" style="width: 100%; background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); padding: 0.65rem 1rem; border-radius: 9px; font-weight: 700; font-size: 0.92rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
@@ -446,6 +464,126 @@
             </div>
 
 
+        </div>
+    </div>
+
+    <!-- MODAL SAISIE MANUELLE -->
+    <div id="manual-form-modal" class="modal-voice-overlay" style="display: none;">
+        <div class="modal-voice-content" style="max-width: 900px; padding: 0 0 2rem 0; background: var(--bg-card); border-radius: 16px; margin: 2rem auto; min-height: auto; border: 1px solid var(--border-glass); box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 2rem; border-bottom: 1px solid var(--border-glass); background: var(--bg-primary); border-top-left-radius: 16px; border-top-right-radius: 16px;">
+                <div>
+                    <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: #3b82f6; letter-spacing: 0.5px;">Saisie Manuelle de Fiche</span>
+                    <h2 id="manual-modal-title" style="font-size: 1.35rem; font-weight: 800; color: var(--text-primary); margin-top: 0.15rem;">Fiche d'Orientation — Saisie Manuelle</h2>
+                </div>
+                <button type="button" onclick="closeManualFormModal()" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 10px; padding: 0.5rem 1rem; font-size: 0.88rem; font-weight: 700; cursor: pointer;">
+                    ✕ Fermer
+                </button>
+            </div>
+
+            <form id="manual-fiche-form" onsubmit="submitManualFormModal(event)" style="padding: 1.5rem 2rem; display: flex; flex-direction: column; gap: 1.25rem;">
+                
+                <div style="width: 100%;">
+                    <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">RATTACHER AU DOSSIER PATIENT :</label>
+                    <select id="manual-dossier-select" style="width: 100%; padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--border-glass); background: var(--bg-primary); color: var(--text-primary); font-size: 0.9rem; font-weight: 600;">
+                        <option value="new">-- Créer un nouveau dossier patient --</option>
+                    </select>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <label class="vform-label">Nom d'usage *</label>
+                        <input type="text" id="mform-nom" class="vform-input" placeholder="ex: DUPONT" required>
+                    </div>
+                    <div>
+                        <label class="vform-label">Prénom *</label>
+                        <input type="text" id="mform-prenom" class="vform-input" placeholder="ex: Marie" required>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <label class="vform-label">Date de naissance / Âge</label>
+                        <input type="text" id="mform-dob" class="vform-input" placeholder="ex: 14/05/1942 ou 82 ans">
+                    </div>
+                    <div>
+                        <label class="vform-label">Sexe</label>
+                        <select id="mform-sexe" class="vform-input">
+                            <option value="">Non spécifié</option>
+                            <option value="F">Féminin (F)</option>
+                            <option value="M">Masculin (M)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="vform-label">Téléphone</label>
+                        <input type="text" id="mform-tel" class="vform-input" placeholder="ex: 06 12 34 56 78">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
+                    <div>
+                        <label class="vform-label">Adresse Domicile</label>
+                        <input type="text" id="mform-adresse" class="vform-input" placeholder="ex: 14 Rue des Lampions">
+                    </div>
+                    <div>
+                        <label class="vform-label">Ville / Commune</label>
+                        <input type="text" id="mform-ville" class="vform-input" placeholder="ex: La Seyne-sur-Mer">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <label class="vform-label">GIR</label>
+                        <select id="mform-gir" class="vform-input">
+                            <option value="">Non évalué</option>
+                            <option value="GIR 1">GIR 1</option>
+                            <option value="GIR 2">GIR 2</option>
+                            <option value="GIR 3">GIR 3</option>
+                            <option value="GIR 4">GIR 4</option>
+                            <option value="GIR 5">GIR 5</option>
+                            <option value="GIR 6">GIR 6</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="vform-label">APA</label>
+                        <select id="mform-apa" class="vform-input">
+                            <option value="">Inconnu</option>
+                            <option value="Oui">Oui</option>
+                            <option value="Non">Non</option>
+                            <option value="En cours">En cours de demande</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="vform-label">Médecin Traitant</label>
+                        <input type="text" id="mform-medecin" class="vform-input" placeholder="ex: Dr Martin">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <label class="vform-label">Service Demandeur / Émetteur</label>
+                        <input type="text" id="mform-emetteur" class="vform-input" placeholder="ex: CCAS La Seyne">
+                    </div>
+                    <div>
+                        <label class="vform-label">Proche Aidant Principal</label>
+                        <input type="text" id="mform-aidant" class="vform-input" placeholder="ex: Sophie DUPONT (Fille) - 06 98 76 54 32">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="vform-label">Motif & Description de la situation *</label>
+                    <textarea id="mform-motif" class="vform-input" style="height: 100px; resize: vertical;" placeholder="Décrivez la situation, le motif de l'orientation et les besoins identifiés..." required></textarea>
+                </div>
+
+                <div id="manual-status-badge" style="display: none; font-size: 0.88rem; font-weight: 700; text-align: center;"></div>
+
+                <button type="submit" class="btn-primary" style="width: 100%; padding: 0.85rem; font-size: 1rem; font-weight: 800; background: linear-gradient(135deg, #3b82f6, #1d4ed8); border: none; border-radius: 10px; cursor: pointer; color: white;">
+                    📄 Valider, enregistrer au dossier & télécharger la fiche PDF
+                </button>
+
+                <div id="manual-redirect-container" style="display: none; text-align: center; margin-top: 0.5rem;"></div>
+
+            </form>
         </div>
     </div>
 
@@ -611,7 +749,32 @@
             ]
         };
 
+        async function loadFichesDossierSelect() {
+            try {
+                const activeUserJson = localStorage.getItem('active_user');
+                const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
+                const creatorParam = activeUser ? `?createur=${encodeURIComponent(activeUser.name)}` : '';
+                const res = await fetch(`/api/dossiers/dropdown-list${creatorParam}`);
+                if (res.ok) {
+                    const list = await res.json();
+                    const select = document.getElementById('fiches-dossier-select');
+                    if (select) {
+                        select.innerHTML = '<option value="new">-- Créer un nouveau dossier patient --</option>';
+                        list.forEach(d => {
+                            const opt = document.createElement('option');
+                            opt.value = d.dossier_id;
+                            opt.textContent = d.display_label;
+                            select.appendChild(opt);
+                        });
+                    }
+                }
+            } catch (e) {
+                console.error("Erreur chargement dossiers fiches", e);
+            }
+        }
+
         function openVoiceFormModal(structureName, pdfEndpoint, pdfViergeUrl) {
+            loadFichesDossierSelect();
             activeStructureName = structureName;
             activePdfEndpoint = pdfEndpoint;
             activePdfViergeUrl = pdfViergeUrl || '';
@@ -993,13 +1156,26 @@
                 badge.textContent = `Remplissage de la fiche en cours...`;
 
                 if (activePdfEndpoint) {
+                    const activeUserJson = localStorage.getItem('active_user');
+                    const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
+                    const creatorName = activeUser ? activeUser.name : 'Anonyme';
+                    const selectEl = document.getElementById('fiches-dossier-select');
+                    const selectedDossierId = selectEl ? selectEl.value : 'new';
+
                     const resPdf = await fetch(activePdfEndpoint, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ text: text })
+                        body: JSON.stringify({ text: text, createur: creatorName, dossier_id: selectedDossierId })
                     });
 
                     if (resPdf.ok) {
+                        const newDossierId = resPdf.headers.get('X-Dossier-ID');
+                        if (newDossierId && selectedDossierId === 'new') {
+                            alert(`Nouveau dossier patient #${newDossierId} créé automatiquement pour cette fiche.`);
+                            await loadFichesDossierSelect();
+                            document.getElementById('fiches-dossier-select').value = newDossierId;
+                        }
+
                         const blob = await resPdf.blob();
                         const pdfUrl = window.URL.createObjectURL(blob);
                         
@@ -1049,13 +1225,26 @@
                 return;
             }
             try {
+                const activeUserJson = localStorage.getItem('active_user');
+                const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
+                const creatorName = activeUser ? activeUser.name : 'Anonyme';
+                const selectEl = document.getElementById('fiches-dossier-select');
+                const selectedDossierId = selectEl ? selectEl.value : 'new';
+
                 const res = await fetch(activePdfEndpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text: text })
+                    body: JSON.stringify({ text: text, createur: creatorName, dossier_id: selectedDossierId })
                 });
 
                 if (res.ok) {
+                    const newDossierId = res.headers.get('X-Dossier-ID');
+                    if (newDossierId && selectedDossierId === 'new') {
+                        alert(`Nouveau dossier patient #${newDossierId} créé automatiquement pour cette fiche.`);
+                        await loadFichesDossierSelect();
+                        document.getElementById('fiches-dossier-select').value = newDossierId;
+                    }
+
                     const blob = await res.blob();
                     const url = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');
@@ -1071,6 +1260,139 @@
             } catch(e) {
                 console.error("Erreur PDF:", e);
                 alert("Erreur lors du téléchargement du PDF.");
+            }
+        }
+
+        // ==========================================
+        // GESTION DU MODAL SAISIE MANUELLE
+        // ==========================================
+        let activeManualStructureName = '';
+        let activeManualPdfEndpoint = '';
+
+        async function loadManualDossierSelect() {
+            try {
+                const activeUserJson = localStorage.getItem('active_user');
+                const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
+                const creatorParam = activeUser ? `?createur=${encodeURIComponent(activeUser.name)}` : '';
+                const res = await fetch(`/api/dossiers/dropdown-list${creatorParam}`);
+                if (res.ok) {
+                    const list = await res.json();
+                    const select = document.getElementById('manual-dossier-select');
+                    if (select) {
+                        select.innerHTML = '<option value="new">-- Créer un nouveau dossier patient --</option>';
+                        list.forEach(d => {
+                            const opt = document.createElement('option');
+                            opt.value = d.dossier_id;
+                            opt.textContent = d.display_label;
+                            select.appendChild(opt);
+                        });
+                    }
+                }
+            } catch (e) {
+                console.error("Erreur chargement dossiers fiches manuelle", e);
+            }
+        }
+
+        function openManualFormModal(structureName, pdfEndpoint, pdfViergeUrl) {
+            activeManualStructureName = structureName;
+            activeManualPdfEndpoint = pdfEndpoint;
+
+            loadManualDossierSelect();
+
+            const titleEl = document.getElementById('manual-modal-title');
+            if (titleEl) titleEl.textContent = `Fiche d'Orientation ${structureName} — Saisie Manuelle`;
+
+            document.getElementById('manual-fiche-form').reset();
+            document.getElementById('manual-status-badge').style.display = 'none';
+            document.getElementById('manual-redirect-container').style.display = 'none';
+            document.getElementById('manual-redirect-container').innerHTML = '';
+
+            const modal = document.getElementById('manual-form-modal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeManualFormModal() {
+            const modal = document.getElementById('manual-form-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        async function submitManualFormModal(event) {
+            event.preventDefault();
+            if (!activeManualPdfEndpoint) return;
+
+            const nom = document.getElementById('mform-nom').value.trim();
+            const prenom = document.getElementById('mform-prenom').value.trim();
+            const dob = document.getElementById('mform-dob').value.trim();
+            const sexe = document.getElementById('mform-sexe').value;
+            const tel = document.getElementById('mform-tel').value.trim();
+            const adresse = document.getElementById('mform-adresse').value.trim();
+            const ville = document.getElementById('mform-ville').value.trim();
+            const gir = document.getElementById('mform-gir').value;
+            const apa = document.getElementById('mform-apa').value;
+            const medecin = document.getElementById('mform-medecin').value.trim();
+            const emetteur = document.getElementById('mform-emetteur').value.trim();
+            const aidant = document.getElementById('mform-aidant').value.trim();
+            const motif = document.getElementById('mform-motif').value.trim();
+
+            let textNarrative = `Fiche d'orientation pour ${sexe === 'F' ? 'Mme' : (sexe === 'M' ? 'M.' : '')} ${prenom} ${nom}`.trim();
+            if (dob) textNarrative += `, naissance/âge: ${dob}`;
+            if (adresse || ville) textNarrative += `. Réside: ${adresse} ${ville}`.trim();
+            if (tel) textNarrative += `. Téléphone: ${tel}`;
+            if (gir) textNarrative += `. ${gir}`;
+            if (apa) textNarrative += `. APA: ${apa}`;
+            if (medecin) textNarrative += `. Médecin traitant: ${medecin}`;
+            if (emetteur) textNarrative += `. Service demandeur: ${emetteur}`;
+            if (aidant) textNarrative += `. Proche aidant: ${aidant}`;
+            if (motif) textNarrative += `. Motif et faits: ${motif}`;
+
+            const badge = document.getElementById('manual-status-badge');
+            badge.style.display = 'block';
+            badge.style.color = '#3b82f6';
+            badge.textContent = "Génération de la fiche PDF et enregistrement en cours...";
+
+            try {
+                const activeUserJson = localStorage.getItem('active_user');
+                const activeUser = activeUserJson ? JSON.parse(activeUserJson) : null;
+                const creatorName = activeUser ? activeUser.name : 'Anonyme';
+                const selectEl = document.getElementById('manual-dossier-select');
+                const selectedDossierId = selectEl ? selectEl.value : 'new';
+
+                const res = await fetch(activeManualPdfEndpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: textNarrative, createur: creatorName, dossier_id: selectedDossierId })
+                });
+
+                if (res.ok) {
+                    const finalDossierId = res.headers.get('X-Dossier-ID') || selectedDossierId;
+                    
+                    const blob = await res.blob();
+                    const pdfUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = pdfUrl;
+                    a.download = `Fiche_${activeManualStructureName.replace(/\s+/g, '_')}_Manuelle.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+
+                    badge.style.color = '#10b981';
+                    badge.textContent = `Fiche d'orientation générée et enregistrée avec succès !`;
+
+                    const redirectBox = document.getElementById('manual-redirect-container');
+                    redirectBox.style.display = 'block';
+                    redirectBox.innerHTML = `
+                        <a href="/dossier/${finalDossierId}" class="btn-primary" style="display: inline-flex; align-items: center; gap: 0.5rem; background: #10b981; color: white; padding: 0.75rem 1.25rem; border-radius: 9px; text-decoration: none; font-weight: 700; margin-top: 0.5rem;">
+                            📁 Accéder au dossier patient (#${finalDossierId})
+                        </a>
+                    `;
+                } else {
+                    badge.style.color = '#ef4444';
+                    badge.textContent = "Erreur lors de la génération de la fiche PDF.";
+                }
+            } catch(e) {
+                console.error("Erreur saisie manuelle:", e);
+                badge.style.color = '#ef4444';
+                badge.textContent = "Erreur lors du traitement de la saisie manuelle.";
             }
         }
 
@@ -1102,6 +1424,41 @@
             dropdownMenu.classList.toggle('hidden');
         });
         document.addEventListener('click', () => dropdownMenu.classList.add('hidden'));
+
+        // AUTO-OPEN MODAL APRES ORIENTATION
+        document.addEventListener('DOMContentLoaded', () => {
+            const pendingText = sessionStorage.getItem('pending_fiche_text');
+            const pendingDossierId = sessionStorage.getItem('pending_fiche_dossier_id');
+            const params = new URLSearchParams(window.location.search);
+            const structParam = params.get('structure');
+            const autoParam = params.get('auto');
+
+            if (pendingText || (structParam && autoParam)) {
+                const text = pendingText || '';
+                sessionStorage.removeItem('pending_fiche_text');
+                sessionStorage.removeItem('pending_fiche_dossier_id');
+
+                const structMap = {
+                    'DAC Var Ouest': { endpoint: '/api/orientation/dac/generate_pdf', template: '/static/fiche_dac_vierge.pdf' },
+                    'CLIC La Seyne': { endpoint: '/api/orientation/clic/generate_pdf', template: '/static/fiche_clic_LaSeyne_vierge.pdf' },
+                    'CLIC Toulon': { endpoint: '/api/orientation/clic_toulon/generate_pdf', template: '/static/fiche_clic_Toulon.pdf' },
+                    'CLIC Provence Verte': { endpoint: '/api/orientation/clic_provence_verte/generate_pdf', template: '/static/fiche_clic_ProvenceVerte.pdf' },
+                    'CLIC Hadage': { endpoint: '/api/orientation/clic_hadage/generate_pdf', template: '/static/fiche_clic_Hadage.pdf' }
+                };
+
+                const structName = structParam || 'DAC Var Ouest';
+                const cfg = structMap[structName] || structMap['DAC Var Ouest'];
+
+                openVoiceFormModal(structName, cfg.endpoint, cfg.template);
+                if (text) {
+                    const textEl = document.getElementById('modal-voice-transcript');
+                    if (textEl) textEl.value = text;
+                    setTimeout(() => {
+                        analyzeAndFillModalForm();
+                    }, 200);
+                }
+            }
+        });
     </script>
 </body>
 </html>
