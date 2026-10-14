@@ -211,7 +211,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ text: text, createur: creatorName, dossier_id: selectedDossierId })
+                body: JSON.stringify({ 
+                    text: text, 
+                    createur: creatorName, 
+                    dossier_id: selectedDossierId,
+                    matrix: window.selectedRulesMatrix || undefined
+                })
             });
 
             if (!response.ok) {
@@ -657,30 +662,63 @@ document.addEventListener('DOMContentLoaded', () => {
         const scores = schemaPivot["evaluation.moteur_points.scores"] || {};
         
         // 1. Rendu des besoins
+        const activeMatrixLabel = schemaPivot["evaluation.moteur_points.active_matrix_label"];
+        if (activeMatrixLabel) {
+            const matrixBanner = document.createElement('div');
+            matrixBanner.style.fontSize = '0.78rem';
+            matrixBanner.style.color = 'var(--text-secondary)';
+            matrixBanner.style.marginBottom = '0.6rem';
+            matrixBanner.style.padding = '0.35rem 0.65rem';
+            matrixBanner.style.background = 'rgba(59, 130, 246, 0.08)';
+            matrixBanner.style.border = '1px solid rgba(59, 130, 246, 0.2)';
+            matrixBanner.style.borderRadius = '6px';
+            matrixBanner.style.display = 'flex';
+            matrixBanner.style.alignItems = 'center';
+            matrixBanner.style.gap = '6px';
+            matrixBanner.innerHTML = `<span>⚙️</span> <span>Référentiel appliqué : <strong style="color: var(--accent-blue);">${activeMatrixLabel}</strong></span>`;
+            needsContainer.appendChild(matrixBanner);
+        }
+
         if (priorisations.length > 0) {
-            needsContainer.innerHTML = `
-                <div style="font-size: 0.88rem; color: #f87171; font-weight: 600;">
-                    ⚡ Garde-fou prioritaire déclenché pour : ${priorisations.join(', ')} (Calcul par points court-circuité)
-                </div>
-            `;
+            const prioDiv = document.createElement('div');
+            prioDiv.style.fontSize = '0.88rem';
+            prioDiv.style.color = '#f87171';
+            prioDiv.style.fontWeight = '600';
+            prioDiv.textContent = `⚡ Garde-fou prioritaire déclenché pour : ${priorisations.join(', ')} (Calcul par points court-circuité)`;
+            needsContainer.appendChild(prioDiv);
         } else if (besoins.length === 0) {
-            needsContainer.innerHTML = `
-                <div style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">
-                    Aucun besoin identifié dans le récit pour le calcul des points.
-                </div>
-            `;
+            const emptyDiv = document.createElement('div');
+            emptyDiv.style.fontSize = '0.85rem';
+            emptyDiv.style.color = 'var(--text-muted)';
+            emptyDiv.style.fontStyle = 'italic';
+            emptyDiv.textContent = "Aucun besoin identifié dans le récit pour le calcul des points.";
+            needsContainer.appendChild(emptyDiv);
         } else {
             besoins.forEach(b => {
                 const item = document.createElement('div');
-                item.style.padding = '0.5rem';
+                item.style.padding = '0.6rem 0.75rem';
                 item.style.background = 'rgba(255, 255, 255, 0.02)';
                 item.style.border = '1px solid var(--border-glass)';
                 item.style.borderRadius = '6px';
                 item.style.fontSize = '0.85rem';
+                item.style.marginBottom = '0.45rem';
+
+                let cassiTagsHtml = '';
+                if (b.cassi_problematique || b.cassi_besoin || b.cassi_prestation) {
+                    const probBes = [b.cassi_problematique, b.cassi_besoin].filter(Boolean).join(' › ');
+                    cassiTagsHtml = `
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; margin: 4px 0 6px 0;">
+                            ${probBes ? `<span style="font-size: 0.72rem; background: rgba(59, 130, 246, 0.12); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 4px; padding: 2px 6px; font-weight: 500;">CASSI : ${probBes}</span>` : ''}
+                            ${b.cassi_prestation ? `<span style="font-size: 0.72rem; background: rgba(16, 185, 129, 0.12); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 4px; padding: 2px 6px; font-weight: 500;">Prestation : ${b.cassi_prestation}</span>` : ''}
+                        </div>
+                    `;
+                }
+
                 item.innerHTML = `
                     <div style="font-weight: 600; color: var(--text-primary);">${b.detaille}</div>
+                    ${cassiTagsHtml}
                     <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">
-                        Catégorie : ${b.categorie} | <span style="color: var(--accent-blue);">+1 pt</span> pour : ${b.structures_cochees.join(', ')}
+                        Catégorie : ${b.categorie} | <span style="color: var(--accent-blue); font-weight: 600;">+1 pt</span> pour : ${b.structures_cochees.join(', ')}
                     </div>
                 `;
                 needsContainer.appendChild(item);
@@ -1514,6 +1552,86 @@ function cleanFrenchVoiceTranscript(text) {
     }
 };
 
+// ==========================================
+// GESTION DU RÉFÉRENTIEL DE RÈGLES (CASSI vs LEGACY)
+// ==========================================
+window.selectedRulesMatrix = 'cassi';
+
+function updateMatrixButtonsUI(activeId, matricesInfo) {
+    window.selectedRulesMatrix = activeId;
+    const btnCassi = document.getElementById('btn-matrix-cassi');
+    const btnLegacy = document.getElementById('btn-matrix-legacy');
+    const badge = document.getElementById('matrix-info-badge');
+
+    if (btnCassi && btnLegacy) {
+        if (activeId === 'cassi') {
+            btnCassi.style.background = '#3b82f6';
+            btnCassi.style.color = '#ffffff';
+            btnCassi.classList.add('active');
+
+            btnLegacy.style.background = 'transparent';
+            btnLegacy.style.color = 'var(--text-secondary)';
+            btnLegacy.classList.remove('active');
+        } else {
+            btnLegacy.style.background = '#3b82f6';
+            btnLegacy.style.color = '#ffffff';
+            btnLegacy.classList.add('active');
+
+            btnCassi.style.background = 'transparent';
+            btnCassi.style.color = 'var(--text-secondary)';
+            btnCassi.classList.remove('active');
+        }
+    }
+
+    if (badge) {
+        if (matricesInfo && Array.isArray(matricesInfo)) {
+            const activeMeta = matricesInfo.find(m => m.id === activeId);
+            if (activeMeta) {
+                badge.textContent = `Matrice active : ${activeMeta.label} (${activeMeta.rules_count} règles)`;
+                return;
+            }
+        }
+        if (activeId === 'cassi') {
+            badge.textContent = 'Matrice active : Nomenclature CASSI (Nouveau - 95 règles)';
+        } else {
+            badge.textContent = 'Matrice active : Standard ORIA (Historique - 58 règles)';
+        }
+    }
+}
+
+window.switchRulesMatrix = async function(matrixId) {
+    updateMatrixButtonsUI(matrixId);
+    try {
+        const resp = await fetch('/api/rules/switch', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ matrix: matrixId })
+        });
+        if (resp.ok) {
+            const data = await resp.json();
+            const badge = document.getElementById('matrix-info-badge');
+            if (badge && data.matrix) {
+                badge.textContent = `Matrice active : ${data.matrix.label} (${data.matrix.rules_count} règles)`;
+            }
+        }
+    } catch (e) {
+        console.warn("Erreur lors du basculement de la matrice de règles :", e);
+    }
+};
+
+async function initMatrixSelector() {
+    try {
+        const resp = await fetch('/api/rules/matrices');
+        if (resp.ok) {
+            const data = await resp.json();
+            const activeId = data.active_matrix || 'cassi';
+            updateMatrixButtonsUI(activeId, data.matrices);
+        }
+    } catch (e) {
+        console.warn("Impossible d'initialiser les matrices de règles :", e);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const voiceBtn = document.getElementById('btn-voice-toggle');
     if (voiceBtn) {
@@ -1522,4 +1640,5 @@ document.addEventListener('DOMContentLoaded', () => {
             window.toggleVoiceDictation();
         });
     }
+    initMatrixSelector();
 });

@@ -2,6 +2,7 @@
 import os
 import sys
 import json
+import asyncio
 
 # Ajout du chemin pour importer les modules du backend
 sys.path.append(os.path.join(os.getcwd(), 'backend', 'src'))

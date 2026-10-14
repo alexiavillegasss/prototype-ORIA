@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, FileResponse, Response
 from pydantic import BaseModel
@@ -76,6 +76,11 @@ class AnalyzeRequest(BaseModel):
     text: str
     createur: Optional[str] = "Anonyme"
     dossier_id: Optional[str] = None
+    matrix: Optional[str] = None  # "cassi" ou "legacy"
+
+
+class SwitchMatrixRequest(BaseModel):
+    matrix: str  # "cassi" ou "legacy"
 
 
 class ValidateRequest(BaseModel):
@@ -129,7 +134,8 @@ async def analyze(request: AnalyzeRequest):
     comid_results = scoring_engine.calculate_comid_score(extracted_data)
 
     # 3. Moteur d'orientation
-    orientation_results = orientation_engine.evaluate_orientation(extracted_data, comid_results, original_text=request.text)
+    matrix_to_use = request.matrix or orientation_engine.active_matrix_id
+    orientation_results = orientation_engine.evaluate_orientation(extracted_data, comid_results, original_text=request.text, matrix=matrix_to_use)
 
     # 4. Territorialisation (Contacts locaux)
     patient_city = extracted_data.get("usager.localisation.commune_residence")
@@ -229,6 +235,73 @@ async def analyze(request: AnalyzeRequest):
         "orientation_suggeree": orientation_with_contacts,
         "status": "analyse_terminee_en_attente_de_relecture"
     }
+
+# -----------------------------
+# RULES MATRIX SWITCH & COMPARE
+# -----------------------------
+@app.get("/api/rules/matrices")
+def get_rules_matrices():
+    """Renvoie les matrices de règles disponibles et la matrice active."""
+    matrices = orientation_engine.get_available_matrices()
+    return {
+        "active_matrix": orientation_engine.active_matrix_id,
+        "matrices": matrices,
+        "available_matrices": matrices
+    }
+
+@app.post("/api/rules/switch")
+def switch_rules_matrix(req: SwitchMatrixRequest):
+    """Bascule la matrice active du moteur d'orientation ('cassi' ou 'legacy')."""
+    try:
+        info = orientation_engine.set_matrix(req.matrix)
+        matrices = orientation_engine.get_available_matrices()
+        return {
+            "status": "success",
+            "message": f"Matrice active basculée sur : {info['label']}",
+            "active_matrix": orientation_engine.active_matrix_id,
+            "matrix": info,
+            "matrix_info": info,
+            "matrices": matrices
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/api/orientation/compare")
+async def compare_orientation_matrices(request: AnalyzeRequest):
+    """Exécute l'analyse et compare les orientations produites par la matrice CASSI vs la matrice Legacy."""
+    try:
+        extracted_data = await extractor.extract(request.text)
+        comid_results = scoring_engine.calculate_comid_score(extracted_data)
+        
+        # 1. Évaluation Legacy
+        data_legacy = extracted_data.copy()
+        res_legacy = orientation_engine.evaluate_orientation(data_legacy, comid_results, original_text=request.text, matrix="legacy")
+        patient_city = data_legacy.get("usager.localisation.commune_residence")
+        legacy_with_contacts = territory_manager.get_contacts_for_structures(res_legacy, patient_city)
+        
+        # 2. Évaluation CASSI
+        data_cassi = extracted_data.copy()
+        res_cassi = orientation_engine.evaluate_orientation(data_cassi, comid_results, original_text=request.text, matrix="cassi")
+        cassi_with_contacts = territory_manager.get_contacts_for_structures(res_cassi, patient_city)
+        
+        return {
+            "legacy": {
+                "matrix": "legacy",
+                "label": "Standard ORIA (Historique)",
+                "results": legacy_with_contacts,
+                "scores": data_legacy.get("evaluation.moteur_points.scores", {}),
+                "besoins_identifies": data_legacy.get("evaluation.moteur_points.besoins_identifies", [])
+            },
+            "cassi": {
+                "matrix": "cassi",
+                "label": "Nomenclature CASSI (Nouveau & Précis)",
+                "results": cassi_with_contacts,
+                "scores": data_cassi.get("evaluation.moteur_points.scores", {}),
+                "besoins_identifies": data_cassi.get("evaluation.moteur_points.besoins_identifies", [])
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # -----------------------------

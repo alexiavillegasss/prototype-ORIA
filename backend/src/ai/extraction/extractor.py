@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from infrastructure.llm_client import OllamaClient
 from ai.security.anonymizer import Anonymizer
 
@@ -24,10 +25,19 @@ class SignalExtractor:
         try:
             import pandas as pd
             rules_dir = os.path.dirname(self.comid_path)
-            excel_path = os.path.join(rules_dir, "tableau_oria.xlsx")
-            df = pd.read_excel(excel_path, sheet_name="02_Besoins_x_structures (2)")
-            needs = df["Besoin détaillé"].dropna().unique().tolist()
-            return needs
+            all_needs = set()
+            for filename in ["tableauORIA - NOMENCLATURE-CASSI.xlsx", "tableau_oria.xlsx"]:
+                excel_path = os.path.join(rules_dir, filename)
+                if os.path.exists(excel_path):
+                    xl = pd.ExcelFile(excel_path)
+                    sname = next((s for s in xl.sheet_names if "02" in s or "besoin" in s.lower()), xl.sheet_names[0])
+                    df = pd.read_excel(excel_path, sheet_name=sname)
+                    df.columns = [str(c).strip() for c in df.columns]
+                    col = next((c for c in df.columns if "besoin" in c.lower() and ("dét" in c.lower() or "det" in c.lower())), None)
+                    if col and col in df.columns:
+                        for val in df[col].dropna().unique():
+                            all_needs.add(str(val).strip())
+            return list(all_needs)
         except Exception as e:
             print(f"Error loading needs from excel: {e}")
             return []
@@ -220,7 +230,6 @@ JSON attendu :
         # Regex age extraction post-processing
         age = raw_data.get("age")
         if age is None or str(age).lower() in ["null", "none", "inconnu", "nan"]:
-            import re
             age_match = re.search(r'(?:âgé\s+de\s+|âgée\s+de\s+|de\s+)?(\d{1,3})\s*ans', text, re.IGNORECASE)
             if age_match:
                 age = int(age_match.group(1))
@@ -228,7 +237,6 @@ JSON attendu :
         # Regex city extraction post-processing
         ville = raw_data.get("ville")
         if ville is None or str(ville).lower() in ["null", "none", "inconnu", "nan"]:
-            import re
             cities = ["toulon", "la seyne-sur-mer", "la seyne", "six-fours", "six fours", "bandol", "hyères", "hyeres", "la valette", "la valette-du-var", "sanary-sur-mer", "sanary", "la garde", "ollioules", "le pradet", "carqueiranne"]
             for city in cities:
                 if re.search(r'\b' + re.escape(city) + r'\b', text, re.IGNORECASE):
@@ -291,12 +299,15 @@ JSON attendu :
         # Mapping du besoin principal Excel vers le motif technique correspondant
         besoin_to_motif = {
             "Danger vital imminent ou agression physique active avec demande de secours d'urgence": "secours_urgence",
+            "Danger vital imminent ou agression physique active avec demande de secours d’urgence": "secours_urgence",
             "Violences physiques actives ou menacées": "secours_urgence",
             "Sécurité du domicile problématique, critique ou danger imminent": "secours_urgence",
             "Recherche de médecin traitant": "recherche_medecin",
             "Médecin traitant ne fait pas de visite à domicile": "recherche_medecin",
             "Mise en place d'aide à domicile": "maintien_a_domicile",
+            "Mise en place d’aide à domicile": "maintien_a_domicile",
             "Besoin de mise en place ou d'adaptation des aides à domicile": "maintien_a_domicile",
+            "Besoin de mise en place ou d’adaptation des aides à domicile": "maintien_a_domicile",
             "Portage de repas": "maintien_a_domicile",
             "Mise en place de Téléalarme": "maintien_a_domicile",
             "Retour à domicile après une hospitalisation": "sortie_hospitalisation",
@@ -307,15 +318,27 @@ JSON attendu :
             "rechercher un logement": "recherche_logement",
             "Aide alimentaire": "aide_alimentaire",
             "Besoin d'aide pour le paiement des factures": "aide_alimentaire",
+            "Besoin d’aide pour le paiement des factures": "aide_alimentaire",
             "Besoin d'évaluation d'une aide financière ponctuelle": "aide_alimentaire",
+            "Besoin d’évaluation d’une aide financière ponctuelle": "aide_alimentaire",
             "Secours d'urgence alimentaire ou financier": "aide_alimentaire",
+            "Secours d’urgence alimentaire ou financier": "aide_alimentaire",
             "Aide financière": "aide_alimentaire",
             "Renoncement aux soins": "refus_de_soins",
             "Accès aux soins": "refus_de_soins",
+            "Alternative à l'EHPAD": "maintien_a_domicile",
+            "Alternative à l’EHPAD": "maintien_a_domicile",
+            "Relais de l'aidant": "maintien_a_domicile",
+            "Relais de l’aidant": "maintien_a_domicile",
             "indetermine": "indetermine"
         }
         
-        motif_principal = besoin_to_motif.get(besoin_principal, "indetermine")
+        motif_principal = besoin_to_motif.get(besoin_principal)
+        if not motif_principal and besoin_principal:
+            norm_bp = str(besoin_principal).replace("’", "'").strip()
+            motif_principal = next((v for k, v in besoin_to_motif.items() if k.replace("’", "'").strip() == norm_bp), "indetermine")
+        if not motif_principal:
+            motif_principal = "indetermine"
 
         nom_usager = raw_data.get("nom_usager") or ""
         prenom_usager = raw_data.get("prenom_usager") or ""
@@ -328,9 +351,40 @@ JSON attendu :
         # Validation anti-hallucination de la suspicion de malveillance
         malveillance_val = str(raw_data.get("malveillance", "aucune")).lower()
         if malveillance_val != "aucune":
-            has_violence_kw = re.search(r'\b(violence|violences|maltraitance|frappe|frapper|bleus?|coups?|menace|agression|agressions|abus|spoliation|vol|volé|vols|privation|danger)\b', text, re.IGNORECASE)
+            has_violence_kw = re.search(
+                r'\b(violence|violences|maltraitance|frappe|frapper|bleus?|coups?|menace|menaces|agression|agressions|abus|spoliation|vol|volé|voler|vols|privation|danger|dérobe|extorsion|chantage|profite|escroquerie|signalement|protéger|proteger)\b|'
+                r'pren\w+\s+(?:de\s+l[\'’]argent|son\s+argent|ses\s+sous|de\s+l[\'’]or)|'
+                r'prend\s+(?:de\s+l[\'’]argent|son\s+argent|ses\s+sous)',
+                text, re.IGNORECASE
+            )
             if not has_violence_kw:
                 malveillance_val = "aucune"
+
+        # Validation anti-hallucination de l'état du logement
+        etat_logement_val = str(raw_data.get("etat_logement", "non_renseigne")).lower()
+        if etat_logement_val in ["diogene", "incurie", "insalubre"]:
+            has_housing_kw = re.search(
+                r'\b(diogène|diogene|incurie|insalubre|insalubrité|saleté|très sale|tres sale|dépotoir|depotoir|poubelles|odeur|urine|excréments|desinfection|désinfection|délabré|delabre|effondre|auto-réhabilitation|auto-rehabilitation)\b',
+                text, re.IGNORECASE
+            )
+            if not has_housing_kw:
+                etat_logement_val = "non_renseigne"
+
+        # Détection automatique de la profession / qualité de l'adresseur (locuteur)
+        speaker_role = None
+        speaker_patterns = [
+            (r'\b(?:bonjour\s*,?\s*)?je suis (?:le |la |un |une )?(?:masseur-)?(?:kinésithérapeute|kinesitherapeute|kiné|kine)\b', "kinésithérapeute"),
+            (r'\b(?:bonjour\s*,?\s*)?je suis (?:le |la |un |une )?(?:infirmière libérale|infirmiere liberale|infirmier libéral|infirmier liberal|infirmière|infirmiere|infirmier|idel?)\b', "infirmier"),
+            (r'\b(?:bonjour\s*,?\s*)?je suis (?:le |la |un |une )?(?:médecin traitant|medecin traitant|médecin|medecin|mt|docteur|neurologue|gériatre|geriatre|psychiatre)\b', "médecin"),
+            (r'\b(?:bonjour\s*,?\s*)?je suis (?:le |la |un |une )?(?:assistante? sociale?|as|travailleur social|travailleuse sociale)\b', "assistante_sociale"),
+            (r'\b(?:bonjour\s*,?\s*)?je suis (?:le |la )?(?:fille|fils|soeur|sœur|frère|frere|conjoint|épouse|epouse|mari|époux|epoux|petite-fille|petit-fils|neveu|nièce|niece)\b', "famille"),
+            (r'\b(?:bonjour\s*,?\s*)?je suis (?:le |la |un |une )?(?:voisin|voisine|ami|amie|proche)\b', "voisin"),
+            (r'\b(?:bonjour\s*,?\s*)?je suis (?:l\'|l’)?(?:auxiliaire de vie|aide à domicile|aide a domicile)\b', "aide_a_domicile")
+        ]
+        for pat, s_title in speaker_patterns:
+            if re.search(pat, text, re.IGNORECASE):
+                speaker_role = s_title
+                break
 
         mapped = {
             "usager.identite.nom": nom_usager,
@@ -345,12 +399,13 @@ JSON attendu :
             "vulnerabilites.sante.suivi_medical.medecin_traitant": raw_data.get("medecin_traitant", "non_mentionne"),
             "usager.situation_actuelle.suspicion_malveillance": malveillance_val,
             "adresseur.degre_urgence_percu": raw_data.get("urgence", "faible"),
+            "adresseur.profession_ou_statut": speaker_role,
             "vulnerabilites.sante.hospitalisation.statut": raw_data.get("hospitalisation", "aucun"),
             "demande.motif_principal": motif_principal,
             "demande.besoin_principal": besoin_principal,
             "vulnerabilites.sante.professionnels_domicile": str(raw_data.get("professionnels_domicile", "inconnu")).lower(),
             "usager.cadre_de_vie.aidant_regulier": str(raw_data.get("aidant_regulier", "inconnu")).lower(),
-            "usager.cadre_de_vie.etat_logement": raw_data.get("etat_logement", "non_renseigne"),
+            "usager.cadre_de_vie.etat_logement": etat_logement_val,
             "demande.proposition_mail": raw_data.get("proposition_mail", ""),
             "demande.resume_structuré": raw_data.get("raisonnement_expert", "")
         }
