@@ -13,9 +13,24 @@ class OrientationEngine:
             self.rules = {}
             print(f"Warning: could not load orientation_rules.json: {e}")
             
-        # Déduit le chemin vers le fichier Excel (dans le même dossier rules)
-        rules_dir = os.path.dirname(rules_path)
-        self.excel_path = os.path.join(rules_dir, "tableau_oria.xlsx")
+        # Déduit le chemin vers les fichiers de règles Excel (dans le même dossier rules)
+        self.rules_dir = os.path.dirname(rules_path)
+        self.available_matrices = {
+            "cassi": {
+                "id": "cassi",
+                "filename": "tableauORIA - NOMENCLATURE-CASSI.xlsx",
+                "label": "Nomenclature CASSI (Nouveau & Précis)",
+                "description": "Matrice enrichie avec la nomenclature nationale CASSI (95 besoins & prestations)"
+            },
+            "legacy": {
+                "id": "legacy",
+                "filename": "tableau_oria.xlsx",
+                "label": "Standard ORIA (Historique)",
+                "description": "Matrice initiale originale d'ORIA (58 besoins regroupés)"
+            }
+        }
+        self.active_matrix_id = "cassi"
+        self.excel_path = os.path.join(self.rules_dir, self.available_matrices[self.active_matrix_id]["filename"])
         
         # Mappings des structures de la feuille 1 vers les identifiants techniques
         self.structure_mapping = {
@@ -68,7 +83,7 @@ class OrientationEngine:
         
         # Mappings des critères de la feuille 1 vers les conditions techniques
         self.condition_map = {
-            "La situation est critique et la demande concerne un secours d’urgence immédiat.": 
+            "La situation est critique et la demande concerne un secours d'urgence immédiat.": 
                 lambda d, c, text_lower: d.get("adresseur.degre_urgence_percu") == "critique" and d.get("demande.motif_principal") == "secours_urgence",
             "Violences sexuelles": 
                 lambda d, c, text_lower: d.get("usager.situation_actuelle.suspicion_malveillance") == "violences_sexuelles",
@@ -77,18 +92,20 @@ class OrientationEngine:
             "Violences psychologiques": 
                 lambda d, c, text_lower: d.get("usager.situation_actuelle.suspicion_malveillance") == "violences_psychologiques",
             "Spoliation financière": 
-                lambda d, c, text_lower: d.get("usager.situation_actuelle.suspicion_malveillance") == "spoliation_financiere",
+                lambda d, c, text_lower: d.get("usager.situation_actuelle.suspicion_malveillance") in ["spoliation_financiere", "abus_de_confiance_ou_faiblesse"] or any(k in text_lower for k in ["prenne de l'argent", "prend de l'argent", "vol d'argent", "voler de l'argent", "spoliation", "dérobe", "extorsion"]),
             "Négligence": 
                 lambda d, c, text_lower: d.get("usager.situation_actuelle.suspicion_malveillance") == "negligence",
+            "Négligence professionnelle":
+                lambda d, c, text_lower: d.get("usager.situation_actuelle.suspicion_malveillance") in ["negligence", "maltraitance_institutionnelle"],
             "Abus de confiance ou abus de faiblesse": 
-                lambda d, c, text_lower: d.get("usager.situation_actuelle.suspicion_malveillance") == "abus_de_confiance_ou_faiblesse",
+                lambda d, c, text_lower: d.get("usager.situation_actuelle.suspicion_malveillance") in ["abus_de_confiance_ou_faiblesse", "spoliation_financiere"] or "abus de faiblesse" in text_lower or "abus de confiance" in text_lower,
             "Privation de droits": 
                 lambda d, c, text_lower: d.get("usager.situation_actuelle.suspicion_malveillance") == "privation_de_droits",
             "Maltraitance institutioinnelle": 
                 lambda d, c, text_lower: d.get("usager.situation_actuelle.suspicion_malveillance") == "maltraitance_institutionnelle",
-            "Sécurité du domicile problématique critique ou danger iminnent ": 
+            "Sécurité du domicile problématique critique ou danger iminnent": 
                 lambda d, c, text_lower: d.get("vulnerabilites.habitat.securite_du_domicile") in ["problematique", "critique", "danger_imminent"],
-            "Problématique non sociale ": 
+            "Problématique non sociale": 
                 lambda d, c, text_lower: not (d.get("vulnerabilites.social.precarite") in ["possible", "probable", "averee"] or d.get("evaluation.comid.precarite_financiere") is True),
             "Sortie d'hospitalisation de + de 10 jours": 
                 lambda d, c, text_lower: d.get("vulnerabilites.sante.hospitalisation.statut") != "recente",
@@ -98,93 +115,193 @@ class OrientationEngine:
                 lambda d, c, text_lower: d.get("usager.identite.age_estime") is not None and float(d.get("usager.identite.age_estime")) <= 60,
             "La personne n'a pas l'APA.": 
                 lambda d, c, text_lower: d.get("usager.situation_actuelle.APA") != "oui",
-            "La personne bénéficie déjà de l’APA.": 
+            "La personne bénéficie déjà de l'APA.": 
                 lambda d, c, text_lower: d.get("usager.situation_actuelle.APA") == "oui",
             "La personne a 60 ans ou moins et ne bénéficie pas de la PCH.": 
                 lambda d, c, text_lower: d.get("usager.identite.age_estime") is not None and float(d.get("usager.identite.age_estime")) <= 60 and d.get("usager.situation_actuelle.PCH") != "oui",
             "Médecin traitant identifié": 
-                lambda d, c, text_lower: d.get("vulnerabilites.sante.suivi_medical.medecin_traitant") == "identifie",
-            "Médecin traitant ne se déplace plus ": 
+                lambda d, c, text_lower: d.get("vulnerabilites.sante.suivi_medical.medecin_traitant") == "identifie" and not any(k in text_lower for k in ["retraite", "partir à la retraite", "plus de médecin", "cherche un médecin"]),
+            "Médecin traitant ne se déplace plus": 
                 lambda d, c, text_lower: "ne se déplace plus" in text_lower or "ne se deplace plus" in text_lower,
             "Recherche de kinésithérapeute": 
-                lambda d, c, text_lower: "kiné" in text_lower or "kine" in text_lower or "kinésithérapeute" in text_lower or "recherche de kine" in text_lower,
+                lambda d, c, text_lower: any(kw in text_lower for kw in ["cherche kiné", "cherche kinésithérapeute", "recherche kiné", "besoin de kiné", "ordonnance de kiné", "séances de kiné"]),
             "Recherche d'infirmière": 
-                lambda d, c, text_lower: "infirmier" in text_lower or "infirmière" in text_lower or "idel" in text_lower,
+                lambda d, c, text_lower: any(kw in text_lower for kw in ["cherche infirmière", "cherche infirmier", "recherche idel", "besoin d'infirmier", "soins infirmiers à domicile"]),
             "Recherche de Médecin Traitant": 
-                lambda d, c, text_lower: "médecin" in text_lower or "medecin" in text_lower or "traitant" in text_lower or "recherche médecin" in text_lower,
+                lambda d, c, text_lower: any(kw in text_lower for kw in ["cherche médecin", "cherche medecin", "recherche médecin", "recherche medecin", "plus de médecin", "sans médecin", "retraite du mt", "départ à la retraite"]),
             "Évaluation médicale": 
                 lambda d, c, text_lower: "médical" in text_lower or "medical" in text_lower or "médecin" in text_lower or "medecin" in text_lower
         }
-        
+
         # Charge les règles et la matrice de besoins depuis le fichier Excel
         self._load_excel_rules()
 
+    def _get_condition_checker(self, detail_name: str):
+        if not detail_name:
+            return None
+        norm_target = str(detail_name).replace("’", "'").strip().lower()
+        for k, checker in self.condition_map.items():
+            if k.replace("’", "'").strip().lower() == norm_target:
+                return checker
+        return None
+
+    def set_matrix(self, matrix_id: str):
+        """Bascule vers une matrice spécifique ('cassi' ou 'legacy') et recharge les règles."""
+        if matrix_id not in self.available_matrices:
+            raise ValueError(f"Matrice inconnue: '{matrix_id}'. Disponibles: {list(self.available_matrices.keys())}")
+        self.active_matrix_id = matrix_id
+        self.excel_path = os.path.join(self.rules_dir, self.available_matrices[matrix_id]["filename"])
+        self._load_excel_rules()
+        return self.get_active_matrix_info()
+
+    def get_active_matrix_info(self):
+        info = self.available_matrices[self.active_matrix_id].copy()
+        info["needs_count"] = len(self.needs_mapping)
+        info["rules_count"] = len(self.prioritization_rules) + len(self.exclusion_rules)
+        return info
+
+    def get_available_matrices(self):
+        result = []
+        for m_id, m_info in self.available_matrices.items():
+            item = m_info.copy()
+            item["active"] = (m_id == self.active_matrix_id)
+            path = os.path.join(self.rules_dir, m_info["filename"])
+            item["exists"] = os.path.exists(path)
+            if m_id == self.active_matrix_id:
+                item["rules_count"] = len(self.needs_mapping)
+            else:
+                item["rules_count"] = 95 if m_id == "cassi" else 58
+            result.append(item)
+        return result
+
     def _load_excel_rules(self):
         if not os.path.exists(self.excel_path):
+            print(f"Warning: Excel rules file not found: {self.excel_path}")
             return
         self.last_excel_mtime = os.path.getmtime(self.excel_path)
-        # Charge Feuille 1: Exclusions et Garde-fous
-        df1 = pd.read_excel(self.excel_path, sheet_name="01_Critère_prio_exclu")
+        
+        # 1. Charge Feuille 1: Exclusions et Garde-fous (avec tolérance sur le nom de l'onglet)
+        try:
+            xl = pd.ExcelFile(self.excel_path)
+            sheet1_name = "01_Critère_prio_exclu"
+            if sheet1_name not in xl.sheet_names:
+                for s in xl.sheet_names:
+                    if "01" in s or "prio" in s.lower() or "critere" in s.lower() or "exclu" in s.lower():
+                        sheet1_name = s
+                        break
+            df1 = pd.read_excel(self.excel_path, sheet_name=sheet1_name)
+            df1.columns = [str(c).strip() for c in df1.columns]
+        except Exception as e:
+            print(f"Warning: could not load sheet 1 from {self.excel_path}: {e}")
+            df1 = pd.DataFrame()
         
         self.prioritization_rules = []
         self.exclusion_rules = []
         
-        for idx, row in df1.iterrows():
-            detail = row.get("Critère détaillé")
-            action = row.get("Action")
-            struct = row.get("Structure")
-            
-            if pd.isna(detail) or pd.isna(action) or pd.isna(struct):
-                continue
+        if not df1.empty:
+            for idx, row in df1.iterrows():
+                detail = row.get("Critère détaillé")
+                action = row.get("Action")
+                struct = row.get("Structure")
+                conseil = row.get("Conseils")
                 
-            detail = str(detail).strip()
-            action = str(action).strip()
-            struct = str(struct).strip()
-            
-            # Map structural codes
-            struct_code = self.structure_mapping.get(struct, struct)
-            
-            rule_item = {
-                "detail": detail,
-                "action": action,
-                "structure": struct_code,
-                "priority": 100.0 if action == "Prioritaire" else 0.0,
-                "objectif": f"Priorisé selon le critère : {detail}" if action == "Prioritaire" else f"Exclu selon le critère : {detail}"
-            }
-            
-            if action == "Prioritaire":
-                self.prioritization_rules.append(rule_item)
-            elif action == "Exclu":
-                self.exclusion_rules.append(rule_item)
+                if pd.isna(detail) or pd.isna(action) or pd.isna(struct):
+                    continue
+                    
+                detail = str(detail).strip()
+                action = str(action).strip()
+                struct = str(struct).strip()
                 
-        # Charge Feuille 2: Cartographie des Besoins
-        df2 = pd.read_excel(self.excel_path, sheet_name="02_Besoins_x_structures (2)")
+                struct_code = self.structure_mapping.get(struct, struct)
+                
+                rule_item = {
+                    "detail": detail,
+                    "action": action,
+                    "structure": struct_code,
+                    "priority": 100.0 if action == "Prioritaire" else 0.0,
+                    "objectif": f"Priorisé selon le critère : {detail}" if action == "Prioritaire" else f"Exclu selon le critère : {detail}",
+                    "conseil": str(conseil).strip() if pd.notna(conseil) and str(conseil).strip() != "nan" else ""
+                }
+                
+                if action == "Prioritaire":
+                    self.prioritization_rules.append(rule_item)
+                elif action == "Exclu":
+                    self.exclusion_rules.append(rule_item)
+                    
+        # 2. Charge Feuille 2: Cartographie des Besoins (avec détection dynamique de l'onglet et des colonnes CASSI)
+        try:
+            xl = pd.ExcelFile(self.excel_path)
+            sheet2_name = "02_Besoins_x_structures (2)"
+            if sheet2_name not in xl.sheet_names:
+                for s in xl.sheet_names:
+                    if "02" in s or "besoin" in s.lower():
+                        sheet2_name = s
+                        break
+                else:
+                    sheet2_name = xl.sheet_names[1] if len(xl.sheet_names) > 1 else xl.sheet_names[0]
+            df2 = pd.read_excel(self.excel_path, sheet_name=sheet2_name)
+            df2.columns = [str(c).strip() for c in df2.columns]
+        except Exception as e:
+            print(f"Warning: could not load sheet 2 from {self.excel_path}: {e}")
+            df2 = pd.DataFrame()
+
         self.needs_mapping = []
         self.structures = ['POLICE', 'CEV', 'SERVICE_SOCIAL_HOPITAL', 'CPTS', 'CLIC', 'CRT', 'DAC', 'UTS', 'CCAS', 'COMPAGNONS_BATISSEURS', 'PSCG_SS_APA', 'PRADO', 'MISAS', "fil d'argent", 'CONSULTATION MÉMOIRE']
         
-        for idx, row in df2.iterrows():
-            detail = row.get("Besoin détaillé")
-            if pd.isna(detail):
-                continue
-            kw = row.get("Mots-clés / critère moteur")
-            struct_proposee = row.get("Structure principale proposée")
-            categorie = row.get("Catégorie")
-            
-            struct_cochees = []
-            for s in self.structures:
-                val = row.get(s)
-                if pd.notna(val) and str(val).strip() in ['✓', 'x']:
-                    struct_cochees.append(s)
-                    
-            conseil_val = row.get("Conseils")
-            self.needs_mapping.append({
-                "categorie": str(categorie).strip() if pd.notna(categorie) else "",
-                "detaille": str(detail).strip(),
-                "moteur_criteria": str(kw).strip() if pd.notna(kw) else "",
-                "struct_proposee": str(struct_proposee).strip() if pd.notna(struct_proposee) else "",
-                "structures_cochees": struct_cochees,
-                "conseil": str(conseil_val).strip() if pd.notna(conseil_val) else ""
-            })
+        if not df2.empty:
+            cassi_prob_col = next((c for c in df2.columns if "cassi" in c.lower() and ("prob" in c.lower() or "problématique" in c.lower())), None)
+            cassi_bes_col = next((c for c in df2.columns if "cassi" in c.lower() and "besoin" in c.lower()), None)
+            cassi_prest_col = next((c for c in df2.columns if "cassi" in c.lower() and "prest" in c.lower()), None)
+
+            for idx, row in df2.iterrows():
+                detail = row.get("Besoin détaillé")
+                if pd.isna(detail) or not str(detail).strip():
+                    continue
+                kw = row.get("Mots-clés / critère moteur")
+                struct_proposee = row.get("Structure principale proposée")
+                categorie = row.get("Catégorie")
+                conseil_val = row.get("Conseils")
+                
+                # Extraction CASSI sécurisée
+                c_prob = ""
+                if cassi_prob_col and pd.notna(row.get(cassi_prob_col)):
+                    val_p = str(row.get(cassi_prob_col)).strip()
+                    if val_p.lower() not in ['x', '-', 'nan', 'none']:
+                        c_prob = val_p
+                        
+                c_bes = ""
+                if cassi_bes_col and pd.notna(row.get(cassi_bes_col)):
+                    val_b = str(row.get(cassi_bes_col)).strip()
+                    if val_b.lower() not in ['x', '-', 'nan', 'none']:
+                        c_bes = val_b
+                        
+                c_prest = ""
+                if cassi_prest_col and pd.notna(row.get(cassi_prest_col)):
+                    val_pr = str(row.get(cassi_prest_col)).strip()
+                    if val_pr.lower() not in ['x', '-', 'nan', 'none']:
+                        c_prest = val_pr
+
+                struct_cochees = []
+                for s in self.structures:
+                    col_match = next((c for c in df2.columns if c.strip() == s), None)
+                    if not col_match:
+                        col_match = next((c for c in df2.columns if c.strip().lower() == s.lower() or c.strip().lower() == s.lower().replace('_', ' ')), None)
+                    if col_match:
+                        val = row.get(col_match)
+                        if pd.notna(val) and str(val).strip() in ['✓', '✔', 'x', 'X', '1', 'oui', 'true', 'OUI', 'True']:
+                            struct_cochees.append(s)
+                        
+                self.needs_mapping.append({
+                    "categorie": str(categorie).strip() if pd.notna(categorie) else "",
+                    "cassi_problematique": c_prob,
+                    "cassi_besoin": c_bes,
+                    "cassi_prestation": c_prest,
+                    "detaille": str(detail).strip(),
+                    "moteur_criteria": str(kw).strip() if pd.notna(kw) else "",
+                    "struct_proposee": str(struct_proposee).strip() if pd.notna(struct_proposee) else "",
+                    "structures_cochees": struct_cochees,
+                    "conseil": str(conseil_val).strip() if pd.notna(conseil_val) and str(conseil_val).strip() != "nan" else ""
+                })
 
     def _reload_excel_if_modified(self):
         try:
@@ -195,11 +312,15 @@ class OrientationEngine:
         except Exception as e:
             print(f"Warning: could not reload excel rules: {e}")
 
-    def evaluate_orientation(self, extracted_data: dict, comid_results: dict, original_text: str = ""):
+    def evaluate_orientation(self, extracted_data: dict, comid_results: dict, original_text: str = "", matrix: str = None):
         """
         Calcule l'orientation recommandée à l'aide d'un algorithme par points.
+        matrix: 'cassi' ou 'legacy' (si None, utilise la matrice active courante).
         """
-        self._reload_excel_if_modified()
+        if matrix and matrix in self.available_matrices and matrix != self.active_matrix_id:
+            self.set_matrix(matrix)
+        else:
+            self._reload_excel_if_modified()
         # Prépare le contexte d'évaluation complet
         eval_context = {**extracted_data}
         eval_context["complexite.niveau"] = comid_results.get("niveau")
@@ -229,15 +350,44 @@ class OrientationEngine:
             except:
                 pass
         
+        # Prétraitement du texte pour la détection des besoins :
+        # On masque les présentations de l'adresseur ("je suis kinésithérapeute", "je suis IDE", "je suis médecin", etc.)
+        # afin de ne pas interpréter la profession du professionnel appelant comme un besoin manquant pour le patient.
+        speaker_regex = (
+            r'\b(?:bonjour\s*,?\s*)?je suis (?:le |la |un |une )?(?:masseur-)?(?:kinésithérapeute|kinesitherapeute|kiné|kine|'
+            r'infirmière libérale|infirmiere liberale|infirmier libéral|infirmier liberal|infirmière|infirmiere|infirmier|idel?|'
+            r'médecin traitant|medecin traitant|médecin|medecin|mt|docteur|généraliste|generaliste|neurologue|gériatre|geriatre|psychiatre|'
+            r'assistante? sociale?|as|travailleur social|travailleuse sociale)\b[^.,;\n]*'
+        )
+        patient_text = re.sub(speaker_regex, ' ', text_lower, flags=re.IGNORECASE)
+        
+        # On masque également les mentions de professionnels déjà mis en place (ex: "nous avons mis en place infirmier libéral, kiné")
+        in_place_regex = (
+            r'\b(?:nous avons mis en place|a déjà mis en place|ont mis en place|intervient déjà|passent déjà|passage d\'un|passage d\'une)\s+'
+            r'[^.,;\n]*'
+        )
+        patient_text = re.sub(in_place_regex, ' ', patient_text, flags=re.IGNORECASE)
+
         # Étape 1 : Garde-fous prioritaires
         triggered_garde_fous = []
         for rule in self.prioritization_rules:
             detail = rule["detail"]
-            if detail in self.condition_map:
-                checker = self.condition_map[detail]
+            checker = self._get_condition_checker(detail)
+            if checker:
                 try:
                     if checker(eval_context, eval_context, text_lower):
-                        triggered_garde_fous.append(rule)
+                        rule_copy = rule.copy()
+                        # Si Spoliation financière ou Abus de faiblesse dans un contexte de signalement/protection sans agression physique armée en cours
+                        # => la CEV est la cellule d'écoute et de vigilance référente
+                        if detail in ["Spoliation financière", "Abus de confiance ou abus de faiblesse"]:
+                            is_armed_vital_emergency = (
+                                eval_context.get("adresseur.degre_urgence_percu") == "critique" or
+                                any(w in text_lower for w in ["arme", "couteau", "frappe en cours", "agression physique", "17", "secours d'urgence"])
+                            )
+                            if not is_armed_vital_emergency:
+                                rule_copy["structure"] = "CEV"
+                                rule_copy["objectif"] = f"Signalement et protection d'adulte vulnérable (Maltraitance / Spoliation) : {detail}"
+                        triggered_garde_fous.append(rule_copy)
                 except Exception as e:
                     print(f"Error checking prio rule {detail}: {e}")
                 
@@ -260,7 +410,7 @@ class OrientationEngine:
                         })
 
             for need in self.needs_mapping:
-                if self._is_need_identified(need, eval_context, text_lower):
+                if self._is_need_identified(need, eval_context, patient_text):
                     c = need.get("conseil")
                     if c and str(c).strip() and str(c).strip() != "nan":
                         c_clean = str(c).strip()
@@ -298,6 +448,8 @@ class OrientationEngine:
             }
             
             # Enrichit extracted_data pour la traçabilité dans l'interface
+            extracted_data["evaluation.moteur_points.active_matrix"] = self.active_matrix_id
+            extracted_data["evaluation.moteur_points.active_matrix_label"] = self.available_matrices[self.active_matrix_id]["label"]
             extracted_data["evaluation.moteur_points.priorisations_declenchees"] = [winner["structure"]]
             extracted_data["evaluation.moteur_points.scores"] = {s: 0 for s in self.structures}
             extracted_data["evaluation.moteur_points.scores"][struct_type] = int(winner["priority"])
@@ -310,6 +462,7 @@ class OrientationEngine:
         scores = {struct: 0 for struct in self.structures}
         identified_needs = []
         identified_conseils_detail = []
+        scored_struct_per_need = set()
         
         danger_needs = [
             "spoliation financière", "spoliation financiere",
@@ -319,26 +472,40 @@ class OrientationEngine:
         ]
         
         for need in self.needs_mapping:
-            if self._is_need_identified(need, eval_context, text_lower):
+            if self._is_need_identified(need, eval_context, patient_text):
                 verbatim = self._extract_verbatim(need["detaille"], need.get("moteur_criteria", ""), original_text)
                 need_obj = {
                     "detaille": need["detaille"],
                     "categorie": need.get("categorie", ""),
+                    "cassi_problematique": need.get("cassi_problematique", ""),
+                    "cassi_besoin": need.get("cassi_besoin", ""),
+                    "cassi_prestation": need.get("cassi_prestation", ""),
                     "moteur_criteria": need.get("moteur_criteria", ""),
                     "structures_cochees": need.get("structures_cochees", []),
                     "verbatim": verbatim
                 }
 
                 if len(need["structures_cochees"]) > 0:
-                    identified_needs.append(need_obj)
-                    detail_lower = need["detaille"].lower()
+                    is_dup = any(
+                        ex["detaille"] == need_obj["detaille"] and 
+                        ex.get("cassi_prestation") == need_obj.get("cassi_prestation")
+                        for ex in identified_needs
+                    )
+                    if not is_dup:
+                        identified_needs.append(need_obj)
+
+                    detail_lower = need["detaille"].lower().replace("’", "'").strip()
                     is_danger = any(dn in detail_lower for dn in danger_needs)
                     for s in need["structures_cochees"]:
                         if s in scores:
-                            if is_danger and s in ["CEV", "POLICE"]:
-                                scores[s] += 100
-                            else:
-                                scores[s] += 1
+                            # Déduplication équitable des points par couple (structure, besoin)
+                            score_key = (s, detail_lower)
+                            if score_key not in scored_struct_per_need:
+                                scored_struct_per_need.add(score_key)
+                                if is_danger and s in ["CEV", "POLICE"]:
+                                    scores[s] += 100
+                                else:
+                                    scores[s] += 1
 
                 c_text = need.get("conseil")
                 if c_text and str(c_text).strip() and str(c_text).strip() != "nan":
@@ -364,30 +531,31 @@ class OrientationEngine:
         for rule in self.exclusion_rules:
             detail = rule["detail"]
             struct_type = rule["structure"]
-            if detail in self.condition_map:
-                checker = self.condition_map[detail]
+            checker = self._get_condition_checker(detail)
+            if checker:
                 try:
                     if checker(eval_context, eval_context, text_lower):
+                        # Ne pas exclure la CPTS si la personne cherche explicitement un médecin traitant / visite à domicile
+                        if struct_type == "CPTS" and any(k in text_lower for k in ["retraite", "partir à la retraite", "plus de médecin", "cherche un médecin", "besoin d'un médecin", "visite au domicile", "visites au domicile"]):
+                            continue
                         excluded_structures.append(struct_type)
                 except Exception as e:
                     print(f"Error checking exclusion rule {detail}: {e}")
                     
-        # Exclure aussi Compagnons Bâtisseurs si pas de Diogène ou incurie ou insalubrité
-        if "COMPAGNONS_BATISSEURS" not in excluded_structures:
-            insalubre_ok = (
-                eval_context.get("usager.cadre_de_vie.etat_logement") in ["insalubre", "diogene", "incurie"] or
-                "diogène" in text_lower or
-                "diogene" in text_lower or
-                "incurie" in text_lower or
-                "insalubre" in text_lower or
-                "auto-réhabilitation" in text_lower or
-                "auto-rehabilitation" in text_lower
-            )
-            if not insalubre_ok:
+        # Exclure Compagnons Bâtisseurs si pas de Diogène ou incurie ou insalubrité avérée dans le récit
+        has_real_insalubrite = any(
+            kw in text_lower for kw in [
+                "diogène", "diogene", "incurie", "insalubre", "insalubrité", "insalubrite",
+                "très sale", "tres sale", "dépotoir", "depotoir", "poubelles partout",
+                "odeur d'urine", "odeur d’urine", "désinfection", "desinfection", "auto-réhabilitation", "auto-rehabilitation"
+            ]
+        )
+        if not has_real_insalubrite:
+            if "COMPAGNONS_BATISSEURS" not in excluded_structures:
                 excluded_structures.append("COMPAGNONS_BATISSEURS")
-            else:
-                # Si Diogène / Insalubrité détecté ➡️ Boost pour placer Les Compagnons Bâtisseurs en choix N°1
-                scores["COMPAGNONS_BATISSEURS"] += 100
+            scores["COMPAGNONS_BATISSEURS"] = -9999
+        else:
+            scores["COMPAGNONS_BATISSEURS"] += 100
                 
         # Remise à zéro/pénalisation extrême pour les structures exclues
         for s in excluded_structures:
@@ -421,15 +589,38 @@ class OrientationEngine:
                 scores["UTS"] = scores["UTS"] - 1
                 
         # 4.2 : CRT vs CLIC
-        # Si la situation est complexe (COMID >= 6), CRT l'emporte sur CLIC (car c'est le volet renforcé du CLIC pour éviter l'EHPAD)
-        if comid_results.get("score_total", 0) >= 6 and scores.get("CRT", 0) > 0 and scores.get("CLIC", 0) > 0:
-            scores["CRT"] = max(scores["CRT"], scores["CLIC"]) + 1
-            scores["CLIC"] = scores["CLIC"] - 1
+        # CRT (Centre de Ressources Territorial) : accompagnement renforcé à domicile, alternative à l'entrée en EHPAD
+        crt_triggers = [
+            "retarder l'entrée en ehpad" in text_lower or "retarder l'ehpad" in text_lower or "retarder entree en ehpad" in text_lower,
+            "éviter l'entrée en ehpad" in text_lower or "eviter l'ehpad" in text_lower or "alternative à l'ehpad" in text_lower or "alternative a l'ehpad" in text_lower,
+            "accompagnement plus global des équipes" in text_lower or "accompagnement renforcé" in text_lower or "accompagnement renforce" in text_lower,
+            ("a déjà des aides" in text_lower or "déjà des aides" in text_lower or "aides déjà en place" in text_lower or "équipes qui sont déjà en place" in text_lower or "equipes qui sont deja en place" in text_lower or "équipes déjà en place" in text_lower) and ("dégrade" in text_lower or "degrade" in text_lower or "insuffisant" in text_lower),
+            ("refus de soins" in text_lower or "refus d'hospitalisation" in text_lower or "refus d’hospitalisation" in text_lower) and ("chutes" in text_lower or "épuisée" in text_lower or "epuisee" in text_lower or "conjugopathie" in text_lower),
+            comid_results.get("score_total", 0) >= 6
+        ]
+        if any(crt_triggers) and "CRT" not in excluded_structures:
+            scores["CRT"] = max(scores.get("CRT", 0), scores.get("CLIC", 0)) + 5
+            if "CLIC" in scores:
+                scores["CLIC"] = max(scores["CLIC"] - 2, 0)
+        else:
+            # Si demande d'aide à domicile pour un senior sans critère CRT -> CLIC prioritaire
+            is_clic_aide_domicile = (
+                ("aide à domicile" in text_lower or "aides à domicile" in text_lower or "aide a domicile" in text_lower or "aides a domicile" in text_lower) and
+                "CLIC" not in excluded_structures
+            )
+            if is_clic_aide_domicile:
+                scores["CLIC"] = max(scores.get("CLIC", 0), scores.get("CRT", 0) + 2, 6)
             
         # 4.3 : CLIC vs CCAS pour les seniors
-        # Si besoin gériatrique / coordination de l'autonomie, CLIC l'emporte sur CCAS
-        # Sauf si demande d'aide sociale à l'hébergement (ASH), qui relève du CCAS
-        if scores.get("CLIC", 0) > 0 and scores.get("CCAS", 0) > 0:
+        # Si senior isolé avec demande d'aide aux courses / portage repas / aide alimentaire sans réseau familial de proximité (ex: Cas 04)
+        is_proximity_ccas = (
+            ("courses" in text_lower or "portage de repas" in text_lower or "aide alimentaire" in text_lower) and
+            ("isolé" in text_lower or "isole" in text_lower or "seul" in text_lower or "sans famille" in text_lower or "étranger" in text_lower or "etranger" in text_lower) and
+            not any(kw in text_lower for kw in ["ehpad", "gir", "apa", "cognitif", "alzheimer", "démence", "demence", "crt", "chute", "chutes"])
+        )
+        if is_proximity_ccas and "CCAS" not in excluded_structures:
+            scores["CCAS"] = max(scores.get("CCAS", 0), scores.get("CLIC", 0)) + 3
+        elif scores.get("CLIC", 0) > 0 and scores.get("CCAS", 0) > 0:
             is_ash_request = (
                 "hébergement" in text_lower or 
                 "hebergement" in text_lower or 
@@ -442,7 +633,7 @@ class OrientationEngine:
                 "moyen" in text_lower
             )
             has_geriatric_need = False
-            geriatric_keywords = ["troubles cognitifs", "troubles cognitifs", "autonomie", "médico-sociale", "medico-sociale", "ehpad", "gir", "apa", "aménagement", "amenagement", "mobilité", "mobilite", "kiné", "kine", "maintien"]
+            geriatric_keywords = ["troubles cognitifs", "troubles cognitifs", "autonomie", "médico-sociale", "medico-sociale", "ehpad", "gir", "apa", "aménagement", "amenagement", "mobilité", "mobilite", "maintien"]
             for need in identified_needs:
                 if any(kw in need["detaille"].lower() for kw in geriatric_keywords):
                     has_geriatric_need = True
@@ -479,7 +670,26 @@ class OrientationEngine:
             
         temp_winner = max(scores, key=scores.get)
         
+        is_dac_situation = (
+            "parcours de soins" in text_lower or
+            ("santé mentale" in text_lower and ("précar" in text_lower or "expulsion" in text_lower or "surendettement" in text_lower or "toxico" in text_lower or "addiction" in text_lower)) or
+            ("psychologique" in text_lower and ("social" in text_lower or "logement" in text_lower or "parano" in text_lower)) or
+            ("signalement" in text_lower and ("seule professionnelle" in text_lower or "parano" in text_lower)) or
+            (
+                (
+                    extracted_data.get("evaluation.comid.psychiatrie") is True or
+                    extracted_data.get("evaluation.comid.addiction") is True or
+                    extracted_data.get("evaluation.comid.depression") is True
+                ) and (
+                    extracted_data.get("evaluation.comid.precarite_financiere") is True or
+                    extracted_data.get("evaluation.comid.logement_inadapte") is True or
+                    "expulsion" in text_lower or "surendettement" in text_lower
+                )
+            )
+        )
+
         redirection_dac = (
+            is_dac_situation or
             (temp_winner == "UTS" and person_cannot_move) or
             (len(identified_needs) > 5 and comid_results.get("score_total", 0) >= 6) or
             (refusal_by_establishment and "CLIC" in excluded_structures) or
@@ -495,7 +705,7 @@ class OrientationEngine:
         # Exceptions à la redirection DAC
         if scores.get("POLICE", 0) >= 100 or scores.get("CEV", 0) >= 100:
             redirection_dac = False
-        elif scores.get("CRT", 0) > 0 and not (
+        elif scores.get("CRT", 0) > 0 and not is_dac_situation and not (
             extracted_data.get("evaluation.comid.psychiatrie") is True or
             extracted_data.get("evaluation.comid.addiction") is True or
             extracted_data.get("evaluation.comid.depression") is True
@@ -504,10 +714,10 @@ class OrientationEngine:
             
         # Application de la redirection DAC
         if redirection_dac:
-            scores["DAC"] = max(scores.values()) + 1
+            scores["DAC"] = max(scores.values()) + 10
             if temp_winner == "UTS" and person_cannot_move:
                 scores["UTS"] = -9999
-        elif comid_results.get("score_total", 0) < 6:
+        elif comid_results.get("score_total", 0) < 6 and not is_dac_situation:
             scores["DAC"] = -9999
 
         # 4.4 : Fil d'Argent est toujours une Ressource Complémentaire et ne crée jamais de carte principale
@@ -522,16 +732,33 @@ class OrientationEngine:
                     "verbatim": v_aidant
                 })
 
-        # 4.5 : Règle CPTS pour la recherche de médecin traitant -> Section 2 intégrée au même cube du CLIC
+        # 4.5 : Règle CPTS pour la recherche de médecin traitant
         cpts_section_obj = None
+        has_primary_medecin_need = (
+            (
+                eval_context.get("demande.motif_principal") == "recherche_medecin" or
+                ("retraite" in text_lower and ("médecin" in text_lower or "medecin" in text_lower or "mt" in text_lower or "patientèle" in text_lower or "patientele" in text_lower)) or
+                ("n'a plus de médecin" in text_lower or "plus de médecin" in text_lower or "pas de médecin" in text_lower or "sans médecin" in text_lower) or
+                ("visites au domicile" in text_lower or "visite au domicile" in text_lower or "visite à domicile" in text_lower or "certificat mdph" in text_lower)
+            ) and not redirection_dac
+        )
         has_medecin_search = (
+            has_primary_medecin_need or
             eval_context.get("vulnerabilites.sante.suivi_medical.medecin_traitant") in ["absent", "non_identifie_avec_certitude"] or
             "médecin" in text_lower or
             "medecin" in text_lower or
             "traitant" in text_lower or
             "retraite" in text_lower
         )
-        if has_medecin_search and "CPTS" not in excluded_structures:
+        if has_primary_medecin_need:
+            # La recherche de médecin traitant / accès aux soins est la demande N°1
+            current_max = max([s for s in scores.values() if s > -9000] or [0])
+            scores["CPTS"] = max(current_max + 10, 25)
+            # Ne pas exclure la CPTS même si patient < 60 ans car la CPTS s'adresse à tout âge
+            if "CPTS" in excluded_structures:
+                excluded_structures.remove("CPTS")
+            cpts_section_obj = None
+        elif has_medecin_search and "CPTS" not in excluded_structures:
             v_med = self._extract_verbatim("Recherche de médecin traitant", "médecin, medecin, traitant, docteur, soins, retraite", original_text)
             cpts_section_obj = {
                 "structure_type": "CPTS",
@@ -719,12 +946,17 @@ class OrientationEngine:
                 except Exception as e:
                     print(f"Error checking prio rule {detail}: {e}")
                     
+        extracted_data["evaluation.moteur_points.active_matrix"] = self.active_matrix_id
+        extracted_data["evaluation.moteur_points.active_matrix_label"] = self.available_matrices[self.active_matrix_id]["label"]
         extracted_data["evaluation.moteur_points.priorisations_declenchees"] = priorisations_declenchees
         extracted_data["evaluation.moteur_points.scores"] = {s: int(score) if score > -9000 else -9999 for s, score in scores.items()}
         extracted_data["evaluation.moteur_points.besoins_identifies"] = [
             {
                 "detaille": need["detaille"],
                 "categorie": need["categorie"],
+                "cassi_problematique": need.get("cassi_problematique", ""),
+                "cassi_besoin": need.get("cassi_besoin", ""),
+                "cassi_prestation": need.get("cassi_prestation", ""),
                 "structures_cochees": need["structures_cochees"]
             }
             for need in identified_needs
@@ -834,62 +1066,51 @@ class OrientationEngine:
         if not text:
             return False
             
-        detail_lower = need["detaille"].lower()
-        
+        detail_lower = need["detaille"].lower().replace("’", "'").strip()
+        text = text.replace("’", "'")
+
         # Helper flags pour aides et maintien à domicile
         has_aide_phrases = [
             "aide à domicile", "aide a domicile", "aides à domicile", "aides a domicile",
             "aides au domicile", "aide au domicile", "auxiliaire de vie", "saad", "ssiad",
             "mal à sortir", "du mal à sortir", "ne peut plus sortir", "plus sortir",
             "mal à se déplacer", "perte d'autonomie", "perte de mobilité", "difficulté à sortir",
-            "difficultés à sortir", "seule à la maison", "seule chez elle", "au quotidien"
+            "difficultés à sortir", "seule à la maison", "seule chez elle", "au quotidien",
+            "courses", "ménage", "menage", "accompagnement médicaux", "sorties"
         ]
         has_aide = any(p in text for p in has_aide_phrases) or "ad" in text.split()
-        has_maintien = "maintien" in text and "domicile" in text
+        has_maintien = "maintien" in text and "domicile" in text or "maintien à domicile" in text or "maintien a domicile" in text or "rester à domicile" in text or "rester a domicile" in text
         has_refus = "refus" in text or "refusé" in text or "refuse" in text or "ne veut pas" in text or "ne veut plus" in text or "opposition" in text
-        
+
         # Addictions / Alcool / Drogues / Médicaments
-        if "addiction" in detail_lower or "addictions" in detail_lower or "alcool" in detail_lower or "drogue" in detail_lower or "médicament" in detail_lower or "medicament" in detail_lower:
-            addiction_kws = ["addiction", "addictions", "alcool", "alcoolisme", "drogue", "drogues", "substance", "toxico", "addictologie", "arcasud", "dépendance", "dependance", "boit", "boit trop", "bouteille", "médicament", "médicaments", "medicament", "medicaments", "doses", "surdosage", "antalgiques", "antidouleurs"]
+        if "addiction" in detail_lower or "addictions" in detail_lower or "alcool" in detail_lower or "drogue" in detail_lower or "médicament" in detail_lower or "medicament" in detail_lower or "toxicomanie" in detail_lower:
+            addiction_kws = ["addiction", "addictions", "alcool", "alcoolisme", "drogue", "drogues", "substance", "toxico", "toxicomanie", "toxicomane", "addictologie", "arcasud", "dépendance", "dependance", "boit", "boit trop", "bouteille", "médicament", "médicaments", "medicament", "medicaments"]
             if any(kw in text for kw in addiction_kws):
                 return True
 
-        # Protection Juridique / Tutelle / Curatelle
-        if "protection" in detail_lower or "tutelle" in detail_lower or "curatelle" in detail_lower:
+        # Protection Juridique / Tutelle / Curatelle / Signalement
+        if "protection" in detail_lower or "tutelle" in detail_lower or "curatelle" in detail_lower or "signalement" in detail_lower:
             protection_kws = [
                 "tutelle", "curatelle", "protection juridique", "sauvegarde de justice", 
                 "mandataire", "mandataire judiciaire", "mjpm", "inapte", "incapable",
                 "ne peut plus décider", "ne peut plus decider", "ne peut plus gérer", "ne peut plus gerer",
                 "juges des contentieux", "juge des tutelles", "tribunal de proximité", "tribunal de proximite",
                 "habilitation familiale", "mise sous tutelle", "mise sous curatelle", "sous tutelle", "sous curatelle",
-                "autonomie décisionnelle", "autonomie decisionnelle", "gestion des comptes"
+                "autonomie décisionnelle", "autonomie decisionnelle", "gestion des comptes", "spoliation", "signalement", "protéger", "proteger"
             ]
             if any(kw in text for kw in protection_kws):
                 return True
 
-        # Relais de l'aidant / Épuisement aidant
-        if "aidant" in detail_lower or "aidants" in detail_lower or "répit" in detail_lower or "repit" in detail_lower:
-            aidant_kws = ["aidant", "aidante", "aidants", "fatigue", "fatigué", "fatiguee", "épuisé", "épuisée", "epuise", "epuisee", "épuisement", "epuisement", "répit", "repit", "charge mentale", "l'aider", "aider", "surmené", "surmenée", "surmenes", "surmenés", "surmenage", "soulager", "souffle"]
-            if any(kw in text for kw in aidant_kws):
-                return True
-
-        # Choix d'un prestataire d'aide à domicile / SAAD / SSIAD / Ménage simple du quotidien
-        if "prestataire" in detail_lower or "aide à domicile" in detail_lower or "aides à domicile" in detail_lower or "saad" in detail_lower or "ssiad" in detail_lower or "ménage" in detail_lower or "menage" in detail_lower:
-            aide_dom_kws = ["aide à domicile", "aide a domicile", "aides à domicile", "aides a domicile", "service d'aide", "services d'aide", "saad", "ssiad", "prestataire", "auxiliaire de vie", "ménage", "menage", "entretien du logement", "repassage", "nettoyer le logement"]
-            if any(kw in text for kw in aide_dom_kws):
-                return True
-
-        # Kinésithérapeute / Kiné
-        if "kiné" in detail_lower or "kine" in detail_lower or "kinésithérapeute" in detail_lower or "kinesitherapeute" in detail_lower:
-            kine_kws = ["kiné", "kine", "kinésithérapeute", "kinesitherapeute", "masso-kinésithérapie"]
-            if any(kw in text for kw in kine_kws):
-                return True
-
-        # Infirmier / IDEL
-        if "infirmier" in detail_lower or "infirmière" in detail_lower or "infirmiere" in detail_lower or "idel" in detail_lower:
-            idel_kws = ["infirmier", "infirmière", "infirmiere", "idel", "soins infirmiers"]
-            if any(kw in text for kw in idel_kws):
-                return True
+        # Correspondance directe par prestation CASSI spécifique si présente
+        cassi_p = need.get("cassi_prestation", "")
+        if cassi_p and cassi_p not in ["x", "-", "nan"]:
+            cassi_p_norm = cassi_p.lower().replace("’", "'").replace("(", " ").replace(")", " ")
+            stopwords = {"dans", "pour", "avec", "sans", "sous", "vers", "chez", "leur", "plus", "tout", "tous", "toute", "toutes", "prise", "charge", "cadre", "appui", "recherche", "dispositif", "aide"}
+            p_words = [w for w in re.findall(r'\b\w{4,}\b', cassi_p_norm) if w not in stopwords]
+            if p_words:
+                matching = [w for w in p_words if w in text]
+                if len(matching) >= 2 or (len(p_words) == 1 and matching):
+                    return True
 
         # Nettoyage extrême / Diogène / Incurie / Insalubrité (Sociétés de nettoyage spécialisées / Compagnons Bâtisseurs - UNIQUEMENT SI INSALUBRITÉ SÉVÈRE)
         if "diogène" in detail_lower or "diogene" in detail_lower or "incurie" in detail_lower or "insalubrité" in detail_lower or "insalubre" in detail_lower:
@@ -962,7 +1183,7 @@ class OrientationEngine:
             if "aménagement" in text or "amenagement" in text or "aménager" in text or "amenager" in text or "adapter" in text or "adaptation" in text or "barre" in text or "douche" in text or "chute" in text or "chutes" in text:
                 return True
         if "maintien renforcé" in detail_lower or "maintien renforce" in detail_lower or "maintien intensif" in detail_lower:
-            if "renforc" in text or "intensif" in text or ("refus" in text and "soin" in text) or "hospitalisation" in text or "chute" in text or "dégrade" in text or "degrade" in text:
+            if "renforc" in text or "intensif" in text or ("refus" in text and "soin" in text) or ("déjà des aides" in text and ("dégrade" in text or "insuffisant" in text)):
                 return True
         if "alternative à l’ehpad" in detail_lower or "alternative a l'ehpad" in detail_lower:
             if "ehpad" in text or "maison de retraite" in text or "retarder l'entrée" in text or "retarder l'entree" in text:
